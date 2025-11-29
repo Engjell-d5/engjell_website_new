@@ -1,0 +1,66 @@
+'use client';
+
+import { useState } from 'react';
+
+export default function SubscribeFormInline() {
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    setMessage('');
+
+    try {
+      const response = await fetch('/api/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setMessage('Successfully subscribed!');
+        setEmail('');
+      } else {
+        setMessage(data.error || 'Failed to subscribe');
+      }
+    } catch (error) {
+      setMessage('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="blog-subscribe-snippet-inline my-8 flex justify-center">
+      <div>
+        <form onSubmit={handleSubmit} className="flex items-center">
+          <input 
+            type="email" 
+            placeholder="Email" 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="bg-black border border-[#1a3a4a] border-r-0 p-2 text-xs text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors h-10" 
+            required
+            disabled={loading}
+          />
+          <button 
+            type="submit"
+            disabled={loading}
+            className="h-10 px-6 bg-white text-black hover:bg-[var(--primary-mint)] text-[10px] font-bold uppercase transition-colors disabled:opacity-50 whitespace-nowrap border border-[#1a3a4a] border-l-0"
+          >
+            {loading ? 'Subscribing...' : 'Join'}
+          </button>
+        </form>
+        {message && (
+          <p className={`text-[10px] mt-2 text-center ${message.includes('Success') ? 'text-[var(--primary-mint)]' : 'text-red-400'}`}>
+            {message}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}

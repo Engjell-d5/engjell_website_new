@@ -1,0 +1,307 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Bebas Neue';
+  src: url('/BebasNeue-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Brand Palette */
+  --primary-mint: #23C18C;
+  --secondary-orange: #E29A4B;
+  --secondary-purple: #9450FF;
+  --rich-black: #001823; /* Brand Book Black */
+  --platinum: #E5E5E5;
+  
+  /* UI Variables */
+  --bg-dark: #000c11; /* Darker accent of Rich Black for depth */
+  --panel-bg: var(--rich-black); /* Rich Black Panels */
+  --border-color: #1a3a4a; /* Subtle architectural border */
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--platinum);
+  font-family: 'Montserrat', sans-serif;
+  /* Scroll naturally */
+  overflow-y: auto;
+  overflow-x: hidden; /* Fix: Prevent horizontal scroll */
+  min-height: 100vh;
+  width: 100%; /* Fix: Use 100% instead of 100vw to account for scrollbar width */
+  /* Subtle noise texture for "classic" feel */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+}
+
+/* Headings Font */
+h1, h2, h3, h4, .brand-font {
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 0.08em; /* Increased spacing for editorial look */
+}
+
+/* Architectural Panel (Classic Style) */
+.classic-panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 4px; /* Sharper corners */
+  box-shadow: none; /* Removed shadow for seamless look */
+}
+
+/* Sticky positioning helpers */
+.sticky-header {
+  position: sticky;
+  top: 0; /* Pinned to very top */
+  z-index: 10; /* Lower z-index so modals can appear above */
+  background-color: var(--panel-bg); /* Matches panel background */
+  backdrop-filter: blur(12px); /* Add blur for legibility when content scrolls under */
+  margin-bottom: 1.5rem; /* Visual separation from content */
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sticky-sidebar {
+  position: sticky;
+  top: 7rem; /* Offset for header */
+  height: fit-content;
+}
+
+/* Animations */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Navigation Button Styles - Classic */
+.nav-btn {
+  transition: all 0.2s ease;
+  position: relative;
+  color: #64748b;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.1rem;
+  letter-spacing: 0.1em;
+  padding: 4px 12px;
+  border: 1px solid transparent;
+}
+
+.nav-btn:hover {
+  color: white;
+}
+
+.nav-btn.active {
+  color: var(--primary-mint);
+  border: 1px solid var(--primary-mint);
+}
+
+/* Image Grayscale to Color on Hover */
+.img-classic {
+  filter: grayscale(100%) contrast(110%);
+  transition: filter 0.5s ease, transform 0.5s ease;
+}
+
+.group:hover .img-classic {
+  filter: grayscale(0%) contrast(100%);
+  transform: scale(1.02);
+}
+
+/* Typography Utilities */
+.text-mint { color: var(--primary-mint); }
+.text-orange { color: var(--secondary-orange); }
+.text-purple { color: var(--secondary-purple); }
+
+/* Tiptap Editor Styles */
+.ProseMirror {
+  outline: none;
+}
+
+.ProseMirror p {
+  margin: 1em 0;
+}
+
+.ProseMirror h1 {
+  font-size: 2em;
+  font-weight: bold;
+  margin: 0.67em 0;
+}
+
+.ProseMirror h2 {
+  font-size: 1.5em;
+  font-weight: bold;
+  margin: 0.75em 0;
+}
+
+.ProseMirror h3 {
+  font-size: 1.17em;
+  font-weight: bold;
+  margin: 0.83em 0;
+}
+
+.ProseMirror ul,
+.ProseMirror ol {
+  padding-left: 2em;
+  margin: 1em 0;
+}
+
+.ProseMirror li {
+  margin: 0.5em 0;
+}
+
+.ProseMirror blockquote {
+  border-left: 4px solid #ccc;
+  padding-left: 1em;
+  margin: 1em 0;
+  font-style: italic;
+}
+
+.ProseMirror a {
+  color: #3b82f6;
+  text-decoration: underline;
+}
+
+.ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1em 0;
+}
+
+.ProseMirror img.editor-image {
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.ProseMirror img.editor-image:hover {
+  opacity: 0.8;
+}
+
+/* Blog Content Styles */
+.blog-content {
+  color: #e5e7eb;
+  line-height: 1.8;
+  font-size: 16px;
+  padding: 2rem 0;
+}
+
+.blog-content h1,
+.blog-content h2,
+.blog-content h3,
+.blog-content h4,
+.blog-content h5,
+.blog-content h6 {
+  font-family: 'Bebas Neue', sans-serif;
+  color: white;
+  margin-top: 2em;
+  margin-bottom: 1em;
+  font-weight: bold;
+}
+
+.blog-content h1 { font-size: 2.5em; }
+.blog-content h2 { font-size: 2em; }
+.blog-content h3 { font-size: 1.75em; }
+.blog-content h4 { font-size: 1.5em; }
+
+.blog-content p {
+  margin-bottom: 1.5em;
+  color: #e5e7eb;
+}
+
+.blog-content a {
+  color: var(--primary-mint);
+  text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.blog-content a:hover {
+  color: #1a9d6b;
+}
+
+.blog-content img {
+  max-width: 100%;
+  height: auto;
+  margin: 2em 0;
+  border: 1px solid var(--border-color);
+}
+
+.blog-content img.editor-image-fullwidth,
+.ProseMirror img.editor-image-fullwidth {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  display: block !important;
+  margin: 2em 0 !important;
+}
+
+/* Subscribe Snippet Styles */
+.blog-subscribe-snippet {
+  margin: 3em 0;
+}
+
+/* Editor placeholder for subscribe snippet */
+.ProseMirror .subscribe-snippet-placeholder {
+  min-height: 100px;
+  border: 2px dashed var(--primary-mint);
+  background: rgba(35, 193, 140, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1.5em 0;
+  padding: 2em;
+  position: relative;
+}
+
+.ProseMirror .subscribe-snippet-placeholder::before {
+  content: "📧 Subscribe Form";
+  color: var(--primary-mint);
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.blog-content ul,
+.blog-content ol {
+  margin: 1.5em 0;
+  padding-left: 2em;
+  color: #e5e7eb;
+}
+
+.blog-content li {
+  margin-bottom: 0.5em;
+}
+
+.blog-content blockquote {
+  border-left: 3px solid var(--primary-mint);
+  padding-left: 1.5em;
+  margin: 2em 0;
+  color: #cbd5e1;
+  font-style: italic;
+}
+
+.blog-content code {
+  background: var(--rich-black);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-size: 0.9em;
+  border: 1px solid var(--border-color);
+}
+
+.blog-content pre {
+  background: var(--rich-black);
+  padding: 1.5em;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 2em 0;
+  border: 1px solid var(--border-color);
+}
+
+.blog-content pre code {
+  background: none;
+  padding: 0;
+  border: none;
+}
