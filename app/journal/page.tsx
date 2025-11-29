@@ -73,8 +73,8 @@ export default function Journal() {
           <section className="animate-slide-up">
             <div className="flex items-end justify-between mb-8 border-b border-[var(--border-color)] pb-4">
               <div>
-                <span className="page-label">Journal</span>
-                <h2 className="text-5xl text-white mt-1">FIELD NOTES</h2>
+                <span className="page-label mb-3 block">Journal</span>
+                <h2 className="text-5xl md:text-6xl text-white font-bebas">FIELD NOTES</h2>
               </div>
             </div>
             

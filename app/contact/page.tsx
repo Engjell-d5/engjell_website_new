@@ -77,8 +77,8 @@ export default function Contact() {
           <section className="animate-slide-up h-full">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="flex flex-col justify-center">
-                <span className="page-label mb-2 block">Connect</span>
-                <h2 className="text-5xl text-white font-bebas mt-1 mb-6">LET'S TALK</h2>
+                <span className="page-label mb-3 block">Contact</span>
+                <h2 className="text-5xl md:text-6xl text-white font-bebas mb-6">LET'S TALK</h2>
                 <p className="text-sm text-[var(--primary-mint)] font-bold uppercase tracking-widest mb-6">Speaker, Builder, Consultant</p>
                 
                 <div className="prose prose-invert max-w-none text-gray-300 font-light text-sm leading-7 mb-8">

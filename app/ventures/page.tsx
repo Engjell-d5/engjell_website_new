@@ -42,8 +42,8 @@ export default function Ventures() {
           <section className="animate-slide-up">
             <div className="flex items-end justify-between mb-8 border-b border-[var(--border-color)] pb-4">
               <div>
-                <span className="page-label">Ventures</span>
-                <h2 className="text-5xl text-white mt-1">WHAT I BUILD</h2>
+                <span className="page-label mb-3 block">Ventures</span>
+                <h2 className="text-5xl md:text-6xl text-white font-bebas">WHAT I BUILD</h2>
               </div>
             </div>
 

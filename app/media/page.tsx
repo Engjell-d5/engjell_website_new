@@ -86,8 +86,8 @@ export default function Media() {
           <section className="animate-slide-up">
             <div className="flex items-end justify-between mb-8 border-b border-[var(--border-color)] pb-4">
               <div>
-                <span className="page-label">Media</span>
-                <h2 className="text-5xl text-white mt-1">THE CONVERSATION</h2>
+                <span className="page-label mb-3 block">Media</span>
+                <h2 className="text-5xl md:text-6xl text-white font-bebas">THE CONVERSATION</h2>
               </div>
               <a 
                 href="https://www.youtube.com/@engjellrraklli" 
