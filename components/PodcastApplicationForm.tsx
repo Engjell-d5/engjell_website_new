@@ -17,9 +17,11 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
     vision: '',
     biggestChallenge: '',
     whyPodcast: '',
+    website: '', // Honeypot field
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [formStartTime] = useState(Date.now()); // Track when form was loaded
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -37,7 +39,10 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
       const response = await fetch('/api/podcast/apply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          formStartTime,
+        }),
       });
 
       const data = await response.json();
@@ -53,6 +58,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
           vision: '',
           biggestChallenge: '',
           whyPodcast: '',
+          website: '',
         });
         // Close modal after a short delay
         if (onSuccess) {
@@ -214,6 +220,17 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
           {loading ? 'Submitting...' : 'Submit Application'}
         </button>
 
+        {/* Honeypot field - hidden from users but visible to bots */}
+        <input
+          type="text"
+          name="website"
+          value={formData.website}
+          onChange={handleChange}
+          tabIndex={-1}
+          autoComplete="off"
+          style={{ position: 'absolute', left: '-9999px' }}
+          aria-hidden="true"
+        />
         {message && (
           <p className={`text-sm mt-2 ${message.includes('success') ? 'text-[var(--primary-mint)]' : 'text-red-400'}`}>
             {message}

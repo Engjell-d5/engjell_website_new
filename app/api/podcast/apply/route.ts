@@ -1,9 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { addPodcastApplication } from '@/lib/data';
+import { checkSpam } from '@/lib/spam-protection';
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, about, businesses, industry, vision, biggestChallenge, whyPodcast } = await request.json();
+    const body = await request.json();
+    const { name, email, about, businesses, industry, vision, biggestChallenge, whyPodcast, website, formStartTime } = body;
+
+    // Spam protection check
+    const spamCheck = checkSpam(request, body, formStartTime);
+    if (spamCheck.isSpam) {
+      console.warn('Spam detected in podcast application:', spamCheck.reason);
+      // Return success to avoid revealing spam detection
+      return NextResponse.json({ 
+        success: true,
+        message: 'Application submitted successfully!'
+      });
+    }
 
     // Validate required fields
     if (!name || !email || !about || !businesses || !industry || !vision || !biggestChallenge || !whyPodcast) {

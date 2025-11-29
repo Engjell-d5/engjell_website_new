@@ -31,7 +31,7 @@ export default function Ventures() {
             <div className="flex items-end justify-between mb-8 border-b border-[#1a3a4a] pb-4">
               <div>
                 <span className="text-[10px] text-white font-bold tracking-[0.2em] uppercase">Portfolio</span>
-                <h2 className="text-5xl text-white mt-1">VENTURES</h2>
+                <h2 className="text-5xl text-white mt-1">WHAT I BUILD</h2>
               </div>
             </div>
 

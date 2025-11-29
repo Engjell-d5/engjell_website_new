@@ -1,10 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { addContactMessage, getContactMessages, markContactMessageAsRead, deleteContactMessage, ContactMessage } from '@/lib/data';
 import { getAuthUser } from '@/lib/auth';
+import { checkSpam } from '@/lib/spam-protection';
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, email, message } = await request.json();
+    const body = await request.json();
+    const { name, email, message, website, formStartTime } = body;
+
+    // Spam protection check
+    const spamCheck = checkSpam(request, body, formStartTime);
+    if (spamCheck.isSpam) {
+      console.warn('Spam detected in contact form:', spamCheck.reason);
+      // Return success to avoid revealing spam detection
+      return NextResponse.json({ 
+        success: true,
+        message: 'Message sent successfully!'
+      });
+    }
 
     // Validate required fields
     if (!name || !email || !message) {

@@ -170,8 +170,13 @@ function BlogContentWithSubscribe({ content }: { content: string }) {
     return <div className="blog-content" dangerouslySetInnerHTML={{ __html: content || '' }} />;
   }
 
-  // Decode HTML entities if needed
+  // Decode HTML entities if needed (server-safe approach)
   const decodeHtml = (html: string) => {
+    if (typeof window === 'undefined') {
+      // Server-side: use a simple regex-based approach
+      return html.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
+    }
+    // Client-side: use DOM API
     const textarea = document.createElement('textarea');
     textarea.innerHTML = html;
     return textarea.value;

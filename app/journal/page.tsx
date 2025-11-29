@@ -74,7 +74,7 @@ export default function Journal() {
             <div className="flex items-end justify-between mb-8 border-b border-[#1a3a4a] pb-4">
               <div>
                 <span className="text-[10px] text-white font-bold tracking-[0.2em] uppercase">Journal</span>
-                <h2 className="text-5xl text-white mt-1">THOUGHTS</h2>
+                <h2 className="text-5xl text-white mt-1">FIELD NOTES</h2>
               </div>
             </div>
             

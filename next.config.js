@@ -12,33 +12,6 @@ const nextConfig = {
   generateEtags: true,
   reactStrictMode: true,
   swcMinify: true,
-  webpack: (config, { isServer }) => {
-    // Externalize node-cron for server-side only
-    if (isServer) {
-      config.externals = config.externals || [];
-      config.externals.push('node-cron');
-    }
-    
-    // Optimize bundle size
-    config.optimization = {
-      ...config.optimization,
-      moduleIds: 'deterministic',
-      runtimeChunk: 'single',
-      splitChunks: {
-        chunks: 'all',
-        cacheGroups: {
-          vendor: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            priority: 10,
-            reuseExistingChunk: true,
-          },
-        },
-      },
-    };
-    
-    return config;
-  },
   // Headers for caching and security
   async headers() {
     return [
@@ -73,6 +46,15 @@ const nextConfig = {
         ],
       },
       {
+        source: '/uploads/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600, must-revalidate',
+          },
+        ],
+      },
+      {
         source: '/_next/static/:path*',
         headers: [
           {
@@ -86,4 +68,3 @@ const nextConfig = {
 }
 
 module.exports = nextConfig
-

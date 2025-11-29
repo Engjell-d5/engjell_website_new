@@ -12,7 +12,7 @@ export const metadata: Metadata = createMetadata({
 export default function About() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-      <main className="classic-panel md:col-span-9 flex flex-col bg-[#02141d] min-h-[80vh]">
+      <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--bg-dark)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[#1a3a4a] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-gray-400">
@@ -30,8 +30,9 @@ export default function About() {
             <div className="grid grid-cols-1 gap-8 max-w-4xl mx-auto">
               <div className="text-center mb-8">
                 <span className="text-[10px] text-[var(--primary-mint)] font-bold uppercase tracking-[0.2em] mb-3 block">My Story</span>
-                <h2 className="text-5xl md:text-6xl text-white font-bebas mb-6">11 YEARS OF BUILDING</h2>
-                <div className="h-[1px] w-24 bg-gray-600 mx-auto"></div>
+                <h2 className="text-5xl md:text-6xl text-white font-bebas mb-6">THE JOURNEY</h2>
+                <p className="text-sm text-gray-400 mt-2 font-light">11 YEARS OF BUILDING</p>
+                <div className="h-[1px] w-24 bg-gray-600 mx-auto mt-4"></div>
               </div>
               <div className="prose prose-invert max-w-none text-gray-300 font-light text-sm leading-7">
                 <p className="mb-6 first-letter:text-4xl first-letter:font-bold first-letter:text-white first-letter:mr-1 first-letter:float-left">

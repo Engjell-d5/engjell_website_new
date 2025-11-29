@@ -8,15 +8,17 @@
 # 1. Syncs code files to the server (excluding node_modules, .git, data, etc.)
 # 2. Builds the Next.js app on the server
 # 3. Installs dependencies
-# 4. Adds or restarts the PM2 process (doesn't create new PM2 ecosystem)
-# 5. Reloads nginx
+# 4. Configures firewall to allow app port
+# 5. Creates/updates nginx configuration
+# 6. Adds or restarts the PM2 process (doesn't create new PM2 ecosystem)
+# 7. Reloads nginx
 #
 # Prerequisites:
 # - SSH key access to root@division5.co
-# - rsync installed locally
+# - rsync installed locally (optional - script will use tar+ssh fallback if not available)
 # - Node.js and npm installed on the server
 # - PM2 installed globally on the server
-# - Existing nginx configuration pointing to port 8081
+# - Nginx installed and running on the server
 #
 # Usage: ./deploy.sh
 ###############################################################################
@@ -29,7 +31,10 @@ SERVER_HOST="division5.co"
 SERVER_PORT="22"
 REMOTE_DIR="/var/www/engjell-website"
 APP_NAME="engjell-website"
-NGINX_PORT="8081"
+APP_PORT="7776"
+NGINX_PORT="8080"
+NGINX_CONFIG_PATH="/etc/nginx/sites-available/engjell-website"
+NGINX_CONFIG_ENABLED="/etc/nginx/sites-enabled/engjell-website"
 
 # Colors for output
 GREEN='\033[0;32m'
@@ -45,21 +50,147 @@ ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "mkdir -p ${REMOTE_DIR}"
 
 # Step 2: Sync files to server (excluding node_modules, .git, .next, data, etc.)
 echo -e "${YELLOW}📤 Syncing files to server...${NC}"
-rsync -avz --delete \
-    --exclude 'node_modules' \
-    --exclude '.git' \
-    --exclude '.next' \
-    --exclude 'data' \
-    --exclude '.env' \
-    --exclude '.env.local' \
-    --exclude '.env.*.local' \
-    --exclude '*.log' \
-    --exclude '.DS_Store' \
-    --exclude 'scripts' \
-    -e "ssh -p ${SERVER_PORT}" \
-    ./ ${SERVER_USER}@${SERVER_HOST}:${REMOTE_DIR}/
 
-# Step 3: Install dependencies, build, and restart PM2 on server
+# Check if rsync is available, otherwise use tar+ssh
+if command -v rsync &> /dev/null; then
+    rsync -avz --delete \
+        --exclude 'node_modules' \
+        --exclude '.git' \
+        --exclude '.next' \
+        --exclude 'data' \
+        --exclude '.env' \
+        --exclude '.env.local' \
+        --exclude '.env.*.local' \
+        --exclude '*.log' \
+        --exclude '.DS_Store' \
+        -e "ssh -p ${SERVER_PORT}" \
+        ./ ${SERVER_USER}@${SERVER_HOST}:${REMOTE_DIR}/
+else
+    # Fallback: Use tar+ssh for Git Bash compatibility
+    echo -e "${YELLOW}⚠️  rsync not found, using tar+ssh method...${NC}"
+    tar --exclude='node_modules' \
+        --exclude='.git' \
+        --exclude='.next' \
+        --exclude='data' \
+        --exclude='.env' \
+        --exclude='.env.local' \
+        --exclude='.env.*.local' \
+        --exclude='*.log' \
+        --exclude='.DS_Store' \
+        -czf - . | ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "cd ${REMOTE_DIR} && tar -xzf -"
+fi
+
+# Step 3: Configure firewall to allow app port
+echo -e "${YELLOW}🔥 Configuring firewall to allow port ${APP_PORT}...${NC}"
+ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} << EOF
+    set -e
+    # Try ufw (Ubuntu/Debian)
+    if command -v ufw &> /dev/null; then
+        if sudo ufw status | grep -q "Status: active"; then
+            echo "Configuring ufw firewall..."
+            sudo ufw allow ${APP_PORT}/tcp comment "Engjell Website Next.js App" || true
+            echo "✅ Firewall rule added for port ${APP_PORT}"
+        else
+            echo "⚠️  UFW is installed but not active, skipping firewall configuration"
+        fi
+    # Try firewall-cmd (CentOS/RHEL/Fedora)
+    elif command -v firewall-cmd &> /dev/null; then
+        if sudo firewall-cmd --state &> /dev/null; then
+            echo "Configuring firewalld..."
+            sudo firewall-cmd --permanent --add-port=${APP_PORT}/tcp || true
+            sudo firewall-cmd --reload || true
+            echo "✅ Firewall rule added for port ${APP_PORT}"
+        else
+            echo "⚠️  Firewalld is installed but not active, skipping firewall configuration"
+        fi
+    # Try iptables directly
+    elif command -v iptables &> /dev/null; then
+        echo "Configuring iptables..."
+        sudo iptables -C INPUT -p tcp --dport ${APP_PORT} -j ACCEPT 2>/dev/null || \
+        sudo iptables -A INPUT -p tcp --dport ${APP_PORT} -j ACCEPT || true
+        echo "✅ Firewall rule added for port ${APP_PORT}"
+        # Try to save iptables rules (varies by distribution)
+        if command -v iptables-save &> /dev/null; then
+            sudo iptables-save > /etc/iptables/rules.v4 2>/dev/null || \
+            sudo sh -c "iptables-save > /etc/iptables/rules.v4" 2>/dev/null || true
+        fi
+    else
+        echo "⚠️  No firewall management tool found (ufw/firewall-cmd/iptables), skipping firewall configuration"
+        echo "⚠️  Please manually allow port ${APP_PORT} in your firewall"
+    fi
+EOF
+
+# Step 4: Create/update nginx configuration
+echo -e "${YELLOW}⚙️  Creating/updating nginx configuration...${NC}"
+ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} << EOF
+    set -e
+    NGINX_CONFIG_PATH="${NGINX_CONFIG_PATH}"
+    NGINX_CONFIG_ENABLED="${NGINX_CONFIG_ENABLED}"
+    
+    cat > /tmp/engjell-website-nginx.conf << 'NGINX_CONFIG_EOF'
+server {
+    listen 8080;
+    server_name engjellrraklli.com www.engjellrraklli.com;
+
+    # Increase body size limit for file uploads
+    client_max_body_size 10M;
+
+    # Gzip compression
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css text/xml text/javascript application/x-javascript application/xml+rss application/json application/javascript;
+
+    # Proxy to Next.js app
+    location / {
+        proxy_pass http://localhost:7776;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host \$host;
+        proxy_set_header X-Real-IP \$remote_addr;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_cache_bypass \$http_upgrade;
+        
+        # Timeouts
+        proxy_connect_timeout 60s;
+        proxy_send_timeout 60s;
+        proxy_read_timeout 60s;
+    }
+
+    # Cache static assets
+    location /_next/static {
+        proxy_pass http://localhost:7776;
+        proxy_cache_valid 200 60m;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Cache images
+    location /images {
+        proxy_pass http://localhost:7776;
+        proxy_cache_valid 200 60m;
+        add_header Cache-Control "public, max-age=31536000, immutable";
+    }
+}
+NGINX_CONFIG_EOF
+    sudo mv /tmp/engjell-website-nginx.conf \${NGINX_CONFIG_PATH}
+    
+    # Enable site if not already enabled
+    if [ ! -L \${NGINX_CONFIG_ENABLED} ]; then
+        sudo ln -s \${NGINX_CONFIG_PATH} \${NGINX_CONFIG_ENABLED}
+    fi
+    
+    # Test nginx configuration
+    if sudo nginx -t; then
+        echo "✅ Nginx configuration is valid"
+    else
+        echo "❌ Nginx configuration test failed!"
+        exit 1
+    fi
+EOF
+
+# Step 5: Install dependencies, build, and restart PM2 on server
 echo -e "${YELLOW}🔄 Installing dependencies, building, and restarting application on server...${NC}"
 ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} << EOF
     set -e
@@ -81,11 +212,14 @@ ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} << EOF
     # Check if PM2 process exists, if not add it, otherwise restart
     if pm2 list | grep -q "${APP_NAME}"; then
         echo "Restarting existing PM2 process..."
-        pm2 restart ${APP_NAME}
+        # Stop and remove to recreate with correct port
+        pm2 delete ${APP_NAME} || true
+        PORT=${APP_PORT} pm2 start npm --name "${APP_NAME}" -- start
+        pm2 save
     else
         echo "Adding new PM2 process..."
-        # Start Next.js (PORT env var should be set in .env file on server if needed)
-        pm2 start npm --name "${APP_NAME}" -- start
+        # Start Next.js on port 7776
+        PORT=${APP_PORT} pm2 start npm --name "${APP_NAME}" -- start
         pm2 save
     fi
     
@@ -98,7 +232,8 @@ EOF
 
 if [ $? -eq 0 ]; then
     echo -e "${GREEN}✅ Deployment completed successfully!${NC}"
-    echo -e "${GREEN}🌐 Application should be running on port ${NGINX_PORT}${NC}"
+    echo -e "${GREEN}🌐 Application should be accessible on port ${NGINX_PORT}${NC}"
+    echo -e "${GREEN}📡 Next.js app running on port ${APP_PORT}${NC}"
 else
     echo -e "${RED}❌ Deployment failed!${NC}"
     exit 1

@@ -85,7 +85,7 @@ export default function Media() {
             <div className="flex items-end justify-between mb-8 border-b border-[#1a3a4a] pb-4">
               <div>
                 <span className="text-[10px] text-white font-bold tracking-[0.2em] uppercase">Podcast</span>
-                <h2 className="text-5xl text-white mt-1">LATEST CONTENT</h2>
+                <h2 className="text-5xl text-white mt-1">THE CONVERSATION</h2>
               </div>
               <a 
                 href="https://www.youtube.com/@engjellrraklli" 
@@ -143,11 +143,6 @@ export default function Media() {
 
       {/* Right Panel - Next 3 Videos */}
       <aside className="classic-panel md:col-span-3 flex flex-col p-6 gap-6 bg-[var(--rich-black)]">
-        <div className="flex items-center justify-between pb-3 border-b border-[#1a3a4a]">
-          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">More Videos</span>
-          <Play className="w-4 h-4 text-gray-500" />
-        </div>
-
         {/* Apply to Podcast Button */}
         <button
           onClick={() => setShowApplicationModal(true)}
@@ -156,6 +151,11 @@ export default function Media() {
           <Mic className="w-4 h-4" />
           Apply to Podcast
         </button>
+
+        <div className="flex items-center justify-between pb-3 border-b border-[#1a3a4a]">
+          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">More Videos</span>
+          <Play className="w-4 h-4 text-gray-500" />
+        </div>
         
         {loading ? (
           <div className="text-center py-8">

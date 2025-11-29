@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { addSubscriber, markSubscriberSynced } from '@/lib/data';
+import { checkSpam } from '@/lib/spam-protection';
 
 const SENDER_API_KEY = process.env.SENDER_API_KEY || '';
 const SENDER_LIST_ID = process.env.SENDER_LIST_ID || '';
@@ -38,7 +39,19 @@ async function addToSenderNet(email: string): Promise<boolean> {
 
 export async function POST(request: NextRequest) {
   try {
-    const { email } = await request.json();
+    const body = await request.json();
+    const { email, website, formStartTime } = body;
+
+    // Spam protection check
+    const spamCheck = checkSpam(request, body, formStartTime);
+    if (spamCheck.isSpam) {
+      console.warn('Spam detected in subscribe form:', spamCheck.reason);
+      // Return success to avoid revealing spam detection
+      return NextResponse.json({ 
+        success: true,
+        message: 'Successfully subscribed!'
+      });
+    }
 
     if (!email || !email.includes('@')) {
       return NextResponse.json(

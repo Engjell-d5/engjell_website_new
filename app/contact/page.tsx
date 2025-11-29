@@ -10,9 +10,11 @@ export default function Contact() {
     name: '',
     email: '',
     message: '',
+    website: '', // Honeypot field
   });
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [formStartTime] = useState(Date.now()); // Track when form was loaded
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -30,7 +32,10 @@ export default function Contact() {
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          formStartTime,
+        }),
       });
 
       const data = await response.json();
@@ -41,6 +46,7 @@ export default function Contact() {
           name: '',
           email: '',
           message: '',
+          website: '',
         });
       } else {
         setMessage(data.error || 'Failed to send message');
@@ -54,7 +60,7 @@ export default function Contact() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-      <main className="classic-panel md:col-span-9 flex flex-col bg-[#02141d] min-h-[80vh]">
+      <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--bg-dark)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[#1a3a4a] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-gray-400">
@@ -72,7 +78,7 @@ export default function Contact() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="flex flex-col justify-center">
                 <span className="text-[10px] text-white font-bold uppercase tracking-[0.2em] mb-2 block">Connect</span>
-                <h2 className="text-5xl text-white font-bebas mb-6">GET IN TOUCH</h2>
+                <h2 className="text-5xl text-white font-bebas mb-6">LET'S TALK</h2>
                 <p className="text-sm text-gray-400 mb-8 font-light leading-relaxed">
                   Open for speaking engagements, technical consultation, and partnership opportunities. Whether you have a question about building in Albania or want to discuss a potential venture, I'm all ears.
                 </p>
@@ -129,6 +135,17 @@ export default function Contact() {
                       className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all resize-none font-montserrat disabled:opacity-50"
                     ></textarea>
                   </div>
+                  {/* Honeypot field - hidden from users but visible to bots */}
+                  <input
+                    type="text"
+                    name="website"
+                    value={formData.website}
+                    onChange={handleChange}
+                    tabIndex={-1}
+                    autoComplete="off"
+                    style={{ position: 'absolute', left: '-9999px' }}
+                    aria-hidden="true"
+                  />
                   {message && (
                     <p className={`text-xs ${message.includes('successfully') ? 'text-[var(--primary-mint)]' : 'text-red-400'}`}>
                       {message}

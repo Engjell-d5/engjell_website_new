@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
-import { existsSync } from 'fs';
+import { existsSync, openSync, closeSync, fsyncSync } from 'fs';
 
 export async function POST(request: NextRequest) {
   const user = getAuthUser(request);
@@ -59,11 +59,17 @@ export async function POST(request: NextRequest) {
     const filename = `${timestamp}-${randomStr}.${extension}`;
     const filepath = join(uploadsDir, filename);
 
-    // Save file
+    // Save file and ensure it's fully written to disk
     await writeFile(filepath, buffer);
 
-    // Return the URL
-    const url = `/uploads/${filename}`;
+    // Force file system sync to ensure file is fully written
+    const fd = openSync(filepath, 'r+');
+    fsyncSync(fd);
+    closeSync(fd);
+
+    // Return the URL pointing to the API route (serves files dynamically)
+    // This ensures images are available immediately without needing to restart the app
+    const url = `/api/uploads/${filename}`;
     return NextResponse.json({ url, filename });
   } catch (error) {
     console.error('Upload error:', error);

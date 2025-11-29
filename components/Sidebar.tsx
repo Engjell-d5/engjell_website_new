@@ -112,11 +112,16 @@ export default function Sidebar() {
   const [loadingVideo, setLoadingVideo] = useState(true);
   const [latestBlog, setLatestBlog] = useState<Blog | null>(null);
   const [loadingBlog, setLoadingBlog] = useState(true);
+  const [relatedBlogs, setRelatedBlogs] = useState<Blog[]>([]);
+  const [loadingRelatedBlogs, setLoadingRelatedBlogs] = useState(true);
 
   useEffect(() => {
     if (pathname === '/') {
       fetchLatestVideo();
       fetchLatestBlog();
+    }
+    if (pathname.startsWith('/journal/')) {
+      fetchRelatedBlogs();
     }
   }, [pathname]);
 
@@ -161,6 +166,33 @@ export default function Sidebar() {
     }
   };
 
+  const fetchRelatedBlogs = async () => {
+    try {
+      const response = await fetch('/api/blogs');
+      if (response.ok) {
+        const data = await response.json();
+        // Get current blog slug from pathname
+        const currentSlug = pathname.split('/journal/')[1];
+        
+        // Filter published blogs, exclude current blog, and sort by publishedAt, most recent first
+        const publishedBlogs = (data.blogs || [])
+          .filter((blog: Blog) => blog.published && blog.slug !== currentSlug)
+          .sort((a: Blog, b: Blog) => {
+            const dateA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+            const dateB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+            return dateB - dateA;
+          });
+        
+        // Take first 3
+        setRelatedBlogs(publishedBlogs.slice(0, 3));
+      }
+    } catch (error) {
+      console.error('Error fetching related blogs:', error);
+    } finally {
+      setLoadingRelatedBlogs(false);
+    }
+  };
+
   const formatDate = (dateString: string | null) => {
     if (!dateString) return '';
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -171,10 +203,16 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="classic-panel md:col-span-3 hidden md:flex flex-col p-6 gap-6 bg-[var(--rich-black)] sticky-sidebar">
+    <aside className="classic-panel md:col-span-3 hidden md:flex flex-col p-6 gap-6 bg-[var(--bg-dark)] sticky-sidebar">
       {/* HOME SIDEBAR */}
       {pathname === '/' && (
         <div className="flex flex-col gap-6">
+          {/* Quick Action - Book Me for Events */}
+          <Link href="/contact" className="w-full py-3 bg-white text-black hover:bg-[var(--primary-mint)] text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
+            <CalendarPlus className="w-4 h-4" />
+            Book Me for Events
+          </Link>
+
           {/* Latest Video */}
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-[#1a3a4a] mb-3">
@@ -255,12 +293,6 @@ export default function Sidebar() {
               </div>
             )}
           </div>
-
-          {/* Quick Action */}
-          <button className="w-full py-4 border border-[#1a3a4a] bg-[var(--rich-black)] hover:bg-white hover:text-black transition-all flex flex-row items-center justify-center gap-3 text-gray-400 mt-2">
-            <CalendarPlus className="w-4 h-4" />
-            <span className="text-[10px] font-bold uppercase tracking-widest">Book Me for Events</span>
-          </button>
         </div>
       )}
 
@@ -334,7 +366,57 @@ export default function Sidebar() {
 
       {/* JOURNAL SIDEBAR */}
       {(pathname === '/journal' || pathname.startsWith('/journal/')) && (
+        <div className="flex flex-col gap-6">
         <SubscribeForm />
+          
+          {/* Related Articles - Only show on single blog post pages */}
+          {pathname.startsWith('/journal/') && (
+            <div>
+              <div className="flex items-center justify-between pb-3 border-b border-[#1a3a4a] mb-3">
+                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Related Articles</span>
+                <PenTool className="w-4 h-4 text-gray-500" />
+              </div>
+              {loadingRelatedBlogs ? (
+                <div className="space-y-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="aspect-[2/1] bg-black border border-[#1a3a4a] flex items-center justify-center">
+                      <p className="text-gray-500 text-xs">Loading...</p>
+                    </div>
+                  ))}
+                </div>
+              ) : relatedBlogs.length > 0 ? (
+                <div className="space-y-4">
+                  {relatedBlogs.map((blog) => (
+                    <Link
+                      key={blog.id}
+                      href={`/journal/${blog.slug}`}
+                      className="group block"
+                    >
+                      <div className="aspect-[2/1] bg-black border border-[#1a3a4a] mb-2 overflow-hidden relative group-hover:border-[var(--primary-mint)] transition-colors">
+                        <Image 
+                          src={blog.imageUrl} 
+                          alt={blog.title} 
+                          fill
+                          className="object-cover opacity-60 group-hover:opacity-90 transition-opacity"
+                        />
+                      </div>
+                      <p className="text-xs text-white font-bold leading-tight group-hover:text-[var(--primary-mint)] transition-colors line-clamp-2">
+                        {blog.title}
+                      </p>
+                      <p className="text-[9px] text-gray-500 mt-1">
+                        {formatDate(blog.publishedAt)} • {blog.category}
+                      </p>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="aspect-[2/1] bg-black border border-[#1a3a4a] flex items-center justify-center">
+                  <p className="text-gray-500 text-xs">No related articles</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       )}
 
       {/* VENTURES SIDEBAR */}

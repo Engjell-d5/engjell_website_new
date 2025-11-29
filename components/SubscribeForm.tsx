@@ -4,8 +4,10 @@ import { useState } from 'react';
 
 export default function SubscribeForm() {
   const [email, setEmail] = useState('');
+  const [website, setWebsite] = useState(''); // Honeypot field
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [formStartTime] = useState(Date.now()); // Track when form was loaded
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -16,7 +18,7 @@ export default function SubscribeForm() {
       const response = await fetch('/api/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, website, formStartTime }),
       });
 
       const data = await response.json();
@@ -24,6 +26,7 @@ export default function SubscribeForm() {
       if (response.ok) {
         setMessage('Successfully subscribed!');
         setEmail('');
+        setWebsite('');
       } else {
         setMessage(data.error || 'Failed to subscribe');
       }
@@ -48,6 +51,17 @@ export default function SubscribeForm() {
             className="w-full bg-black border border-[#1a3a4a] p-2 text-xs text-white mb-2 focus:outline-none focus:border-[var(--primary-mint)] transition-colors" 
             required
             disabled={loading}
+          />
+          {/* Honeypot field */}
+          <input
+            type="text"
+            name="website"
+            value={website}
+            onChange={(e) => setWebsite(e.target.value)}
+            tabIndex={-1}
+            autoComplete="off"
+            style={{ position: 'absolute', left: '-9999px' }}
+            aria-hidden="true"
           />
           <button 
             type="submit"
