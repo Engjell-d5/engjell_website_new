@@ -139,7 +139,7 @@ export default function YouTubePage() {
               name="cronSchedule"
               defaultValue={config?.cronSchedule || '0 2 * * *'}
               placeholder="0 2 * * *"
-              className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-mono"
+              className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-mono"
               required
             />
             <button

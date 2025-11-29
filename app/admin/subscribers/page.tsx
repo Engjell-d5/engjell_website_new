@@ -71,7 +71,7 @@ export default function SubscribersPage() {
             className={`px-4 py-2 text-xs font-bold uppercase tracking-widest transition-colors ${
               filter === filterType
                 ? 'bg-[var(--primary-mint)] text-black'
-                : 'bg-[var(--rich-black)] text-gray-400 hover:text-white border border-[#1a3a4a]'
+                : 'bg-[var(--rich-black)] text-gray-400 hover:text-white border border-[var(--border-color)]'
             }`}
           >
             {filterType === 'all' ? 'All' : filterType === 'synced' ? 'Synced' : 'Not Synced'} (
@@ -99,7 +99,7 @@ export default function SubscribersPage() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[#1a3a4a]">
+                <tr className="border-b border-[var(--border-color)]">
                   <th className="text-left p-4 text-xs text-gray-400 uppercase tracking-widest font-bold">
                     Email
                   </th>
@@ -115,7 +115,7 @@ export default function SubscribersPage() {
                 {filteredSubscribers.map((subscriber) => (
                   <tr
                     key={subscriber.id}
-                    className="border-b border-[#1a3a4a] hover:bg-[var(--rich-black)]/50 transition-colors"
+                    className="border-b border-[var(--border-color)] hover:bg-[var(--rich-black)]/50 transition-colors"
                   >
                     <td className="p-4">
                       <div className="flex items-center gap-3">

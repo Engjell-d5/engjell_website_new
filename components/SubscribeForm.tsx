@@ -39,7 +39,7 @@ export default function SubscribeForm() {
 
   return (
     <div className="blog-subscribe-snippet my-8">
-      <div className="bg-[var(--rich-black)] border border-[#1a3a4a] p-6">
+      <div className="bg-[var(--rich-black)] border border-[var(--border-color)] p-6">
         <h4 className="text-xl text-white font-bebas tracking-wide mb-3">SUBSCRIBE</h4>
         <p className="text-xs text-gray-400 leading-relaxed mb-4 font-light">Get my weekly tech trends.</p>
         <form onSubmit={handleSubmit} className="space-y-2">
@@ -48,7 +48,7 @@ export default function SubscribeForm() {
             placeholder="Email" 
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-black border border-[#1a3a4a] p-2 text-xs text-white mb-2 focus:outline-none focus:border-[var(--primary-mint)] transition-colors" 
+            className="w-full bg-black border border-[var(--border-color)] p-2 text-xs text-white mb-2 focus:outline-none focus:border-[var(--primary-mint)] transition-colors font-montserrat" 
             required
             disabled={loading}
           />

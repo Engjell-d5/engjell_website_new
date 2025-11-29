@@ -39,8 +39,10 @@ export default function BlogPost() {
   const router = useRouter();
   const [blog, setBlog] = useState<Blog | null>(null);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     if (params.slug) {
       fetchBlog();
     }
@@ -72,10 +74,10 @@ export default function BlogPost() {
     });
   };
 
-  if (loading) {
+  if (!mounted || loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-        <main className="classic-panel md:col-span-9 flex flex-col bg-[#02141d] min-h-[80vh]">
+        <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
           <div className="p-10 text-center">
             <p className="text-gray-400">Loading...</p>
           </div>
@@ -88,7 +90,7 @@ export default function BlogPost() {
   if (!blog) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-        <main className="classic-panel md:col-span-9 flex flex-col bg-[#02141d] min-h-[80vh]">
+        <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
           <div className="p-10 text-center">
             <p className="text-gray-400 mb-4">Blog post not found</p>
             <Link href="/journal" className="text-[var(--primary-mint)] hover:underline">
@@ -103,16 +105,16 @@ export default function BlogPost() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-      <main className="classic-panel md:col-span-9 flex flex-col bg-[#02141d] min-h-[80vh]">
+      <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
-        <div className="h-14 border-b border-[#1a3a4a] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
+        <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-gray-400">
             <Link href="/journal" className="hover:text-[var(--primary-mint)] transition-colors">
               <span className="text-[var(--primary-mint)] font-bold">/</span>
-              <span className="text-white font-medium uppercase tracking-widest font-montserrat text-[11px]">Journal</span>
+              <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">Journal</span>
             </Link>
             <span className="text-gray-500">/</span>
-            <span className="text-white font-medium uppercase tracking-widest font-montserrat text-[11px]">{blog.slug}</span>
+            <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">{blog.slug}</span>
           </div>
           <div className="font-montserrat text-[10px] text-gray-500 font-bold tracking-[0.15em] hidden md:block">
             A KIND WORLD IS A BETTER WORLD.
@@ -123,7 +125,7 @@ export default function BlogPost() {
         <div className="p-10 md:p-16 lg:p-20">
           <article className="animate-slide-up">
             {/* Header */}
-            <div className="mb-8 border-b border-[#1a3a4a] pb-6">
+            <div className="mb-8 border-b border-[var(--border-color)] pb-6">
               <div className="flex items-center gap-3 mb-4">
                 <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest border border-gray-600 px-2 py-0.5">
                   {blog.category}
@@ -144,7 +146,7 @@ export default function BlogPost() {
 
             {/* Featured Image */}
             {blog.imageUrl && (
-              <div className="relative w-full aspect-video mb-8 border border-[#1a3a4a] overflow-hidden">
+              <div className="relative w-full aspect-video mb-8 border border-[var(--border-color)] overflow-hidden">
                 <Image
                   src={blog.imageUrl}
                   alt={blog.title}
@@ -172,14 +174,8 @@ function BlogContentWithSubscribe({ content }: { content: string }) {
 
   // Decode HTML entities if needed (server-safe approach)
   const decodeHtml = (html: string) => {
-    if (typeof window === 'undefined') {
-      // Server-side: use a simple regex-based approach
-      return html.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
-    }
-    // Client-side: use DOM API
-    const textarea = document.createElement('textarea');
-    textarea.innerHTML = html;
-    return textarea.value;
+    // Use consistent regex-based approach for both server and client
+    return html.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
   };
 
   let decodedContent = content;

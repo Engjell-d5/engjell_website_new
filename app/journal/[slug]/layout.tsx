@@ -19,6 +19,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     const title = blog.seo?.metaTitle || blog.seo?.ogTitle || blog.title;
     const description = blog.seo?.metaDescription || blog.seo?.ogDescription || blog.excerpt || '';
     const image = blog.seo?.ogImage || blog.imageUrl || '';
+    
+    // Parse keywords from blog SEO or use category-based keywords
+    let keywords: string[] | undefined;
+    if (blog.seo?.keywords) {
+      keywords = blog.seo.keywords.split(',').map(k => k.trim()).filter(k => k.length > 0);
+    } else if (blog.category) {
+      keywords = [blog.category, 'Tech Blog', 'Entrepreneurship'];
+    }
 
     return createMetadata({
       title,
@@ -28,6 +36,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       type: 'article',
       publishedTime: blog.publishedAt || undefined,
       modifiedTime: blog.updatedAt || undefined,
+      keywords,
     });
   } catch (error) {
     const resolvedParams = await Promise.resolve(params);

@@ -9,17 +9,26 @@ export const metadata: Metadata = createMetadata({
   title: 'Home',
   description: 'Building scalable tech and human potential in Tirana. Creative at heart, resilient by practice. Valuing discipline, persistence, kindness, and patience above all.',
   path: '/',
+  keywords: [
+    'Technology',
+    'Startups',
+    'Software Development',
+    'Entrepreneurship',
+    'Albanian Tech',
+    'Tirana Startup',
+    'Tech Innovation',
+  ],
 });
 
 export default function Home() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-      <main className="classic-panel md:col-span-9 flex flex-col bg-[#02141d] min-h-[80vh]">
+      <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
-        <div className="h-14 border-b border-[#1a3a4a] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
+        <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-gray-400">
             <span className="text-[var(--primary-mint)] font-bold">/</span>
-            <span className="text-white font-medium uppercase tracking-widest font-montserrat text-[11px]">Dashboard</span>
+            <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">Engjell Rraklli</span>
           </div>
           <div className="font-montserrat text-[10px] text-gray-500 font-bold tracking-[0.15em] hidden md:block">
             IF IT WAS EASY, EVERYONE WOULD DO IT.
@@ -30,7 +39,7 @@ export default function Home() {
         <div className="p-6 md:p-10">
           <section className="animate-slide-up">
             {/* Full Width Hero */}
-            <div className="relative w-full h-[600px] border border-[#1a3a4a] overflow-hidden group mb-8 rounded-sm">
+            <div className="relative w-full h-[600px] border border-[var(--border-color)] overflow-hidden group mb-8 rounded-sm">
               <Image 
                 src="/IMG_0425.JPG" 
                 alt="Engjell Rraklli" 
@@ -54,9 +63,9 @@ export default function Home() {
             </div>
 
             {/* Bio Grid (Split Layout) */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-0 mb-8 border border-[#1a3a4a] bg-[var(--rich-black)] rounded-sm overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-0 mb-8 border border-[var(--border-color)] bg-[var(--rich-black)] rounded-sm overflow-hidden">
               {/* Portrait Image Column */}
-              <div className="md:col-span-4 h-64 md:h-auto relative overflow-hidden group border-b md:border-b-0 md:border-r border-[#1a3a4a]">
+              <div className="md:col-span-4 h-64 md:h-auto relative overflow-hidden group border-b md:border-b-0 md:border-r border-[var(--border-color)]">
                 <Image 
                   src="/_DSC0142.JPG" 
                   alt="Portrait" 
@@ -74,7 +83,7 @@ export default function Home() {
                   <Quote className="w-8 h-8 text-[var(--primary-mint)] mb-4 opacity-50" />
                   <h3 className="text-white font-bebas text-3xl mb-4 tracking-wide">THE MISSION</h3>
                   <p className="text-gray-300 text-sm leading-relaxed font-light max-w-2xl">
-                    My mission is to empower young Albanian talent to build their future at home. By creating an ecosystem of world-class technology in Tirana, I am providing the mentorship, structure, and opportunities the next generation needs to succeed without leaving the country.
+                    My mission is to empower young Albanian talent to build their future at home. By creating an ecosystem of world-class technology and software development in Tirana, I am providing the mentorship, structure, and opportunities the next generation needs to succeed without leaving the country. Through entrepreneurship and tech innovation, we're building the Albanian tech startup ecosystem.
                   </p>
                 </div>
                 <div className="mt-8 flex items-center gap-4">
@@ -84,16 +93,16 @@ export default function Home() {
             </div>
 
             {/* Metrics Strip */}
-            <div className="grid grid-cols-2 md:grid-cols-4 border-t border-b border-[#1a3a4a] bg-[var(--rich-black)]">
-              <div className="p-6 border-r border-[#1a3a4a] text-center">
+            <div className="grid grid-cols-2 md:grid-cols-4 border-t border-b border-[var(--border-color)] bg-[var(--rich-black)]">
+              <div className="p-6 border-r border-[var(--border-color)] text-center">
                 <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Experience</p>
                 <p className="text-3xl font-bebas text-white">11+ Years</p>
               </div>
-              <div className="p-6 border-r border-[#1a3a4a] text-center">
+              <div className="p-6 border-r border-[var(--border-color)] text-center">
                 <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Ventures</p>
                 <p className="text-3xl font-bebas text-white">3 Active</p>
               </div>
-              <div className="p-6 border-r border-[#1a3a4a] text-center">
+              <div className="p-6 border-r border-[var(--border-color)] text-center">
                 <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Mission</p>
                 <p className="text-3xl font-bebas text-white">Local Growth</p>
               </div>

@@ -13,6 +13,7 @@ export function createMetadata({
   type = 'website',
   publishedTime,
   modifiedTime,
+  keywords,
 }: {
   title?: string;
   description?: string;
@@ -21,6 +22,7 @@ export function createMetadata({
   type?: 'website' | 'article';
   publishedTime?: string;
   modifiedTime?: string;
+  keywords?: string[];
 }): Metadata {
   const pageTitle = title ? `${title} | ${siteName}` : defaultTitle;
   const pageDescription = description || defaultDescription;
@@ -40,21 +42,24 @@ export function createMetadata({
     pageImage = `${siteUrl}/IMG_0425.JPG`;
   }
 
+  // Default keywords (base set for all pages)
+  const defaultKeywords = [
+    'Engjell Rraklli',
+    'Tech Entrepreneur',
+    'Albania',
+    'Tirana',
+  ];
+
+  // Merge default keywords with page-specific keywords
+  const pageKeywords = keywords 
+    ? [...defaultKeywords, ...keywords]
+    : defaultKeywords;
+
   return {
     metadataBase: new URL(siteUrl),
     title: pageTitle,
     description: pageDescription,
-    keywords: [
-      'Engjell Rraklli',
-      'Tech Entrepreneur',
-      'Albania',
-      'Tirana',
-      'Technology',
-      'Startups',
-      'division5',
-      'Software Development',
-      'Entrepreneurship',
-    ],
+    keywords: pageKeywords,
     authors: [{ name: 'Engjell Rraklli' }],
     creator: 'Engjell Rraklli',
     publisher: 'Engjell Rraklli',

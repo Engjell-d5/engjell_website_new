@@ -1,9 +1,32 @@
 import type { Metadata } from "next";
+import { Montserrat } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { createMetadata } from "@/lib/metadata";
 import StructuredData from "@/components/StructuredData";
+
+// Optimize Montserrat font loading
+const montserrat = Montserrat({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
+  display: "swap",
+  variable: "--font-montserrat",
+  preload: true,
+});
+
+// Optimize Bebas Neue font loading
+// Font file is in app/fonts directory
+const bebasNeue = localFont({
+  src: "./fonts/BebasNeue-Bold.ttf",
+  weight: "700",
+  style: "normal",
+  display: "swap",
+  variable: "--font-bebas",
+  preload: true,
+  fallback: ['sans-serif'],
+});
 
 export const metadata: Metadata = createMetadata({});
 
@@ -48,8 +71,8 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en">
-      <body className="flex flex-col p-2 md:p-6 gap-0 max-w-[1600px] mx-auto">
+    <html lang="en" className={`${montserrat.variable} ${bebasNeue.variable}`}>
+      <body className={`${montserrat.className} flex flex-col p-2 md:p-6 gap-0 max-w-[1600px] mx-auto`}>
         <StructuredData type="Person" data={personData} />
         <StructuredData type="WebSite" data={websiteData} />
         <Header />

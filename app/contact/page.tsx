@@ -60,12 +60,12 @@ export default function Contact() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-      <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--bg-dark)] min-h-[80vh]">
+      <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
-        <div className="h-14 border-b border-[#1a3a4a] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
+        <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-gray-400">
             <span className="text-[var(--primary-mint)] font-bold">/</span>
-            <span className="text-white font-medium uppercase tracking-widest font-montserrat text-[11px]">Inquiries</span>
+            <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">Contact</span>
           </div>
           <div className="font-montserrat text-[10px] text-gray-500 font-bold tracking-[0.15em] hidden md:block">
             WISH FOR OTHERS WHAT YOU WISH FOR YOURSELF.
@@ -77,14 +77,26 @@ export default function Contact() {
           <section className="animate-slide-up h-full">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="flex flex-col justify-center">
-                <span className="text-[10px] text-white font-bold uppercase tracking-[0.2em] mb-2 block">Connect</span>
-                <h2 className="text-5xl text-white font-bebas mb-6">LET'S TALK</h2>
-                <p className="text-sm text-gray-400 mb-8 font-light leading-relaxed">
-                  Open for speaking engagements, technical consultation, and partnership opportunities. Whether you have a question about building in Albania or want to discuss a potential venture, I'm all ears.
-                </p>
+                <span className="page-label mb-2 block">Connect</span>
+                <h2 className="text-5xl text-white font-bebas mt-1 mb-6">LET'S TALK</h2>
+                <p className="text-sm text-[var(--primary-mint)] font-bold uppercase tracking-widest mb-6">Speaker, Builder, Consultant</p>
+                
+                <div className="prose prose-invert max-w-none text-gray-300 font-light text-sm leading-7 mb-8">
+                  <p className="mb-6">
+                    Open for speaking engagements, technical consultation, and business partnership opportunities. I am passionate about the entrepreneurial potential of Albania and the Balkans, and I'm here to provide tech consulting and entrepreneurship advice.
+                  </p>
+                  
+                  <p className="mb-6">
+                    I work at the intersection of strategy and implementation. Whether I am consulting on technical architecture or advising on market entry for Albania business opportunities, my goal is to build resilient, scalable ventures. I am eager to connect with fellow builders who see the potential in this market through startup consulting.
+                  </p>
+                  
+                  <p className="mb-6">
+                    Whether you have a question about the nuances of building in Albania or want to discuss a potential venture, I'm all ears. Contact me for speaking engagements, technical consultation, or partnership discussions.
+                  </p>
+                </div>
                 
                 {/* Personal Image Injection */}
-                <div className="w-full h-64 rounded-sm overflow-hidden border border-[#1a3a4a] relative group mb-6">
+                <div className="w-full h-64 rounded-sm overflow-hidden border border-[var(--border-color)] relative group mb-6">
                   <Image 
                     src="/IMG_0456 (1).JPG" 
                     alt="Smiling Portrait" 
@@ -93,7 +105,7 @@ export default function Contact() {
                   />
                 </div>
               </div>
-              <div className="p-10 border border-[#1a3a4a] bg-[var(--rich-black)] relative flex flex-col justify-center">
+              <div className="p-10 border border-[var(--border-color)] bg-[var(--rich-black)] relative flex flex-col justify-center">
                 {/* Decorative corner accents */}
                 <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[var(--primary-mint)]"></div>
                 <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[var(--primary-mint)]"></div>
@@ -108,7 +120,7 @@ export default function Contact() {
                       onChange={handleChange}
                       required
                       disabled={loading}
-                      className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat disabled:opacity-50" 
+                      className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat disabled:opacity-50" 
                     />
                   </div>
                   <div>
@@ -120,7 +132,7 @@ export default function Contact() {
                       onChange={handleChange}
                       required
                       disabled={loading}
-                      className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat disabled:opacity-50" 
+                      className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat disabled:opacity-50" 
                     />
                   </div>
                   <div>
@@ -132,7 +144,7 @@ export default function Contact() {
                       onChange={handleChange}
                       required
                       disabled={loading}
-                      className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all resize-none font-montserrat disabled:opacity-50"
+                      className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all resize-none font-montserrat disabled:opacity-50"
                     ></textarea>
                   </div>
                   {/* Honeypot field - hidden from users but visible to bots */}

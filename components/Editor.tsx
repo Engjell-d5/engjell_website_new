@@ -197,11 +197,11 @@ export default function Editor({ content, onChange }: EditorProps) {
   }
 
   return (
-    <div className="border border-[#1a3a4a] bg-[var(--rich-black)] rounded-sm">
+    <div className="border border-[var(--border-color)] bg-[var(--rich-black)] rounded-sm">
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-2 p-3 border-b border-[#1a3a4a] bg-[var(--rich-black)]">
+      <div className="flex flex-wrap items-center gap-2 p-3 border-b border-[var(--border-color)] bg-[var(--rich-black)]">
         {/* Text Formatting */}
-        <div className="flex items-center gap-1 border-r border-[#1a3a4a] pr-2">
+        <div className="flex items-center gap-1 border-r border-[var(--border-color)] pr-2">
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleBold().run()}
@@ -256,7 +256,7 @@ export default function Editor({ content, onChange }: EditorProps) {
         </div>
 
         {/* Headings */}
-        <div className="flex items-center gap-1 border-r border-[#1a3a4a] pr-2">
+        <div className="flex items-center gap-1 border-r border-[var(--border-color)] pr-2">
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
@@ -296,7 +296,7 @@ export default function Editor({ content, onChange }: EditorProps) {
         </div>
 
         {/* Lists */}
-        <div className="flex items-center gap-1 border-r border-[#1a3a4a] pr-2">
+        <div className="flex items-center gap-1 border-r border-[var(--border-color)] pr-2">
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleBulletList().run()}
@@ -336,7 +336,7 @@ export default function Editor({ content, onChange }: EditorProps) {
         </div>
 
         {/* Alignment */}
-        <div className="flex items-center gap-1 border-r border-[#1a3a4a] pr-2">
+        <div className="flex items-center gap-1 border-r border-[var(--border-color)] pr-2">
           <button
             type="button"
             onClick={() => editor.chain().focus().setTextAlign('left').run()}
@@ -388,7 +388,7 @@ export default function Editor({ content, onChange }: EditorProps) {
         </div>
 
         {/* Media */}
-        <div className="flex items-center gap-1 border-r border-[#1a3a4a] pr-2">
+        <div className="flex items-center gap-1 border-r border-[var(--border-color)] pr-2">
           <button
             type="button"
             onClick={handleImageUpload}

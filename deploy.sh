@@ -54,20 +54,20 @@ echo -e "${YELLOW}📤 Syncing files to server...${NC}"
 
 # Check if rsync is available, otherwise use tar+ssh
 if command -v rsync &> /dev/null; then
-    rsync -avz --delete \
-        --exclude 'node_modules' \
-        --exclude '.git' \
-        --exclude '.next' \
+rsync -avz --delete \
+    --exclude 'node_modules' \
+    --exclude '.git' \
+    --exclude '.next' \
         --exclude 'data/*.json' \
         --exclude 'data/*.db' \
         --exclude 'data/*.db-journal' \
-        --exclude '.env' \
-        --exclude '.env.local' \
-        --exclude '.env.*.local' \
-        --exclude '*.log' \
-        --exclude '.DS_Store' \
-        -e "ssh -p ${SERVER_PORT}" \
-        ./ ${SERVER_USER}@${SERVER_HOST}:${REMOTE_DIR}/
+    --exclude '.env' \
+    --exclude '.env.local' \
+    --exclude '.env.*.local' \
+    --exclude '*.log' \
+    --exclude '.DS_Store' \
+    -e "ssh -p ${SERVER_PORT}" \
+    ./ ${SERVER_USER}@${SERVER_HOST}:${REMOTE_DIR}/
 else
     # Fallback: Use tar+ssh for Git Bash compatibility
     echo -e "${YELLOW}⚠️  rsync not found, using tar+ssh method...${NC}"

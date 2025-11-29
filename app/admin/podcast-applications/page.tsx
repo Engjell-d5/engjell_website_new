@@ -118,7 +118,7 @@ export default function PodcastApplicationsPage() {
             className={`px-4 py-2 text-xs font-bold uppercase tracking-widest transition-colors ${
               filter === status
                 ? 'bg-[var(--primary-mint)] text-black'
-                : 'bg-[var(--rich-black)] text-gray-400 hover:text-white border border-[#1a3a4a]'
+                : 'bg-[var(--rich-black)] text-gray-400 hover:text-white border border-[var(--border-color)]'
             }`}
           >
             {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)} ({status === 'all' ? applications.length : applications.filter(a => a.status === status).length})
@@ -144,7 +144,7 @@ export default function PodcastApplicationsPage() {
                 className={`classic-panel p-6 bg-[var(--rich-black)] cursor-pointer transition-all ${
                   selectedApplication?.id === application.id
                     ? 'border-[var(--primary-mint)]'
-                    : 'border-[#1a3a4a] hover:border-gray-600'
+                    : 'border-[var(--border-color)] hover:border-gray-600'
                 }`}
                 onClick={() => setSelectedApplication(application)}
               >
@@ -173,7 +173,7 @@ export default function PodcastApplicationsPage() {
           <div className="lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)]">
             {selectedApplication ? (
               <div className="classic-panel p-6 bg-[var(--rich-black)] overflow-y-auto max-h-full">
-                <div className="flex items-start justify-between mb-6 pb-4 border-b border-[#1a3a4a]">
+                <div className="flex items-start justify-between mb-6 pb-4 border-b border-[var(--border-color)]">
                   <div>
                     <h2 className="text-2xl text-white font-bebas tracking-wide mb-1">
                       {selectedApplication.name}
@@ -229,7 +229,7 @@ export default function PodcastApplicationsPage() {
                     <p className="text-sm text-white leading-relaxed">{selectedApplication.whyPodcast}</p>
                   </div>
 
-                  <div className="pt-4 border-t border-[#1a3a4a]">
+                  <div className="pt-4 border-t border-[var(--border-color)]">
                     <label className="block text-xs text-gray-400 mb-2 uppercase tracking-widest">
                       Submitted
                     </label>
@@ -237,7 +237,7 @@ export default function PodcastApplicationsPage() {
                   </div>
 
                   {/* Status Update Buttons */}
-                  <div className="pt-4 border-t border-[#1a3a4a] space-y-2">
+                  <div className="pt-4 border-t border-[var(--border-color)] space-y-2">
                     <label className="block text-xs text-gray-400 mb-3 uppercase tracking-widest">
                       Update Status
                     </label>

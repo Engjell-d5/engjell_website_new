@@ -40,7 +40,7 @@ function SubscribeForm() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="bg-[var(--rich-black)] border border-[#1a3a4a] p-6">
+      <div className="bg-[var(--rich-black)] border border-[var(--border-color)] p-6">
         <h4 className="text-xl text-white font-bebas tracking-wide mb-3">SUBSCRIBE</h4>
         <p className="text-xs text-gray-400 leading-relaxed mb-4 font-light">Get my weekly tech trends.</p>
         <form onSubmit={handleSubmit} className="space-y-2">
@@ -49,7 +49,7 @@ function SubscribeForm() {
             placeholder="Email" 
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-black border border-[#1a3a4a] p-2 text-xs text-white mb-2 focus:outline-none focus:border-[var(--primary-mint)] transition-colors" 
+            className="w-full bg-black border border-[var(--border-color)] p-2 text-xs text-white mb-2 focus:outline-none focus:border-[var(--primary-mint)] transition-colors font-montserrat" 
             required
             disabled={loading}
           />
@@ -203,7 +203,7 @@ export default function Sidebar() {
   };
 
   return (
-    <aside className="classic-panel md:col-span-3 hidden md:flex flex-col p-6 gap-6 bg-[var(--bg-dark)] sticky-sidebar">
+    <aside className={`classic-panel md:col-span-3 ${pathname === '/about' ? 'flex' : 'hidden md:flex'} flex-col p-6 gap-6 bg-[var(--bg-dark)] sticky-sidebar`}>
       {/* HOME SIDEBAR */}
       {pathname === '/' && (
         <div className="flex flex-col gap-6">
@@ -215,13 +215,15 @@ export default function Sidebar() {
 
           {/* Latest Video */}
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-[#1a3a4a] mb-3">
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)] mb-3">
               <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Latest Video</span>
               <Play className="w-4 h-4 text-gray-500" />
             </div>
             {loadingVideo ? (
-              <div className="aspect-video bg-black border border-[#1a3a4a] flex items-center justify-center">
-                <p className="text-gray-500 text-xs">Loading...</p>
+              <div className="animate-pulse">
+                <div className="aspect-video bg-gray-800 border border-[var(--border-color)] mb-2 rounded"></div>
+                <div className="h-4 w-full bg-gray-800 rounded mb-1"></div>
+                <div className="h-3 w-24 bg-gray-800 rounded"></div>
               </div>
             ) : latestVideo ? (
               <a
@@ -230,7 +232,7 @@ export default function Sidebar() {
                 rel="noopener noreferrer"
                 className="group cursor-pointer block"
               >
-                <div className="aspect-video bg-black border border-[#1a3a4a] mb-2 overflow-hidden relative group-hover:border-[var(--primary-mint)] transition-colors">
+                <div className="aspect-video bg-black border border-[var(--border-color)] mb-2 overflow-hidden relative group-hover:border-[var(--primary-mint)] transition-colors">
                   <Image 
                     src={latestVideo.thumbnailUrl} 
                     alt={latestVideo.title} 
@@ -251,7 +253,7 @@ export default function Sidebar() {
                 </p>
               </a>
             ) : (
-              <div className="aspect-video bg-black border border-[#1a3a4a] flex items-center justify-center">
+              <div className="aspect-video bg-black border border-[var(--border-color)] flex items-center justify-center">
                 <p className="text-gray-500 text-xs">No videos available</p>
               </div>
             )}
@@ -259,20 +261,22 @@ export default function Sidebar() {
 
           {/* Latest Blog */}
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-[#1a3a4a] mb-3">
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)] mb-3">
               <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Latest Blog</span>
               <PenTool className="w-4 h-4 text-gray-500" />
             </div>
             {loadingBlog ? (
-              <div className="aspect-[2/1] bg-black border border-[#1a3a4a] flex items-center justify-center">
-                <p className="text-gray-500 text-xs">Loading...</p>
+              <div className="animate-pulse">
+                <div className="aspect-[2/1] bg-gray-800 border border-[var(--border-color)] mb-2 rounded"></div>
+                <div className="h-4 w-full bg-gray-800 rounded mb-1"></div>
+                <div className="h-3 w-32 bg-gray-800 rounded"></div>
               </div>
             ) : latestBlog ? (
               <Link
                 href={`/journal/${latestBlog.slug}`}
                 className="group block"
               >
-                <div className="aspect-[2/1] bg-black border border-[#1a3a4a] mb-2 overflow-hidden relative group-hover:border-[var(--primary-mint)] transition-colors">
+                <div className="aspect-[2/1] bg-black border border-[var(--border-color)] mb-2 overflow-hidden relative group-hover:border-[var(--primary-mint)] transition-colors">
                   <Image 
                     src={latestBlog.imageUrl} 
                     alt={latestBlog.title} 
@@ -288,7 +292,7 @@ export default function Sidebar() {
                 </p>
               </Link>
             ) : (
-              <div className="aspect-[2/1] bg-black border border-[#1a3a4a] flex items-center justify-center">
+              <div className="aspect-[2/1] bg-black border border-[var(--border-color)] flex items-center justify-center">
                 <p className="text-gray-500 text-xs">No blog posts available</p>
               </div>
             )}
@@ -299,7 +303,7 @@ export default function Sidebar() {
       {/* ABOUT SIDEBAR */}
       {pathname === '/about' && (
         <div className="flex flex-col gap-6">
-          <div className="w-full h-48 rounded-sm overflow-hidden border border-[#1a3a4a] relative group">
+          <div className="w-full h-48 rounded-sm overflow-hidden border border-[var(--border-color)] relative group">
             <Image 
               src="/IMG_0466.JPG" 
               alt="About Portrait" 
@@ -309,30 +313,30 @@ export default function Sidebar() {
             />
           </div>
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-[#1a3a4a] mb-3">
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)] mb-3">
               <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Timeline</span>
               <History className="w-4 h-4 text-gray-500" />
             </div>
             <div className="space-y-4">
-              <div className="relative pl-4 border-l border-[#1a3a4a]">
+              <div className="relative pl-4 border-l border-[var(--border-color)]">
                 <div className="absolute -left-1 top-1 w-2 h-2 bg-[var(--primary-mint)] rounded-full"></div>
                 <p className="text-[9px] text-gray-400 mb-1">2025</p>
                 <p className="text-xs text-white font-bold">Expanding Global Reach</p>
               </div>
-              <div className="relative pl-4 border-l border-[#1a3a4a]">
-                <div className="absolute -left-1 top-1 w-2 h-2 bg-[var(--secondary-orange)] rounded-full"></div>
+              <div className="relative pl-4 border-l border-[var(--border-color)]">
+                <div className="absolute -left-1 top-1 w-2 h-2 bg-gray-400 rounded-full"></div>
                 <p className="text-[9px] text-gray-400 mb-1">2022</p>
                 <p className="text-xs text-white font-bold">Launched DivisionAI</p>
               </div>
-              <div className="relative pl-4 border-l border-[#1a3a4a]">
-                <div className="absolute -left-1 top-1 w-2 h-2 bg-[var(--secondary-purple)] rounded-full"></div>
+              <div className="relative pl-4 border-l border-[var(--border-color)]">
+                <div className="absolute -left-1 top-1 w-2 h-2 bg-[var(--primary-mint)] rounded-full"></div>
                 <p className="text-[9px] text-gray-400 mb-1">2014</p>
                 <p className="text-xs text-white font-bold">First Venture Founded</p>
               </div>
             </div>
           </div>
           <div className="mt-auto">
-            <div className="p-4 border border-[#1a3a4a] bg-[var(--rich-black)]">
+            <div className="p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
               <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Years Active</p>
               <p className="text-2xl font-bebas text-white">11+</p>
             </div>
@@ -343,12 +347,12 @@ export default function Sidebar() {
       {/* MEDIA SIDEBAR */}
       {pathname === '/media' && (
         <div className="flex flex-col gap-6">
-          <div className="flex items-center justify-between pb-3 border-b border-[#1a3a4a]">
+          <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Curated Playlists</span>
             <ListVideo className="w-4 h-4 text-gray-500" />
           </div>
           <div className="space-y-4">
-            <div className="relative group cursor-pointer border border-[#1a3a4a] aspect-[16/9] hover:border-white transition-colors">
+            <div className="relative group cursor-pointer border border-[var(--border-color)] aspect-[16/9] hover:border-white transition-colors">
               <Image 
                 src="/_DSC0048.JPG" 
                 alt="Playlist" 
@@ -372,15 +376,17 @@ export default function Sidebar() {
           {/* Related Articles - Only show on single blog post pages */}
           {pathname.startsWith('/journal/') && (
             <div>
-              <div className="flex items-center justify-between pb-3 border-b border-[#1a3a4a] mb-3">
+              <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)] mb-3">
                 <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Related Articles</span>
                 <PenTool className="w-4 h-4 text-gray-500" />
               </div>
               {loadingRelatedBlogs ? (
                 <div className="space-y-4">
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className="aspect-[2/1] bg-black border border-[#1a3a4a] flex items-center justify-center">
-                      <p className="text-gray-500 text-xs">Loading...</p>
+                    <div key={i} className="animate-pulse">
+                      <div className="aspect-[2/1] bg-gray-800 border border-[var(--border-color)] mb-2 rounded"></div>
+                      <div className="h-4 w-full bg-gray-800 rounded mb-1"></div>
+                      <div className="h-3 w-32 bg-gray-800 rounded"></div>
                     </div>
                   ))}
                 </div>
@@ -392,7 +398,7 @@ export default function Sidebar() {
                       href={`/journal/${blog.slug}`}
                       className="group block"
                     >
-                      <div className="aspect-[2/1] bg-black border border-[#1a3a4a] mb-2 overflow-hidden relative group-hover:border-[var(--primary-mint)] transition-colors">
+                      <div className="aspect-[2/1] bg-black border border-[var(--border-color)] mb-2 overflow-hidden relative group-hover:border-[var(--primary-mint)] transition-colors">
                         <Image 
                           src={blog.imageUrl} 
                           alt={blog.title} 
@@ -410,7 +416,7 @@ export default function Sidebar() {
                   ))}
                 </div>
               ) : (
-                <div className="aspect-[2/1] bg-black border border-[#1a3a4a] flex items-center justify-center">
+                <div className="aspect-[2/1] bg-black border border-[var(--border-color)] flex items-center justify-center">
                   <p className="text-gray-500 text-xs">No related articles</p>
                 </div>
               )}
@@ -423,16 +429,16 @@ export default function Sidebar() {
       {pathname === '/ventures' && (
         <div className="flex flex-col gap-6">
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-[#1a3a4a] mb-3">
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)] mb-3">
               <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Quick Stats</span>
               <Briefcase className="w-4 h-4 text-gray-500" />
             </div>
             <div className="space-y-3">
-              <div className="p-4 border border-[#1a3a4a] bg-[var(--rich-black)]">
+              <div className="p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
                 <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Total Experience</p>
                 <p className="text-2xl font-bebas text-white">11+ Years</p>
               </div>
-              <div className="p-4 border border-[#1a3a4a] bg-[var(--rich-black)]">
+              <div className="p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
                 <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Active Ventures</p>
                 <p className="text-2xl font-bebas text-white">3</p>
               </div>
@@ -440,26 +446,26 @@ export default function Sidebar() {
           </div>
 
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-[#1a3a4a] mb-3">
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)] mb-3">
               <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Categories</span>
               <BrainCircuit className="w-4 h-4 text-gray-500" />
             </div>
             <div className="space-y-2">
-              <div className="p-3 border border-[#1a3a4a] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-colors group">
+              <div className="p-3 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-colors group">
                 <div className="flex items-center gap-2 mb-1">
                   <Briefcase className="w-3 h-3 text-white" />
                   <span className="text-xs text-white font-bold">Services</span>
                 </div>
                 <p className="text-[9px] text-gray-400">Staff augmentation & solutions</p>
               </div>
-              <div className="p-3 border border-[#1a3a4a] bg-[var(--rich-black)] hover:border-white transition-colors group">
+              <div className="p-3 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-white transition-colors group">
                 <div className="flex items-center gap-2 mb-1">
                   <BrainCircuit className="w-3 h-3 text-white" />
                   <span className="text-xs text-white font-bold">Technology</span>
                 </div>
                 <p className="text-[9px] text-gray-400">AI-powered solutions</p>
               </div>
-              <div className="p-3 border border-[#1a3a4a] bg-[var(--rich-black)] hover:border-white transition-colors group">
+              <div className="p-3 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-white transition-colors group">
                 <div className="flex items-center gap-2 mb-1">
                   <Cuboid className="w-3 h-3 text-white" />
                   <span className="text-xs text-white font-bold">Creative</span>
@@ -470,7 +476,7 @@ export default function Sidebar() {
           </div>
 
           <div className="mt-auto">
-            <div className="p-4 border border-[#1a3a4a] bg-[var(--rich-black)]">
+            <div className="p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
               <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Location</p>
               <p className="text-sm font-bebas text-white">Tirana, Albania</p>
             </div>
@@ -481,7 +487,7 @@ export default function Sidebar() {
       {/* CONTACT SIDEBAR */}
       {pathname === '/contact' && (
         <div className="flex flex-col gap-6">
-          <div className="border border-[#1a3a4a] bg-[var(--rich-black)] p-4">
+          <div className="border border-[var(--border-color)] bg-[var(--rich-black)] p-4">
             <div className="flex justify-between items-center mb-4">
               <span className="text-xs font-bold text-white uppercase tracking-widest">Contact Details</span>
               <Contact className="w-4 h-4 text-gray-500" />
@@ -495,25 +501,25 @@ export default function Sidebar() {
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <MapPin className="w-4 h-4 text-[var(--secondary-orange)] mt-0.5" />
+                <MapPin className="w-4 h-4 text-gray-400 mt-0.5" />
                 <div>
                   <p className="text-[10px] text-gray-400 uppercase tracking-wide">Location</p>
                   <p className="text-xs text-white">Tirana, Albania</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <Clock className="w-4 h-4 text-[var(--secondary-purple)] mt-0.5" />
+                <Clock className="w-4 h-4 text-[var(--primary-mint)] mt-0.5" />
                 <div>
                   <p className="text-[10px] text-gray-400 uppercase tracking-wide">Office Hours</p>
                   <p className="text-xs text-white">Mon - Fri, 9AM - 5PM CET</p>
                 </div>
               </div>
             </div>
-            <div className="mt-6 pt-4 border-t border-[#1a3a4a] flex gap-2">
-              <a href="https://www.linkedin.com/in/engjell-rraklli-a8b20a68/" target="_blank" rel="noopener noreferrer" className="flex-1 py-2 bg-[#1a3a4a] hover:bg-white hover:text-black rounded-sm flex items-center justify-center text-gray-400 transition-all">
+            <div className="mt-6 pt-4 border-t border-[var(--border-color)] flex gap-2">
+              <a href="https://www.linkedin.com/in/engjell-rraklli-a8b20a68/" target="_blank" rel="noopener noreferrer" className="flex-1 py-2 bg-[var(--border-color)] hover:bg-white hover:text-black rounded-sm flex items-center justify-center text-gray-400 transition-all">
                 <Linkedin className="w-4 h-4" />
               </a>
-              <a href="https://x.com/RraklliEngjell" target="_blank" rel="noopener noreferrer" className="flex-1 py-2 bg-[#1a3a4a] hover:bg-white hover:text-black rounded-sm flex items-center justify-center text-gray-400 transition-all">
+              <a href="https://x.com/RraklliEngjell" target="_blank" rel="noopener noreferrer" className="flex-1 py-2 bg-[var(--border-color)] hover:bg-white hover:text-black rounded-sm flex items-center justify-center text-gray-400 transition-all">
                 <Twitter className="w-4 h-4" />
               </a>
             </div>

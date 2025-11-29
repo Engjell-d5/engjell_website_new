@@ -37,7 +37,7 @@ export default function Header() {
           />
         </Link>
         <div className="flex flex-col">
-          <h1 className="text-3xl tracking-widest text-white leading-none mt-1">ENGJELL RRAKLLI</h1>
+          <h1 className="text-3xl tracking-widest text-white leading-none mt-1 font-bebas">ENGJELL RRAKLLI</h1>
           <div className="flex items-center gap-2 mt-1">
             <div className="h-[1px] w-8 bg-gray-600"></div>
             <span className="text-[10px] text-[var(--platinum)] font-bold tracking-[0.2em] font-montserrat uppercase opacity-80">Tech Entrepreneur</span>
@@ -72,6 +72,7 @@ export default function Header() {
         className="md:hidden text-white z-50"
         onClick={toggleMobileMenu}
         aria-label="Toggle menu"
+        suppressHydrationWarning
       >
         {isMobileMenuOpen ? (
           <X className="w-6 h-6" />
@@ -83,7 +84,7 @@ export default function Header() {
 
     {/* Mobile Menu Dropdown */}
     {isMobileMenuOpen && (
-      <div className="md:hidden fixed inset-0 top-20 z-40 bg-[var(--panel-bg)] border-t border-[#1a3a4a]">
+      <div className="md:hidden fixed inset-0 top-20 z-40 bg-[var(--panel-bg)] border-t border-[var(--border-color)]">
         <nav className="flex flex-col p-6 gap-4">
           <Link 
             href="/" 

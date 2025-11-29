@@ -103,7 +103,7 @@ export default function AdminDashboard() {
           </Link>
           <Link
             href="/admin/blogs"
-            className="px-6 py-3 border border-[#1a3a4a] text-white hover:bg-[var(--rich-black)] font-bold uppercase tracking-widest text-xs transition-colors"
+            className="px-6 py-3 border border-[var(--border-color)] text-white hover:bg-[var(--rich-black)] font-bold uppercase tracking-widest text-xs transition-colors"
           >
             Manage Blogs
           </Link>

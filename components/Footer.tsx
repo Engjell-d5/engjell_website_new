@@ -3,7 +3,7 @@ import { Twitter, Linkedin, Youtube } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="mt-12 border-t border-l border-r border-b border-[#1a3a4a] bg-[#02141d] py-10 px-8">
+    <footer className="mt-12 border-t border-l border-r border-b border-[var(--border-color)] bg-[var(--rich-black)] py-10 px-8">
       <div className="grid grid-cols-1 md:grid-cols-5 gap-8 max-w-[1600px] mx-auto">
         <div className="md:col-span-2">
           <div className="flex items-center gap-3 mb-4">
@@ -19,16 +19,16 @@ export default function Footer() {
           </p>
         </div>
         <div>
-          <h4 className="text-[10px] text-white font-bold uppercase tracking-widest mb-4">Navigation</h4>
+          <h4 className="text-base text-white font-bold uppercase tracking-widest mb-4 font-bebas">Navigation</h4>
           <ul className="space-y-2 text-xs text-gray-400">
-            <li><Link href="/" className="hover:text-[var(--primary-mint)] transition-colors">Overview</Link></li>
+            <li><Link href="/" className="hover:text-[var(--primary-mint)] transition-colors">Engjell Rraklli</Link></li>
             <li><Link href="/media" className="hover:text-[var(--primary-mint)] transition-colors">Podcast</Link></li>
             <li><Link href="/journal" className="hover:text-[var(--primary-mint)] transition-colors">Journal</Link></li>
             <li><Link href="/ventures" className="hover:text-[var(--primary-mint)] transition-colors">Ventures</Link></li>
           </ul>
         </div>
         <div>
-          <h4 className="text-[10px] text-white font-bold uppercase tracking-widest mb-4">My Ventures</h4>
+          <h4 className="text-base text-white font-bold uppercase tracking-widest mb-4 font-bebas">My Ventures</h4>
           <ul className="space-y-2 text-xs text-gray-400">
             <li><a href="https://division5.co" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--primary-mint)] transition-colors">Division5</a></li>
             <li><a href="https://divisionai.co" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--primary-mint)] transition-colors">DivisionAI</a></li>
@@ -36,7 +36,7 @@ export default function Footer() {
           </ul>
         </div>
         <div>
-          <h4 className="text-[10px] text-white font-bold uppercase tracking-widest mb-4">Connect</h4>
+          <h4 className="text-base text-white font-bold uppercase tracking-widest mb-4 font-bebas">Connect</h4>
           <div className="flex gap-4">
             <a href="https://x.com/RraklliEngjell" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors"><Twitter className="w-5 h-5" /></a>
             <a href="https://www.linkedin.com/in/engjell-rraklli-a8b20a68/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors"><Linkedin className="w-5 h-5" /></a>

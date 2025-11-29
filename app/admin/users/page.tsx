@@ -121,7 +121,7 @@ export default function UsersPage() {
       <div className="classic-panel overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-[#1a3a4a]">
+            <tr className="border-b border-[var(--border-color)]">
               <th className="text-left p-4 text-[10px] text-gray-500 uppercase tracking-widest font-bold">Name</th>
               <th className="text-left p-4 text-[10px] text-gray-500 uppercase tracking-widest font-bold">Email</th>
               <th className="text-left p-4 text-[10px] text-gray-500 uppercase tracking-widest font-bold">Role</th>
@@ -131,10 +131,10 @@ export default function UsersPage() {
           </thead>
           <tbody>
             {users.map((user) => (
-              <tr key={user.id} className="border-b border-[#1a3a4a] hover:bg-[var(--rich-black)]">
+              <tr key={user.id} className="border-b border-[var(--border-color)] hover:bg-[var(--rich-black)]">
                 <td className="p-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 border border-[#1a3a4a] rounded-full flex items-center justify-center">
+                    <div className="w-8 h-8 border border-[var(--border-color)] rounded-full flex items-center justify-center">
                       <UserIcon className="w-4 h-4 text-gray-400" />
                     </div>
                     <span className="text-white font-medium">{user.name}</span>
@@ -190,7 +190,7 @@ export default function UsersPage() {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                  className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat"
                   required
                 />
               </div>
@@ -202,7 +202,7 @@ export default function UsersPage() {
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                  className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat"
                   required
                 />
               </div>
@@ -214,7 +214,7 @@ export default function UsersPage() {
                   type="password"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                  className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat"
                   required={!editingUser}
                 />
               </div>
@@ -225,7 +225,7 @@ export default function UsersPage() {
                 <select
                   value={formData.role}
                   onChange={(e) => setFormData({ ...formData, role: e.target.value as 'admin' | 'editor' })}
-                  className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                  className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat"
                 >
                   <option value="editor">Editor</option>
                   <option value="admin">Admin</option>
@@ -244,7 +244,7 @@ export default function UsersPage() {
                     setShowModal(false);
                     setEditingUser(null);
                   }}
-                  className="flex-1 border border-[#1a3a4a] text-white hover:bg-[var(--rich-black)] font-bold py-3 uppercase tracking-widest text-xs transition-colors"
+                  className="flex-1 border border-[var(--border-color)] text-white hover:bg-[var(--rich-black)] font-bold py-3 uppercase tracking-widest text-xs transition-colors"
                 >
                   Cancel
                 </button>

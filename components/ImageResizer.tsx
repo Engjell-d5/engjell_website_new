@@ -81,7 +81,7 @@ export default function ImageResizer({ imageUrl, onUpdate, onClose }: ImageResiz
           </button>
         </div>
 
-        <div className={`mb-6 border border-[#1a3a4a] p-4 bg-[var(--rich-black)] ${fullWidth ? '' : ''}`}>
+        <div className={`mb-6 border border-[var(--border-color)] p-4 bg-[var(--rich-black)] ${fullWidth ? '' : ''}`}>
           <img
             ref={imgRef}
             src={imageUrl}
@@ -110,7 +110,7 @@ export default function ImageResizer({ imageUrl, onUpdate, onClose }: ImageResiz
                   value={width}
                   onChange={(e) => handleWidthChange(e.target.value)}
                   placeholder="e.g., 500px, 50%, 100%"
-                  className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                  className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
                 />
               </div>
 
@@ -123,7 +123,7 @@ export default function ImageResizer({ imageUrl, onUpdate, onClose }: ImageResiz
                   value={height}
                   onChange={(e) => handleHeightChange(e.target.value)}
                   placeholder="e.g., 300px, auto"
-                  className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                  className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
                 />
               </div>
 
@@ -134,7 +134,7 @@ export default function ImageResizer({ imageUrl, onUpdate, onClose }: ImageResiz
                 <select
                   value={align}
                   onChange={(e) => setAlign(e.target.value)}
-                  className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                  className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
                 >
                   <option value="left">Left</option>
                   <option value="center">Center</option>
@@ -184,7 +184,7 @@ export default function ImageResizer({ imageUrl, onUpdate, onClose }: ImageResiz
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 border border-[#1a3a4a] text-white hover:bg-[var(--primary-mint)] hover:text-black font-bold py-3 uppercase tracking-widest text-xs transition-colors"
+              className="flex-1 border border-[var(--border-color)] text-white hover:bg-[var(--primary-mint)] hover:text-black font-bold py-3 uppercase tracking-widest text-xs transition-colors"
             >
               Cancel
             </button>

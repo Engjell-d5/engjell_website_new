@@ -9,8 +9,8 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        'bebas': ['Bebas Neue', 'sans-serif'],
-        'montserrat': ['Montserrat', 'sans-serif'],
+        'bebas': ['var(--font-bebas)', 'Bebas Neue', 'sans-serif'],
+        'montserrat': ['var(--font-montserrat)', 'Montserrat', 'sans-serif'],
       },
     },
   },

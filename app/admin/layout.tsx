@@ -77,7 +77,7 @@ export default function AdminLayout({
             <Link href="/admin" className="text-2xl text-white font-bebas tracking-widest">
               ADMIN PANEL
             </Link>
-            <div className="h-6 w-px bg-[#1a3a4a]"></div>
+            <div className="h-6 w-px bg-[var(--border-color)]"></div>
             <span className="text-xs text-gray-400">Welcome, {user.name}</span>
           </div>
           <div className="flex items-center gap-4">
@@ -100,7 +100,7 @@ export default function AdminLayout({
       </div>
 
       <div className="flex">
-        <aside className="w-64 classic-panel min-h-[calc(100vh-4rem)] p-6 border-r border-[#1a3a4a] relative z-0">
+        <aside className="w-64 classic-panel min-h-[calc(100vh-4rem)] p-6 border-r border-[var(--border-color)] relative z-0">
           <nav className="space-y-2">
             <Link
               href="/admin"

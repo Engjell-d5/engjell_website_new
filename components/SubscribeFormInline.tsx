@@ -46,7 +46,7 @@ export default function SubscribeFormInline() {
             placeholder="Email" 
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="bg-black border border-[#1a3a4a] border-r-0 p-2 text-xs text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors h-10" 
+            className="bg-black border border-[var(--border-color)] border-r-0 p-2 text-xs text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors h-10 font-montserrat" 
             required
             disabled={loading}
           />
@@ -64,7 +64,7 @@ export default function SubscribeFormInline() {
           <button 
             type="submit"
             disabled={loading}
-            className="h-10 px-6 bg-white text-black hover:bg-[var(--primary-mint)] text-[10px] font-bold uppercase transition-colors disabled:opacity-50 whitespace-nowrap border border-[#1a3a4a] border-l-0"
+            className="h-10 px-6 bg-white text-black hover:bg-[var(--primary-mint)] text-[10px] font-bold uppercase transition-colors disabled:opacity-50 whitespace-nowrap border border-[var(--border-color)] border-l-0"
           >
             {loading ? 'Subscribing...' : 'Join'}
           </button>

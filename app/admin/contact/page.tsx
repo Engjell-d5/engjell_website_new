@@ -118,7 +118,7 @@ export default function ContactMessagesPage() {
             className={`px-4 py-2 text-xs font-bold uppercase tracking-widest transition-colors ${
               filter === filterType
                 ? 'bg-[var(--primary-mint)] text-black'
-                : 'bg-[var(--rich-black)] text-gray-400 hover:text-white border border-[#1a3a4a]'
+                : 'bg-[var(--rich-black)] text-gray-400 hover:text-white border border-[var(--border-color)]'
             }`}
           >
             {filterType.charAt(0).toUpperCase() + filterType.slice(1)} (
@@ -151,7 +151,7 @@ export default function ContactMessagesPage() {
                   selectedMessage?.id === message.id
                     ? 'border-[var(--primary-mint)]'
                     : message.read
-                    ? 'border-[#1a3a4a] hover:border-gray-600'
+                    ? 'border-[var(--border-color)] hover:border-gray-600'
                     : 'border-yellow-500/50 hover:border-yellow-500'
                 }`}
                 onClick={() => {
@@ -184,7 +184,7 @@ export default function ContactMessagesPage() {
           <div className="lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)]">
             {selectedMessage ? (
               <div className="classic-panel p-6 bg-[var(--rich-black)] overflow-y-auto max-h-full">
-                <div className="flex items-start justify-between mb-6 pb-4 border-b border-[#1a3a4a]">
+                <div className="flex items-start justify-between mb-6 pb-4 border-b border-[var(--border-color)]">
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <h2 className="text-2xl text-white font-bebas tracking-wide">
@@ -208,7 +208,7 @@ export default function ContactMessagesPage() {
                     </p>
                   </div>
 
-                  <div className="pt-4 border-t border-[#1a3a4a]">
+                  <div className="pt-4 border-t border-[var(--border-color)]">
                     <label className="block text-xs text-gray-400 mb-2 uppercase tracking-widest">
                       Submitted
                     </label>
@@ -216,7 +216,7 @@ export default function ContactMessagesPage() {
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="pt-4 border-t border-[#1a3a4a] space-y-2">
+                  <div className="pt-4 border-t border-[var(--border-color)] space-y-2">
                     <div className="flex gap-2">
                       {!selectedMessage.read ? (
                         <button
@@ -255,7 +255,7 @@ export default function ContactMessagesPage() {
                 </div>
               </div>
             ) : (
-              <div className="classic-panel p-6 bg-[var(--rich-black)] border border-[#1a3a4a] flex items-center justify-center h-full min-h-[400px]">
+              <div className="classic-panel p-6 bg-[var(--rich-black)] border border-[var(--border-color)] flex items-center justify-center h-full min-h-[400px]">
                 <p className="text-gray-400">Select a message to view details</p>
               </div>
             )}

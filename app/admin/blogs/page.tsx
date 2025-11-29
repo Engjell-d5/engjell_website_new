@@ -276,7 +276,7 @@ export default function BlogsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {blogs.map((blog) => (
           <div key={blog.id} className="classic-panel p-6 group">
-            <div className="relative w-full h-48 mb-4 overflow-hidden border border-[#1a3a4a]">
+            <div className="relative w-full h-48 mb-4 overflow-hidden border border-[var(--border-color)]">
               <Image
                 src={blog.imageUrl}
                 alt={blog.title}
@@ -300,7 +300,7 @@ export default function BlogsPage() {
             </div>
             <h3 className="text-xl text-white font-bebas mb-2 line-clamp-2">{blog.title}</h3>
             <p className="text-xs text-gray-400 mb-4 line-clamp-2">{blog.excerpt}</p>
-            <div className="flex items-center justify-between pt-4 border-t border-[#1a3a4a]">
+            <div className="flex items-center justify-between pt-4 border-t border-[var(--border-color)]">
               <span className="text-[10px] text-gray-500">
                 {new Date(blog.createdAt).toLocaleDateString()}
               </span>
@@ -361,7 +361,7 @@ export default function BlogsPage() {
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                  className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat"
                   required
                 />
               </div>
@@ -376,7 +376,7 @@ export default function BlogsPage() {
                     setFormData({ ...formData, slug: e.target.value });
                     setSlugManuallyEdited(true);
                   }}
-                  className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                  className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat"
                   placeholder="Auto-generated from title"
                   required
                 />
@@ -390,7 +390,7 @@ export default function BlogsPage() {
                   type="text"
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                  className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat"
                   required
                 />
               </div>
@@ -403,7 +403,7 @@ export default function BlogsPage() {
                     type="text"
                     value={formData.imageUrl}
                     onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                    className="flex-1 bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                    className="flex-1 bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat"
                     placeholder="Enter URL or upload an image"
                     required
                   />
@@ -419,14 +419,14 @@ export default function BlogsPage() {
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploadingImage}
-                    className="px-4 py-3 bg-[var(--rich-black)] border border-[#1a3a4a] text-white hover:bg-[var(--primary-mint)] hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    className="px-4 py-3 bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:bg-[var(--primary-mint)] hover:text-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                   >
                     <Upload className="w-4 h-4" />
                     {uploadingImage ? 'Uploading...' : 'Upload'}
                   </button>
                 </div>
                 {formData.imageUrl && (
-                  <div className="mt-2 relative w-full h-32 border border-[#1a3a4a] overflow-hidden">
+                  <div className="mt-2 relative w-full h-32 border border-[var(--border-color)] overflow-hidden">
                     <Image
                       src={formData.imageUrl}
                       alt="Preview"
@@ -443,7 +443,7 @@ export default function BlogsPage() {
                 <textarea
                   value={formData.excerpt}
                   onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                  className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all resize-none"
+                  className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all resize-none font-montserrat"
                   rows={3}
                   required
                 />
@@ -462,7 +462,7 @@ export default function BlogsPage() {
               </div>
 
               {/* SEO Section */}
-              <div className="border-t border-[#1a3a4a] pt-4 mt-6">
+              <div className="border-t border-[var(--border-color)] pt-4 mt-6">
                 <h3 className="text-lg text-white font-bebas mb-4 flex items-center gap-2">
                   <Search className="w-5 h-5" />
                   SEO Settings
@@ -477,7 +477,7 @@ export default function BlogsPage() {
                       type="text"
                       value={formData.seo.metaTitle}
                       onChange={(e) => setFormData({ ...formData, seo: { ...formData.seo, metaTitle: e.target.value } })}
-                      className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                      className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat"
                       placeholder="Leave empty to use blog title"
                     />
                     <p className="text-xs text-gray-500 mt-1">Title for search engines (recommended: 50-60 characters)</p>
@@ -490,7 +490,7 @@ export default function BlogsPage() {
                     <textarea
                       value={formData.seo.metaDescription}
                       onChange={(e) => setFormData({ ...formData, seo: { ...formData.seo, metaDescription: e.target.value } })}
-                      className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all resize-none"
+                      className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all resize-none font-montserrat"
                       rows={2}
                       placeholder="Leave empty to use excerpt"
                     />
@@ -505,13 +505,13 @@ export default function BlogsPage() {
                       type="text"
                       value={formData.seo.keywords}
                       onChange={(e) => setFormData({ ...formData, seo: { ...formData.seo, keywords: e.target.value } })}
-                      className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                      className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat"
                       placeholder="keyword1, keyword2, keyword3"
                     />
                     <p className="text-xs text-gray-500 mt-1">Comma-separated keywords</p>
                   </div>
 
-                  <div className="border-t border-[#1a3a4a] pt-4 mt-4">
+                  <div className="border-t border-[var(--border-color)] pt-4 mt-4">
                     <h4 className="text-sm text-white font-bold mb-3">Open Graph (Facebook, LinkedIn)</h4>
                     <div className="space-y-3">
                       <div>
@@ -522,7 +522,7 @@ export default function BlogsPage() {
                           type="text"
                           value={formData.seo.ogTitle}
                           onChange={(e) => setFormData({ ...formData, seo: { ...formData.seo, ogTitle: e.target.value } })}
-                          className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                          className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat"
                           placeholder="Leave empty to use meta title"
                         />
                       </div>
@@ -533,7 +533,7 @@ export default function BlogsPage() {
                         <textarea
                           value={formData.seo.ogDescription}
                           onChange={(e) => setFormData({ ...formData, seo: { ...formData.seo, ogDescription: e.target.value } })}
-                          className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all resize-none"
+                          className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all resize-none font-montserrat"
                           rows={2}
                           placeholder="Leave empty to use meta description"
                         />
@@ -546,14 +546,14 @@ export default function BlogsPage() {
                           type="text"
                           value={formData.seo.ogImage}
                           onChange={(e) => setFormData({ ...formData, seo: { ...formData.seo, ogImage: e.target.value } })}
-                          className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                          className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat"
                           placeholder="Leave empty to use blog image"
                         />
                       </div>
                     </div>
                   </div>
 
-                  <div className="border-t border-[#1a3a4a] pt-4 mt-4">
+                  <div className="border-t border-[var(--border-color)] pt-4 mt-4">
                     <h4 className="text-sm text-white font-bold mb-3">Twitter Card</h4>
                     <div className="space-y-3">
                       <div>
@@ -563,7 +563,7 @@ export default function BlogsPage() {
                         <select
                           value={formData.seo.twitterCard}
                           onChange={(e) => setFormData({ ...formData, seo: { ...formData.seo, twitterCard: e.target.value } })}
-                          className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                          className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat"
                         >
                           <option value="summary">Summary</option>
                           <option value="summary_large_image">Summary Large Image</option>
@@ -577,7 +577,7 @@ export default function BlogsPage() {
                           type="text"
                           value={formData.seo.twitterTitle}
                           onChange={(e) => setFormData({ ...formData, seo: { ...formData.seo, twitterTitle: e.target.value } })}
-                          className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                          className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat"
                           placeholder="Leave empty to use OG title"
                         />
                       </div>
@@ -588,7 +588,7 @@ export default function BlogsPage() {
                         <textarea
                           value={formData.seo.twitterDescription}
                           onChange={(e) => setFormData({ ...formData, seo: { ...formData.seo, twitterDescription: e.target.value } })}
-                          className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all resize-none"
+                          className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all resize-none font-montserrat"
                           rows={2}
                           placeholder="Leave empty to use OG description"
                         />
@@ -601,7 +601,7 @@ export default function BlogsPage() {
                           type="text"
                           value={formData.seo.twitterImage}
                           onChange={(e) => setFormData({ ...formData, seo: { ...formData.seo, twitterImage: e.target.value } })}
-                          className="w-full bg-[var(--rich-black)] border border-[#1a3a4a] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                          className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat"
                           placeholder="Leave empty to use OG image"
                         />
                       </div>
@@ -635,7 +635,7 @@ export default function BlogsPage() {
                     setShowModal(false);
                     setEditingBlog(null);
                   }}
-                  className="flex-1 border border-[#1a3a4a] text-white hover:bg-[var(--rich-black)] font-bold py-3 uppercase tracking-widest text-xs transition-colors"
+                  className="flex-1 border border-[var(--border-color)] text-white hover:bg-[var(--rich-black)] font-bold py-3 uppercase tracking-widest text-xs transition-colors"
                 >
                   Cancel
                 </button>
