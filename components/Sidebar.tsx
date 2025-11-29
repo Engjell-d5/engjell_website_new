@@ -90,6 +90,7 @@ interface Blog {
   category: string;
   excerpt: string;
   imageUrl: string;
+  published: boolean;
   publishedAt: string | null;
 }
 

@@ -2,15 +2,17 @@ import { getBlogs } from '@/lib/data';
 import { createMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> | { slug: string } }): Promise<Metadata> {
   try {
+    // Handle both sync and async params (Next.js 14 vs 15)
+    const resolvedParams = await Promise.resolve(params);
     const blogs = getBlogs();
-    const blog = blogs.find((b: any) => b.slug === params.slug && b.published);
+    const blog = blogs.find((b: any) => b.slug === resolvedParams.slug && b.published);
 
     if (!blog) {
       return createMetadata({
         title: 'Blog Post Not Found',
-        path: `/journal/${params.slug}`,
+        path: `/journal/${resolvedParams.slug}`,
       });
     }
 
@@ -28,9 +30,10 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       modifiedTime: blog.updatedAt || undefined,
     });
   } catch (error) {
+    const resolvedParams = await Promise.resolve(params);
     return createMetadata({
       title: 'Blog Post',
-      path: `/journal/${params.slug}`,
+      path: `/journal/${resolvedParams.slug}`,
     });
   }
 }
