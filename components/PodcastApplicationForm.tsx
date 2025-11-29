@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Mic } from 'lucide-react';
+import { Mic, Send } from 'lucide-react';
 
 interface PodcastApplicationFormProps {
   onSuccess?: () => void;
@@ -215,8 +215,9 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 bg-white text-black hover:bg-[var(--primary-mint)] text-sm font-bold uppercase transition-colors disabled:opacity-50"
+          className="w-full py-3 bg-white text-black hover:bg-[var(--primary-mint)] text-sm font-bold uppercase transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
         >
+          <Send className="w-4 h-4" />
           {loading ? 'Submitting...' : 'Submit Application'}
         </button>
 

@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Quote, MapPin } from 'lucide-react';
+import { Quote, MapPin, BookOpen } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import { createMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
@@ -87,7 +87,10 @@ export default function Home() {
                   </p>
                 </div>
                 <div className="mt-8 flex items-center gap-4">
-                  <Link href="/about" className="px-6 py-2 bg-white text-black hover:bg-[var(--primary-mint)] text-[10px] font-bold uppercase tracking-widest transition-colors">Read My Story</Link>
+                  <Link href="/about" className="px-6 py-2 bg-white text-black hover:bg-[var(--primary-mint)] text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
+                    <BookOpen className="w-4 h-4" />
+                    Read My Story
+                  </Link>
                 </div>
               </div>
             </div>

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Contact as ContactIcon, Mail, MapPin, Clock, Linkedin, Twitter } from 'lucide-react';
+import { Contact as ContactIcon, Mail, MapPin, Clock, Linkedin, Twitter, Send } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 
 export default function Contact() {
@@ -166,8 +166,9 @@ export default function Contact() {
                   <button 
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-white hover:bg-[var(--primary-mint)] text-black font-bold py-4 transition-all tracking-[0.15em] uppercase text-xs disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full bg-white hover:bg-[var(--primary-mint)] text-black font-bold py-4 transition-all tracking-[0.15em] uppercase text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
+                    <Send className="w-4 h-4" />
                     {loading ? 'Sending...' : 'Send Message'}
                   </button>
                 </form>

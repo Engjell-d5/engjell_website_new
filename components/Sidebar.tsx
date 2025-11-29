@@ -56,8 +56,9 @@ function SubscribeForm() {
           <button 
             type="submit"
             disabled={loading}
-            className="w-full py-2 bg-white text-black hover:bg-[var(--primary-mint)] text-[10px] font-bold uppercase transition-colors disabled:opacity-50"
+            className="w-full py-2 bg-white text-black hover:bg-[var(--primary-mint)] text-[10px] font-bold uppercase transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
           >
+            <Mail className="w-4 h-4" />
             {loading ? 'Subscribing...' : 'Join'}
           </button>
           {message && (

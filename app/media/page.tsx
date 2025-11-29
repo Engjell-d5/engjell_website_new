@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { Play, Mic, X } from 'lucide-react';
+import { Play, Mic, X, ExternalLink } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import PodcastApplicationForm from '@/components/PodcastApplicationForm';
 // Format duration helper
@@ -93,8 +93,9 @@ export default function Media() {
                 href="https://www.youtube.com/@engjellrraklli" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="bg-white text-black hover:bg-[var(--primary-mint)] px-6 py-3 text-xs font-bold uppercase tracking-widest transition-colors rounded-sm inline-block"
+                className="bg-white text-black hover:bg-[var(--primary-mint)] px-6 py-3 text-xs font-bold uppercase tracking-widest transition-colors rounded-sm inline-block flex items-center justify-center gap-2"
               >
+                <ExternalLink className="w-4 h-4" />
                 Visit Channel
               </a>
             </div>

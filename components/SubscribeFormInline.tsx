@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Mail } from 'lucide-react';
 
 export default function SubscribeFormInline() {
   const [email, setEmail] = useState('');
@@ -64,8 +65,9 @@ export default function SubscribeFormInline() {
           <button 
             type="submit"
             disabled={loading}
-            className="h-10 px-6 bg-white text-black hover:bg-[var(--primary-mint)] text-[10px] font-bold uppercase transition-colors disabled:opacity-50 whitespace-nowrap border border-[var(--border-color)] border-l-0"
+            className="h-10 px-6 bg-white text-black hover:bg-[var(--primary-mint)] text-[10px] font-bold uppercase transition-colors disabled:opacity-50 whitespace-nowrap border border-[var(--border-color)] border-l-0 flex items-center justify-center gap-2"
           >
+            <Mail className="w-4 h-4" />
             {loading ? 'Subscribing...' : 'Join'}
           </button>
         </form>
