@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Add application to database
-    const application = addPodcastApplication({
+    const application = await addPodcastApplication({
       name,
       email: email.toLowerCase(),
       about,

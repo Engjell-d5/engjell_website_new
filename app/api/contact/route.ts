@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Add message to database
-    const contactMessage = addContactMessage({
+    const contactMessage = await addContactMessage({
       name: name.trim(),
       email: email.toLowerCase().trim(),
       message: message.trim(),
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const messages = getContactMessages();
+    const messages = await getContactMessages();
     // Sort by submittedAt, most recent first
     const sortedMessages = [...messages].sort((a, b) => {
       return new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime();
@@ -137,7 +137,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    deleteContactMessage(id);
+    await deleteContactMessage(id);
     return NextResponse.json({ success: true });
   } catch (error: any) {
     return NextResponse.json(

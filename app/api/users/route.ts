@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const users = getUsers().map(({ password, ...user }) => user);
+  const users = (await getUsers()).map(({ password, ...user }) => user);
   return NextResponse.json({ users });
 }
 
@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const users = getUsers();
+    const users = await getUsers();
     
     if (users.find(u => u.email === email)) {
       return NextResponse.json(
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     };
 
     users.push(newUser);
-    saveUsers(users);
+    await saveUsers(users);
 
     const { password: _, ...userWithoutPassword } = newUser;
     return NextResponse.json({ user: userWithoutPassword }, { status: 201 });

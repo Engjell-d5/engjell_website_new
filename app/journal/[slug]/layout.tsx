@@ -6,7 +6,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   try {
     // Handle both sync and async params (Next.js 14 vs 15)
     const resolvedParams = await Promise.resolve(params);
-    const blogs = getBlogs();
+    const blogs = await getBlogs();
     const blog = blogs.find((b: any) => b.slug === resolvedParams.slug && b.published);
 
     if (!blog) {

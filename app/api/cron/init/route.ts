@@ -6,7 +6,7 @@ let initialized = false;
 
 export async function GET() {
   if (!initialized) {
-    startYouTubeCron();
+    await startYouTubeCron();
     initialized = true;
     return NextResponse.json({ message: 'Cron job initialized' });
   }

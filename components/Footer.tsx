@@ -3,7 +3,7 @@ import { Twitter, Linkedin, Youtube } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="mt-12 border-t border-l border-r border-[#1a3a4a] bg-[#02141d] py-10 px-8">
+    <footer className="mt-12 border-t border-l border-r border-b border-[#1a3a4a] bg-[#02141d] py-10 px-8">
       <div className="grid grid-cols-1 md:grid-cols-5 gap-8 max-w-[1600px] mx-auto">
         <div className="md:col-span-2">
           <div className="flex items-center gap-3 mb-4">

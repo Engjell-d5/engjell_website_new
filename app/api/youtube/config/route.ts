@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const config = getConfig();
+    const config = await getConfig();
     // Don't expose API key in response
     const { youtubeApiKey, ...safeConfig } = config;
     return NextResponse.json({ config: safeConfig });
@@ -37,11 +37,11 @@ export async function PUT(request: NextRequest) {
 
   try {
     const { cronSchedule } = await request.json();
-    const config = getConfig();
+    const config = await getConfig();
     
     if (cronSchedule) {
       config.cronSchedule = cronSchedule;
-      saveConfig(config);
+      await saveConfig(config);
     }
 
     return NextResponse.json({ success: true, config });

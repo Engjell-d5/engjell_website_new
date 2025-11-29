@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const applications = getPodcastApplications();
+    const applications = await getPodcastApplications();
     return NextResponse.json({ applications });
   } catch (error) {
     return NextResponse.json(
@@ -50,7 +50,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    updatePodcastApplicationStatus(id, status);
+    await updatePodcastApplicationStatus(id, status);
     
     return NextResponse.json({ success: true });
   } catch (error) {

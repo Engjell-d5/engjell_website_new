@@ -61,13 +61,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Add subscriber to local database
-    const subscriber = addSubscriber(email);
+    const subscriber = await addSubscriber(email);
 
     // Try to sync to Sender.net (non-blocking)
     try {
       const synced = await addToSenderNet(email);
       if (synced) {
-        markSubscriberSynced(email);
+        await markSubscriberSynced(email);
       }
     } catch (error) {
       // Log error but don't fail the request

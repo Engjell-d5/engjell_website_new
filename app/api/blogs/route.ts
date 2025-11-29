@@ -4,7 +4,7 @@ import { getBlogs, saveBlogs, Blog } from '@/lib/data';
 
 export async function GET(request: NextRequest) {
   const authUser = getAuthUser(request);
-  const blogs = getBlogs();
+  const blogs = await getBlogs();
   
   // If not authenticated, only return published blogs
   if (!authUser) {
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const blogs = getBlogs();
+    const blogs = await getBlogs();
     
     // Ensure unique slug
     let finalSlug = slug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
     };
 
     blogs.push(newBlog);
-    saveBlogs(blogs);
+    await saveBlogs(blogs);
 
     return NextResponse.json({ blog: newBlog }, { status: 201 });
   } catch (error) {

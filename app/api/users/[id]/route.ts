@@ -18,7 +18,7 @@ export async function PUT(
 
   try {
     const { email, name, password, role } = await request.json();
-    const users = getUsers();
+    const users = await getUsers();
     const userIndex = users.findIndex(u => u.id === params.id);
 
     if (userIndex === -1) {
@@ -41,7 +41,7 @@ export async function PUT(
     }
 
     users[userIndex] = updatedUser;
-    saveUsers(users);
+    await saveUsers(users);
 
     const { password: _, ...userWithoutPassword } = updatedUser;
     return NextResponse.json({ user: userWithoutPassword });
@@ -67,7 +67,7 @@ export async function DELETE(
   }
 
   try {
-    const users = getUsers();
+    const users = await getUsers();
     const filteredUsers = users.filter(u => u.id !== params.id);
     
     if (filteredUsers.length === users.length) {
@@ -77,7 +77,7 @@ export async function DELETE(
       );
     }
 
-    saveUsers(filteredUsers);
+    await saveUsers(filteredUsers);
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json(

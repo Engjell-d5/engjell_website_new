@@ -53,7 +53,7 @@ export async function getChannelIdFromHandle(handle: string): Promise<string | n
 
 export async function fetchYouTubeVideos(): Promise<YouTubeVideo[]> {
   try {
-    const config = getConfig();
+    const config = await getConfig();
     let channelId = config.youtubeChannelId;
 
     console.log('Starting YouTube video fetch...');
@@ -66,7 +66,7 @@ export async function fetchYouTubeVideos(): Promise<YouTubeVideo[]> {
       if (fetchedChannelId) {
         channelId = fetchedChannelId;
         config.youtubeChannelId = channelId;
-        saveConfig(config);
+        await saveConfig(config);
         console.log('Channel ID saved:', channelId);
       } else {
         throw new Error('Could not find channel ID for handle: ' + CHANNEL_HANDLE);
@@ -224,11 +224,11 @@ export async function fetchYouTubeVideos(): Promise<YouTubeVideo[]> {
     console.log(`Successfully processed ${videos.length} videos (using videoDuration=medium,long filter)`);
 
     // Save videos
-    saveVideos(videos);
+    await saveVideos(videos);
 
     // Update config
     config.lastVideoFetch = new Date().toISOString();
-    saveConfig(config);
+    await saveConfig(config);
 
     return videos;
   } catch (error: any) {

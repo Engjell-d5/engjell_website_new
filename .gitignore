@@ -37,6 +37,10 @@ next-env.d.ts
 
 # data files (contains sensitive information)
 /data/
+# database file
+/prisma/data/
+*.db
+*.db-journal
 
 # uploaded files
 /public/uploads/

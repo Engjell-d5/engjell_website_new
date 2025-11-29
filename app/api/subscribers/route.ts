@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const subscribers = getSubscribers();
+    const subscribers = await getSubscribers();
     return NextResponse.json({ subscribers });
   } catch (error) {
     return NextResponse.json(

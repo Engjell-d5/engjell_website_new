@@ -25,7 +25,7 @@ export function verifyToken(token: string): AuthUser | null {
 }
 
 export async function authenticateUser(email: string, password: string): Promise<AuthUser | null> {
-  const users = getUsers();
+  const users = await getUsers();
   const user = users.find(u => u.email === email);
   
   if (!user) return null;

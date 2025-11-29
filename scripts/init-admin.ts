@@ -2,7 +2,7 @@ import { getUsers, saveUsers, User } from '../lib/data';
 import { hashPassword } from '../lib/auth';
 
 async function initAdmin() {
-  const users = getUsers();
+  const users = await getUsers();
   
   if (users.length > 0) {
     console.log('Users already exist. Skipping initialization.');
@@ -23,7 +23,7 @@ async function initAdmin() {
   };
 
   users.push(adminUser);
-  saveUsers(users);
+  await saveUsers(users);
 
   console.log('Admin user created successfully!');
   console.log('Email: admin@engjellrraklli.com');

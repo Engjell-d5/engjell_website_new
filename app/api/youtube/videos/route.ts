@@ -4,7 +4,7 @@ import { getVideos, saveVideos } from '@/lib/data';
 
 export async function GET() {
   try {
-    const videos = getVideos();
+    const videos = await getVideos();
     return NextResponse.json({ videos });
   } catch (error) {
     return NextResponse.json(
@@ -25,7 +25,7 @@ export async function DELETE(request: NextRequest) {
   }
 
   try {
-    saveVideos([]);
+    await saveVideos([]);
     return NextResponse.json({ 
       success: true,
       message: 'All videos cleared successfully' 

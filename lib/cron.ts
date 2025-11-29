@@ -6,13 +6,13 @@ import { getConfig } from './data';
 let cronJob: cron.ScheduledTask | null = null;
 let initialized = false;
 
-export function startYouTubeCron() {
+export async function startYouTubeCron() {
   // Prevent multiple initializations
   if (initialized && cronJob) {
     return cronJob;
   }
 
-  const config = getConfig();
+  const config = await getConfig();
   const schedule = config.cronSchedule || '0 2 * * *'; // Default: 2 AM daily
 
   // Stop existing job if any
@@ -44,8 +44,8 @@ export function stopYouTubeCron() {
   }
 }
 
-export function restartYouTubeCron() {
+export async function restartYouTubeCron() {
   stopYouTubeCron();
-  return startYouTubeCron();
+  return await startYouTubeCron();
 }
 

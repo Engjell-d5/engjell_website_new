@@ -19,6 +19,7 @@
 # - Node.js and npm installed on the server
 # - PM2 installed globally on the server
 # - Nginx installed and running on the server
+# - SQLite3 installed on the server (for database operations)
 #
 # Usage: ./deploy.sh
 ###############################################################################
@@ -48,7 +49,7 @@ echo -e "${YELLOW}🚀 Starting deployment to ${SERVER_HOST}...${NC}"
 echo -e "${YELLOW}📁 Ensuring remote directory exists...${NC}"
 ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "mkdir -p ${REMOTE_DIR}"
 
-# Step 2: Sync files to server (excluding node_modules, .git, .next, data, etc.)
+# Step 2: Sync files to server (excluding node_modules, .git, .next, data files, etc.)
 echo -e "${YELLOW}📤 Syncing files to server...${NC}"
 
 # Check if rsync is available, otherwise use tar+ssh
@@ -57,7 +58,9 @@ if command -v rsync &> /dev/null; then
         --exclude 'node_modules' \
         --exclude '.git' \
         --exclude '.next' \
-        --exclude 'data' \
+        --exclude 'data/*.json' \
+        --exclude 'data/*.db' \
+        --exclude 'data/*.db-journal' \
         --exclude '.env' \
         --exclude '.env.local' \
         --exclude '.env.*.local' \
@@ -71,7 +74,9 @@ else
     tar --exclude='node_modules' \
         --exclude='.git' \
         --exclude='.next' \
-        --exclude='data' \
+        --exclude='data/*.json' \
+        --exclude='data/*.db' \
+        --exclude='data/*.db-journal' \
         --exclude='.env' \
         --exclude='.env.local' \
         --exclude='.env.*.local' \
@@ -196,9 +201,54 @@ ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} << EOF
     set -e
     cd ${REMOTE_DIR}
     
+    # Ensure data directory exists with proper permissions
+    echo "Ensuring data directory exists..."
+    mkdir -p data
+    chmod 755 data
+    
     # Install/update dependencies
     echo "Installing dependencies..."
     npm ci
+    
+    # Generate Prisma Client
+    echo "Generating Prisma Client..."
+    npm run db:generate || {
+        echo "⚠️  Prisma Client generation failed, but continuing..."
+    }
+    
+    # Run database migrations (creates tables if they don't exist)
+    # Use --skip-seed to avoid interactive prompts
+    echo "Running database migrations..."
+    npx prisma migrate deploy || {
+        echo "⚠️  Migration deploy failed, trying dev migration..."
+        npx prisma migrate dev --name deploy || echo "⚠️  Migration may have failed or already exists, continuing..."
+    }
+    
+    # Migrate data from JSON files if they exist and database is empty
+    # Only run if database is new or empty
+    echo "Checking if data migration is needed..."
+    if command -v sqlite3 &> /dev/null; then
+        if [ -f "data/database.db" ]; then
+            USER_COUNT=\$(sqlite3 data/database.db "SELECT COUNT(*) FROM users;" 2>/dev/null || echo "0")
+            if [ "\$USER_COUNT" = "0" ] && [ -f "data/users.json" ] && [ -s "data/users.json" ]; then
+                echo "Database exists but is empty, migrating data from JSON files..."
+                npm run db:seed || echo "⚠️  Data migration failed, but continuing..."
+            else
+                echo "Database already has data or no JSON files, skipping data migration"
+            fi
+        else
+            # Database doesn't exist, try to migrate if JSON files exist
+            if [ -f "data/users.json" ] && [ -s "data/users.json" ]; then
+                echo "Database doesn't exist yet, running data migration..."
+                npm run db:seed || echo "⚠️  Data migration failed, but continuing..."
+            else
+                echo "No database and no JSON files found, database will be created on first use"
+            fi
+        fi
+    else
+        echo "⚠️  sqlite3 not found, skipping data migration check"
+        echo "⚠️  If this is first deployment, run 'npm run db:seed' manually after deployment"
+    fi
     
     # Build the Next.js application
     echo "Building Next.js application..."

@@ -6,7 +6,7 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { slug: string } }
 ) {
-  const blogs = getBlogs();
+  const blogs = await getBlogs();
   const blog = blogs.find(b => b.slug === params.slug);
   
   if (!blog) {

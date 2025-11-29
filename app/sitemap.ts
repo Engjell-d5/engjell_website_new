@@ -46,7 +46,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Dynamic blog routes
   try {
-    const blogs = getBlogs();
+    const blogs = await getBlogs();
     const publishedBlogs = blogs.filter((blog: any) => blog.published);
 
     const blogRoutes: MetadataRoute.Sitemap = publishedBlogs.map((blog: any) => ({

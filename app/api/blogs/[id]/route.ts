@@ -6,7 +6,7 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const blogs = getBlogs();
+  const blogs = await getBlogs();
   const blog = blogs.find(b => b.id === params.id);
   
   if (!blog) {
@@ -42,7 +42,7 @@ export async function PUT(
 
   try {
     const { title, slug, category, excerpt, content, imageUrl, published, seo } = await request.json();
-    const blogs = getBlogs();
+    const blogs = await getBlogs();
     const blogIndex = blogs.findIndex(b => b.id === params.id);
 
     if (blogIndex === -1) {
@@ -89,7 +89,7 @@ export async function PUT(
     };
 
     blogs[blogIndex] = updatedBlog;
-    saveBlogs(blogs);
+    await saveBlogs(blogs);
 
     return NextResponse.json({ blog: updatedBlog });
   } catch (error) {
@@ -114,7 +114,7 @@ export async function DELETE(
   }
 
   try {
-    const blogs = getBlogs();
+    const blogs = await getBlogs();
     const filteredBlogs = blogs.filter(b => b.id !== params.id);
     
     if (filteredBlogs.length === blogs.length) {
@@ -124,7 +124,7 @@ export async function DELETE(
       );
     }
 
-    saveBlogs(filteredBlogs);
+    await saveBlogs(filteredBlogs);
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json(
