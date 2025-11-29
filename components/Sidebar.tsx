@@ -352,7 +352,7 @@ export default function Sidebar() {
             <ListVideo className="w-4 h-4 text-gray-500" />
           </div>
           <div className="space-y-4">
-            <div className="relative group cursor-pointer border border-[var(--border-color)] aspect-[16/9] hover:border-white transition-colors">
+            <div className="relative group cursor-pointer border border-[var(--border-color)] aspect-[16/9] hover:border-[var(--primary-mint)] transition-colors">
               <Image 
                 src="/_DSC0048.JPG" 
                 alt="Playlist" 
@@ -458,14 +458,14 @@ export default function Sidebar() {
                 </div>
                 <p className="text-[9px] text-gray-400">Staff augmentation & solutions</p>
               </div>
-              <div className="p-3 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-white transition-colors group">
+              <div className="p-3 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-colors group">
                 <div className="flex items-center gap-2 mb-1">
                   <BrainCircuit className="w-3 h-3 text-white" />
                   <span className="text-xs text-white font-bold">Technology</span>
                 </div>
                 <p className="text-[9px] text-gray-400">AI-powered solutions</p>
               </div>
-              <div className="p-3 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-white transition-colors group">
+              <div className="p-3 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-colors group">
                 <div className="flex items-center gap-2 mb-1">
                   <Cuboid className="w-3 h-3 text-white" />
                   <span className="text-xs text-white font-bold">Creative</span>

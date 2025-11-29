@@ -83,15 +83,15 @@ export default function Ventures() {
                 
                 <div className="relative z-20 h-full flex flex-col justify-end p-8">
                   <div className="flex justify-between items-end mb-4">
-                    <div className="w-12 h-12 border border-white/20 flex items-center justify-center bg-[var(--rich-black)]">
+                    <div className="w-12 h-12 border border-[var(--border-color)]/50 flex items-center justify-center bg-[var(--rich-black)]">
                       <Briefcase className="w-6 h-6 text-white" />
                     </div>
                     <span className="text-[10px] font-bold text-[var(--primary-mint)] uppercase tracking-widest border border-[var(--primary-mint)] px-2 py-1">Services</span>
                   </div>
                   <h3 className="text-4xl text-white font-bebas mb-2">DIVISION 5</h3>
-                  <p className="text-sm text-gray-400 mb-6 font-light border-l border-white/20 pl-3">Building scalable service-based businesses.</p>
+                  <p className="text-sm text-gray-400 mb-6 font-light border-l border-[var(--border-color)]/50 pl-3">Building scalable service-based businesses.</p>
                   
-                  <div className="grid grid-cols-2 gap-4 border-t border-white/10 pt-4">
+                  <div className="grid grid-cols-2 gap-4 border-t border-[var(--border-color)]/30 pt-4">
                     <div>
                       <p className="text-[9px] text-gray-500 uppercase font-bold tracking-widest">Role</p>
                       <p className="text-xs text-white">Founder</p>
@@ -105,7 +105,7 @@ export default function Ventures() {
               </a>
 
               {/* Venture 2: DivisionAI */}
-              <a href="https://divisionai.co" target="_blank" rel="noopener noreferrer" className="group relative h-[300px] border border-[var(--border-color)] overflow-hidden hover:border-white transition-all">
+              <a href="https://divisionai.co" target="_blank" rel="noopener noreferrer" className="group relative h-[300px] border border-[var(--border-color)] overflow-hidden hover:border-[var(--primary-mint)] transition-all">
                 <Image 
                   src="https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80" 
                   alt="DivisionAI - AI Coding" 
@@ -116,15 +116,15 @@ export default function Ventures() {
                 
                 <div className="relative z-20 h-full flex flex-col justify-end p-8">
                   <div className="flex justify-between items-end mb-4">
-                    <div className="w-12 h-12 border border-white/20 flex items-center justify-center bg-[var(--rich-black)]">
+                    <div className="w-12 h-12 border border-[var(--border-color)]/50 flex items-center justify-center bg-[var(--rich-black)]">
                       <BrainCircuit className="w-6 h-6 text-white" />
                     </div>
-                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest border border-gray-600 px-2 py-1 group-hover:text-white transition-colors">Technology</span>
+                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest border border-[var(--border-color)] px-2 py-1 group-hover:text-white transition-colors">Technology</span>
                   </div>
                   <h3 className="text-4xl text-white font-bebas mb-2">DIVISION AI</h3>
-                  <p className="text-sm text-gray-400 mb-6 font-light border-l border-white/20 pl-3">Artificial Intelligence solutions.</p>
+                  <p className="text-sm text-gray-400 mb-6 font-light border-l border-[var(--border-color)]/50 pl-3">Artificial Intelligence solutions.</p>
                   
-                  <div className="grid grid-cols-2 gap-4 border-t border-white/10 pt-4">
+                  <div className="grid grid-cols-2 gap-4 border-t border-[var(--border-color)]/30 pt-4">
                     <div>
                       <p className="text-[9px] text-gray-500 uppercase font-bold tracking-widest">Role</p>
                       <p className="text-xs text-white">Founder</p>
@@ -138,7 +138,7 @@ export default function Ventures() {
               </a>
 
               {/* Venture 3: Division3D */}
-              <a href="https://division3d.co" target="_blank" rel="noopener noreferrer" className="group relative h-[300px] border border-[var(--border-color)] overflow-hidden hover:border-white transition-all md:col-span-2">
+              <a href="https://division3d.co" target="_blank" rel="noopener noreferrer" className="group relative h-[300px] border border-[var(--border-color)] overflow-hidden hover:border-[var(--primary-mint)] transition-all md:col-span-2">
                 <Image 
                   src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80" 
                   alt="Division3D - 3D Design" 
@@ -149,15 +149,15 @@ export default function Ventures() {
                 
                 <div className="relative z-20 h-full flex flex-col justify-end p-8">
                   <div className="flex justify-between items-end mb-4">
-                    <div className="w-12 h-12 border border-white/20 flex items-center justify-center bg-[var(--rich-black)]">
+                    <div className="w-12 h-12 border border-[var(--border-color)]/50 flex items-center justify-center bg-[var(--rich-black)]">
                       <Cuboid className="w-6 h-6 text-white" />
                     </div>
-                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest border border-gray-600 px-2 py-1 group-hover:text-white transition-colors">Creative</span>
+                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest border border-[var(--border-color)] px-2 py-1 group-hover:text-white transition-colors">Creative</span>
                   </div>
                   <h3 className="text-4xl text-white font-bebas mb-2">DIVISION 3D</h3>
-                  <p className="text-sm text-gray-400 mb-6 font-light border-l border-white/20 pl-3">Immersive 3D experiences and design.</p>
+                  <p className="text-sm text-gray-400 mb-6 font-light border-l border-[var(--border-color)]/50 pl-3">Immersive 3D experiences and design.</p>
                   
-                  <div className="grid grid-cols-2 gap-4 border-t border-white/10 pt-4">
+                  <div className="grid grid-cols-2 gap-4 border-t border-[var(--border-color)]/30 pt-4">
                     <div>
                       <p className="text-[9px] text-gray-500 uppercase font-bold tracking-widest">Role</p>
                       <p className="text-xs text-white">Founder</p>

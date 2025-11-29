@@ -21,7 +21,7 @@ export default function Footer() {
         <div>
           <h4 className="text-base text-white font-bold uppercase tracking-widest mb-4 font-bebas">Navigation</h4>
           <ul className="space-y-2 text-xs text-gray-400">
-            <li><Link href="/" className="hover:text-[var(--primary-mint)] transition-colors">Engjell Rraklli</Link></li>
+            <li><Link href="/" className="hover:text-[var(--primary-mint)] transition-colors">Home</Link></li>
             <li><Link href="/media" className="hover:text-[var(--primary-mint)] transition-colors">Podcast</Link></li>
             <li><Link href="/journal" className="hover:text-[var(--primary-mint)] transition-colors">Journal</Link></li>
             <li><Link href="/ventures" className="hover:text-[var(--primary-mint)] transition-colors">Ventures</Link></li>

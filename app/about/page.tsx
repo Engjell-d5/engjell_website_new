@@ -64,7 +64,7 @@ export default function About() {
                     </div>
                     <p className="text-xs text-gray-400">Business is ultimately about people. Treating every stakeholder with genuine respect and empathy is non-negotiable.</p>
                   </div>
-                  <div className="p-6 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-white transition-colors group">
+                  <div className="p-6 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-colors group">
                     <div className="flex items-center gap-3 mb-2">
                       <Mountain className="w-5 h-5 text-white" />
                       <h4 className="text-lg text-white font-bebas tracking-wide">Persistence</h4>
@@ -78,7 +78,7 @@ export default function About() {
                     </div>
                     <p className="text-xs text-gray-400">Motivation gets you started; discipline keeps you going. It is the bridge between goals and accomplishment.</p>
                   </div>
-                  <div className="p-6 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-white transition-colors group">
+                  <div className="p-6 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-colors group">
                     <div className="flex items-center gap-3 mb-2">
                       <Hourglass className="w-5 h-5 text-white" />
                       <h4 className="text-lg text-white font-bebas tracking-wide">Patience</h4>

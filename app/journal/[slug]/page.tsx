@@ -127,7 +127,7 @@ export default function BlogPost() {
             {/* Header */}
             <div className="mb-8 border-b border-[var(--border-color)] pb-6">
               <div className="flex items-center gap-3 mb-4">
-                <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest border border-gray-600 px-2 py-0.5">
+                <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest border border-[var(--border-color)] px-2 py-0.5">
                   {blog.category}
                 </span>
                 <span className="text-[10px] text-gray-500 uppercase tracking-widest">

@@ -15,6 +15,10 @@ const config: Config = {
     },
   },
   plugins: [],
+  safelist: [
+    'font-bebas',
+    'font-montserrat',
+  ],
 };
 export default config;
 

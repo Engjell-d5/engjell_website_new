@@ -82,7 +82,7 @@ export default function Journal() {
               <div className="grid gap-6">
                 {[1, 2, 3].map((i) => (
                   <div key={i} className="p-6 border border-[var(--border-color)] bg-[var(--rich-black)] flex flex-col md:flex-row gap-8 animate-pulse">
-                    <div className="w-full md:w-56 h-36 bg-gray-800 shrink-0 border border-white/5"></div>
+                    <div className="w-full md:w-56 h-36 bg-gray-800 shrink-0 border border-[var(--border-color)]/30"></div>
                     <div className="flex-1 py-1 space-y-3">
                       <div className="flex items-center gap-3">
                         <div className="h-4 w-16 bg-gray-800 rounded"></div>
@@ -107,9 +107,9 @@ export default function Journal() {
                   <Link
                     key={blog.id}
                     href={`/journal/${blog.slug}`}
-                    className="p-6 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-white transition-all cursor-pointer group flex flex-col md:flex-row gap-8"
+                    className="p-6 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-all cursor-pointer group flex flex-col md:flex-row gap-8"
                   >
-                    <div className="w-full md:w-56 h-36 bg-black shrink-0 overflow-hidden border border-white/5 relative">
+                    <div className="w-full md:w-56 h-36 bg-black shrink-0 overflow-hidden border border-[var(--border-color)]/30 relative">
                       <Image 
                         src={blog.imageUrl} 
                         alt={blog.title} 
@@ -119,7 +119,7 @@ export default function Journal() {
                     </div>
                     <div className="flex-1 py-1">
                       <div className="flex items-center gap-3 mb-3">
-                        <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest border border-gray-600 px-2 py-0.5">
+                        <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest border border-[var(--border-color)] px-2 py-0.5">
                           {blog.category}
                         </span>
                         <span className="text-[10px] text-gray-500 uppercase tracking-widest">

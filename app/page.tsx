@@ -39,7 +39,7 @@ export default function Home() {
         <div className="p-6 md:p-10">
           <section className="animate-slide-up">
             {/* Full Width Hero */}
-            <div className="relative w-full h-[600px] border border-[var(--border-color)] overflow-hidden group mb-8 rounded-sm">
+            <div className="relative w-[calc(100%+3rem)] md:w-[calc(100%+5rem)] h-[600px] border-b border-[var(--border-color)] overflow-hidden group mb-8 -ml-6 -mr-6 -mt-6 md:-ml-10 md:-mr-10 md:-mt-10 rounded-none">
               <Image 
                 src="/IMG_0425.JPG" 
                 alt="Engjell Rraklli" 

@@ -130,7 +130,7 @@ export default function Media() {
                   className="object-cover img-classic opacity-80"
                 />
                 <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                  <div className="w-20 h-20 border border-white flex items-center justify-center rounded-full hover:bg-white hover:text-black transition-all duration-300 text-white">
+                  <div className="w-20 h-20 border border-[var(--border-color)] flex items-center justify-center rounded-full hover:bg-white hover:text-black hover:border-white transition-all duration-300 text-white">
                     <Play className="w-8 h-8 fill-current ml-1" />
                   </div>
                 </div>

@@ -48,7 +48,7 @@ export default function Header() {
       {/* Navigation - Right Aligned */}
       <nav className="hidden md:flex items-center gap-2 ml-auto">
         <Link href="/" className={`nav-btn ${isActive('/') ? 'active' : ''}`}>
-          Engjell Rraklli
+          Home
         </Link>
         <Link href="/about" className={`nav-btn ${isActive('/about') ? 'active' : ''}`}>
           About
@@ -91,7 +91,7 @@ export default function Header() {
             onClick={closeMobileMenu}
             className={`nav-btn text-lg py-3 ${isActive('/') ? 'active' : ''}`}
           >
-            Engjell Rraklli
+            Home
           </Link>
           <Link 
             href="/about" 

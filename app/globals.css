@@ -36,6 +36,11 @@
   /* These are set on <html> element via layout.tsx, but adding fallbacks here */
 }
 
+/* Ensure all borders use the correct color by default */
+* {
+  border-color: var(--border-color);
+}
+
 body {
   background-color: var(--bg-dark);
   color: var(--platinum);
