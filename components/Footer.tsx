@@ -38,9 +38,9 @@ export default function Footer() {
         <div>
           <h4 className="text-base text-white font-bold uppercase tracking-widest mb-4 font-bebas">Connect</h4>
           <div className="flex gap-4">
-            <a href="https://x.com/RraklliEngjell" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors"><Twitter className="w-5 h-5" /></a>
-            <a href="https://www.linkedin.com/in/engjell-rraklli-a8b20a68/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors"><Linkedin className="w-5 h-5" /></a>
-            <a href="https://www.youtube.com/@engjellrraklli" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors"><Youtube className="w-5 h-5" /></a>
+            <a href="https://x.com/RraklliEngjell" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[var(--primary-mint)] transition-colors"><Twitter className="w-5 h-5" /></a>
+            <a href="https://www.linkedin.com/in/engjell-rraklli-a8b20a68/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[var(--primary-mint)] transition-colors"><Linkedin className="w-5 h-5" /></a>
+            <a href="https://www.youtube.com/@engjellrraklli" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[var(--primary-mint)] transition-colors"><Youtube className="w-5 h-5" /></a>
           </div>
           <p className="text-[10px] text-gray-600 mt-6">&copy; 2025 Engjell Rraklli. All rights reserved.</p>
           <p className="text-[10px] text-gray-600 mt-2">

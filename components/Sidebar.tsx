@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Mic, PenTool, CalendarPlus, History, ListVideo, Contact, Mail, MapPin, Clock, Linkedin, Twitter, Play, Heart, Mountain, ShieldCheck, Hourglass, Briefcase, BrainCircuit, Cuboid } from 'lucide-react';
+import { Mic, PenTool, CalendarPlus, History, ListVideo, Contact, Mail, MapPin, Clock, Linkedin, Twitter, Play, Heart, Mountain, ShieldCheck, Hourglass, Briefcase, BrainCircuit, Cuboid, Quote } from 'lucide-react';
 
 function SubscribeForm() {
   const [email, setEmail] = useState('');
@@ -304,15 +304,6 @@ export default function Sidebar() {
       {/* ABOUT SIDEBAR */}
       {pathname === '/about' && (
         <div className="flex flex-col gap-6">
-          <div className="w-full h-48 rounded-none overflow-hidden border border-[var(--border-color)] relative group">
-            <Image 
-              src="/IMG_0466.JPG" 
-              alt="About Portrait" 
-              width={600}
-              height={192}
-              className="w-full h-full object-cover img-classic group-hover:scale-105 transition-transform duration-700"
-            />
-          </div>
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)] mb-3">
               <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Timeline</span>
@@ -348,6 +339,16 @@ export default function Sidebar() {
       {/* MEDIA SIDEBAR */}
       {pathname === '/media' && (
         <div className="flex flex-col gap-6">
+            <div className="relative p-6 border-l-4 border-[var(--primary-mint)] bg-[var(--rich-black)]">
+              <div className="absolute top-2 left-4 opacity-20">
+                <Quote className="w-12 h-12 text-[var(--primary-mint)]" />
+              </div>
+              <div className="relative z-10">
+                <p className="text-sm text-gray-300 leading-relaxed font-light italic pl-6 pt-4">
+                  "I talk about how to run a business which is more human, which provides real value, and which scales without losing its soul. I am a big believer that businesses should love problems first and make a profit next."
+                </p>
+              </div>
+            </div>
           <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
             <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Curated Playlists</span>
             <ListVideo className="w-4 h-4 text-gray-500" />
@@ -372,6 +373,18 @@ export default function Sidebar() {
       {/* JOURNAL SIDEBAR */}
       {(pathname === '/journal' || pathname.startsWith('/journal/')) && (
         <div className="flex flex-col gap-6">
+          {pathname === '/journal' && (
+            <div className="relative p-6 border-l-4 border-[var(--primary-mint)] bg-[var(--rich-black)]">
+              <div className="absolute top-2 left-4 opacity-20">
+                <Quote className="w-12 h-12 text-[var(--primary-mint)]" />
+              </div>
+              <div className="relative z-10">
+                <p className="text-sm text-gray-300 leading-relaxed font-light italic pl-10 pt-4">
+                  "When I started as an entrepreneur, I constantly craved a mentor to help me make sense of the chaos. I'm documenting the lessons I've learned so you can navigate your own journey with a little more clarity and a little less stress."
+                </p>
+              </div>
+            </div>
+          )}
         <SubscribeForm />
           
           {/* Related Articles - Only show on single blog post pages */}
@@ -429,6 +442,16 @@ export default function Sidebar() {
       {/* VENTURES SIDEBAR */}
       {pathname === '/ventures' && (
         <div className="flex flex-col gap-6">
+          <div className="relative p-6 border-l-4 border-[var(--primary-mint)] bg-[var(--rich-black)]">
+            <div className="absolute top-2 left-4 opacity-20">
+              <Quote className="w-12 h-12 text-[var(--primary-mint)]" />
+            </div>
+            <div className="relative z-10">
+              <p className="text-sm text-gray-300 leading-relaxed font-light italic pl-10 pt-4">
+                "I specialize in scaling next-generation digital agencies. Through division5, divisionAI, and division3D, I deliver software services, AI solutions, and 3D design experiences."
+              </p>
+            </div>
+          </div>
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)] mb-3">
               <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Quick Stats</span>
@@ -442,36 +465,6 @@ export default function Sidebar() {
               <div className="p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
                 <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Active Ventures</p>
                 <p className="text-2xl font-bebas text-white">3</p>
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)] mb-3">
-              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Categories</span>
-              <BrainCircuit className="w-4 h-4 text-gray-500" />
-            </div>
-            <div className="space-y-2">
-              <div className="p-3 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-colors group">
-                <div className="flex items-center gap-2 mb-1">
-                  <Briefcase className="w-3 h-3 text-white" />
-                  <span className="text-xs text-white font-bold">Services</span>
-                </div>
-                <p className="text-[9px] text-gray-400">Staff augmentation & solutions</p>
-              </div>
-              <div className="p-3 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-colors group">
-                <div className="flex items-center gap-2 mb-1">
-                  <BrainCircuit className="w-3 h-3 text-white" />
-                  <span className="text-xs text-white font-bold">Technology</span>
-                </div>
-                <p className="text-[9px] text-gray-400">AI-powered solutions</p>
-              </div>
-              <div className="p-3 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-colors group">
-                <div className="flex items-center gap-2 mb-1">
-                  <Cuboid className="w-3 h-3 text-white" />
-                  <span className="text-xs text-white font-bold">Creative</span>
-                </div>
-                <p className="text-[9px] text-gray-400">3D experiences & design</p>
               </div>
             </div>
           </div>
@@ -517,10 +510,10 @@ export default function Sidebar() {
               </div>
             </div>
             <div className="mt-6 pt-4 border-t border-[var(--border-color)] flex gap-2">
-              <a href="https://www.linkedin.com/in/engjell-rraklli-a8b20a68/" target="_blank" rel="noopener noreferrer" className="flex-1 py-2 bg-[var(--border-color)] hover:bg-white hover:text-black rounded-none flex items-center justify-center text-gray-400 transition-all">
+              <a href="https://www.linkedin.com/in/engjell-rraklli-a8b20a68/" target="_blank" rel="noopener noreferrer" className="flex-1 py-2 bg-[var(--border-color)] hover:bg-[var(--primary-mint)] hover:text-black rounded-none flex items-center justify-center text-gray-400 transition-all">
                 <Linkedin className="w-4 h-4" />
               </a>
-              <a href="https://x.com/RraklliEngjell" target="_blank" rel="noopener noreferrer" className="flex-1 py-2 bg-[var(--border-color)] hover:bg-white hover:text-black rounded-none flex items-center justify-center text-gray-400 transition-all">
+              <a href="https://x.com/RraklliEngjell" target="_blank" rel="noopener noreferrer" className="flex-1 py-2 bg-[var(--border-color)] hover:bg-[var(--primary-mint)] hover:text-black rounded-none flex items-center justify-center text-gray-400 transition-all">
                 <Twitter className="w-4 h-4" />
               </a>
             </div>

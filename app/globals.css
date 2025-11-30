@@ -54,6 +54,17 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
 }
 
+/* Text selection with mint accent */
+::selection {
+  background-color: var(--primary-mint);
+  color: var(--rich-black);
+}
+
+::-moz-selection {
+  background-color: var(--primary-mint);
+  color: var(--rich-black);
+}
+
 /* Headings Font */
 h1, h2, h3, h4, .brand-font {
   font-family: var(--font-bebas), sans-serif !important;
@@ -123,7 +134,7 @@ h1, h2, h3, h4, .brand-font {
 }
 
 .nav-btn:hover {
-  color: var(--text-primary);
+  color: var(--primary-mint);
 }
 
 .nav-btn.active {
@@ -192,8 +203,13 @@ h1, h2, h3, h4, .brand-font {
 }
 
 .ProseMirror a {
-  color: var(--link-color);
+  color: var(--primary-mint);
   text-decoration: underline;
+  transition: color 0.2s;
+}
+
+.ProseMirror a:hover {
+  color: var(--link-hover);
 }
 
 .ProseMirror img {

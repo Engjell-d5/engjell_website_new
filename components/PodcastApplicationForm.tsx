@@ -83,10 +83,10 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         <h2 className="text-xl text-white font-bebas tracking-wide">Apply to Podcast</h2>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="name" className="block text-xs text-gray-400 mb-2 uppercase tracking-widest">
-            Name *
+          <label htmlFor="name" className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
+            Name
           </label>
           <input
             type="text"
@@ -101,8 +101,8 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-xs text-gray-400 mb-2 uppercase tracking-widest">
-            Email *
+          <label htmlFor="email" className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
+            Email
           </label>
           <input
             type="email"
@@ -133,8 +133,8 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         </div>
 
         <div>
-          <label htmlFor="businesses" className="block text-xs text-gray-400 mb-2 uppercase tracking-widest">
-            Your businesses *
+          <label htmlFor="businesses" className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
+            Your businesses
           </label>
           <textarea
             id="businesses"
@@ -149,8 +149,8 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         </div>
 
         <div>
-          <label htmlFor="industry" className="block text-xs text-gray-400 mb-2 uppercase tracking-widest">
-            Industry *
+          <label htmlFor="industry" className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
+            Industry
           </label>
           <input
             type="text"
@@ -165,8 +165,8 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         </div>
 
         <div>
-          <label htmlFor="vision" className="block text-xs text-gray-400 mb-2 uppercase tracking-widest">
-            Your vision *
+          <label htmlFor="vision" className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
+            Your vision
           </label>
           <textarea
             id="vision"
@@ -181,8 +181,8 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         </div>
 
         <div>
-          <label htmlFor="biggestChallenge" className="block text-xs text-gray-400 mb-2 uppercase tracking-widest">
-            Your biggest challenge *
+          <label htmlFor="biggestChallenge" className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
+            Your biggest challenge
           </label>
           <textarea
             id="biggestChallenge"
@@ -197,8 +197,8 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         </div>
 
         <div>
-          <label htmlFor="whyPodcast" className="block text-xs text-gray-400 mb-2 uppercase tracking-widest">
-            Why do you want to be on the podcast? *
+          <label htmlFor="whyPodcast" className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
+            Why do you want to be on the podcast?
           </label>
           <textarea
             id="whyPodcast"

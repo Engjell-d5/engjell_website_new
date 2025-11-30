@@ -47,32 +47,9 @@ export default function Ventures() {
               </div>
             </div>
 
-            <div className="prose prose-invert max-w-none text-gray-300 font-light text-sm leading-7 mb-8">
-              <p className="mb-6">
-                I specialize in scaling next-generation digital agencies. Through division5, divisionAI, and division3D, I deliver software services, AI solutions, and 3D design experiences.
-              </p>
-              <p className="mb-6">
-                From assembling elite software engineering teams and deploying AI-driven workflows to pushing the boundaries of the immersive web (Web3D), I turn technical expertise into scalable business models. These tech ventures represent my approach to building digital agencies that combine staff augmentation, artificial intelligence, and creative 3D experiences. Explore my current ventures:
-              </p>
-            </div>
-
-            {/* Personal Image Injection */}
-            <div className="mb-10 w-full h-64 rounded-none overflow-hidden border border-[var(--border-color)] relative group">
-              <Image 
-                src="/IMG_7944.jpeg" 
-                alt="Working" 
-                fill
-                className="object-cover img-classic opacity-60 group-hover:opacity-80"
-              />
-              <div className="absolute bottom-0 left-0 p-6 bg-gradient-to-t from-[var(--rich-black)] to-transparent w-full">
-                <p className="text-[10px] text-[var(--primary-mint)] font-bold uppercase tracking-widest mb-1">On Location</p>
-                <p className="text-xl text-white font-bebas">Building scalable solutions from Tirana.</p>
-              </div>
-            </div>
-
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Venture 1: Division5 */}
-              <a href="https://division5.co" target="_blank" rel="noopener noreferrer" className="group relative h-[300px] border border-[var(--border-color)] overflow-hidden hover:border-[var(--primary-mint)] transition-all">
+              {/* Venture 1: Division5 - Main/First */}
+              <a href="https://division5.co" target="_blank" rel="noopener noreferrer" className="group relative h-[300px] border border-[var(--border-color)] overflow-hidden hover:border-[var(--primary-mint)] transition-all md:col-span-2">
                 <Image 
                   src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80" 
                   alt="Division5 - Staff Augmentation" 
@@ -86,7 +63,6 @@ export default function Ventures() {
                     <div className="w-12 h-12 border border-[var(--border-color)]/50 flex items-center justify-center bg-[var(--rich-black)]">
                       <Briefcase className="w-6 h-6 text-white" />
                     </div>
-                    <span className="text-[10px] font-bold text-[var(--primary-mint)] uppercase tracking-widest border border-[var(--primary-mint)] px-2 py-1">Services</span>
                   </div>
                   <h3 className="text-4xl text-white font-bebas mb-2">DIVISION 5</h3>
                   <p className="text-sm text-gray-400 mb-6 font-light border-l border-[var(--border-color)]/50 pl-3">Building scalable service-based businesses.</p>
@@ -119,7 +95,6 @@ export default function Ventures() {
                     <div className="w-12 h-12 border border-[var(--border-color)]/50 flex items-center justify-center bg-[var(--rich-black)]">
                       <BrainCircuit className="w-6 h-6 text-white" />
                     </div>
-                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest border border-[var(--border-color)] px-2 py-1 group-hover:text-white transition-colors">Technology</span>
                   </div>
                   <h3 className="text-4xl text-white font-bebas mb-2">DIVISION AI</h3>
                   <p className="text-sm text-gray-400 mb-6 font-light border-l border-[var(--border-color)]/50 pl-3">Artificial Intelligence solutions.</p>
@@ -138,7 +113,7 @@ export default function Ventures() {
               </a>
 
               {/* Venture 3: Division3D */}
-              <a href="https://division3d.co" target="_blank" rel="noopener noreferrer" className="group relative h-[300px] border border-[var(--border-color)] overflow-hidden hover:border-[var(--primary-mint)] transition-all md:col-span-2">
+              <a href="https://division3d.co" target="_blank" rel="noopener noreferrer" className="group relative h-[300px] border border-[var(--border-color)] overflow-hidden hover:border-[var(--primary-mint)] transition-all">
                 <Image 
                   src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80" 
                   alt="Division3D - 3D Design" 
@@ -152,7 +127,6 @@ export default function Ventures() {
                     <div className="w-12 h-12 border border-[var(--border-color)]/50 flex items-center justify-center bg-[var(--rich-black)]">
                       <Cuboid className="w-6 h-6 text-white" />
                     </div>
-                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest border border-[var(--border-color)] px-2 py-1 group-hover:text-white transition-colors">Creative</span>
                   </div>
                   <h3 className="text-4xl text-white font-bebas mb-2">DIVISION 3D</h3>
                   <p className="text-sm text-gray-400 mb-6 font-light border-l border-[var(--border-color)]/50 pl-3">Immersive 3D experiences and design.</p>

@@ -29,17 +29,17 @@ export default function Header() {
     <header className="classic-panel h-20 shrink-0 flex items-center justify-between px-8 sticky-header">
       {/* Brand */}
       <div className="flex items-center gap-5 shrink-0">
-        <Link href="/" className="w-16 h-16 flex items-center justify-center">
+        <Link href="/" className="w-16 h-16 flex items-center justify-center hover:opacity-80 transition-opacity group">
           <img 
             src="/Engjell_Rraklli_White_Logo_Mark.svg" 
             alt="ER Logo" 
-            className="w-full h-full object-contain"
+            className="w-full h-full object-contain group-hover:brightness-110 transition-all"
           />
         </Link>
         <div className="flex flex-col">
           <h1 className="text-3xl tracking-widest text-white leading-none mt-1 font-bebas">ENGJELL RRAKLLI</h1>
           <div className="flex items-center gap-2 mt-1">
-            <div className="h-[1px] w-8 bg-gray-600"></div>
+            <div className="h-[1px] w-8 bg-[var(--primary-mint)]"></div>
             <span className="text-[10px] text-[var(--platinum)] font-bold tracking-[0.2em] font-montserrat uppercase opacity-80">Tech Entrepreneur</span>
           </div>
         </div>
@@ -69,7 +69,7 @@ export default function Header() {
 
       {/* Mobile Menu Button */}
       <button 
-        className="md:hidden text-white z-50"
+        className="md:hidden text-white hover:text-[var(--primary-mint)] transition-colors z-50"
         onClick={toggleMobileMenu}
         aria-label="Toggle menu"
         suppressHydrationWarning

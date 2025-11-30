@@ -162,12 +162,12 @@ export async function GET(
     // Critical: These headers must allow Instagram/Facebook servers to fetch the image
     // Make headers as permissive as possible for Instagram's crawler
     const headers: Record<string, string> = {
-      'Content-Type': contentType,
-      'Content-Length': fileBuffer.length.toString(),
+        'Content-Type': contentType,
+        'Content-Length': fileBuffer.length.toString(),
       'Cache-Control': 'public, max-age=86400, must-revalidate',
-      // CORS headers to allow Instagram/Facebook servers to fetch images
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+        // CORS headers to allow Instagram/Facebook servers to fetch images
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
       'Access-Control-Allow-Headers': '*',
       // Additional headers for better compatibility
       'Accept-Ranges': 'bytes',

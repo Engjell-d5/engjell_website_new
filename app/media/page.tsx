@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { Play, Mic, X, ExternalLink } from 'lucide-react';
+import { Play, Mic, X, ExternalLink, ChevronDown, Quote } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import PodcastApplicationForm from '@/components/PodcastApplicationForm';
 // Format duration helper
@@ -35,6 +35,7 @@ export default function Media() {
   const [loading, setLoading] = useState(true);
   const [showApplicationModal, setShowApplicationModal] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [videosToShow, setVideosToShow] = useState(3);
 
   useEffect(() => {
     setMounted(true);
@@ -64,7 +65,12 @@ export default function Media() {
   };
 
   const featuredVideo = videos[0];
-  const nextVideos = videos.slice(1, 4); // Next 3 videos
+  const nextVideos = videos.slice(1, videosToShow + 1); // Videos after featured
+  const hasMoreVideos = videos.length > videosToShow + 1;
+  
+  const loadMoreVideos = () => {
+    setVideosToShow(prev => prev + 3);
+  };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
@@ -84,7 +90,7 @@ export default function Media() {
         {/* Content Area */}
         <div className="p-6 md:p-10">
           <section className="animate-slide-up">
-            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8 border-b border-[var(--border-color)] pb-4">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 border-b border-[var(--border-color)] pb-4">
               <div>
                 <span className="page-label mb-3 block">Media</span>
                 <h2 className="text-5xl md:text-6xl text-white font-bebas">THE CONVERSATION</h2>
@@ -144,42 +150,11 @@ export default function Media() {
                 </div>
               </a>
             ) : null}
-          </section>
-        </div>
-      </main>
 
-      {/* Right Panel - Next 3 Videos */}
-      <aside className="classic-panel md:col-span-3 flex flex-col p-6 gap-6 bg-[var(--rich-black)]">
-        {/* Apply to Podcast Button */}
-        <button
-          onClick={() => setShowApplicationModal(true)}
-          className="w-full py-3 bg-white text-black hover:bg-[var(--primary-mint)] text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
-        >
-          <Mic className="w-4 h-4" />
-          Apply to Podcast
-        </button>
-
-        <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
-          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">More Videos</span>
-          <Play className="w-4 h-4 text-gray-500" />
-        </div>
-        
-        {!mounted || loading ? (
-          <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="animate-pulse">
-                <div className="aspect-video bg-gray-800 border border-[var(--border-color)] mb-2 rounded-none"></div>
-                <div className="h-4 w-full bg-gray-800 rounded-none mb-1"></div>
-                <div className="h-3 w-24 bg-gray-800 rounded-none"></div>
-              </div>
-            ))}
-          </div>
-        ) : nextVideos.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-gray-400 text-sm">No more videos available.</p>
-          </div>
-        ) : (
-          <div className="space-y-4">
+            {/* More Videos Section */}
+            {!mounted || loading ? null : nextVideos.length > 0 && (
+              <div className="mt-12">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {nextVideos.map((video) => (
               <a
                 key={video.id}
@@ -193,7 +168,7 @@ export default function Media() {
                     src={video.thumbnailUrl} 
                     alt={video.title} 
                     fill
-                    sizes="(max-width: 768px) 100vw, 25vw"
+                          sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover img-classic opacity-60 group-hover:opacity-90 transition-opacity"
                   />
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -210,8 +185,46 @@ export default function Media() {
                 </p>
               </a>
             ))}
+                </div>
+                {hasMoreVideos && (
+                  <div className="mt-8 flex justify-center">
+                    <button
+                      onClick={loadMoreVideos}
+                      className="bg-white text-black hover:bg-[var(--primary-mint)] px-6 py-3 text-xs font-bold uppercase tracking-widest transition-colors rounded-none flex items-center justify-center gap-2"
+                    >
+                      <ChevronDown className="w-4 h-4" />
+                      Load More
+                    </button>
+                  </div>
+                )}
           </div>
         )}
+          </section>
+        </div>
+      </main>
+
+      {/* Right Panel - Next 3 Videos */}
+      <aside className="classic-panel md:col-span-3 flex flex-col p-6 gap-6 bg-[var(--rich-black)] sticky-sidebar">
+        {/* Description */}
+        <div className="relative p-6 border-l-4 border-[var(--primary-mint)] bg-[var(--rich-black)]">
+          <div className="absolute top-2 left-4 opacity-20">
+            <Quote className="w-12 h-12 text-[var(--primary-mint)]" />
+          </div>
+          <div className="relative z-10">
+            <p className="text-sm text-gray-300 leading-relaxed font-light italic pl-10 pt-4">
+              "I talk about how to run a business which is more human, which provides real value, and which scales without losing its soul. I am a big believer that businesses should love problems first and make a profit next."
+            </p>
+          </div>
+        </div>
+
+        {/* Apply to Podcast Button */}
+        <button
+          onClick={() => setShowApplicationModal(true)}
+          className="w-full py-3 bg-white text-black hover:bg-[var(--primary-mint)] text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+        >
+          <Mic className="w-4 h-4" />
+          Apply to Podcast
+        </button>
       </aside>
 
       {/* Podcast Application Modal */}

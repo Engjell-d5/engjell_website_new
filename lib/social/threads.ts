@@ -675,11 +675,11 @@ export async function publishToThreads(
     console.log('[THREADS] Using /me endpoint for media container creation');
     
     const mediaResponse = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${threadsAccessToken}`,
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${threadsAccessToken}`,
         'Content-Type': 'application/x-www-form-urlencoded',
-      },
+        },
       body: mediaParams.toString(),
     });
     
@@ -711,11 +711,11 @@ export async function publishToThreads(
         creationId = fallbackData.id;
         console.log('[THREADS] Media container created with account ID fallback, creation_id:', creationId);
       } else {
-        throw new Error(`Failed to create Threads media container (${mediaResponse.status}): ${error}`);
-      }
+      throw new Error(`Failed to create Threads media container (${mediaResponse.status}): ${error}`);
+    }
     } else {
-      const mediaData = await mediaResponse.json();
-      creationId = mediaData.id;
+    const mediaData = await mediaResponse.json();
+    creationId = mediaData.id;
       console.log('[THREADS] Media container created with /me endpoint, creation_id:', creationId);
     }
   } else {
@@ -765,21 +765,21 @@ export async function publishToThreads(
         if (!fallbackResponse.ok) {
           const fallbackError = await fallbackResponse.text();
           console.error('[THREADS] Failed to create text media container with account ID:', fallbackError);
-          console.error('[THREADS] Account ID used:', threadsAccountId);
-          console.error('[THREADS] Token preview:', threadsAccessToken.substring(0, 20) + '...');
-          
+      console.error('[THREADS] Account ID used:', threadsAccountId);
+      console.error('[THREADS] Token preview:', threadsAccessToken.substring(0, 20) + '...');
+      
           let errorMessage = `Failed to create Threads text media container (${fallbackResponse.status}): ${fallbackError}`;
           if (fallbackError.includes('does not exist') || fallbackError.includes('cannot be loaded')) {
-            errorMessage += `\n\nPossible causes:\n` +
-              `1. The Threads account ID (${threadsAccountId}) might be incorrect\n` +
-              `2. The access token might not have permission to publish to this account\n` +
-              `3. The account might not be properly linked to Instagram\n` +
+        errorMessage += `\n\nPossible causes:\n` +
+          `1. The Threads account ID (${threadsAccountId}) might be incorrect\n` +
+          `2. The access token might not have permission to publish to this account\n` +
+          `3. The account might not be properly linked to Instagram\n` +
               `4. The access token might be expired or invalid\n` +
               `5. Try disconnecting and reconnecting your Threads account`;
-          }
-          throw new Error(errorMessage);
-        }
-        
+      }
+      throw new Error(errorMessage);
+    }
+    
         const fallbackData = await fallbackResponse.json();
         creationId = fallbackData.id;
         console.log('[THREADS] Text media container created with account ID fallback, creation_id:', creationId);
@@ -788,8 +788,8 @@ export async function publishToThreads(
         throw new Error(`Failed to create Threads text media container (${mediaResponse.status}): ${error}`);
       }
     } else {
-      const mediaData = await mediaResponse.json();
-      creationId = mediaData.id;
+    const mediaData = await mediaResponse.json();
+    creationId = mediaData.id;
       console.log('[THREADS] Text media container created with /me endpoint, creation_id:', creationId);
     }
   }
@@ -808,11 +808,11 @@ export async function publishToThreads(
   console.log('[THREADS] Using /me endpoint for publishing');
   
   const publishResponse = await fetch(publishUrl, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${threadsAccessToken}`,
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${threadsAccessToken}`,
       'Content-Type': 'application/x-www-form-urlencoded',
-    },
+      },
     body: publishParams.toString(),
   });
 
@@ -855,7 +855,7 @@ export async function publishToThreads(
         postId: postId,
       };
     } else {
-      throw new Error(`Failed to publish Threads post (${publishResponse.status}): ${error}`);
+    throw new Error(`Failed to publish Threads post (${publishResponse.status}): ${error}`);
     }
   }
 
