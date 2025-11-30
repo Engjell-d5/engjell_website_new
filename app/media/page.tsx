@@ -69,7 +69,7 @@ export default function Media() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
       {/* Left Panel - Latest Video */}
-      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
+      <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-gray-400">
@@ -191,11 +191,10 @@ export default function Media() {
                 <div className="relative aspect-video bg-black border border-[var(--border-color)] mb-2 overflow-hidden group-hover:border-[var(--primary-mint)] transition-colors">
                   <Image 
                     src={video.thumbnailUrl} 
-                    alt={`${video.title} thumbnail`} 
+                    alt={video.title} 
                     fill
                     sizes="(max-width: 768px) 100vw, 25vw"
                     className="object-cover img-classic opacity-60 group-hover:opacity-90 transition-opacity"
-                    loading="lazy"
                   />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-8 h-8 bg-[var(--primary-mint)] rounded-full flex items-center justify-center text-black opacity-0 group-hover:opacity-100 transition-opacity">

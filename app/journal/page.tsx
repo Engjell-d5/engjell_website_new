@@ -115,8 +115,6 @@ export default function Journal() {
                         alt={blog.title} 
                         fill
                         className="object-cover img-classic"
-                        loading="lazy"
-                        sizes="(max-width: 768px) 100vw, 224px"
                       />
                     </div>
                     <div className="flex-1 py-1">

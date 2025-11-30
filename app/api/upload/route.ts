@@ -76,7 +76,6 @@ export async function POST(request: NextRequest) {
     const filepath = join(uploadsDir, filename);
 
     // Save file and ensure it's fully written to disk
-    // NOTE: Images are saved at original resolution and quality - no resizing or compression is applied
     await writeFile(filepath, buffer);
 
     // Force file system sync to ensure file is fully written

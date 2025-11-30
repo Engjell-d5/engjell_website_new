@@ -60,7 +60,7 @@ export default function Contact() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
+      <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-gray-400">
@@ -100,11 +100,9 @@ export default function Contact() {
                 <div className="w-full h-64 rounded-sm overflow-hidden border border-[var(--border-color)] relative group">
                   <Image 
                     src="/IMG_0456 (1).JPG" 
-                    alt="Engjell Rraklli portrait" 
+                    alt="Smiling Portrait" 
                     fill
                     className="object-cover img-classic opacity-80 group-hover:opacity-100"
-                    loading="lazy"
-                    sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 </div>
                 
