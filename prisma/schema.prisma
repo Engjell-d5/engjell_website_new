@@ -114,3 +114,36 @@ model ContactMessage {
 
   @@map("contact_messages")
 }
+
+model SocialConnection {
+  id            String   @id @default(cuid())
+  platform      String   // 'linkedin' | 'twitter' | 'instagram' | 'threads'
+  accessToken   String   // Encrypted token
+  refreshToken  String?  // For token refresh
+  expiresAt     DateTime? // Token expiration
+  connectedAt   DateTime @default(now())
+  isActive      Boolean  @default(true)
+  username      String?  // Platform username for display
+  profileImage  String?  // Profile image URL
+  
+  @@unique([platform])
+  @@map("social_connections")
+}
+
+model SocialPost {
+  id              String   @id @default(cuid())
+  content         String
+  mediaAssets     String?  // JSON array: [{'type': 'image'|'video', 'url': '...', 'filename': '...'}]
+  platforms       String   // JSON array: ['linkedin', 'twitter', ...]
+  scheduledFor    DateTime
+  publishedAt     DateTime?
+  status          String   @default("scheduled") // 'scheduled' | 'published' | 'failed' | 'draft'
+  publishedOn     String?  // JSON: {'linkedin': '2024-01-01', 'twitter': '2024-01-01'}
+  errorMessage    String?
+  timesPosted     Int      @default(0) // Number of times this post has been published
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  createdBy       String?  // User ID who created the post
+  
+  @@map("social_posts")
+}

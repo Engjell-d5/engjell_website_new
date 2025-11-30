@@ -1,13 +1,16 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 export default function Header() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const firstLinkRef = useRef<HTMLAnchorElement>(null);
 
   const isActive = (path: string) => {
     if (path === '/') {
@@ -24,16 +27,47 @@ export default function Header() {
     setIsMobileMenuOpen(false);
   };
 
+  // Handle Escape key to close mobile menu
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isMobileMenuOpen) {
+        closeMobileMenu();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isMobileMenuOpen]);
+
+  // Focus trap and auto-focus first link when menu opens
+  useEffect(() => {
+    if (isMobileMenuOpen && firstLinkRef.current) {
+      firstLinkRef.current.focus();
+    }
+  }, [isMobileMenuOpen]);
+
   return (
     <>
+    {/* Skip to main content link for accessibility */}
+    <a 
+      href="#main-content" 
+      className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-[var(--primary-mint)] focus:text-black focus:font-bold focus:rounded"
+      tabIndex={0}
+    >
+      Skip to main content
+    </a>
+    
     <header className="classic-panel h-20 shrink-0 flex items-center justify-between px-8 sticky-header">
       {/* Brand */}
       <div className="flex items-center gap-5 shrink-0">
-        <Link href="/" className="w-16 h-16 flex items-center justify-center">
-          <img 
+        <Link href="/" className="w-16 h-16 flex items-center justify-center" aria-label="Home">
+          <Image 
             src="/Engjell_Rraklli_White_Logo_Mark.svg" 
-            alt="ER Logo" 
-            className="w-full h-full object-contain"
+            alt="Engjell Rraklli Logo" 
+            width={64}
+            height={64}
+            className="object-contain"
+            priority
           />
         </Link>
         <div className="flex flex-col">
@@ -84,9 +118,16 @@ export default function Header() {
 
     {/* Mobile Menu Dropdown */}
     {isMobileMenuOpen && (
-      <div className="md:hidden fixed inset-0 top-20 z-40 bg-[var(--panel-bg)] border-t border-[var(--border-color)]">
+      <div 
+        ref={mobileMenuRef}
+        className="md:hidden fixed inset-0 top-20 z-40 bg-[var(--panel-bg)] border-t border-[var(--border-color)]"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Main navigation"
+      >
         <nav className="flex flex-col p-6 gap-4">
           <Link 
+            ref={firstLinkRef}
             href="/" 
             onClick={closeMobileMenu}
             className={`nav-btn text-lg py-3 ${isActive('/') ? 'active' : ''}`}

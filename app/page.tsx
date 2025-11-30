@@ -23,7 +23,7 @@ export const metadata: Metadata = createMetadata({
 export default function Home() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-      <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
+      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-gray-400">
@@ -42,10 +42,12 @@ export default function Home() {
             <div className="relative w-[calc(100%+3rem)] md:w-[calc(100%+5rem)] h-[600px] border-b border-[var(--border-color)] overflow-hidden group mb-8 -ml-6 -mr-6 -mt-6 md:-ml-10 md:-mr-10 md:-mt-10 rounded-none">
               <Image 
                 src="/IMG_0425.JPG" 
-                alt="Engjell Rraklli" 
+                alt="Engjell Rraklli standing in an urban setting" 
                 fill
                 className="object-cover img-classic"
                 style={{ objectPosition: 'center 20%' }}
+                priority
+                sizes="100vw"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-[var(--rich-black)] via-transparent to-transparent opacity-90"></div>
               <div className="absolute inset-0 bg-gradient-to-r from-[var(--rich-black)]/80 via-transparent to-transparent"></div>
@@ -68,15 +70,16 @@ export default function Home() {
               <div className="md:col-span-4 h-64 md:h-auto relative overflow-hidden group border-b md:border-b-0 md:border-r border-[var(--border-color)]">
                 <Image 
                   src="/_DSC0142.JPG" 
-                  alt="Portrait" 
+                  alt="Engjell Rraklli portrait" 
                   fill
                   className="object-cover img-classic group-hover:scale-105 transition-transform duration-700"
+                  loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[var(--rich-black)]/80 md:hidden"></div>
               </div>
               {/* Bio Text Column */}
               <div className="md:col-span-8 p-8 md:p-10 flex flex-col justify-center relative">
-                <div className="absolute top-0 right-0 p-6 opacity-5">
+                <div className="absolute top-0 right-0 p-6 opacity-5" aria-hidden="true">
                   <MapPin className="w-32 h-32 text-white" />
                 </div>
                 <div>

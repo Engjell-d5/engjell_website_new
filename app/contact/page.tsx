@@ -60,7 +60,7 @@ export default function Contact() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-      <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
+      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-gray-400">
@@ -74,14 +74,14 @@ export default function Contact() {
 
         {/* Content Area */}
         <div className="p-6 md:p-10">
-          <section className="animate-slide-up h-full">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-              <div className="flex flex-col justify-center">
+          <section className="animate-slide-up">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
+              <div className="flex flex-col">
                 <span className="page-label mb-3 block">Contact</span>
                 <h2 className="text-5xl md:text-6xl text-white font-bebas mb-6">LET'S TALK</h2>
                 <p className="text-sm text-[var(--primary-mint)] font-bold uppercase tracking-widest mb-6">Speaker, Builder, Consultant</p>
                 
-                <div className="prose prose-invert max-w-none text-gray-300 font-light text-sm leading-7 mb-8">
+                <div className="prose prose-invert max-w-none text-gray-300 font-light text-sm leading-7">
                   <p className="mb-6">
                     Open for speaking engagements, technical consultation, and business partnership opportunities. I am passionate about the entrepreneurial potential of Albania and the Balkans, and I'm here to provide tech consulting and entrepreneurship advice.
                   </p>
@@ -94,23 +94,26 @@ export default function Contact() {
                     Whether you have a question about the nuances of building in Albania or want to discuss a potential venture, I'm all ears. Contact me for speaking engagements, technical consultation, or partnership discussions.
                   </p>
                 </div>
-                
-                {/* Personal Image Injection */}
-                <div className="w-full h-64 rounded-sm overflow-hidden border border-[var(--border-color)] relative group mb-6">
+              </div>
+              <div className="flex flex-col gap-6">
+                {/* Personal Image - Above the form */}
+                <div className="w-full h-64 rounded-sm overflow-hidden border border-[var(--border-color)] relative group">
                   <Image 
                     src="/IMG_0456 (1).JPG" 
-                    alt="Smiling Portrait" 
+                    alt="Engjell Rraklli portrait" 
                     fill
                     className="object-cover img-classic opacity-80 group-hover:opacity-100"
+                    loading="lazy"
+                    sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 </div>
-              </div>
-              <div className="p-10 border border-[var(--border-color)] bg-[var(--rich-black)] relative flex flex-col justify-center">
-                {/* Decorative corner accents */}
-                <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[var(--primary-mint)]"></div>
-                <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[var(--primary-mint)]"></div>
                 
-                <form className="space-y-6" onSubmit={handleSubmit}>
+                <div className="p-10 border border-[var(--border-color)] bg-[var(--rich-black)] relative flex flex-col">
+                  {/* Decorative corner accents */}
+                  <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[var(--primary-mint)]"></div>
+                  <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[var(--primary-mint)]"></div>
+                  
+                  <form className="space-y-6" onSubmit={handleSubmit}>
                   <div>
                     <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">Name</label>
                     <input 
@@ -172,6 +175,7 @@ export default function Contact() {
                     {loading ? 'Sending...' : 'Send Message'}
                   </button>
                 </form>
+                </div>
               </div>
             </div>
           </section>

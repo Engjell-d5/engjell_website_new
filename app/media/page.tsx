@@ -69,7 +69,7 @@ export default function Media() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
       {/* Left Panel - Latest Video */}
-      <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
+      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-gray-400">
@@ -84,7 +84,7 @@ export default function Media() {
         {/* Content Area */}
         <div className="p-6 md:p-10">
           <section className="animate-slide-up">
-            <div className="flex items-end justify-between mb-8 border-b border-[var(--border-color)] pb-4">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-8 border-b border-[var(--border-color)] pb-4">
               <div>
                 <span className="page-label mb-3 block">Media</span>
                 <h2 className="text-5xl md:text-6xl text-white font-bebas">THE CONVERSATION</h2>
@@ -93,7 +93,7 @@ export default function Media() {
                 href="https://www.youtube.com/@engjellrraklli" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="bg-white text-black hover:bg-[var(--primary-mint)] px-6 py-3 text-xs font-bold uppercase tracking-widest transition-colors rounded-sm inline-block flex items-center justify-center gap-2"
+                className="bg-white text-black hover:bg-[var(--primary-mint)] px-6 py-3 text-xs font-bold uppercase tracking-widest transition-colors rounded-sm flex items-center justify-center gap-2 w-full md:w-auto"
               >
                 <ExternalLink className="w-4 h-4" />
                 Visit Channel
@@ -191,10 +191,11 @@ export default function Media() {
                 <div className="relative aspect-video bg-black border border-[var(--border-color)] mb-2 overflow-hidden group-hover:border-[var(--primary-mint)] transition-colors">
                   <Image 
                     src={video.thumbnailUrl} 
-                    alt={video.title} 
+                    alt={`${video.title} thumbnail`} 
                     fill
                     sizes="(max-width: 768px) 100vw, 25vw"
                     className="object-cover img-classic opacity-60 group-hover:opacity-90 transition-opacity"
+                    loading="lazy"
                   />
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div className="w-8 h-8 bg-[var(--primary-mint)] rounded-full flex items-center justify-center text-black opacity-0 group-hover:opacity-100 transition-opacity">

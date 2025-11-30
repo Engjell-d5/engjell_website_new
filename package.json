@@ -12,7 +12,10 @@
     "db:migrate": "prisma migrate dev",
     "db:generate": "prisma generate",
     "db:seed": "tsx scripts/migrate-to-db.ts",
-    "db:setup": "tsx scripts/setup-database.ts"
+    "db:setup": "tsx scripts/setup-database.ts",
+    "ngrok": "powershell -ExecutionPolicy Bypass -File ./scripts/ngrok-start.ps1",
+    "ngrok:url": "powershell -ExecutionPolicy Bypass -File ./scripts/ngrok-get-url.ps1",
+    "ngrok:simple": "ngrok http 3000"
   },
   "dependencies": {
     "@prisma/client": "^5.19.1",

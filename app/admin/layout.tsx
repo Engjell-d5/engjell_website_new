@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Users, FileText, LogOut, Home, Youtube, Mic, Mail, MessageSquare } from 'lucide-react';
+import { Users, FileText, LogOut, Home, Youtube, Mic, Mail, MessageSquare, Share2 } from 'lucide-react';
 
 export default function AdminLayout({
   children,
@@ -180,6 +180,17 @@ export default function AdminLayout({
             >
               <MessageSquare className="w-4 h-4 flex-shrink-0" />
               <span className="text-sm font-bold uppercase tracking-widest">Contact Messages</span>
+            </Link>
+            <Link
+              href="/admin/social"
+              className={`flex items-center gap-3 px-4 py-3 rounded-sm transition-colors ${
+                pathname === '/admin/social'
+                  ? 'bg-[var(--primary-mint)] text-black'
+                  : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
+              }`}
+            >
+              <Share2 className="w-4 h-4 flex-shrink-0" />
+              <span className="text-sm font-bold uppercase tracking-widest">Social Media</span>
             </Link>
           </nav>
         </aside>

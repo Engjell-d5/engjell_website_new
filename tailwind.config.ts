@@ -11,6 +11,7 @@ const config: Config = {
       fontFamily: {
         'bebas': ['var(--font-bebas)', 'Bebas Neue', 'sans-serif'],
         'montserrat': ['var(--font-montserrat)', 'Montserrat', 'sans-serif'],
+        'mono': ['var(--font-mono)', 'JetBrains Mono', 'Courier New', 'monospace'],
       },
     },
   },

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Twitter, Linkedin, Youtube } from 'lucide-react';
 
 export default function Footer() {
@@ -7,10 +8,12 @@ export default function Footer() {
       <div className="grid grid-cols-1 md:grid-cols-5 gap-8 max-w-[1600px] mx-auto">
         <div className="md:col-span-2">
           <div className="flex items-center gap-3 mb-4">
-            <img 
+            <Image 
               src="/Engjell_Rraklli_White_Logo_Mark.svg" 
-              alt="ER Logo" 
-              className="w-12 h-12 object-contain"
+              alt="Engjell Rraklli Logo" 
+              width={48}
+              height={48}
+              className="object-contain"
             />
             <span className="text-xl text-white font-bebas tracking-widest">ENGJELL RRAKLLI</span>
           </div>
