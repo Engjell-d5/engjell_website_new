@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import { PenTool } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import SubscribeForm from '@/components/SubscribeForm';
 import SubscribeFormInline from '@/components/SubscribeFormInline';
@@ -40,11 +41,14 @@ export default function BlogPost() {
   const [blog, setBlog] = useState<Blog | null>(null);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
+  const [relatedBlogs, setRelatedBlogs] = useState<Blog[]>([]);
+  const [loadingRelatedBlogs, setLoadingRelatedBlogs] = useState(true);
 
   useEffect(() => {
     setMounted(true);
     if (params.slug) {
       fetchBlog();
+      fetchRelatedBlogs();
     }
   }, [params.slug]);
 
@@ -65,10 +69,46 @@ export default function BlogPost() {
     }
   };
 
+  const fetchRelatedBlogs = async () => {
+    try {
+      const response = await fetch('/api/blogs');
+      if (response.ok) {
+        const data = await response.json();
+        // Get current blog slug from params
+        const currentSlug = params.slug as string;
+        
+        // Filter published blogs, exclude current blog, and sort by publishedAt, most recent first
+        const publishedBlogs = (data.blogs || [])
+          .filter((blog: Blog) => blog.published && blog.slug !== currentSlug)
+          .sort((a: Blog, b: Blog) => {
+            const dateA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+            const dateB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+            return dateB - dateA;
+          });
+        
+        // Take first 2
+        setRelatedBlogs(publishedBlogs.slice(0, 2));
+      }
+    } catch (error) {
+      console.error('Error fetching related blogs:', error);
+    } finally {
+      setLoadingRelatedBlogs(false);
+    }
+  };
+
   const formatDate = (dateString: string | null) => {
     if (!dateString) return '';
     return new Date(dateString).toLocaleDateString('en-US', {
       month: 'long',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  };
+
+  const formatDateShort = (dateString: string | null) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'short',
       day: 'numeric',
       year: 'numeric',
     });
@@ -158,6 +198,40 @@ export default function BlogPost() {
 
             {/* Content */}
             <BlogContentWithSubscribe content={blog.content || ''} />
+
+            {/* Related Articles - Only render after mount to avoid hydration issues */}
+            {mounted && relatedBlogs.length > 0 && (
+              <div className="mt-16 pt-8 border-t border-[var(--border-color)]">
+                <div className="flex items-center justify-between mb-6">
+                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Keep reading</span>
+                  <PenTool className="w-4 h-4 text-gray-500" />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {relatedBlogs.map((relatedBlog) => (
+                    <Link
+                      key={relatedBlog.id}
+                      href={`/journal/${relatedBlog.slug}`}
+                      className="group block"
+                    >
+                      <div className="aspect-[2/1] bg-black border border-[var(--border-color)] mb-3 overflow-hidden relative group-hover:border-[var(--primary-mint)] transition-colors">
+                        <Image 
+                          src={relatedBlog.imageUrl} 
+                          alt={relatedBlog.title} 
+                          fill
+                          className="object-cover opacity-60 group-hover:opacity-90 transition-opacity"
+                        />
+                      </div>
+                      <p className="text-sm text-white font-bold leading-tight group-hover:text-[var(--primary-mint)] transition-colors line-clamp-2 mb-1">
+                        {relatedBlog.title}
+                      </p>
+                      <p className="text-[9px] text-gray-500">
+                        {formatDateShort(relatedBlog.publishedAt)} • {relatedBlog.category}
+                      </p>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
           </article>
         </div>
       </main>

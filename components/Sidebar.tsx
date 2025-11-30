@@ -113,16 +113,11 @@ export default function Sidebar() {
   const [loadingVideo, setLoadingVideo] = useState(true);
   const [latestBlog, setLatestBlog] = useState<Blog | null>(null);
   const [loadingBlog, setLoadingBlog] = useState(true);
-  const [relatedBlogs, setRelatedBlogs] = useState<Blog[]>([]);
-  const [loadingRelatedBlogs, setLoadingRelatedBlogs] = useState(true);
 
   useEffect(() => {
     if (pathname === '/') {
       fetchLatestVideo();
       fetchLatestBlog();
-    }
-    if (pathname.startsWith('/journal/')) {
-      fetchRelatedBlogs();
     }
   }, [pathname]);
 
@@ -167,32 +162,6 @@ export default function Sidebar() {
     }
   };
 
-  const fetchRelatedBlogs = async () => {
-    try {
-      const response = await fetch('/api/blogs');
-      if (response.ok) {
-        const data = await response.json();
-        // Get current blog slug from pathname
-        const currentSlug = pathname.split('/journal/')[1];
-        
-        // Filter published blogs, exclude current blog, and sort by publishedAt, most recent first
-        const publishedBlogs = (data.blogs || [])
-          .filter((blog: Blog) => blog.published && blog.slug !== currentSlug)
-          .sort((a: Blog, b: Blog) => {
-            const dateA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
-            const dateB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
-            return dateB - dateA;
-          });
-        
-        // Take first 3
-        setRelatedBlogs(publishedBlogs.slice(0, 3));
-      }
-    } catch (error) {
-      console.error('Error fetching related blogs:', error);
-    } finally {
-      setLoadingRelatedBlogs(false);
-    }
-  };
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return '';
@@ -386,56 +355,6 @@ export default function Sidebar() {
             </div>
           )}
         <SubscribeForm />
-          
-          {/* Related Articles - Only show on single blog post pages */}
-          {pathname.startsWith('/journal/') && (
-            <div>
-              <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)] mb-3">
-                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Related Articles</span>
-                <PenTool className="w-4 h-4 text-gray-500" />
-              </div>
-              {loadingRelatedBlogs ? (
-                <div className="space-y-4">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="animate-pulse">
-                      <div className="aspect-[2/1] bg-gray-800 border border-[var(--border-color)] mb-2 rounded-none"></div>
-                      <div className="h-4 w-full bg-gray-800 rounded-none mb-1"></div>
-                      <div className="h-3 w-32 bg-gray-800 rounded-none"></div>
-                    </div>
-                  ))}
-                </div>
-              ) : relatedBlogs.length > 0 ? (
-                <div className="space-y-4">
-                  {relatedBlogs.map((blog) => (
-                    <Link
-                      key={blog.id}
-                      href={`/journal/${blog.slug}`}
-                      className="group block"
-                    >
-                      <div className="aspect-[2/1] bg-black border border-[var(--border-color)] mb-2 overflow-hidden relative group-hover:border-[var(--primary-mint)] transition-colors">
-                        <Image 
-                          src={blog.imageUrl} 
-                          alt={blog.title} 
-                          fill
-                          className="object-cover opacity-60 group-hover:opacity-90 transition-opacity"
-                        />
-                      </div>
-                      <p className="text-xs text-white font-bold leading-tight group-hover:text-[var(--primary-mint)] transition-colors line-clamp-2">
-                        {blog.title}
-                      </p>
-                      <p className="text-[9px] text-gray-500 mt-1">
-                        {formatDate(blog.publishedAt)} • {blog.category}
-                      </p>
-                    </Link>
-                  ))}
-                </div>
-              ) : (
-                <div className="aspect-[2/1] bg-black border border-[var(--border-color)] flex items-center justify-center">
-                  <p className="text-gray-500 text-xs">No related articles</p>
-                </div>
-              )}
-            </div>
-          )}
         </div>
       )}
 
