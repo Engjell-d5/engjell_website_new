@@ -81,8 +81,24 @@ export async function GET(
   try {
     const filename = params.filename;
     const userAgent = request.headers.get('user-agent') || 'unknown';
+    const referer = request.headers.get('referer') || 'none';
+    const origin = request.headers.get('origin') || 'none';
     
-    console.log('[UPLOADS] Request for file:', filename, 'from:', userAgent);
+    // Log all request details for debugging Instagram crawler access
+    console.log('[UPLOADS] Request for file:', filename);
+    console.log('[UPLOADS] User-Agent:', userAgent);
+    console.log('[UPLOADS] Referer:', referer);
+    console.log('[UPLOADS] Origin:', origin);
+    
+    // Detect Instagram/Facebook crawler
+    const isInstagramCrawler = userAgent.includes('facebookexternalhit') || 
+                                userAgent.includes('Facebot') ||
+                                userAgent.includes('Instagram') ||
+                                userAgent.includes('facebook');
+    
+    if (isInstagramCrawler) {
+      console.log('[UPLOADS] ✓ Detected Instagram/Facebook crawler');
+    }
     
     // Security: Prevent directory traversal
     if (filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
@@ -116,6 +132,18 @@ export async function GET(
 
     // Determine content type based on file extension
     const extension = filename.split('.').pop()?.toLowerCase();
+    
+    // Verify JPEG file signature for Instagram compatibility
+    // JPEG files start with FF D8 FF
+    if (extension === 'jpg' || extension === 'jpeg') {
+      const jpegSignature = fileBuffer[0] === 0xFF && fileBuffer[1] === 0xD8 && fileBuffer[2] === 0xFF;
+      if (!jpegSignature) {
+        console.error('[UPLOADS] WARNING: File does not have valid JPEG signature!');
+        console.error('[UPLOADS] First bytes:', fileBuffer.slice(0, 10).toString('hex'));
+      } else {
+        console.log('[UPLOADS] ✓ Valid JPEG file signature confirmed');
+      }
+    }
     const contentTypeMap: Record<string, string> = {
       jpg: 'image/jpeg',
       jpeg: 'image/jpeg',
@@ -132,20 +160,34 @@ export async function GET(
 
     // Return the file with appropriate headers
     // Critical: These headers must allow Instagram/Facebook servers to fetch the image
-    const headers = {
-        'Content-Type': contentType,
-        'Content-Length': fileBuffer.length.toString(),
+    // Make headers as permissive as possible for Instagram's crawler
+    const headers: Record<string, string> = {
+      'Content-Type': contentType,
+      'Content-Length': fileBuffer.length.toString(),
       'Cache-Control': 'public, max-age=86400, must-revalidate',
-        // CORS headers to allow Instagram/Facebook servers to fetch images
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Accept, User-Agent',
+      // CORS headers to allow Instagram/Facebook servers to fetch images
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
+      'Access-Control-Allow-Headers': '*',
       // Additional headers for better compatibility
       'Accept-Ranges': 'bytes',
-      'X-Content-Type-Options': 'nosniff',
+      // Remove X-Content-Type-Options for Instagram compatibility (might cause issues)
+      // 'X-Content-Type-Options': 'nosniff',
     };
 
-    console.log('[UPLOADS] Serving file with content-type:', contentType);
+    // Add additional headers for Instagram crawler if detected
+    if (isInstagramCrawler) {
+      console.log('[UPLOADS] ✓✓✓ INSTAGRAM CRAWLER DETECTED - Serving file to Instagram/Facebook');
+      console.log('[UPLOADS] File details for Instagram:', {
+        filename,
+        contentType,
+        size: fileBuffer.length,
+        contentLength: fileBuffer.length.toString(),
+      });
+      // Don't add X-Robots-Tag for Instagram - might interfere
+    }
+
+    console.log('[UPLOADS] Serving file with content-type:', contentType, 'size:', fileBuffer.length, 'bytes');
     
     return new NextResponse(fileBuffer, {
       headers,

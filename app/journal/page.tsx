@@ -85,13 +85,13 @@ export default function Journal() {
                     <div className="w-full md:w-56 h-36 bg-gray-800 shrink-0 border border-[var(--border-color)]/30"></div>
                     <div className="flex-1 py-1 space-y-3">
                       <div className="flex items-center gap-3">
-                        <div className="h-4 w-16 bg-gray-800 rounded"></div>
-                        <div className="h-4 w-24 bg-gray-800 rounded"></div>
+                        <div className="h-4 w-16 bg-gray-800 rounded-none"></div>
+                        <div className="h-4 w-24 bg-gray-800 rounded-none"></div>
                       </div>
-                      <div className="h-8 w-3/4 bg-gray-800 rounded"></div>
+                      <div className="h-8 w-3/4 bg-gray-800 rounded-none"></div>
                       <div className="space-y-2">
-                        <div className="h-4 w-full bg-gray-800 rounded"></div>
-                        <div className="h-4 w-5/6 bg-gray-800 rounded"></div>
+                        <div className="h-4 w-full bg-gray-800 rounded-none"></div>
+                        <div className="h-4 w-5/6 bg-gray-800 rounded-none"></div>
                       </div>
                     </div>
                   </div>

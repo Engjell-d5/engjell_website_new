@@ -97,7 +97,7 @@ export default function Contact() {
               </div>
               <div className="flex flex-col gap-6">
                 {/* Personal Image - Above the form */}
-                <div className="w-full h-64 rounded-sm overflow-hidden border border-[var(--border-color)] relative group">
+                <div className="w-full h-64 rounded-none overflow-hidden border border-[var(--border-color)] relative group">
                   <Image 
                     src="/IMG_0456 (1).JPG" 
                     alt="Smiling Portrait" 

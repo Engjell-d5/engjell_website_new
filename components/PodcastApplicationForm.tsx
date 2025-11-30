@@ -95,7 +95,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
             value={formData.name}
             onChange={handleChange}
             required
-            className="w-full bg-black border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors font-montserrat"
+            className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat disabled:opacity-50"
             disabled={loading}
           />
         </div>
@@ -111,7 +111,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
             value={formData.email}
             onChange={handleChange}
             required
-            className="w-full bg-black border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors font-montserrat"
+            className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat disabled:opacity-50"
             disabled={loading}
           />
         </div>
@@ -127,7 +127,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
             onChange={handleChange}
             required
             rows={4}
-            className="w-full bg-black border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors resize-none font-montserrat"
+            className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all resize-none font-montserrat disabled:opacity-50"
             disabled={loading}
           />
         </div>
@@ -143,7 +143,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
             onChange={handleChange}
             required
             rows={3}
-            className="w-full bg-black border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors resize-none font-montserrat"
+            className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all resize-none font-montserrat disabled:opacity-50"
             disabled={loading}
           />
         </div>
@@ -159,7 +159,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
             value={formData.industry}
             onChange={handleChange}
             required
-            className="w-full bg-black border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors font-montserrat"
+            className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat disabled:opacity-50"
             disabled={loading}
           />
         </div>
@@ -175,7 +175,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
             onChange={handleChange}
             required
             rows={3}
-            className="w-full bg-black border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors resize-none font-montserrat"
+            className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all resize-none font-montserrat disabled:opacity-50"
             disabled={loading}
           />
         </div>
@@ -191,7 +191,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
             onChange={handleChange}
             required
             rows={3}
-            className="w-full bg-black border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors resize-none font-montserrat"
+            className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all resize-none font-montserrat disabled:opacity-50"
             disabled={loading}
           />
         </div>
@@ -207,7 +207,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
             onChange={handleChange}
             required
             rows={3}
-            className="w-full bg-black border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors resize-none font-montserrat"
+            className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all resize-none font-montserrat disabled:opacity-50"
             disabled={loading}
           />
         </div>
@@ -215,7 +215,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 bg-white text-black hover:bg-[var(--primary-mint)] text-sm font-bold uppercase transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+          className="w-full bg-white hover:bg-[var(--primary-mint)] text-black font-bold py-4 transition-all tracking-[0.15em] uppercase text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           <Send className="w-4 h-4" />
           {loading ? 'Submitting...' : 'Submit Application'}

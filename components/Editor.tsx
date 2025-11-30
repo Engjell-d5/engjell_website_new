@@ -197,7 +197,7 @@ export default function Editor({ content, onChange }: EditorProps) {
   }
 
   return (
-    <div className="border border-[var(--border-color)] bg-[var(--rich-black)] rounded-sm">
+    <div className="border border-[var(--border-color)] bg-[var(--rich-black)] rounded-none">
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-2 p-3 border-b border-[var(--border-color)] bg-[var(--rich-black)]">
         {/* Text Formatting */}
@@ -206,7 +206,7 @@ export default function Editor({ content, onChange }: EditorProps) {
             type="button"
             onClick={() => editor.chain().focus().toggleBold().run()}
             disabled={!editor.can().chain().focus().toggleBold().run()}
-            className={`p-2 rounded-sm transition-colors ${
+            className={`p-2 rounded-none transition-colors ${
               editor.isActive('bold')
                 ? 'bg-[var(--primary-mint)] text-black'
                 : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -219,7 +219,7 @@ export default function Editor({ content, onChange }: EditorProps) {
             type="button"
             onClick={() => editor.chain().focus().toggleItalic().run()}
             disabled={!editor.can().chain().focus().toggleItalic().run()}
-            className={`p-2 rounded-sm transition-colors ${
+            className={`p-2 rounded-none transition-colors ${
               editor.isActive('italic')
                 ? 'bg-[var(--primary-mint)] text-black'
                 : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -231,7 +231,7 @@ export default function Editor({ content, onChange }: EditorProps) {
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleUnderline().run()}
-            className={`p-2 rounded-sm transition-colors ${
+            className={`p-2 rounded-none transition-colors ${
               editor.isActive('underline')
                 ? 'bg-[var(--primary-mint)] text-black'
                 : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -244,7 +244,7 @@ export default function Editor({ content, onChange }: EditorProps) {
             type="button"
             onClick={() => editor.chain().focus().toggleStrike().run()}
             disabled={!editor.can().chain().focus().toggleStrike().run()}
-            className={`p-2 rounded-sm transition-colors ${
+            className={`p-2 rounded-none transition-colors ${
               editor.isActive('strike')
                 ? 'bg-[var(--primary-mint)] text-black'
                 : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -260,7 +260,7 @@ export default function Editor({ content, onChange }: EditorProps) {
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-            className={`p-2 rounded-sm transition-colors ${
+            className={`p-2 rounded-none transition-colors ${
               editor.isActive('heading', { level: 1 })
                 ? 'bg-[var(--primary-mint)] text-black'
                 : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -272,7 +272,7 @@ export default function Editor({ content, onChange }: EditorProps) {
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-            className={`p-2 rounded-sm transition-colors ${
+            className={`p-2 rounded-none transition-colors ${
               editor.isActive('heading', { level: 2 })
                 ? 'bg-[var(--primary-mint)] text-black'
                 : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -284,7 +284,7 @@ export default function Editor({ content, onChange }: EditorProps) {
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-            className={`p-2 rounded-sm transition-colors ${
+            className={`p-2 rounded-none transition-colors ${
               editor.isActive('heading', { level: 3 })
                 ? 'bg-[var(--primary-mint)] text-black'
                 : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -300,7 +300,7 @@ export default function Editor({ content, onChange }: EditorProps) {
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleBulletList().run()}
-            className={`p-2 rounded-sm transition-colors ${
+            className={`p-2 rounded-none transition-colors ${
               editor.isActive('bulletList')
                 ? 'bg-[var(--primary-mint)] text-black'
                 : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -312,7 +312,7 @@ export default function Editor({ content, onChange }: EditorProps) {
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleOrderedList().run()}
-            className={`p-2 rounded-sm transition-colors ${
+            className={`p-2 rounded-none transition-colors ${
               editor.isActive('orderedList')
                 ? 'bg-[var(--primary-mint)] text-black'
                 : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -324,7 +324,7 @@ export default function Editor({ content, onChange }: EditorProps) {
           <button
             type="button"
             onClick={() => editor.chain().focus().toggleBlockquote().run()}
-            className={`p-2 rounded-sm transition-colors ${
+            className={`p-2 rounded-none transition-colors ${
               editor.isActive('blockquote')
                 ? 'bg-[var(--primary-mint)] text-black'
                 : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -340,7 +340,7 @@ export default function Editor({ content, onChange }: EditorProps) {
           <button
             type="button"
             onClick={() => editor.chain().focus().setTextAlign('left').run()}
-            className={`p-2 rounded-sm transition-colors ${
+            className={`p-2 rounded-none transition-colors ${
               editor.isActive({ textAlign: 'left' })
                 ? 'bg-[var(--primary-mint)] text-black'
                 : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -352,7 +352,7 @@ export default function Editor({ content, onChange }: EditorProps) {
           <button
             type="button"
             onClick={() => editor.chain().focus().setTextAlign('center').run()}
-            className={`p-2 rounded-sm transition-colors ${
+            className={`p-2 rounded-none transition-colors ${
               editor.isActive({ textAlign: 'center' })
                 ? 'bg-[var(--primary-mint)] text-black'
                 : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -364,7 +364,7 @@ export default function Editor({ content, onChange }: EditorProps) {
           <button
             type="button"
             onClick={() => editor.chain().focus().setTextAlign('right').run()}
-            className={`p-2 rounded-sm transition-colors ${
+            className={`p-2 rounded-none transition-colors ${
               editor.isActive({ textAlign: 'right' })
                 ? 'bg-[var(--primary-mint)] text-black'
                 : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -376,7 +376,7 @@ export default function Editor({ content, onChange }: EditorProps) {
           <button
             type="button"
             onClick={() => editor.chain().focus().setTextAlign('justify').run()}
-            className={`p-2 rounded-sm transition-colors ${
+            className={`p-2 rounded-none transition-colors ${
               editor.isActive({ textAlign: 'justify' })
                 ? 'bg-[var(--primary-mint)] text-black'
                 : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -393,7 +393,7 @@ export default function Editor({ content, onChange }: EditorProps) {
             type="button"
             onClick={handleImageUpload}
             disabled={uploading}
-            className="p-2 rounded-sm transition-colors text-gray-400 hover:text-white hover:bg-[var(--rich-black)] disabled:opacity-50"
+            className="p-2 rounded-none transition-colors text-gray-400 hover:text-white hover:bg-[var(--rich-black)] disabled:opacity-50"
             title="Insert Image"
           >
             <ImageIcon className="w-4 h-4" />
@@ -401,7 +401,7 @@ export default function Editor({ content, onChange }: EditorProps) {
           <button
             type="button"
             onClick={setLink}
-            className={`p-2 rounded-sm transition-colors ${
+            className={`p-2 rounded-none transition-colors ${
               editor.isActive('link')
                 ? 'bg-[var(--primary-mint)] text-black'
                 : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -413,7 +413,7 @@ export default function Editor({ content, onChange }: EditorProps) {
           <button
             type="button"
             onClick={insertSubscribeSnippet}
-            className="p-2 rounded-sm transition-colors text-gray-400 hover:text-white hover:bg-[var(--rich-black)]"
+            className="p-2 rounded-none transition-colors text-gray-400 hover:text-white hover:bg-[var(--rich-black)]"
             title="Insert Subscribe Form"
           >
             <Mail className="w-4 h-4" />
@@ -426,7 +426,7 @@ export default function Editor({ content, onChange }: EditorProps) {
             type="button"
             onClick={() => editor.chain().focus().undo().run()}
             disabled={!editor.can().chain().focus().undo().run()}
-            className="p-2 rounded-sm transition-colors text-gray-400 hover:text-white hover:bg-[var(--rich-black)] disabled:opacity-50"
+            className="p-2 rounded-none transition-colors text-gray-400 hover:text-white hover:bg-[var(--rich-black)] disabled:opacity-50"
             title="Undo"
           >
             <Undo className="w-4 h-4" />
@@ -435,7 +435,7 @@ export default function Editor({ content, onChange }: EditorProps) {
             type="button"
             onClick={() => editor.chain().focus().redo().run()}
             disabled={!editor.can().chain().focus().redo().run()}
-            className="p-2 rounded-sm transition-colors text-gray-400 hover:text-white hover:bg-[var(--rich-black)] disabled:opacity-50"
+            className="p-2 rounded-none transition-colors text-gray-400 hover:text-white hover:bg-[var(--rich-black)] disabled:opacity-50"
             title="Redo"
           >
             <Redo className="w-4 h-4" />

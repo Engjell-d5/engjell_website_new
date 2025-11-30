@@ -79,7 +79,7 @@ h1, h2, h3, h4, .brand-font {
 .classic-panel {
   background: var(--panel-bg);
   border: 1px solid var(--border-color);
-  border-radius: 4px; /* Sharper corners */
+  border-radius: 0; /* Sharp corners for consistent design */
   box-shadow: none; /* Removed shadow for seamless look */
 }
 

@@ -63,7 +63,7 @@ export default function Home() {
             </div>
 
             {/* Bio Grid (Split Layout) */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-0 mb-8 border border-[var(--border-color)] bg-[var(--rich-black)] rounded-sm overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-0 mb-8 border border-[var(--border-color)] bg-[var(--rich-black)] rounded-none overflow-hidden">
               {/* Portrait Image Column */}
               <div className="md:col-span-4 h-64 md:h-auto relative overflow-hidden group border-b md:border-b-0 md:border-r border-[var(--border-color)]">
                 <Image 

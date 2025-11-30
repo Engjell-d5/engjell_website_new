@@ -542,7 +542,7 @@ export async function getThreadsAccount(
 /**
  * Publish a post to Threads
  * Threads API uses a two-step process:
- * 1. Create a media container (POST /{threads-user-id}/media)
+ * 1. Create a media container (POST /{threads-user-id}/threads)
  * 2. Publish the container (POST /{threads-user-id}/threads_publish)
  * Uses graph.threads.net endpoints with Threads user access token
  */
@@ -574,8 +574,18 @@ async function debugThreadsToken(accessToken: string, accountId: string): Promis
     
     // Try a test media container creation with minimal data to check permissions
     // This will fail but give us more info about what's wrong
-    const testUrl = `https://graph.threads.net/v1.0/${accountId}/media?media_type=TEXT&text=test&access_token=${accessToken}`;
-    const testResponse = await fetch(testUrl, { method: 'POST' });
+    const testParams = new URLSearchParams();
+    testParams.append('media_type', 'TEXT');
+    testParams.append('text', 'test');
+    const testUrl = `https://graph.threads.net/v1.0/${accountId}/threads`;
+    const testResponse = await fetch(testUrl, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: testParams.toString(),
+    });
     
     if (!testResponse.ok) {
       const testError = await testResponse.text();
@@ -648,76 +658,140 @@ export async function publishToThreads(
     console.log('[THREADS] Creating media container for:', mediaType, absoluteMediaUrl);
     
     // Create media container with media
-    const mediaParams = new URLSearchParams({
-      media_type: mediaType,
-      image_url: mediaType === 'IMAGE' ? absoluteMediaUrl : '',
-      video_url: mediaType === 'VIDEO' ? absoluteMediaUrl : '',
-      caption: content.substring(0, 500), // Threads text limit is 500 characters
-    });
+    // Use form data as per Threads API documentation
+    const mediaParams = new URLSearchParams();
+    mediaParams.append('media_type', mediaType);
+    if (mediaType === 'IMAGE') {
+      mediaParams.append('image_url', absoluteMediaUrl);
+    } else if (mediaType === 'VIDEO') {
+      mediaParams.append('video_url', absoluteMediaUrl);
+    }
+    if (content && content.trim().length > 0) {
+      mediaParams.append('text', content.substring(0, 500)); // Threads text limit is 500 characters
+    }
     
-    const mediaResponse = await fetch(
-      `https://graph.threads.net/v1.0/${threadsAccountId}/media?${mediaParams.toString()}`,
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${threadsAccessToken}`,
-        },
-      }
-    );
+    // Use /me endpoint for user access tokens
+    const apiUrl = `https://graph.threads.net/v1.0/me/threads`;
+    console.log('[THREADS] Using /me endpoint for media container creation');
+    
+    const mediaResponse = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${threadsAccessToken}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: mediaParams.toString(),
+    });
     
     if (!mediaResponse.ok) {
       const error = await mediaResponse.text();
-      console.error('[THREADS] Failed to create media container:', error);
-      throw new Error(`Failed to create Threads media container (${mediaResponse.status}): ${error}`);
+      console.error('[THREADS] Failed to create media container with /me:', error);
+      
+      // If /me fails, try with account ID as fallback
+      if (error.includes('does not exist') || error.includes('cannot be loaded') || error.includes('THApiException')) {
+        console.log('[THREADS] /me endpoint failed, trying with account ID as fallback...');
+        const fallbackUrl = `https://graph.threads.net/v1.0/${threadsAccountId}/threads`;
+        
+        const fallbackResponse = await fetch(fallbackUrl, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${threadsAccessToken}`,
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: mediaParams.toString(),
+        });
+        
+        if (!fallbackResponse.ok) {
+          const fallbackError = await fallbackResponse.text();
+          console.error('[THREADS] Failed to create media container with account ID:', fallbackError);
+          throw new Error(`Failed to create Threads media container (${fallbackResponse.status}): ${fallbackError}`);
+        }
+        
+        const fallbackData = await fallbackResponse.json();
+        creationId = fallbackData.id;
+        console.log('[THREADS] Media container created with account ID fallback, creation_id:', creationId);
+      } else {
+        throw new Error(`Failed to create Threads media container (${mediaResponse.status}): ${error}`);
+      }
+    } else {
+      const mediaData = await mediaResponse.json();
+      creationId = mediaData.id;
+      console.log('[THREADS] Media container created with /me endpoint, creation_id:', creationId);
     }
-    
-    const mediaData = await mediaResponse.json();
-    creationId = mediaData.id;
-    console.log('[THREADS] Media container created, creation_id:', creationId);
   } else {
     // Text-only post
     console.log('[THREADS] Creating text-only media container...');
-    console.log('[THREADS] Using endpoint: https://graph.threads.net/v1.0/' + threadsAccountId + '/media');
-    console.log('[THREADS] Account ID type check:', typeof threadsAccountId, 'Value:', threadsAccountId);
     
-    const mediaParams = new URLSearchParams({
-      media_type: 'TEXT',
-      text: content.substring(0, 500), // Threads text limit is 500 characters
-    });
+    // For user access tokens, use /me endpoint instead of account ID
+    // This is the recommended approach per Threads API documentation
+    const mediaParams = new URLSearchParams();
+    mediaParams.append('media_type', 'TEXT');
+    mediaParams.append('text', content.substring(0, 500)); // Threads text limit is 500 characters
     
-    const mediaUrl = `https://graph.threads.net/v1.0/${threadsAccountId}/media?${mediaParams.toString()}`;
-    console.log('[THREADS] Media container URL:', mediaUrl.replace(threadsAccessToken.substring(0, 20) + '...', 'TOKEN'));
+    // Try using /me endpoint first (recommended for user access tokens)
+    const mediaUrl = `https://graph.threads.net/v1.0/me/threads`;
+    console.log('[THREADS] Using /me endpoint for media container creation');
+    console.log('[THREADS] Account ID (for reference):', threadsAccountId);
     
     const mediaResponse = await fetch(mediaUrl, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${threadsAccessToken}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
       },
+      body: mediaParams.toString(),
     });
     
     console.log('[THREADS] Media container response status:', mediaResponse.status, mediaResponse.statusText);
     
     if (!mediaResponse.ok) {
       const error = await mediaResponse.text();
-      console.error('[THREADS] Failed to create text media container:', error);
-      console.error('[THREADS] Account ID used:', threadsAccountId);
-      console.error('[THREADS] Token preview:', threadsAccessToken.substring(0, 20) + '...');
+      console.error('[THREADS] Failed to create text media container with /me:', error);
       
-      // Provide more helpful error message
-      let errorMessage = `Failed to create Threads text media container (${mediaResponse.status}): ${error}`;
-      if (error.includes('does not exist') || error.includes('cannot be loaded')) {
-        errorMessage += `\n\nPossible causes:\n` +
-          `1. The Threads account ID (${threadsAccountId}) might be incorrect\n` +
-          `2. The access token might not have permission to publish to this account\n` +
-          `3. The account might not be properly linked to Instagram\n` +
-          `4. Try disconnecting and reconnecting your Threads account`;
+      // If /me fails with account ID error, try using the account ID directly as fallback
+      if (error.includes('does not exist') || error.includes('cannot be loaded') || error.includes('THApiException')) {
+        console.log('[THREADS] /me endpoint failed, trying with account ID as fallback...');
+        const fallbackUrl = `https://graph.threads.net/v1.0/${threadsAccountId}/threads`;
+        
+        const fallbackResponse = await fetch(fallbackUrl, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${threadsAccessToken}`,
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: mediaParams.toString(),
+        });
+        
+        if (!fallbackResponse.ok) {
+          const fallbackError = await fallbackResponse.text();
+          console.error('[THREADS] Failed to create text media container with account ID:', fallbackError);
+          console.error('[THREADS] Account ID used:', threadsAccountId);
+          console.error('[THREADS] Token preview:', threadsAccessToken.substring(0, 20) + '...');
+          
+          let errorMessage = `Failed to create Threads text media container (${fallbackResponse.status}): ${fallbackError}`;
+          if (fallbackError.includes('does not exist') || fallbackError.includes('cannot be loaded')) {
+            errorMessage += `\n\nPossible causes:\n` +
+              `1. The Threads account ID (${threadsAccountId}) might be incorrect\n` +
+              `2. The access token might not have permission to publish to this account\n` +
+              `3. The account might not be properly linked to Instagram\n` +
+              `4. The access token might be expired or invalid\n` +
+              `5. Try disconnecting and reconnecting your Threads account`;
+          }
+          throw new Error(errorMessage);
+        }
+        
+        const fallbackData = await fallbackResponse.json();
+        creationId = fallbackData.id;
+        console.log('[THREADS] Text media container created with account ID fallback, creation_id:', creationId);
+      } else {
+        // Different error, throw it
+        throw new Error(`Failed to create Threads text media container (${mediaResponse.status}): ${error}`);
       }
-      throw new Error(errorMessage);
+    } else {
+      const mediaData = await mediaResponse.json();
+      creationId = mediaData.id;
+      console.log('[THREADS] Text media container created with /me endpoint, creation_id:', creationId);
     }
-    
-    const mediaData = await mediaResponse.json();
-    creationId = mediaData.id;
-    console.log('[THREADS] Text media container created, creation_id:', creationId);
   }
   
   if (!creationId) {
@@ -726,26 +800,63 @@ export async function publishToThreads(
   
   // Step 2: Publish the media container
   console.log('[THREADS] Publishing media container to Threads...');
-  const publishParams = new URLSearchParams({
-    creation_id: creationId,
-  });
+  const publishParams = new URLSearchParams();
+  publishParams.append('creation_id', creationId);
   
-  const publishResponse = await fetch(
-    `https://graph.threads.net/v1.0/${threadsAccountId}/threads_publish?${publishParams.toString()}`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${threadsAccessToken}`,
-      },
-    }
-  );
+  // Use /me endpoint for publishing (recommended for user access tokens)
+  const publishUrl = `https://graph.threads.net/v1.0/me/threads_publish`;
+  console.log('[THREADS] Using /me endpoint for publishing');
+  
+  const publishResponse = await fetch(publishUrl, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${threadsAccessToken}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: publishParams.toString(),
+  });
 
   console.log('[THREADS] Publish response status:', publishResponse.status, publishResponse.statusText);
 
   if (!publishResponse.ok) {
     const error = await publishResponse.text();
-    console.error('[THREADS] Failed to publish post:', error);
-    throw new Error(`Failed to publish Threads post (${publishResponse.status}): ${error}`);
+    console.error('[THREADS] Failed to publish post with /me:', error);
+    
+    // If /me fails, try with account ID as fallback
+    if (error.includes('does not exist') || error.includes('cannot be loaded') || error.includes('THApiException')) {
+      console.log('[THREADS] /me endpoint failed for publish, trying with account ID as fallback...');
+      const fallbackPublishUrl = `https://graph.threads.net/v1.0/${threadsAccountId}/threads_publish`;
+      
+      const fallbackPublishResponse = await fetch(fallbackPublishUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${threadsAccessToken}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: publishParams.toString(),
+      });
+      
+      if (!fallbackPublishResponse.ok) {
+        const fallbackError = await fallbackPublishResponse.text();
+        console.error('[THREADS] Failed to publish post with account ID:', fallbackError);
+        throw new Error(`Failed to publish Threads post (${fallbackPublishResponse.status}): ${fallbackError}`);
+      }
+      
+      const publishData = await fallbackPublishResponse.json();
+      const postId = publishData.id;
+      
+      if (!postId) {
+        console.error('[THREADS] ERROR: No post ID found in response!');
+        throw new Error('Threads API returned success but no post ID in response');
+      }
+      
+      console.log('[THREADS] ✓ Post published successfully with account ID fallback - Post ID:', postId);
+      return {
+        postId: postId,
+      };
+    } else {
+      throw new Error(`Failed to publish Threads post (${publishResponse.status}): ${error}`);
+    }
   }
 
   const publishData = await publishResponse.json();

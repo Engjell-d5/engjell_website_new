@@ -49,14 +49,14 @@ function SubscribeForm() {
             placeholder="Email" 
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-black border border-[var(--border-color)] p-2 text-xs text-white mb-2 focus:outline-none focus:border-[var(--primary-mint)] transition-colors font-montserrat" 
+            className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat disabled:opacity-50" 
             required
             disabled={loading}
           />
           <button 
             type="submit"
             disabled={loading}
-            className="w-full py-2 bg-white text-black hover:bg-[var(--primary-mint)] text-[10px] font-bold uppercase transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full bg-white hover:bg-[var(--primary-mint)] text-black font-bold py-4 transition-all tracking-[0.15em] uppercase text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <Mail className="w-4 h-4" />
             {loading ? 'Subscribing...' : 'Join'}
@@ -222,9 +222,9 @@ export default function Sidebar() {
             </div>
             {loadingVideo ? (
               <div className="animate-pulse">
-                <div className="aspect-video bg-gray-800 border border-[var(--border-color)] mb-2 rounded"></div>
-                <div className="h-4 w-full bg-gray-800 rounded mb-1"></div>
-                <div className="h-3 w-24 bg-gray-800 rounded"></div>
+                <div className="aspect-video bg-gray-800 border border-[var(--border-color)] mb-2 rounded-none"></div>
+                <div className="h-4 w-full bg-gray-800 rounded-none mb-1"></div>
+                <div className="h-3 w-24 bg-gray-800 rounded-none"></div>
               </div>
             ) : latestVideo ? (
               <a
@@ -268,9 +268,9 @@ export default function Sidebar() {
             </div>
             {loadingBlog ? (
               <div className="animate-pulse">
-                <div className="aspect-[2/1] bg-gray-800 border border-[var(--border-color)] mb-2 rounded"></div>
-                <div className="h-4 w-full bg-gray-800 rounded mb-1"></div>
-                <div className="h-3 w-32 bg-gray-800 rounded"></div>
+                <div className="aspect-[2/1] bg-gray-800 border border-[var(--border-color)] mb-2 rounded-none"></div>
+                <div className="h-4 w-full bg-gray-800 rounded-none mb-1"></div>
+                <div className="h-3 w-32 bg-gray-800 rounded-none"></div>
               </div>
             ) : latestBlog ? (
               <Link
@@ -304,7 +304,7 @@ export default function Sidebar() {
       {/* ABOUT SIDEBAR */}
       {pathname === '/about' && (
         <div className="flex flex-col gap-6">
-          <div className="w-full h-48 rounded-sm overflow-hidden border border-[var(--border-color)] relative group">
+          <div className="w-full h-48 rounded-none overflow-hidden border border-[var(--border-color)] relative group">
             <Image 
               src="/IMG_0466.JPG" 
               alt="About Portrait" 
@@ -385,9 +385,9 @@ export default function Sidebar() {
                 <div className="space-y-4">
                   {[1, 2, 3].map((i) => (
                     <div key={i} className="animate-pulse">
-                      <div className="aspect-[2/1] bg-gray-800 border border-[var(--border-color)] mb-2 rounded"></div>
-                      <div className="h-4 w-full bg-gray-800 rounded mb-1"></div>
-                      <div className="h-3 w-32 bg-gray-800 rounded"></div>
+                      <div className="aspect-[2/1] bg-gray-800 border border-[var(--border-color)] mb-2 rounded-none"></div>
+                      <div className="h-4 w-full bg-gray-800 rounded-none mb-1"></div>
+                      <div className="h-3 w-32 bg-gray-800 rounded-none"></div>
                     </div>
                   ))}
                 </div>
@@ -517,10 +517,10 @@ export default function Sidebar() {
               </div>
             </div>
             <div className="mt-6 pt-4 border-t border-[var(--border-color)] flex gap-2">
-              <a href="https://www.linkedin.com/in/engjell-rraklli-a8b20a68/" target="_blank" rel="noopener noreferrer" className="flex-1 py-2 bg-[var(--border-color)] hover:bg-white hover:text-black rounded-sm flex items-center justify-center text-gray-400 transition-all">
+              <a href="https://www.linkedin.com/in/engjell-rraklli-a8b20a68/" target="_blank" rel="noopener noreferrer" className="flex-1 py-2 bg-[var(--border-color)] hover:bg-white hover:text-black rounded-none flex items-center justify-center text-gray-400 transition-all">
                 <Linkedin className="w-4 h-4" />
               </a>
-              <a href="https://x.com/RraklliEngjell" target="_blank" rel="noopener noreferrer" className="flex-1 py-2 bg-[var(--border-color)] hover:bg-white hover:text-black rounded-sm flex items-center justify-center text-gray-400 transition-all">
+              <a href="https://x.com/RraklliEngjell" target="_blank" rel="noopener noreferrer" className="flex-1 py-2 bg-[var(--border-color)] hover:bg-white hover:text-black rounded-none flex items-center justify-center text-gray-400 transition-all">
                 <Twitter className="w-4 h-4" />
               </a>
             </div>

@@ -680,6 +680,7 @@ async function createInstagramMediaContainer(
   console.log('[INSTAGRAM] Creating media container for image:', imageUrl);
   
   // Convert relative URLs to absolute URLs - Instagram requires publicly accessible URLs
+  // Keep using /api/uploads/ route as it's reliable and properly configured
   let absoluteImageUrl: string;
   if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
     absoluteImageUrl = imageUrl;
@@ -787,19 +788,28 @@ async function createInstagramMediaContainer(
     }
   }
   
-  const params = new URLSearchParams({
+  // Build request body as JSON per Instagram API documentation
+  const requestBody: { image_url: string; caption?: string } = {
     image_url: absoluteImageUrl,
-    caption: caption || '',
-  });
+  };
+  if (caption && caption.trim().length > 0) {
+    requestBody.caption = caption;
+  }
 
   console.log('[INSTAGRAM] Sending media container creation request to Instagram Graph API...');
+  console.log('[INSTAGRAM] Request URL:', `https://graph.facebook.com/v24.0/${instagramAccountId}/media`);
+  console.log('[INSTAGRAM] Request body:', JSON.stringify(requestBody, null, 2));
+  console.log('[INSTAGRAM] Image URL being sent:', absoluteImageUrl);
+  
   const response = await fetch(
-    `https://graph.facebook.com/v24.0/${instagramAccountId}/media?${params.toString()}`,
+    `https://graph.facebook.com/v24.0/${instagramAccountId}/media`,
     {
       method: 'POST',
       headers: {
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${pageAccessToken}`,
       },
+      body: JSON.stringify(requestBody),
     }
   );
 
@@ -882,17 +892,20 @@ export async function publishToInstagram(
   // Step 2: Publish the media container
   console.log('[INSTAGRAM] Publishing media container:', containerId);
   
-  const publishParams = new URLSearchParams({
+  // Build request body as JSON per Instagram API documentation
+  const publishBody = {
     creation_id: containerId,
-  });
+  };
 
   const publishResponse = await fetch(
-    `https://graph.facebook.com/v18.0/${instagramAccountId}/media_publish?${publishParams.toString()}`,
+    `https://graph.facebook.com/v24.0/${instagramAccountId}/media_publish`,
     {
       method: 'POST',
       headers: {
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${pageAccessToken}`,
       },
+      body: JSON.stringify(publishBody),
     }
   );
 

@@ -49,7 +49,7 @@ export default function SubscribeForm() {
             placeholder="Email" 
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-black border border-[var(--border-color)] p-2 text-xs text-white mb-2 focus:outline-none focus:border-[var(--primary-mint)] transition-colors font-montserrat" 
+            className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat disabled:opacity-50" 
             required
             disabled={loading}
           />
@@ -67,7 +67,7 @@ export default function SubscribeForm() {
           <button 
             type="submit"
             disabled={loading}
-            className="w-full py-2 bg-white text-black hover:bg-[var(--primary-mint)] text-[10px] font-bold uppercase transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full bg-white hover:bg-[var(--primary-mint)] text-black font-bold py-4 transition-all tracking-[0.15em] uppercase text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <Mail className="w-4 h-4" />
             {loading ? 'Subscribing...' : 'Join'}

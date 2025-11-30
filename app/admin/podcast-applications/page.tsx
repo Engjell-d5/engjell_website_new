@@ -153,7 +153,7 @@ export default function PodcastApplicationsPage() {
                     <h3 className="text-lg text-white font-bold mb-1">{application.name}</h3>
                     <p className="text-xs text-gray-400">{application.email}</p>
                   </div>
-                  <div className={`flex items-center gap-2 px-2 py-1 rounded border text-xs font-bold ${getStatusColor(application.status)}`}>
+                  <div className={`flex items-center gap-2 px-2 py-1 rounded-none border text-xs font-bold ${getStatusColor(application.status)}`}>
                     {getStatusIcon(application.status)}
                     <span className="uppercase">{application.status}</span>
                   </div>
@@ -180,7 +180,7 @@ export default function PodcastApplicationsPage() {
                     </h2>
                     <p className="text-sm text-gray-400">{selectedApplication.email}</p>
                   </div>
-                  <div className={`flex items-center gap-2 px-3 py-1 rounded border text-xs font-bold ${getStatusColor(selectedApplication.status)}`}>
+                  <div className={`flex items-center gap-2 px-3 py-1 rounded-none border text-xs font-bold ${getStatusColor(selectedApplication.status)}`}>
                     {getStatusIcon(selectedApplication.status)}
                     <span className="uppercase">{selectedApplication.status}</span>
                   </div>

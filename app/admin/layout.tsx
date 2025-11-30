@@ -104,7 +104,7 @@ export default function AdminLayout({
           <nav className="space-y-2">
             <Link
               href="/admin"
-              className={`flex items-center gap-3 px-4 py-3 rounded-sm transition-colors ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-none transition-colors ${
                 pathname === '/admin'
                   ? 'bg-[var(--primary-mint)] text-black'
                   : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -116,7 +116,7 @@ export default function AdminLayout({
             {user.role === 'admin' && (
               <Link
                 href="/admin/users"
-                className={`flex items-center gap-3 px-4 py-3 rounded-sm transition-colors ${
+                className={`flex items-center gap-3 px-4 py-3 rounded-none transition-colors ${
                   pathname === '/admin/users'
                     ? 'bg-[var(--primary-mint)] text-black'
                     : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -128,7 +128,7 @@ export default function AdminLayout({
             )}
             <Link
               href="/admin/blogs"
-              className={`flex items-center gap-3 px-4 py-3 rounded-sm transition-colors ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-none transition-colors ${
                 pathname === '/admin/blogs'
                   ? 'bg-[var(--primary-mint)] text-black'
                   : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -139,7 +139,7 @@ export default function AdminLayout({
             </Link>
             <Link
               href="/admin/youtube"
-              className={`flex items-center gap-3 px-4 py-3 rounded-sm transition-colors ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-none transition-colors ${
                 pathname === '/admin/youtube'
                   ? 'bg-[var(--primary-mint)] text-black'
                   : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -150,7 +150,7 @@ export default function AdminLayout({
             </Link>
             <Link
               href="/admin/podcast-applications"
-              className={`flex items-center gap-3 px-4 py-3 rounded-sm transition-colors ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-none transition-colors ${
                 pathname === '/admin/podcast-applications'
                   ? 'bg-[var(--primary-mint)] text-black'
                   : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -161,7 +161,7 @@ export default function AdminLayout({
             </Link>
             <Link
               href="/admin/subscribers"
-              className={`flex items-center gap-3 px-4 py-3 rounded-sm transition-colors ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-none transition-colors ${
                 pathname === '/admin/subscribers'
                   ? 'bg-[var(--primary-mint)] text-black'
                   : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -172,7 +172,7 @@ export default function AdminLayout({
             </Link>
             <Link
               href="/admin/contact"
-              className={`flex items-center gap-3 px-4 py-3 rounded-sm transition-colors ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-none transition-colors ${
                 pathname === '/admin/contact'
                   ? 'bg-[var(--primary-mint)] text-black'
                   : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -183,7 +183,7 @@ export default function AdminLayout({
             </Link>
             <Link
               href="/admin/social"
-              className={`flex items-center gap-3 px-4 py-3 rounded-sm transition-colors ${
+              className={`flex items-center gap-3 px-4 py-3 rounded-none transition-colors ${
                 pathname === '/admin/social'
                   ? 'bg-[var(--primary-mint)] text-black'
                   : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'

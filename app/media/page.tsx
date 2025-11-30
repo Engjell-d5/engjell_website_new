@@ -93,7 +93,7 @@ export default function Media() {
                 href="https://www.youtube.com/@engjellrraklli" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="bg-white text-black hover:bg-[var(--primary-mint)] px-6 py-3 text-xs font-bold uppercase tracking-widest transition-colors rounded-sm flex items-center justify-center gap-2 w-full md:w-auto"
+                className="bg-white text-black hover:bg-[var(--primary-mint)] px-6 py-3 text-xs font-bold uppercase tracking-widest transition-colors rounded-none flex items-center justify-center gap-2 w-full md:w-auto"
               >
                 <ExternalLink className="w-4 h-4" />
                 Visit Channel
@@ -105,9 +105,9 @@ export default function Media() {
                 {/* Featured video skeleton */}
                 <div className="relative w-full aspect-video border border-[var(--border-color)] bg-gray-900 animate-pulse">
                   <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black to-transparent">
-                    <div className="h-3 w-20 bg-gray-700 mb-3 rounded"></div>
-                    <div className="h-10 w-3/4 bg-gray-700 mb-2 rounded"></div>
-                    <div className="h-4 w-full bg-gray-700 rounded"></div>
+                    <div className="h-3 w-20 bg-gray-700 mb-3 rounded-none"></div>
+                    <div className="h-10 w-3/4 bg-gray-700 mb-2 rounded-none"></div>
+                    <div className="h-4 w-full bg-gray-700 rounded-none"></div>
                   </div>
                 </div>
               </div>
@@ -168,9 +168,9 @@ export default function Media() {
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
               <div key={i} className="animate-pulse">
-                <div className="aspect-video bg-gray-800 border border-[var(--border-color)] mb-2 rounded"></div>
-                <div className="h-4 w-full bg-gray-800 rounded mb-1"></div>
-                <div className="h-3 w-24 bg-gray-800 rounded"></div>
+                <div className="aspect-video bg-gray-800 border border-[var(--border-color)] mb-2 rounded-none"></div>
+                <div className="h-4 w-full bg-gray-800 rounded-none mb-1"></div>
+                <div className="h-3 w-24 bg-gray-800 rounded-none"></div>
               </div>
             ))}
           </div>

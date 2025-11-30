@@ -204,7 +204,7 @@ export default function DateTimePicker({
       
       {/* Display full date/time summary */}
       {date && time && (
-        <div className="mt-2 p-2 bg-[var(--rich-black)] border border-[var(--border-color)] rounded">
+        <div className="mt-2 p-2 bg-[var(--rich-black)] border border-[var(--border-color)] rounded-none">
           <p className="text-xs text-gray-400">
             Scheduled: <span className="text-white font-semibold">{formatFullDateTime()}</span>
           </p>

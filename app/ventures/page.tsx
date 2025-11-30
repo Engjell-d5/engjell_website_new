@@ -57,7 +57,7 @@ export default function Ventures() {
             </div>
 
             {/* Personal Image Injection */}
-            <div className="mb-10 w-full h-64 rounded-sm overflow-hidden border border-[var(--border-color)] relative group">
+            <div className="mb-10 w-full h-64 rounded-none overflow-hidden border border-[var(--border-color)] relative group">
               <Image 
                 src="/IMG_7944.jpeg" 
                 alt="Working" 
