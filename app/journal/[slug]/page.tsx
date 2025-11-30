@@ -8,6 +8,7 @@ import { PenTool } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import SubscribeForm from '@/components/SubscribeForm';
 import SubscribeFormInline from '@/components/SubscribeFormInline';
+import StructuredData from '@/components/StructuredData';
 
 interface Blog {
   id: string;
@@ -143,8 +144,44 @@ export default function BlogPost() {
     );
   }
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
+  
+  // Calculate reading time (average 200 words per minute)
+  const calculateReadingTime = (content: string): number => {
+    const text = content.replace(/<[^>]*>/g, ''); // Remove HTML tags
+    const words = text.split(/\s+/).filter(word => word.length > 0).length;
+    return Math.ceil(words / 200);
+  };
+
+  const readingTime = blog.content ? calculateReadingTime(blog.content) : 5;
+
+  // Article structured data
+  const articleData = {
+    headline: blog.title,
+    description: blog.excerpt || '',
+    image: blog.imageUrl ? (blog.imageUrl.startsWith('http') ? blog.imageUrl : `${siteUrl}${blog.imageUrl}`) : `${siteUrl}/IMG_0425.JPG`,
+    datePublished: blog.publishedAt || blog.createdAt,
+    dateModified: blog.updatedAt,
+    author: {
+      '@type': 'Person',
+      name: 'Engjell Rraklli',
+      url: siteUrl,
+    },
+    publisher: {
+      '@type': 'Person',
+      name: 'Engjell Rraklli',
+      url: siteUrl,
+    },
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `${siteUrl}/journal/${blog.slug}`,
+    },
+    timeRequired: `PT${readingTime}M`,
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+      <StructuredData type="Article" data={articleData} />
       <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
@@ -170,9 +207,14 @@ export default function BlogPost() {
                 <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest border border-[var(--border-color)] px-2 py-0.5">
                   {blog.category}
                 </span>
-                <span className="text-[10px] text-gray-500 uppercase tracking-widest">
+                {blog.publishedAt && (
+                  <time 
+                    dateTime={new Date(blog.publishedAt).toISOString()}
+                    className="text-[10px] text-gray-500 uppercase tracking-widest"
+                  >
                   {formatDate(blog.publishedAt)}
-                </span>
+                  </time>
+                )}
               </div>
               <h1 className="text-5xl md:text-6xl text-white font-bebas tracking-wide mb-4">
                 {blog.title}
@@ -189,7 +231,7 @@ export default function BlogPost() {
               <div className="relative w-full aspect-video mb-8 border border-[var(--border-color)] overflow-hidden">
                 <Image
                   src={blog.imageUrl}
-                  alt={blog.title}
+                  alt={`${blog.title} - Featured image`}
                   fill
                   className="object-cover img-classic"
                 />
@@ -225,7 +267,11 @@ export default function BlogPost() {
                         {relatedBlog.title}
                       </p>
                       <p className="text-[9px] text-gray-500">
-                        {formatDateShort(relatedBlog.publishedAt)} • {relatedBlog.category}
+                        {relatedBlog.publishedAt && (
+                          <time dateTime={new Date(relatedBlog.publishedAt).toISOString()}>
+                            {formatDateShort(relatedBlog.publishedAt)}
+                          </time>
+                        )} • {relatedBlog.category}
                       </p>
                     </Link>
                   ))}

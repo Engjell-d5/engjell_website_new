@@ -78,7 +78,7 @@ export default function Contact() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
               <div className="flex flex-col">
                 <span className="page-label mb-3 block">Contact</span>
-                <h2 className="text-5xl md:text-6xl text-white font-bebas mb-6">LET'S TALK</h2>
+                <h1 className="text-5xl md:text-6xl text-white font-bebas mb-6">LET'S TALK</h1>
                 <p className="text-sm text-[var(--primary-mint)] font-bold uppercase tracking-widest mb-6">Speaker, Builder, Consultant</p>
                 
                 <div className="prose prose-invert max-w-none text-gray-300 font-light text-sm leading-7">
@@ -100,7 +100,7 @@ export default function Contact() {
                 <div className="w-full h-64 rounded-none overflow-hidden border border-[var(--border-color)] relative group">
                   <Image 
                     src="/IMG_0456 (1).JPG" 
-                    alt="Smiling Portrait" 
+                    alt="Engjell Rraklli smiling portrait - Available for speaking and consulting" 
                     fill
                     className="object-cover img-classic opacity-80 group-hover:opacity-100"
                   />

@@ -42,7 +42,7 @@ export default function Home() {
             <div className="relative w-[calc(100%+3rem)] md:w-[calc(100%+5rem)] h-[600px] border-b border-[var(--border-color)] overflow-hidden group mb-8 -ml-6 -mr-6 -mt-6 md:-ml-10 md:-mr-10 md:-mt-10 rounded-none">
               <Image 
                 src="/IMG_0425.JPG" 
-                alt="Engjell Rraklli" 
+                  alt="Engjell Rraklli - Tech Entrepreneur building the future in Albania" 
                 fill
                 className="object-cover img-classic"
                 style={{ objectPosition: 'center 20%' }}
@@ -54,11 +54,11 @@ export default function Home() {
                 <div className="flex items-center gap-2 mb-4">
                   <span className="bg-[var(--primary-mint)] text-[var(--rich-black)] text-[10px] font-bold px-3 py-1 uppercase tracking-widest inline-block">Founder's Note</span>
                 </div>
-                <h2 className="text-6xl md:text-8xl text-white font-bebas leading-[0.85] tracking-tight max-w-4xl">
+                <h1 className="text-6xl md:text-8xl text-white font-bebas leading-[0.85] tracking-tight max-w-4xl">
                   BUILDING THE<br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">FUTURE</span><br />
                   IN ALBANIA.
-                </h2>
+                </h1>
               </div>
             </div>
 
@@ -68,7 +68,7 @@ export default function Home() {
               <div className="md:col-span-4 h-64 md:h-auto relative overflow-hidden group border-b md:border-b-0 md:border-r border-[var(--border-color)]">
                 <Image 
                   src="/_DSC0142.JPG" 
-                  alt="Portrait" 
+                  alt="Engjell Rraklli portrait - Tech entrepreneur and founder" 
                   fill
                   className="object-cover img-classic group-hover:scale-105 transition-transform duration-700"
                 />

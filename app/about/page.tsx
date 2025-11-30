@@ -41,7 +41,7 @@ export default function About() {
             <div className="grid grid-cols-1 gap-8 max-w-4xl mx-auto">
               <div className="text-center mb-8">
                 <span className="page-label mb-3 block">My Story</span>
-                <h2 className="text-5xl md:text-6xl text-white font-bebas mb-6">THE JOURNEY</h2>
+                <h1 className="text-5xl md:text-6xl text-white font-bebas mb-6">THE JOURNEY</h1>
                 <p className="text-sm text-gray-400 mt-2 font-light">11 YEARS OF BUILDING</p>
                 <div className="h-[1px] w-24 bg-gray-600 mx-auto mt-4"></div>
               </div>
@@ -52,7 +52,7 @@ export default function About() {
                 <div className="md:col-span-5 h-64 md:h-auto relative overflow-hidden group">
                   <Image 
                     src="/IMG_0466.JPG" 
-                    alt="About Portrait" 
+                    alt="Engjell Rraklli - About page portrait, tech entrepreneur in Tirana" 
                     fill
                     className="object-cover img-classic group-hover:scale-105 transition-transform duration-700"
                   />

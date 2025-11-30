@@ -74,7 +74,7 @@ export default function Journal() {
             <div className="flex items-end justify-between mb-8 border-b border-[var(--border-color)] pb-4">
               <div>
                 <span className="page-label mb-3 block">Journal</span>
-                <h2 className="text-5xl md:text-6xl text-white font-bebas">FIELD NOTES</h2>
+                <h1 className="text-5xl md:text-6xl text-white font-bebas">FIELD NOTES</h1>
               </div>
             </div>
             
@@ -112,7 +112,7 @@ export default function Journal() {
                     <div className="w-full md:w-56 h-36 bg-black shrink-0 overflow-hidden border border-[var(--border-color)]/30 relative">
                       <Image 
                         src={blog.imageUrl} 
-                        alt={blog.title} 
+                        alt={`${blog.title} - ${blog.category} article`} 
                         fill
                         className="object-cover img-classic"
                       />
@@ -122,9 +122,14 @@ export default function Journal() {
                         <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest border border-[var(--border-color)] px-2 py-0.5">
                           {blog.category}
                         </span>
-                        <span className="text-[10px] text-gray-500 uppercase tracking-widest">
+                        {blog.publishedAt && (
+                          <time 
+                            dateTime={new Date(blog.publishedAt).toISOString()}
+                            className="text-[10px] text-gray-500 uppercase tracking-widest"
+                          >
                           {formatDate(blog.publishedAt)}
-                        </span>
+                          </time>
+                        )}
                       </div>
                       <h3 className="text-3xl text-white font-bebas mb-3 group-hover:text-[var(--primary-mint)] transition-colors">
                         {blog.title}

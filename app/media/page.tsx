@@ -93,7 +93,7 @@ export default function Media() {
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 border-b border-[var(--border-color)] pb-4">
               <div>
                 <span className="page-label mb-3 block">Media</span>
-                <h2 className="text-5xl md:text-6xl text-white font-bebas">THE CONVERSATION</h2>
+                <h1 className="text-5xl md:text-6xl text-white font-bebas">THE CONVERSATION</h1>
               </div>
               <a 
                 href="https://www.youtube.com/@engjellrraklli" 
@@ -130,7 +130,7 @@ export default function Media() {
               >
                 <Image 
                   src={featuredVideo.thumbnailUrl} 
-                  alt={featuredVideo.title} 
+                  alt={`${featuredVideo.title} - YouTube video thumbnail`} 
                   fill
                   sizes="(max-width: 768px) 100vw, 66vw"
                   priority
@@ -166,7 +166,7 @@ export default function Media() {
                 <div className="relative aspect-video bg-black border border-[var(--border-color)] mb-2 overflow-hidden group-hover:border-[var(--primary-mint)] transition-colors">
                   <Image 
                     src={video.thumbnailUrl} 
-                    alt={video.title} 
+                    alt={`${video.title} - YouTube video thumbnail`} 
                     fill
                           sizes="(max-width: 768px) 100vw, 33vw"
                     className="object-cover img-classic opacity-60 group-hover:opacity-90 transition-opacity"
@@ -181,7 +181,7 @@ export default function Media() {
                   {video.title}
                 </h4>
                 <p className="text-[9px] text-gray-500 mt-1">
-                  {formatDuration(video.duration)} • {formatDate(video.publishedAt)}
+                  {formatDuration(video.duration)} • <time dateTime={new Date(video.publishedAt).toISOString()}>{formatDate(video.publishedAt)}</time>
                 </p>
               </a>
             ))}

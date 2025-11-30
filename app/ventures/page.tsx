@@ -43,7 +43,7 @@ export default function Ventures() {
             <div className="flex items-end justify-between mb-8 border-b border-[var(--border-color)] pb-4">
               <div>
                 <span className="page-label mb-3 block">Ventures</span>
-                <h2 className="text-5xl md:text-6xl text-white font-bebas">WHAT I BUILD</h2>
+                <h1 className="text-5xl md:text-6xl text-white font-bebas">WHAT I BUILD</h1>
               </div>
             </div>
 
