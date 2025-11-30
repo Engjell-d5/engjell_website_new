@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Quote } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 
 interface Blog {
@@ -75,6 +76,18 @@ export default function Journal() {
               <div>
                 <span className="page-label mb-3 block">Journal</span>
                 <h1 className="text-5xl md:text-6xl text-white font-bebas">FIELD NOTES</h1>
+              </div>
+            </div>
+
+            {/* Description - Mobile only */}
+            <div className="md:hidden mb-8 relative p-6 border-l-4 border-[var(--primary-mint)] bg-[var(--rich-black)]">
+              <div className="absolute top-2 left-4 opacity-20">
+                <Quote className="w-12 h-12 text-[var(--primary-mint)]" />
+              </div>
+              <div className="relative z-10">
+                <p className="text-sm text-gray-300 leading-relaxed font-light italic pl-10 pt-4">
+                  "When I started as an entrepreneur, I constantly craved a mentor to help me make sense of the chaos. I'm documenting the lessons I've learned so you can navigate your own journey with a little more clarity and a little less stress."
+                </p>
               </div>
             </div>
             

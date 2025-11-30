@@ -106,6 +106,18 @@ export default function Media() {
               </a>
             </div>
 
+            {/* Description - Mobile only */}
+            <div className="md:hidden mb-8 relative p-6 border-l-4 border-[var(--primary-mint)] bg-[var(--rich-black)]">
+              <div className="absolute top-2 left-4 opacity-20">
+                <Quote className="w-12 h-12 text-[var(--primary-mint)]" />
+              </div>
+              <div className="relative z-10">
+                <p className="text-sm text-gray-300 leading-relaxed font-light italic pl-10 pt-4">
+                  "I talk about how to run a business which is more human, which provides real value, and which scales without losing its soul. I am a big believer that businesses should love problems first and make a profit next."
+                </p>
+              </div>
+            </div>
+
             {!mounted || loading ? (
               <div className="space-y-6">
                 {/* Featured video skeleton */}

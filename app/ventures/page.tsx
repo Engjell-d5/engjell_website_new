@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { Briefcase, BrainCircuit, Cuboid, ArrowUpRight } from 'lucide-react';
+import { Briefcase, BrainCircuit, Cuboid, ArrowUpRight, Quote } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import { createMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
@@ -44,6 +44,18 @@ export default function Ventures() {
               <div>
                 <span className="page-label mb-3 block">Ventures</span>
                 <h1 className="text-5xl md:text-6xl text-white font-bebas">WHAT I BUILD</h1>
+              </div>
+            </div>
+
+            {/* Description - Mobile only */}
+            <div className="md:hidden mb-8 relative p-6 border-l-4 border-[var(--primary-mint)] bg-[var(--rich-black)]">
+              <div className="absolute top-2 left-4 opacity-20">
+                <Quote className="w-12 h-12 text-[var(--primary-mint)]" />
+              </div>
+              <div className="relative z-10">
+                <p className="text-sm text-gray-300 leading-relaxed font-light italic pl-10 pt-4">
+                  "I specialize in scaling next-generation digital agencies. Through division5, divisionAI, and division3D, I deliver software services, AI solutions, and 3D design experiences."
+                </p>
               </div>
             </div>
 
