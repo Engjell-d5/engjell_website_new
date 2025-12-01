@@ -1,31 +1,39 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import localFont from "next/font/local";
+import dynamic from "next/dynamic";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { createMetadata } from "@/lib/metadata";
 import StructuredData from "@/components/StructuredData";
 
-// Optimize Montserrat font loading
+// Dynamically import Sidebar to reduce initial bundle size
+const Sidebar = dynamic(() => import("@/components/Sidebar"), {
+  ssr: false, // Sidebar is client-only anyway
+});
+
+// Optimize Montserrat font loading - non-blocking
 const montserrat = Montserrat({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
-  display: "swap",
+  display: "swap", // Prevents render blocking
   variable: "--font-montserrat",
-  preload: true,
+  preload: false, // Changed to false - let Next.js optimize
+  adjustFontFallback: true,
 });
 
-// Optimize Bebas Neue font loading
+// Optimize Bebas Neue font loading - non-blocking
 // Font file is in app/fonts directory
 const bebasNeue = localFont({
   src: "./fonts/BebasNeue-Bold.ttf",
   weight: "700",
   style: "normal",
-  display: "swap",
+  display: "swap", // Prevents render blocking
   variable: "--font-bebas",
-  preload: true,
-  fallback: ['sans-serif'],
+  preload: false, // Changed to false - let Next.js optimize
+  fallback: ['sans-serif', 'Arial', 'Helvetica'],
+  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = createMetadata({});

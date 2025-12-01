@@ -3,11 +3,14 @@ import cron from 'node-cron';
 import { fetchYouTubeVideos } from './youtube';
 import { getConfig } from './data';
 import { publishScheduledPosts } from './social';
+import { syncSubscribersWithSender } from './sender-sync';
 
 let cronJob: cron.ScheduledTask | null = null;
 let socialCronJob: cron.ScheduledTask | null = null;
+let subscriberSyncCronJob: cron.ScheduledTask | null = null;
 let initialized = false;
 let socialInitialized = false;
+let subscriberSyncInitialized = false;
 
 export async function startYouTubeCron() {
   // Prevent multiple initializations
@@ -135,6 +138,62 @@ export async function restartSocialMediaCron() {
   return await startSocialMediaCron();
 }
 
+export async function startSubscriberSyncCron() {
+  // Prevent multiple initializations
+  if (subscriberSyncInitialized && subscriberSyncCronJob) {
+    return subscriberSyncCronJob;
+  }
+
+  // Run daily at 3 AM (after YouTube fetch at 2 AM)
+  const schedule = '0 3 * * *';
+
+  // Stop existing job if any
+  if (subscriberSyncCronJob) {
+    subscriberSyncCronJob.stop();
+    subscriberSyncCronJob = null;
+  }
+
+  console.log(`[CRON-INIT] Starting subscriber sync cron job with schedule: ${schedule}`);
+
+  subscriberSyncCronJob = cron.schedule(schedule, async () => {
+    const runTime = new Date().toISOString();
+    console.log(`[CRON] ============================================`);
+    console.log(`[CRON] Running subscriber sync cron job at ${runTime}`);
+    console.log(`[CRON] ============================================`);
+    try {
+      const result = await syncSubscribersWithSender();
+      console.log(`[CRON] Subscriber sync complete:`);
+      console.log(`[CRON]   - Pushed: ${result.pushed.synced} synced, ${result.pushed.failed} failed`);
+      console.log(`[CRON]   - Pulled: ${result.pulled.updated} updated, ${result.pulled.created} created, ${result.pulled.errors} errors`);
+      if (result.errors.length > 0) {
+        console.log(`[CRON]   - Errors: ${result.errors.slice(0, 5).join(', ')}${result.errors.length > 5 ? '...' : ''}`);
+      }
+    } catch (error) {
+      console.error('[CRON] Error in subscriber sync cron job:', error);
+      if (error instanceof Error) {
+        console.error('[CRON] Error details:', error.message, error.stack);
+      }
+    }
+    console.log(`[CRON] ============================================`);
+  });
+
+  subscriberSyncInitialized = true;
+  return subscriberSyncCronJob;
+}
+
+export function stopSubscriberSyncCron() {
+  if (subscriberSyncCronJob) {
+    subscriberSyncCronJob.stop();
+    subscriberSyncCronJob = null;
+    console.log('Subscriber sync cron job stopped');
+  }
+}
+
+export async function restartSubscriberSyncCron() {
+  stopSubscriberSyncCron();
+  return await startSubscriberSyncCron();
+}
+
 export async function initializeAllCronJobs() {
   console.log(`[CRON-INIT] ============================================`);
   console.log(`[CRON-INIT] Initializing all cron jobs at ${new Date().toISOString()}`);
@@ -152,6 +211,14 @@ export async function initializeAllCronJobs() {
   } catch (error) {
     console.error(`[CRON-INIT] Failed to initialize social media cron:`, error);
   }
+  
+  try {
+    await startSubscriberSyncCron();
+    console.log(`[CRON-INIT] Subscriber sync cron initialized`);
+  } catch (error) {
+    console.error(`[CRON-INIT] Failed to initialize subscriber sync cron:`, error);
+  }
+  
   console.log(`[CRON-INIT] ============================================`);
 }
 
@@ -164,6 +231,10 @@ export function getCronStatus() {
     socialMedia: {
       initialized: socialInitialized,
       running: socialInitialized && socialCronJob !== null,
+    },
+    subscriberSync: {
+      initialized: subscriberSyncInitialized,
+      running: subscriberSyncInitialized && subscriberSyncCronJob !== null,
     },
   };
 }
@@ -249,9 +320,11 @@ export async function getCronStatusWithNextRun() {
   const config = await getConfig();
   const youtubeSchedule = config.cronSchedule || '0 2 * * *';
   const socialMediaSchedule = '*/5 * * * *';
+  const subscriberSyncSchedule = '0 3 * * *';
 
   const youtubeNextRun = status.youtube.running ? getNextRunTime(youtubeSchedule) : null;
   const socialNextRun = status.socialMedia.running ? getNextRunTime(socialMediaSchedule) : null;
+  const subscriberSyncNextRun = status.subscriberSync.running ? getNextRunTime(subscriberSyncSchedule) : null;
 
   return {
     youtube: {
@@ -263,6 +336,11 @@ export async function getCronStatusWithNextRun() {
       ...status.socialMedia,
       nextRun: socialNextRun ? socialNextRun.toISOString() : null,
       schedule: socialMediaSchedule,
+    },
+    subscriberSync: {
+      ...status.subscriberSync,
+      nextRun: subscriberSyncNextRun ? subscriberSyncNextRun.toISOString() : null,
+      schedule: subscriberSyncSchedule,
     },
   };
 }

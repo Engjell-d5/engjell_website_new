@@ -106,9 +106,15 @@ h1, h2, h3, h4, .brand-font {
 }
 
 .sticky-sidebar {
-  position: sticky;
-  top: 7rem; /* Offset for header */
+  position: static; /* Default to static on mobile */
   height: fit-content;
+}
+
+@media (min-width: 768px) {
+  .sticky-sidebar {
+    position: sticky;
+    top: 7rem; /* Offset for header */
+  }
 }
 
 /* Animations */

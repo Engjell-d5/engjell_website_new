@@ -37,7 +37,7 @@ export default function Header() {
           />
         </Link>
         <div className="flex flex-col">
-          <h1 className="text-3xl tracking-widest text-white leading-none mt-1 font-bebas">ENGJELL RRAKLLI</h1>
+          <div className="text-3xl tracking-widest text-white leading-none mt-1 font-bebas">ENGJELL RRAKLLI</div>
           <div className="flex items-center gap-2 mt-1">
             <div className="h-[1px] w-8 bg-[var(--primary-mint)]"></div>
             <span className="text-[10px] text-[var(--platinum)] font-bold tracking-[0.2em] font-montserrat uppercase opacity-80">Tech Entrepreneur</span>

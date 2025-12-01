@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 const siteName = 'Engjell Rraklli';
 const defaultTitle = 'Engjell Rraklli | Tech Entrepreneur Building the Future in Albania';
-const defaultDescription = 'Building scalable tech and human potential in Tirana. Creative at heart, resilient by practice. Valuing discipline, persistence, kindness, and patience above all.';
+const defaultDescription = 'Albanian tech entrepreneur building scalable technology in Tirana. Software development, startups, and tech innovation in Albania.';
 
 export function createMetadata({
   title,

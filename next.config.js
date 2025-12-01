@@ -12,6 +12,8 @@ const nextConfig = {
   generateEtags: true,
   reactStrictMode: true,
   swcMinify: true,
+  // Optimize font loading to prevent render blocking
+  optimizeFonts: true,
   // Headers for caching and security
   async headers() {
     return [

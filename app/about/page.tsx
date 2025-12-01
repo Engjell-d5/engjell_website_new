@@ -5,17 +5,17 @@ import { createMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = createMetadata({
-  title: 'About',
-  description: 'My work is grounded in the conviction that Tirana is fertile ground for world-class technology. Building the infrastructure that allows young Albanian talents to apply their skills at a global level without leaving their homes.',
+  title: 'About Engjell Rraklli | Albanian Tech Entrepreneur',
+  description: 'Engjell Rraklli - Albanian tech entrepreneur building world-class technology in Tirana. Startup founder creating software development opportunities and tech innovation in Albania.',
   path: '/about',
   keywords: [
     'About Engjell Rraklli',
+    'Albanian Tech Entrepreneur',
     'Tech Entrepreneur Story',
-    'Albanian Entrepreneur',
     'Tirana Technology',
-    'Software Development',
-    'Startup Founder',
-    'Tech Leadership',
+    'Software Development Albania',
+    'Startup Founder Albania',
+    'Tech Leadership Albania',
     'Albania Tech Ecosystem',
   ],
 });
@@ -72,7 +72,7 @@ export default function About() {
 
               {/* Core Values Grid */}
               <div className="mt-8">
-                <h3 className="text-2xl text-white font-bebas mb-6 tracking-wide">THE PILLARS OF MY WORK</h3>
+                <h2 className="text-2xl text-white font-bebas mb-6 tracking-wide">Tech Entrepreneur Values and Principles</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="p-6 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-colors group">
                     <div className="flex items-center gap-3 mb-2">

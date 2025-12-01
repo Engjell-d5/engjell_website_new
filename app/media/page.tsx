@@ -36,6 +36,7 @@ export default function Media() {
   const [showApplicationModal, setShowApplicationModal] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [videosToShow, setVideosToShow] = useState(3);
+  const [loadingMore, setLoadingMore] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -69,13 +70,18 @@ export default function Media() {
   const hasMoreVideos = videos.length > videosToShow + 1;
   
   const loadMoreVideos = () => {
-    setVideosToShow(prev => prev + 3);
+    setLoadingMore(true);
+    // Simulate a brief loading state for better UX
+    setTimeout(() => {
+      setVideosToShow(prev => prev + 3);
+      setLoadingMore(false);
+    }, 300);
   };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
       {/* Left Panel - Latest Video */}
-      <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
+      <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh] order-2 md:order-1">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-gray-400">
@@ -104,18 +110,6 @@ export default function Media() {
                 <ExternalLink className="w-4 h-4" />
                 Visit Channel
               </a>
-            </div>
-
-            {/* Description - Mobile only */}
-            <div className="md:hidden mb-8 relative p-6 border-l-4 border-[var(--primary-mint)] bg-[var(--rich-black)]">
-              <div className="absolute top-2 left-4 opacity-20">
-                <Quote className="w-12 h-12 text-[var(--primary-mint)]" />
-              </div>
-              <div className="relative z-10">
-                <p className="text-sm text-gray-300 leading-relaxed font-light italic pl-10 pt-4">
-                  "I talk about how to run a business which is more human, which provides real value, and which scales without losing its soul. I am a big believer that businesses should love problems first and make a profit next."
-                </p>
-              </div>
             </div>
 
             {!mounted || loading ? (
@@ -198,7 +192,18 @@ export default function Media() {
               </a>
             ))}
                 </div>
-                {hasMoreVideos && (
+                {loadingMore && (
+                  <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {[1, 2, 3].map((i) => (
+                      <div key={i} className="animate-pulse">
+                        <div className="aspect-video bg-gray-800 border border-[var(--border-color)] mb-2 rounded-none"></div>
+                        <div className="h-4 w-full bg-gray-800 rounded-none mb-1"></div>
+                        <div className="h-3 w-24 bg-gray-800 rounded-none"></div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {hasMoreVideos && !loadingMore && (
                   <div className="mt-8 flex justify-center">
                     <button
                       onClick={loadMoreVideos}
@@ -216,7 +221,7 @@ export default function Media() {
       </main>
 
       {/* Right Panel - Next 3 Videos */}
-      <aside className="classic-panel md:col-span-3 flex flex-col p-6 gap-6 bg-[var(--rich-black)] sticky-sidebar">
+      <aside className="classic-panel md:col-span-3 flex flex-col p-6 gap-6 bg-[var(--rich-black)] sticky-sidebar order-1 md:order-2">
         {/* Description */}
         <div className="relative p-6 border-l-4 border-[var(--primary-mint)] bg-[var(--rich-black)]">
           <div className="absolute top-2 left-4 opacity-20">

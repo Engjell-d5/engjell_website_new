@@ -5,7 +5,7 @@ export async function GET() {
   let status = await getCronStatusWithNextRun();
   
   // If cron jobs aren't running, try to initialize them
-  if (!status.socialMedia.running || !status.youtube.running) {
+  if (!status.socialMedia.running || !status.youtube.running || !status.subscriberSync.running) {
     try {
       await initializeAllCronJobs();
       // Get updated status after initialization
@@ -20,10 +20,12 @@ export async function GET() {
     schedule: {
       youtube: 'Runs daily at 2 AM (configurable)',
       socialMedia: 'Runs every 5 minutes to check for scheduled posts (*/5 * * * *)',
+      subscriberSync: 'Runs daily at 3 AM to sync subscribers with Sender.net (0 3 * * *)',
     },
     endpoints: {
       init: '/api/cron/init - Initialize all cron jobs',
       publish: '/api/social/publish - Manually trigger post publishing',
+      sync: '/api/subscribers/sync - Manually trigger subscriber sync',
       status: '/api/cron/status - Check cron job status',
     },
     note: status.socialMedia.running 

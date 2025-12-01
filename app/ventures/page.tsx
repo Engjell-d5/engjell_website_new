@@ -1,31 +1,31 @@
 import Image from 'next/image';
-import { Briefcase, BrainCircuit, Cuboid, ArrowUpRight, Quote } from 'lucide-react';
+import { Briefcase, BrainCircuit, Cuboid, ArrowUpRight } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import { createMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = createMetadata({
-  title: 'Ventures',
-  description: 'Portfolio of ventures including division5, divisionAI, and division3D. Building scalable service-based businesses, AI solutions, and immersive 3D experiences from Tirana, Albania.',
+  title: 'Tech Ventures Albania | division5, divisionAI, division3D',
+  description: 'Engjell Rraklli\'s tech ventures in Albania: division5 (software services), divisionAI (AI solutions), and division3D (3D design). Building scalable tech businesses from Tirana.',
   path: '/ventures',
   keywords: [
-    'division5',
-    'divisionAI',
-    'division3D',
-    'Software Services',
-    'AI Solutions',
-    '3D Design',
-    'Staff Augmentation',
-    'Digital Agencies',
-    'Web3D',
-    'Tech Ventures',
+    'Tech Ventures Albania',
+    'division5 Albania',
+    'divisionAI Albania',
+    'division3D Albania',
+    'Software Services Albania',
+    'AI Solutions Albania',
+    '3D Design Albania',
+    'Staff Augmentation Albania',
+    'Tech Startups Tirana',
+    'Albanian Tech Companies',
   ],
 });
 
 export default function Ventures() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-      <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
+      <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh] order-2 md:order-1">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-gray-400">
@@ -44,18 +44,6 @@ export default function Ventures() {
               <div>
                 <span className="page-label mb-3 block">Ventures</span>
                 <h1 className="text-5xl md:text-6xl text-white font-bebas">WHAT I BUILD</h1>
-              </div>
-            </div>
-
-            {/* Description - Mobile only */}
-            <div className="md:hidden mb-8 relative p-6 border-l-4 border-[var(--primary-mint)] bg-[var(--rich-black)]">
-              <div className="absolute top-2 left-4 opacity-20">
-                <Quote className="w-12 h-12 text-[var(--primary-mint)]" />
-              </div>
-              <div className="relative z-10">
-                <p className="text-sm text-gray-300 leading-relaxed font-light italic pl-10 pt-4">
-                  "I specialize in scaling next-generation digital agencies. Through division5, divisionAI, and division3D, I deliver software services, AI solutions, and 3D design experiences."
-                </p>
               </div>
             </div>
 
@@ -85,7 +73,7 @@ export default function Ventures() {
                       <p className="text-xs text-white">Founder</p>
                     </div>
                     <div className="flex items-center gap-1 group-hover:text-[var(--primary-mint)] transition-colors">
-                      <p className="text-[9px] uppercase font-bold tracking-widest">Visit Site</p>
+                      <p className="text-[9px] uppercase font-bold tracking-widest">Visit Division5</p>
                       <ArrowUpRight className="w-3 h-3" />
                     </div>
                   </div>
@@ -117,7 +105,7 @@ export default function Ventures() {
                       <p className="text-xs text-white">Founder</p>
                     </div>
                     <div className="flex items-center gap-1 group-hover:text-[var(--primary-mint)] transition-colors">
-                      <p className="text-[9px] uppercase font-bold tracking-widest">Visit Site</p>
+                      <p className="text-[9px] uppercase font-bold tracking-widest">Visit DivisionAI</p>
                       <ArrowUpRight className="w-3 h-3" />
                     </div>
                   </div>
@@ -149,7 +137,7 @@ export default function Ventures() {
                       <p className="text-xs text-white">Founder</p>
                     </div>
                     <div className="flex items-center gap-1 group-hover:text-[var(--primary-mint)] transition-colors">
-                      <p className="text-[9px] uppercase font-bold tracking-widest">Visit Site</p>
+                      <p className="text-[9px] uppercase font-bold tracking-widest">Visit Division3D</p>
                       <ArrowUpRight className="w-3 h-3" />
                     </div>
                   </div>

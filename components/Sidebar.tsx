@@ -172,8 +172,11 @@ export default function Sidebar() {
     });
   };
 
+  // Show sidebar on mobile for journal, ventures, and media pages
+  const showOnMobile = pathname === '/about' || pathname === '/journal' || pathname === '/ventures' || pathname.startsWith('/journal/') || pathname === '/media';
+  
   return (
-    <aside className={`classic-panel md:col-span-3 ${pathname === '/about' ? 'flex' : 'hidden md:flex'} flex-col p-6 gap-6 bg-[var(--bg-dark)] sticky-sidebar`}>
+    <aside className={`classic-panel md:col-span-3 ${showOnMobile ? 'flex' : 'hidden md:flex'} flex-col p-6 gap-6 bg-[var(--bg-dark)] sticky-sidebar order-1 md:order-2`}>
       {/* HOME SIDEBAR */}
       {pathname === '/' && (
         <div className="flex flex-col gap-6">

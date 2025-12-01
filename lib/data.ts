@@ -63,6 +63,7 @@ export interface Subscriber {
   email: string;
   subscribedAt: string;
   syncedToSender: boolean;
+  status: 'active' | 'churned';
 }
 
 export interface PodcastApplication {
@@ -325,6 +326,7 @@ export async function getSubscribers(): Promise<Subscriber[]> {
     email: sub.email,
     subscribedAt: sub.subscribedAt.toISOString(),
     syncedToSender: sub.syncedToSender,
+    status: (sub.status as 'active' | 'churned') || 'active',
   }));
 }
 
@@ -334,18 +336,20 @@ export async function saveSubscribers(subscribers: Subscriber[]): Promise<void> 
       where: { email: subscriber.email },
       update: {
         syncedToSender: subscriber.syncedToSender,
+        status: subscriber.status || 'active',
       },
       create: {
         id: subscriber.id,
         email: subscriber.email,
         subscribedAt: new Date(subscriber.subscribedAt),
         syncedToSender: subscriber.syncedToSender,
+        status: subscriber.status || 'active',
       },
     });
   }
 }
 
-export async function addSubscriber(email: string): Promise<Subscriber> {
+export async function addSubscriber(email: string, status: 'active' | 'churned' = 'active'): Promise<Subscriber> {
   const existing = await prisma.subscriber.findUnique({
     where: { email: email.toLowerCase() },
   });
@@ -359,6 +363,7 @@ export async function addSubscriber(email: string): Promise<Subscriber> {
       email: email.toLowerCase(),
       subscribedAt: new Date(),
       syncedToSender: false,
+      status: status,
     },
   });
   
@@ -367,7 +372,37 @@ export async function addSubscriber(email: string): Promise<Subscriber> {
     email: newSubscriber.email,
     subscribedAt: newSubscriber.subscribedAt.toISOString(),
     syncedToSender: newSubscriber.syncedToSender,
+    status: (newSubscriber.status as 'active' | 'churned') || 'active',
   };
+}
+
+export async function updateSubscriber(id: string, data: { email?: string; status?: 'active' | 'churned' }): Promise<Subscriber> {
+  const updateData: any = {};
+  if (data.email !== undefined) {
+    updateData.email = data.email.toLowerCase();
+  }
+  if (data.status !== undefined) {
+    updateData.status = data.status;
+  }
+  
+  const updated = await prisma.subscriber.update({
+    where: { id },
+    data: updateData,
+  });
+  
+  return {
+    id: updated.id,
+    email: updated.email,
+    subscribedAt: updated.subscribedAt.toISOString(),
+    syncedToSender: updated.syncedToSender,
+    status: (updated.status as 'active' | 'churned') || 'active',
+  };
+}
+
+export async function deleteSubscriber(id: string): Promise<void> {
+  await prisma.subscriber.delete({
+    where: { id },
+  });
 }
 
 export async function markSubscriberSynced(email: string): Promise<void> {
@@ -375,6 +410,23 @@ export async function markSubscriberSynced(email: string): Promise<void> {
     where: { email: email.toLowerCase() },
     data: { syncedToSender: true },
   });
+}
+
+export async function getUnsyncedSubscribers(): Promise<Subscriber[]> {
+  const subscribers = await prisma.subscriber.findMany({
+    where: { 
+      syncedToSender: false,
+      status: 'active', // Only sync active subscribers
+    },
+    orderBy: { subscribedAt: 'desc' },
+  });
+  return subscribers.map(sub => ({
+    id: sub.id,
+    email: sub.email,
+    subscribedAt: sub.subscribedAt.toISOString(),
+    syncedToSender: sub.syncedToSender,
+    status: (sub.status as 'active' | 'churned') || 'active',
+  }));
 }
 
 // Podcast Application functions

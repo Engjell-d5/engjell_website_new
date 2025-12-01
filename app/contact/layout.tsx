@@ -2,18 +2,18 @@ import { createMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = createMetadata({
-  title: 'Contact',
-  description: 'Open for speaking engagements, technical consultation, and partnership opportunities. Get in touch to discuss building in Albania or potential ventures.',
+  title: 'Contact Engjell Rraklli | Tech Entrepreneur Albania',
+  description: 'Contact Engjell Rraklli - Albanian tech entrepreneur. Speaking engagements, technical consultation, and partnership opportunities in Albania. Tech consulting and startup advice.',
   path: '/contact',
   keywords: [
     'Contact Engjell Rraklli',
-    'Speaking Engagements',
-    'Technical Consultation',
-    'Business Partnership',
-    'Albania Business',
-    'Tech Consulting',
-    'Entrepreneurship Advice',
-    'Startup Consulting',
+    'Tech Entrepreneur Albania Contact',
+    'Speaking Engagements Albania',
+    'Technical Consultation Albania',
+    'Business Partnership Albania',
+    'Albania Tech Consulting',
+    'Entrepreneurship Advice Albania',
+    'Startup Consulting Albania',
   ],
 });
 

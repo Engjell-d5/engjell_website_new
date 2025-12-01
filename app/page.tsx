@@ -6,17 +6,18 @@ import { createMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = createMetadata({
-  title: 'Home',
-  description: 'Building scalable tech and human potential in Tirana. Creative at heart, resilient by practice. Valuing discipline, persistence, kindness, and patience above all.',
+  title: 'Tech Entrepreneur Albania | Building the Future in Tirana',
+  description: 'Engjell Rraklli - Albanian tech entrepreneur building scalable technology in Tirana. Software development, startups, and tech innovation in Albania.',
   path: '/',
   keywords: [
-    'Technology',
-    'Startups',
-    'Software Development',
-    'Entrepreneurship',
-    'Albanian Tech',
+    'Tech Entrepreneur Albania',
+    'Albanian Tech Entrepreneur',
     'Tirana Startup',
-    'Tech Innovation',
+    'Software Development Albania',
+    'Technology Albania',
+    'Startups Tirana',
+    'Tech Innovation Albania',
+    'Entrepreneurship Albania',
   ],
 });
 
@@ -81,7 +82,7 @@ export default function Home() {
                 </div>
                 <div>
                   <Quote className="w-8 h-8 text-[var(--primary-mint)] mb-4 opacity-50" />
-                  <h3 className="text-white font-bebas text-3xl mb-4 tracking-wide">THE MISSION</h3>
+                  <h2 className="text-white font-bebas text-3xl mb-4 tracking-wide">Tech Entrepreneur Mission in Albania</h2>
                   <p className="text-gray-300 text-sm leading-relaxed font-light max-w-2xl">
                     My mission is to empower young Albanian talent to build their future at home. By creating an ecosystem of world-class technology and software development in Tirana, I am providing the mentorship, structure, and opportunities the next generation needs to succeed without leaving the country. Through entrepreneurship and tech innovation, we're building the Albanian tech startup ecosystem.
                   </p>

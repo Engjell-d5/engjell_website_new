@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Quote } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 
 interface Blog {
@@ -57,7 +56,7 @@ export default function Journal() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
+      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh] order-2 md:order-1">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-gray-400">
@@ -76,18 +75,6 @@ export default function Journal() {
               <div>
                 <span className="page-label mb-3 block">Journal</span>
                 <h1 className="text-5xl md:text-6xl text-white font-bebas">FIELD NOTES</h1>
-              </div>
-            </div>
-
-            {/* Description - Mobile only */}
-            <div className="md:hidden mb-8 relative p-6 border-l-4 border-[var(--primary-mint)] bg-[var(--rich-black)]">
-              <div className="absolute top-2 left-4 opacity-20">
-                <Quote className="w-12 h-12 text-[var(--primary-mint)]" />
-              </div>
-              <div className="relative z-10">
-                <p className="text-sm text-gray-300 leading-relaxed font-light italic pl-10 pt-4">
-                  "When I started as an entrepreneur, I constantly craved a mentor to help me make sense of the chaos. I'm documenting the lessons I've learned so you can navigate your own journey with a little more clarity and a little less stress."
-                </p>
               </div>
             </div>
             
