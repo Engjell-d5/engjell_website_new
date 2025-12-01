@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { content, mediaAssets, platforms, scheduledFor, status } = body;
+    const { content, mediaAssets, platforms, scheduledFor, status, comments } = body;
 
     if (!content || !scheduledFor) {
       return NextResponse.json(
@@ -82,6 +82,11 @@ export async function POST(request: NextRequest) {
       ? (typeof mediaAssets === 'string' ? mediaAssets : JSON.stringify(mediaAssets))
       : null;
 
+    // Handle comments - optional array of comment strings
+    const commentsJson = comments
+      ? (typeof comments === 'string' ? comments : JSON.stringify(comments))
+      : null;
+
     const post = await prisma.socialPost.create({
       data: {
         content,
@@ -89,6 +94,7 @@ export async function POST(request: NextRequest) {
         platforms: JSON.stringify(platformsArray),
         scheduledFor: scheduledDate,
         status: status || 'scheduled',
+        comments: commentsJson,
         createdBy: user.id,
       },
     });

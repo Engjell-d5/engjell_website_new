@@ -874,6 +874,215 @@ export async function publishToThreads(
 }
 
 /**
+ * Post a comment/reply on a Threads post
+ * Follows the same pattern as publishToThreads but with reply_to_id parameter
+ */
+export async function commentOnThreadsPost(
+  threadsAccessToken: string,
+  threadsAccountId: string,
+  postId: string,
+  commentText: string
+): Promise<{ commentId: string }> {
+  console.log('[THREADS] commentOnThreadsPost called - postId:', postId, 'comment length:', commentText.length);
+  console.log('[THREADS] Using Threads account ID:', threadsAccountId);
+  
+  // Validate Threads account ID format (should be numeric string)
+  if (!threadsAccountId || !/^\d+$/.test(threadsAccountId)) {
+    throw new Error(`Invalid Threads account ID format: ${threadsAccountId}. Expected numeric string.`);
+  }
+  
+  // Validate comment text length (Threads limit is 500 characters)
+  if (commentText.length > 500) {
+    throw new Error(`Threads comment exceeds 500 characters (${commentText.length})`);
+  }
+  
+  // Step 1: Create a reply container using /me/threads with reply_to_id
+  console.log('[THREADS] Creating reply container...');
+  const replyParams = new URLSearchParams();
+  replyParams.append('text', commentText);
+  replyParams.append('reply_to_id', postId);
+  
+  // Use /me endpoint for user access tokens
+  const replyUrl = `https://graph.threads.net/v1.0/me/threads`;
+  console.log('[THREADS] Using /me endpoint for reply container creation');
+  
+  const replyResponse = await fetch(replyUrl, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${threadsAccessToken}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: replyParams.toString(),
+  });
+  
+  console.log('[THREADS] Reply container response status:', replyResponse.status, replyResponse.statusText);
+  
+  if (!replyResponse.ok) {
+    const error = await replyResponse.text();
+    console.error('[THREADS] Failed to create reply container with /me:', error);
+    
+    // If /me fails, try with account ID as fallback
+    if (error.includes('does not exist') || error.includes('cannot be loaded') || error.includes('THApiException')) {
+      console.log('[THREADS] /me endpoint failed, trying with account ID as fallback...');
+      const fallbackUrl = `https://graph.threads.net/v1.0/${threadsAccountId}/threads`;
+      
+      const fallbackResponse = await fetch(fallbackUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${threadsAccessToken}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: replyParams.toString(),
+      });
+      
+      if (!fallbackResponse.ok) {
+        const fallbackError = await fallbackResponse.text();
+        console.error('[THREADS] Failed to create reply container with account ID:', fallbackError);
+        throw new Error(`Failed to create Threads reply container (${fallbackResponse.status}): ${fallbackError}`);
+      }
+      
+      const fallbackData = await fallbackResponse.json();
+      const creationId = fallbackData.id;
+      
+      if (!creationId) {
+        console.error('[THREADS] ERROR: No creation ID found in fallback response!');
+        throw new Error('Threads API returned success but no creation ID in response');
+      }
+      
+      console.log('[THREADS] Reply container created with account ID fallback - Creation ID:', creationId);
+      
+      // Step 2: Wait 30 seconds as recommended by Threads API
+      console.log('[THREADS] Waiting 30 seconds before publishing reply (as recommended by Threads API)...');
+      await new Promise(resolve => setTimeout(resolve, 30000));
+      
+      // Step 3: Publish the reply container
+      const publishParams = new URLSearchParams();
+      publishParams.append('creation_id', creationId);
+      
+      const fallbackPublishUrl = `https://graph.threads.net/v1.0/${threadsAccountId}/threads_publish`;
+      
+      const fallbackPublishResponse = await fetch(fallbackPublishUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${threadsAccessToken}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: publishParams.toString(),
+      });
+      
+      if (!fallbackPublishResponse.ok) {
+        const publishError = await fallbackPublishResponse.text();
+        console.error('[THREADS] Failed to publish reply with account ID:', publishError);
+        throw new Error(`Failed to publish Threads reply (${fallbackPublishResponse.status}): ${publishError}`);
+      }
+      
+      const publishData = await fallbackPublishResponse.json();
+      const commentId = publishData.id;
+      
+      if (!commentId) {
+        console.error('[THREADS] ERROR: No reply ID found in response!');
+        throw new Error('Threads API returned success but no reply ID in response');
+      }
+      
+      console.log('[THREADS] ✓ Reply published successfully with account ID fallback - Reply ID:', commentId);
+      return {
+        commentId: commentId,
+      };
+    } else {
+      throw new Error(`Failed to create Threads reply container (${replyResponse.status}): ${error}`);
+    }
+  }
+  
+  const replyData = await replyResponse.json();
+  const creationId = replyData.id;
+  
+  if (!creationId) {
+    console.error('[THREADS] ERROR: No creation ID found in response!');
+    throw new Error('Threads API returned success but no creation ID in response');
+  }
+  
+  console.log('[THREADS] Reply container created - Creation ID:', creationId);
+  
+  // Step 2: Wait 30 seconds as recommended by Threads API
+  console.log('[THREADS] Waiting 30 seconds before publishing reply (as recommended by Threads API)...');
+  await new Promise(resolve => setTimeout(resolve, 30000));
+  
+  // Step 3: Publish the reply container
+  console.log('[THREADS] Publishing reply container to Threads...');
+  const publishParams = new URLSearchParams();
+  publishParams.append('creation_id', creationId);
+  
+  // Use /me endpoint for publishing (recommended for user access tokens)
+  const publishUrl = `https://graph.threads.net/v1.0/me/threads_publish`;
+  console.log('[THREADS] Using /me endpoint for publishing reply');
+  
+  const publishResponse = await fetch(publishUrl, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${threadsAccessToken}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: publishParams.toString(),
+  });
+  
+  console.log('[THREADS] Publish reply response status:', publishResponse.status, publishResponse.statusText);
+  
+  if (!publishResponse.ok) {
+    const error = await publishResponse.text();
+    console.error('[THREADS] Failed to publish reply with /me:', error);
+    
+    // If /me fails, try with account ID as fallback
+    if (error.includes('does not exist') || error.includes('cannot be loaded') || error.includes('THApiException')) {
+      console.log('[THREADS] /me endpoint failed for publish, trying with account ID as fallback...');
+      const fallbackPublishUrl = `https://graph.threads.net/v1.0/${threadsAccountId}/threads_publish`;
+      
+      const fallbackPublishResponse = await fetch(fallbackPublishUrl, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${threadsAccessToken}`,
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: publishParams.toString(),
+      });
+      
+      if (!fallbackPublishResponse.ok) {
+        const fallbackError = await fallbackPublishResponse.text();
+        console.error('[THREADS] Failed to publish reply with account ID:', fallbackError);
+        throw new Error(`Failed to publish Threads reply (${fallbackPublishResponse.status}): ${fallbackError}`);
+      }
+      
+      const publishData = await fallbackPublishResponse.json();
+      const commentId = publishData.id;
+      
+      if (!commentId) {
+        console.error('[THREADS] ERROR: No reply ID found in response!');
+        throw new Error('Threads API returned success but no reply ID in response');
+      }
+      
+      console.log('[THREADS] ✓ Reply published successfully with account ID fallback - Reply ID:', commentId);
+      return {
+        commentId: commentId,
+      };
+    } else {
+      throw new Error(`Failed to publish Threads reply (${publishResponse.status}): ${error}`);
+    }
+  }
+  
+  const publishData = await publishResponse.json();
+  const commentId = publishData.id;
+  
+  if (!commentId) {
+    console.error('[THREADS] ERROR: No reply ID found in response!');
+    throw new Error('Threads API returned success but no reply ID in response');
+  }
+  
+  console.log('[THREADS] ✓ Reply published successfully - Reply ID:', commentId);
+  return {
+    commentId: commentId,
+  };
+}
+
+/**
  * Check if Threads token is expired or about to expire
  */
 export function isThreadsTokenExpired(expiresAt: Date | null): boolean {

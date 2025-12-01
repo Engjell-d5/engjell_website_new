@@ -1,8 +1,8 @@
 import { prisma } from './prisma';
-import { publishToLinkedIn, refreshLinkedInToken, isLinkedInTokenExpired } from './social/linkedin';
-import { publishToTwitter, refreshTwitterToken, isTwitterTokenExpired } from './social/twitter';
-import { publishToInstagram, refreshInstagramToken, isInstagramTokenExpired, getInstagramAccountInfoFromToken } from './social/instagram';
-import { publishToThreads, refreshThreadsToken, isThreadsTokenExpired } from './social/threads';
+import { publishToLinkedIn, refreshLinkedInToken, isLinkedInTokenExpired, commentOnLinkedInPost } from './social/linkedin';
+import { publishToTwitter, refreshTwitterToken, isTwitterTokenExpired, commentOnTwitterPost } from './social/twitter';
+import { publishToInstagram, refreshInstagramToken, isInstagramTokenExpired, getInstagramAccountInfoFromToken, commentOnInstagramPost } from './social/instagram';
+import { publishToThreads, refreshThreadsToken, isThreadsTokenExpired, commentOnThreadsPost } from './social/threads';
 
 interface PublishResult {
   platform: string;
@@ -14,7 +14,7 @@ interface PublishResult {
 /**
  * Refresh access token if needed
  */
-async function ensureValidToken(connection: {
+export async function ensureValidToken(connection: {
   platform: string;
   accessToken: string;
   refreshToken: string | null;
@@ -51,6 +51,43 @@ async function ensureValidToken(connection: {
         console.log(`[LINKEDIN] Returning original token after refresh failure`);
         return connection.accessToken;
       }
+    }
+  } else if (connection.platform === 'twitter') {
+    const isExpired = isTwitterTokenExpired(connection.expiresAt);
+    console.log(`[TWITTER] Token check: expiresAt=${connection.expiresAt?.toISOString() || 'N/A'}, isExpired=${isExpired}, hasRefreshToken=${!!connection.refreshToken}`);
+    
+    // Try to refresh if expired OR if no expiration date (might be invalid)
+    if (connection.refreshToken && (isExpired || !connection.expiresAt)) {
+      console.log(`[TWITTER] Token expired or missing expiration date, attempting to refresh...`);
+      try {
+        const newTokenData = await refreshTwitterToken(connection.refreshToken);
+        console.log(`[TWITTER] Token refresh successful, new expires_in: ${newTokenData.expires_in} seconds`);
+        
+        // Update token in database
+        const expiresAt = new Date(Date.now() + newTokenData.expires_in * 1000);
+        await prisma.socialConnection.update({
+          where: { platform: 'twitter' },
+          data: {
+            accessToken: newTokenData.access_token,
+            expiresAt,
+            refreshToken: newTokenData.refresh_token || connection.refreshToken, // Keep old refresh token if new one not provided
+          },
+        });
+        
+        console.log(`[TWITTER] Token updated in database, new expiresAt: ${expiresAt.toISOString()}`);
+        return newTokenData.access_token;
+      } catch (error) {
+        console.error('[TWITTER] Failed to refresh Twitter token:', error);
+        if (error instanceof Error) {
+          console.error('[TWITTER] Token refresh error details:', error.message, error.stack);
+        }
+        // If refresh fails, the token might be completely invalid - user needs to reconnect
+        console.log(`[TWITTER] Token refresh failed - user may need to reconnect their Twitter account`);
+        // Return original token and let the publish attempt fail gracefully
+        return connection.accessToken;
+      }
+    } else if (!connection.refreshToken) {
+      console.warn(`[TWITTER] No refresh token available - token cannot be refreshed. User may need to reconnect.`);
     }
   } else if (connection.platform === 'instagram') {
     const isExpired = isInstagramTokenExpired(connection.expiresAt);
@@ -181,25 +218,75 @@ export async function publishToPlatform(
       
       case 'twitter':
         console.log(`[TWITTER] Calling publishToTwitter...`);
-        const twitterResult = await publishToTwitter(validToken, content, mediaAssets || null);
-        console.log(`[TWITTER] publishToTwitter returned - postId: ${twitterResult.postId}`);
-        
-        // Validate that we actually got a post ID
-        if (!twitterResult.postId || twitterResult.postId.trim() === '') {
-          console.error(`[TWITTER] ERROR: Twitter returned success but no postId!`);
+        try {
+          const twitterResult = await publishToTwitter(validToken, content, mediaAssets || null);
+          console.log(`[TWITTER] publishToTwitter returned - postId: ${twitterResult.postId}`);
+          
+          // Validate that we actually got a post ID
+          if (!twitterResult.postId || twitterResult.postId.trim() === '') {
+            console.error(`[TWITTER] ERROR: Twitter returned success but no postId!`);
+            return {
+              platform,
+              success: false,
+              error: 'Twitter API returned no post ID',
+            };
+          }
+          
+          console.log(`[TWITTER] ✓ publishToTwitter succeeded with valid postId: ${twitterResult.postId}`);
           return {
             platform,
-            success: false,
-            error: 'Twitter API returned no post ID',
+            success: true,
+            postId: twitterResult.postId,
           };
+        } catch (error) {
+          // If we get a 403 error, try refreshing the token and retry once
+          if (error instanceof Error && error.message.includes('403')) {
+            console.log(`[TWITTER] Got 403 error, attempting token refresh and retry...`);
+            if (connection && connection.refreshToken) {
+              try {
+                const newTokenData = await refreshTwitterToken(connection.refreshToken);
+                console.log(`[TWITTER] Token refresh successful, retrying publish...`);
+                
+                // Update token in database
+                const expiresAt = new Date(Date.now() + newTokenData.expires_in * 1000);
+                await prisma.socialConnection.update({
+                  where: { platform: 'twitter' },
+                  data: {
+                    accessToken: newTokenData.access_token,
+                    expiresAt,
+                    refreshToken: newTokenData.refresh_token || connection.refreshToken,
+                  },
+                });
+                
+                // Retry with new token
+                const retryResult = await publishToTwitter(newTokenData.access_token, content, mediaAssets || null);
+                console.log(`[TWITTER] Retry successful - postId: ${retryResult.postId}`);
+                
+                if (!retryResult.postId || retryResult.postId.trim() === '') {
+                  return {
+                    platform,
+                    success: false,
+                    error: 'Twitter API returned no post ID after retry',
+                  };
+                }
+                
+                return {
+                  platform,
+                  success: true,
+                  postId: retryResult.postId,
+                };
+              } catch (refreshError) {
+                console.error('[TWITTER] Token refresh failed during retry:', refreshError);
+                // Fall through to throw original error with helpful message
+                throw new Error(`Twitter authentication failed. Please disconnect and reconnect your Twitter account. Original error: ${error.message}`);
+              }
+            } else {
+              throw new Error(`Twitter authentication failed. No refresh token available. Please disconnect and reconnect your Twitter account. Original error: ${error.message}`);
+            }
+          }
+          // Re-throw the error if it's not a 403 or retry didn't work
+          throw error;
         }
-        
-        console.log(`[TWITTER] ✓ publishToTwitter succeeded with valid postId: ${twitterResult.postId}`);
-        return {
-          platform,
-          success: true,
-          postId: twitterResult.postId,
-        };
       
       case 'instagram':
         console.log(`[INSTAGRAM] Calling publishToInstagram...`);
@@ -491,6 +578,80 @@ export async function publishScheduledPosts() {
           if (result.success && result.postId) {
             console.log(`[LINKEDIN] ✓ Successfully published to ${platform} for post ${post.id}. Post ID: ${result.postId}`);
             publishedResults[platform] = new Date().toISOString();
+            
+            // Post comments after the main post if comments exist
+            if (post.comments) {
+              try {
+                let commentsArray: string[] = [];
+                try {
+                  commentsArray = JSON.parse(post.comments);
+                } catch (e) {
+                  console.error(`[LINKEDIN] Error parsing comments for post ${post.id}:`, e);
+                }
+                
+                if (commentsArray && commentsArray.length > 0) {
+                  console.log(`[LINKEDIN] Posting ${commentsArray.length} comment(s) on ${platform} for post ${post.id}`);
+                  
+                  // Ensure token is valid (refresh if needed) before posting comments
+                  const validToken = await ensureValidToken(connection);
+                  
+                  // Post each comment with a small delay between them
+                  for (let i = 0; i < commentsArray.length; i++) {
+                    const comment = commentsArray[i].trim();
+                    if (!comment) continue; // Skip empty comments
+                    
+                    try {
+                      // Add a small delay between comments (1 second)
+                      if (i > 0) {
+                        await new Promise(resolve => setTimeout(resolve, 1000));
+                      }
+                      
+                      if (platform === 'linkedin') {
+                        // LinkedIn needs the full URN format
+                        const postUrn = result.postId.startsWith('urn:li:') 
+                          ? result.postId 
+                          : `urn:li:ugcPost:${result.postId}`;
+                        await commentOnLinkedInPost(validToken, postUrn, comment);
+                        console.log(`[LINKEDIN] ✓ Comment ${i + 1}/${commentsArray.length} posted on LinkedIn`);
+                      } else if (platform === 'twitter') {
+                        await commentOnTwitterPost(validToken, result.postId, comment);
+                        console.log(`[LINKEDIN] ✓ Comment ${i + 1}/${commentsArray.length} posted on Twitter`);
+                      } else if (platform === 'threads') {
+                        // Get Threads account ID from connection (stored in username field as "username|threads_id")
+                        let threadsAccountId: string | null = null;
+                        if (connection.username) {
+                          const parts = connection.username.split('|');
+                          if (parts.length >= 2) {
+                            threadsAccountId = parts[1]; // Second part is the Threads account ID
+                          }
+                        }
+                        
+                        if (!threadsAccountId) {
+                          throw new Error('Threads account ID not found in connection');
+                        }
+                        
+                        await commentOnThreadsPost(validToken, threadsAccountId, result.postId, comment);
+                        console.log(`[LINKEDIN] ✓ Comment ${i + 1}/${commentsArray.length} posted on Threads`);
+                      } else if (platform === 'instagram') {
+                        // Instagram uses page access token (same as for posting)
+                        await commentOnInstagramPost(validToken, result.postId, comment);
+                        console.log(`[LINKEDIN] ✓ Comment ${i + 1}/${commentsArray.length} posted on Instagram`);
+                      } else {
+                        console.log(`[LINKEDIN] Comment posting not yet implemented for ${platform}, skipping`);
+                      }
+                    } catch (commentError) {
+                      const errorMsg = `Failed to post comment ${i + 1} on ${platform}: ${commentError instanceof Error ? commentError.message : 'Unknown error'}`;
+                      console.error(`[LINKEDIN] ${errorMsg}`);
+                      // Don't fail the whole post if a comment fails, just log it
+                      errors.push(errorMsg);
+                    }
+                  }
+                }
+              } catch (commentError) {
+                console.error(`[LINKEDIN] Error processing comments for ${platform}:`, commentError);
+                // Don't fail the whole post if comments fail
+              }
+            }
           } else {
             const errorMsg = `${platform}: ${result.error || 'Unknown error - no postId returned'}`;
             console.error(`[LINKEDIN] ✗ Failed to publish to ${platform} for post ${post.id}: ${errorMsg}`);

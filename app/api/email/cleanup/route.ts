@@ -3,6 +3,8 @@ import { getAuthUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { getAllEmails, parseGmailMessage, refreshGoogleToken, isGoogleTokenExpired } from '@/lib/google-email';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * Cleanup endpoint to:
  * 1. Remove emails that no longer exist in Gmail

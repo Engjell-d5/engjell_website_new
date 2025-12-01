@@ -183,6 +183,7 @@ model SocialPost {
   publishedOn     String?  // JSON: {'linkedin': '2024-01-01', 'twitter': '2024-01-01'}
   errorMessage    String?
   timesPosted     Int      @default(0) // Number of times this post has been published
+  comments        String?  // JSON array: ['comment1', 'comment2', ...] - Optional comments to post after the main post
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
   createdBy       String?  // User ID who created the post
@@ -311,4 +312,21 @@ model EmailTask {
   updatedAt     DateTime @updatedAt
   
   @@map("email_tasks")
+}
+
+model EmailCronJob {
+  id            String   @id @default(cuid())
+  isEnabled     Boolean  @default(false) // Whether the cron job is enabled
+  schedule      String   @default("0 */6 * * *") // Cron schedule (default: every 6 hours)
+  syncEmails    Boolean  @default(true) // Whether to sync emails from Gmail
+  analyzeEmails Boolean  @default(true) // Whether to analyze emails after syncing
+  aiIntegrationId String? // AI Integration ID to use for analysis
+  lastRun       DateTime? // Last time the cron job ran
+  lastSyncAt    DateTime? // Last time emails were synced
+  lastAnalyzeAt DateTime? // Last time emails were analyzed
+  nextRun       DateTime? // Next scheduled run time
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@map("email_cron_jobs")
 }

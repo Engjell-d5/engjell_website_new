@@ -8,9 +8,11 @@ import { syncSubscribersWithSender } from './sender-sync';
 let cronJob: cron.ScheduledTask | null = null;
 let socialCronJob: cron.ScheduledTask | null = null;
 let subscriberSyncCronJob: cron.ScheduledTask | null = null;
+let emailCronJob: cron.ScheduledTask | null = null;
 let initialized = false;
 let socialInitialized = false;
 let subscriberSyncInitialized = false;
+let emailCronInitialized = false;
 
 export async function startYouTubeCron() {
   // Prevent multiple initializations
@@ -194,6 +196,319 @@ export async function restartSubscriberSyncCron() {
   return await startSubscriberSyncCron();
 }
 
+export async function startEmailCron() {
+  // Prevent multiple initializations
+  if (emailCronInitialized && emailCronJob) {
+    return emailCronJob;
+  }
+
+  // Get email cron job configuration from database
+  const { prisma } = await import('./prisma');
+  let emailCronConfig = await prisma.emailCronJob.findFirst();
+  
+  // Create default config if none exists
+  if (!emailCronConfig) {
+    emailCronConfig = await prisma.emailCronJob.create({
+      data: {
+        isEnabled: false,
+        schedule: '0 */6 * * *', // Default: every 6 hours
+        syncEmails: true,
+        analyzeEmails: true,
+      },
+    });
+  }
+
+  // Only start if enabled
+  if (!emailCronConfig.isEnabled) {
+    console.log(`[CRON-INIT] Email cron job is disabled, skipping initialization`);
+    return null;
+  }
+
+  const schedule = emailCronConfig.schedule || '0 */6 * * *';
+
+  // Stop existing job if any
+  if (emailCronJob) {
+    emailCronJob.stop();
+    emailCronJob = null;
+  }
+
+  console.log(`[CRON-INIT] Starting email sync/analyze cron job with schedule: ${schedule}`);
+
+  emailCronJob = cron.schedule(schedule, async () => {
+    const runTime = new Date().toISOString();
+    console.log(`[CRON] ============================================`);
+    console.log(`[CRON] Running email sync/analyze cron job at ${runTime}`);
+    console.log(`[CRON] ============================================`);
+    
+    try {
+      // Get updated config
+      const config = await prisma.emailCronJob.findFirst();
+      if (!config || !config.isEnabled) {
+        console.log(`[CRON] Email cron job is disabled, stopping`);
+        if (emailCronJob) {
+          emailCronJob.stop();
+          emailCronJob = null;
+          emailCronInitialized = false;
+        }
+        return;
+      }
+
+      // Update last run time
+      await prisma.emailCronJob.updateMany({
+        data: { lastRun: new Date() },
+      });
+
+      // Sync emails if enabled
+      if (config.syncEmails) {
+        console.log(`[CRON] Syncing emails from Gmail...`);
+        try {
+          // Import sync functions directly
+          const { getAllEmails, parseGmailMessage, refreshGoogleToken, isGoogleTokenExpired, getThreadDetails } = await import('./google-email');
+          
+          // Get Google connection
+          const connection = await prisma.googleConnection.findFirst({
+            where: { isActive: true },
+          });
+
+          if (!connection) {
+            console.error(`[CRON] No active Google connection found`);
+          } else {
+            // Check and refresh token if needed
+            let accessToken = connection.accessToken;
+            if (isGoogleTokenExpired(connection.expiresAt)) {
+              if (connection.refreshToken) {
+                const tokenData = await refreshGoogleToken(connection.refreshToken);
+                accessToken = tokenData.access_token;
+                const expiresAt = tokenData.expires_in
+                  ? new Date(Date.now() + tokenData.expires_in * 1000)
+                  : null;
+                await prisma.googleConnection.update({
+                  where: { id: connection.id },
+                  data: { accessToken, expiresAt },
+                });
+              }
+            }
+
+            // Fetch and sync emails
+            const gmailMessages = await getAllEmails(accessToken, 100);
+            let syncedCount = 0;
+            let newCount = 0;
+            const threadIds = new Set<string>();
+
+            // First pass: sync all emails
+            for (const message of gmailMessages) {
+              const parsed = parseGmailMessage(message);
+              if (!parsed.threadId) continue;
+              
+              threadIds.add(parsed.threadId);
+              const existing = await prisma.email.findUnique({
+                where: { gmailId: parsed.gmailId },
+              });
+
+              if (existing) {
+                await prisma.email.update({
+                  where: { id: existing.id },
+                  data: {
+                    threadId: parsed.threadId,
+                    subject: parsed.subject,
+                    from: parsed.from,
+                    to: parsed.to,
+                    snippet: parsed.snippet,
+                    body: parsed.body,
+                    bodyText: parsed.bodyText,
+                    isRead: parsed.isRead,
+                    lastSyncedAt: new Date(),
+                  },
+                });
+                syncedCount++;
+              } else {
+                await prisma.email.create({
+                  data: {
+                    gmailId: parsed.gmailId,
+                    threadId: parsed.threadId,
+                    subject: parsed.subject,
+                    from: parsed.from,
+                    to: parsed.to,
+                    snippet: parsed.snippet,
+                    body: parsed.body,
+                    bodyText: parsed.bodyText,
+                    receivedAt: parsed.receivedAt,
+                    isRead: parsed.isRead,
+                    syncedAt: new Date(),
+                    isAnalyzed: false,
+                  },
+                });
+                newCount++;
+              }
+            }
+
+            // Second pass: Check threads for new messages
+            const threadsWithNewMessages = new Set<string>();
+            for (const threadId of threadIds) {
+              try {
+                const thread = await getThreadDetails(accessToken, threadId);
+                const threadMessages = thread.messages || [];
+                const threadEmails = await prisma.email.findMany({
+                  where: { threadId },
+                  select: { id: true, lastSyncedAt: true, syncedAt: true },
+                });
+                const mostRecentSync = threadEmails.reduce((latest: number, email: { lastSyncedAt: Date | null; syncedAt: Date | null }) => {
+                  const emailSyncTime = email.lastSyncedAt || email.syncedAt;
+                  if (!emailSyncTime) return latest;
+                  return emailSyncTime.getTime() > latest ? emailSyncTime.getTime() : latest;
+                }, 0);
+                const hasNewMessages = threadMessages.some((msg: any) => {
+                  const msgTime = parseInt(msg.internalDate);
+                  return msgTime > mostRecentSync;
+                });
+                const hasUnreadInThread = threadMessages.some((msg: any) => 
+                  msg.labelIds?.includes('UNREAD')
+                );
+                if (hasNewMessages || hasUnreadInThread) {
+                  threadsWithNewMessages.add(threadId);
+                }
+              } catch (error) {
+                console.error(`[CRON] Error checking thread ${threadId}:`, error);
+              }
+            }
+
+            if (threadsWithNewMessages.size > 0) {
+              await prisma.email.updateMany({
+                where: { threadId: { in: Array.from(threadsWithNewMessages) } },
+                data: { isRead: false, isAnalyzed: false },
+              });
+            }
+
+            console.log(`[CRON] Email sync complete: ${syncedCount} synced, ${newCount} new`);
+            await prisma.emailCronJob.updateMany({
+              data: { lastSyncAt: new Date() },
+            });
+          }
+        } catch (error) {
+          console.error(`[CRON] Error syncing emails:`, error);
+        }
+      }
+
+      // Analyze emails if enabled
+      if (config.analyzeEmails && config.aiIntegrationId) {
+        console.log(`[CRON] Analyzing emails...`);
+        try {
+          const { analyzeEmailAndGenerateTasks } = await import('./ai-service');
+          const { createEmailTask } = await import('./data');
+          
+          // Get all unanalyzed, relevant emails
+          const emails = await prisma.email.findMany({
+            where: {
+              isAnalyzed: false,
+              isIrrelevant: false,
+            },
+            orderBy: { receivedAt: 'desc' },
+          });
+
+          if (emails.length > 0) {
+            // Group emails by threadId
+            const threadMap = new Map<string, typeof emails>();
+            for (const email of emails) {
+              const threadId = email.threadId || email.id;
+              if (!threadMap.has(threadId)) {
+                threadMap.set(threadId, []);
+              }
+              threadMap.get(threadId)!.push(email);
+            }
+
+            let totalTasksCreated = 0;
+            let threadsAnalyzed = 0;
+
+            // Analyze each thread once
+            for (const [threadId, threadEmails] of threadMap.entries()) {
+              try {
+                const latestEmail = threadEmails[0];
+                const tasks = await analyzeEmailAndGenerateTasks({
+                  threadId: threadId !== latestEmail.id ? threadId : undefined,
+                  emailId: latestEmail.id,
+                  aiIntegrationId: config.aiIntegrationId,
+                });
+
+                // Save tasks
+                await Promise.all(
+                  tasks.map(task =>
+                    createEmailTask({
+                      emailId: latestEmail.id,
+                      title: task.title,
+                      description: task.description,
+                      priority: task.priority,
+                      status: 'pending',
+                      aiAnalysis: JSON.stringify({ generatedAt: new Date().toISOString() }),
+                    })
+                  )
+                );
+
+                // Mark all emails in thread as analyzed
+                if (threadId !== latestEmail.id) {
+                  await prisma.email.updateMany({
+                    where: { threadId },
+                    data: { isAnalyzed: true },
+                  });
+                } else {
+                  await prisma.email.update({
+                    where: { id: latestEmail.id },
+                    data: { isAnalyzed: true },
+                  });
+                }
+
+                totalTasksCreated += tasks.length;
+                threadsAnalyzed++;
+              } catch (error: any) {
+                console.error(`[CRON] Error analyzing thread ${threadId}:`, error);
+              }
+            }
+
+            console.log(`[CRON] Email analysis complete: ${threadsAnalyzed} threads analyzed, ${totalTasksCreated} tasks created`);
+            await prisma.emailCronJob.updateMany({
+              data: { lastAnalyzeAt: new Date() },
+            });
+          } else {
+            console.log(`[CRON] No unanalyzed emails to analyze`);
+          }
+        } catch (error) {
+          console.error(`[CRON] Error analyzing emails:`, error);
+        }
+      }
+    } catch (error) {
+      console.error('[CRON] Error in email sync/analyze cron job:', error);
+      if (error instanceof Error) {
+        console.error('[CRON] Error details:', error.message, error.stack);
+      }
+    }
+    console.log(`[CRON] ============================================`);
+  });
+
+  // Calculate and update next run time
+  const nextRun = getNextRunTime(schedule);
+  if (nextRun) {
+    await prisma.emailCronJob.updateMany({
+      data: { nextRun },
+    });
+  }
+
+  emailCronInitialized = true;
+  return emailCronJob;
+}
+
+export function stopEmailCron() {
+  if (emailCronJob) {
+    emailCronJob.stop();
+    emailCronJob = null;
+    emailCronInitialized = false;
+    console.log('Email sync/analyze cron job stopped');
+  }
+}
+
+export async function restartEmailCron() {
+  stopEmailCron();
+  return await startEmailCron();
+}
+
 export async function initializeAllCronJobs() {
   console.log(`[CRON-INIT] ============================================`);
   console.log(`[CRON-INIT] Initializing all cron jobs at ${new Date().toISOString()}`);
@@ -219,6 +534,13 @@ export async function initializeAllCronJobs() {
     console.error(`[CRON-INIT] Failed to initialize subscriber sync cron:`, error);
   }
   
+  try {
+    await startEmailCron();
+    console.log(`[CRON-INIT] Email cron initialized`);
+  } catch (error) {
+    console.error(`[CRON-INIT] Failed to initialize email cron:`, error);
+  }
+  
   console.log(`[CRON-INIT] ============================================`);
 }
 
@@ -235,6 +557,10 @@ export function getCronStatus() {
     subscriberSync: {
       initialized: subscriberSyncInitialized,
       running: subscriberSyncInitialized && subscriberSyncCronJob !== null,
+    },
+    email: {
+      initialized: emailCronInitialized,
+      running: emailCronInitialized && emailCronJob !== null,
     },
   };
 }
@@ -322,9 +648,15 @@ export async function getCronStatusWithNextRun() {
   const socialMediaSchedule = '*/5 * * * *';
   const subscriberSyncSchedule = '0 3 * * *';
 
+  // Get email cron config
+  const { prisma } = await import('./prisma');
+  const emailCronConfig = await prisma.emailCronJob.findFirst();
+  const emailSchedule = emailCronConfig?.schedule || '0 */6 * * *';
+
   const youtubeNextRun = status.youtube.running ? getNextRunTime(youtubeSchedule) : null;
   const socialNextRun = status.socialMedia.running ? getNextRunTime(socialMediaSchedule) : null;
   const subscriberSyncNextRun = status.subscriberSync.running ? getNextRunTime(subscriberSyncSchedule) : null;
+  const emailNextRun = status.email.running && emailCronConfig?.isEnabled ? getNextRunTime(emailSchedule) : null;
 
   return {
     youtube: {
@@ -341,6 +673,17 @@ export async function getCronStatusWithNextRun() {
       ...status.subscriberSync,
       nextRun: subscriberSyncNextRun ? subscriberSyncNextRun.toISOString() : null,
       schedule: subscriberSyncSchedule,
+    },
+    email: {
+      ...status.email,
+      nextRun: emailNextRun ? emailNextRun.toISOString() : null,
+      schedule: emailSchedule,
+      isEnabled: emailCronConfig?.isEnabled || false,
+      syncEmails: emailCronConfig?.syncEmails || false,
+      analyzeEmails: emailCronConfig?.analyzeEmails || false,
+      lastRun: emailCronConfig?.lastRun?.toISOString() || null,
+      lastSyncAt: emailCronConfig?.lastSyncAt?.toISOString() || null,
+      lastAnalyzeAt: emailCronConfig?.lastAnalyzeAt?.toISOString() || null,
     },
   };
 }

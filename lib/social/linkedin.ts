@@ -277,13 +277,32 @@ export async function uploadLinkedInVideo(
   const registerData = await registerResponse.json();
   console.log(`[LINKEDIN] Video registration successful, asset URN: ${registerData.value.asset}`);
 
+  // Convert relative URLs to absolute URLs
+  let absoluteVideoUrl: string;
+  if (videoUrl.startsWith('http://') || videoUrl.startsWith('https://')) {
+    absoluteVideoUrl = videoUrl;
+  } else {
+    // Normalize BASE_URL to remove trailing slashes
+    const normalizedBase = BASE_URL.replace(/\/+$/, '');
+    
+    if (videoUrl.startsWith('/')) {
+      // Relative URL starting with / - prepend normalized base URL
+      absoluteVideoUrl = `${normalizedBase}${videoUrl}`;
+    } else {
+      // Relative URL without leading / - treat as relative to base
+      absoluteVideoUrl = `${normalizedBase}/${videoUrl}`;
+    }
+  }
+  
+  console.log(`[LINKEDIN] Resolved video URL: ${absoluteVideoUrl}`);
+  
   // Download the video from the URL
-  console.log(`[LINKEDIN] Downloading video from: ${videoUrl}`);
-  const videoResponse = await fetch(videoUrl);
+  console.log(`[LINKEDIN] Downloading video from: ${absoluteVideoUrl}`);
+  const videoResponse = await fetch(absoluteVideoUrl);
   console.log(`[LINKEDIN] Video download response status: ${videoResponse.status} ${videoResponse.statusText}`);
   
   if (!videoResponse.ok) {
-    const errorMsg = `Failed to download video from ${videoUrl} (${videoResponse.status})`;
+    const errorMsg = `Failed to download video from ${absoluteVideoUrl} (${videoResponse.status})`;
     console.error(`[LINKEDIN] ${errorMsg}`);
     throw new Error(errorMsg);
   }
@@ -324,7 +343,18 @@ export async function uploadLinkedInVideo(
   }
 
   console.log(`[LINKEDIN] Video uploaded successfully, asset URN: ${registerData.value.asset}`);
-  return registerData.value.asset;
+  
+  // Convert digitalmediaAsset URN to video URN format required by Posts API
+  // LinkedIn returns urn:li:digitalmediaAsset:ABC123 but Posts API expects urn:li:video:ABC123
+  const assetUrn = registerData.value.asset;
+  if (assetUrn.startsWith('urn:li:digitalmediaAsset:')) {
+    const videoId = assetUrn.replace('urn:li:digitalmediaAsset:', '');
+    const videoUrn = `urn:li:video:${videoId}`;
+    console.log(`[LINKEDIN] Converted digitalmediaAsset URN to video URN: ${videoUrn}`);
+    return videoUrn;
+  }
+  
+  return assetUrn;
 }
 
 /**
@@ -374,13 +404,32 @@ export async function uploadLinkedInImage(
   const registerData = await registerResponse.json();
   console.log(`[LINKEDIN] Image registration successful, asset URN: ${registerData.value.asset}`);
 
+  // Convert relative URLs to absolute URLs
+  let absoluteImageUrl: string;
+  if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+    absoluteImageUrl = imageUrl;
+  } else {
+    // Normalize BASE_URL to remove trailing slashes
+    const normalizedBase = BASE_URL.replace(/\/+$/, '');
+    
+    if (imageUrl.startsWith('/')) {
+      // Relative URL starting with / - prepend normalized base URL
+      absoluteImageUrl = `${normalizedBase}${imageUrl}`;
+    } else {
+      // Relative URL without leading / - treat as relative to base
+      absoluteImageUrl = `${normalizedBase}/${imageUrl}`;
+    }
+  }
+  
+  console.log(`[LINKEDIN] Resolved image URL: ${absoluteImageUrl}`);
+
   // Download the image from the URL
-  console.log(`[LINKEDIN] Downloading image from: ${imageUrl}`);
-  const imageResponse = await fetch(imageUrl);
+  console.log(`[LINKEDIN] Downloading image from: ${absoluteImageUrl}`);
+  const imageResponse = await fetch(absoluteImageUrl);
   console.log(`[LINKEDIN] Image download response status: ${imageResponse.status} ${imageResponse.statusText}`);
   
   if (!imageResponse.ok) {
-    const errorMsg = `Failed to download image from ${imageUrl} (${imageResponse.status})`;
+    const errorMsg = `Failed to download image from ${absoluteImageUrl} (${imageResponse.status})`;
     console.error(`[LINKEDIN] ${errorMsg}`);
     throw new Error(errorMsg);
   }
@@ -422,7 +471,18 @@ export async function uploadLinkedInImage(
   }
 
   console.log(`[LINKEDIN] Image uploaded successfully, asset URN: ${registerData.value.asset}`);
-  return registerData.value.asset;
+  
+  // Convert digitalmediaAsset URN to image URN format required by Posts API
+  // LinkedIn returns urn:li:digitalmediaAsset:ABC123 but Posts API expects urn:li:image:ABC123
+  const assetUrn = registerData.value.asset;
+  if (assetUrn.startsWith('urn:li:digitalmediaAsset:')) {
+    const imageId = assetUrn.replace('urn:li:digitalmediaAsset:', '');
+    const imageUrn = `urn:li:image:${imageId}`;
+    console.log(`[LINKEDIN] Converted digitalmediaAsset URN to image URN: ${imageUrn}`);
+    return imageUrn;
+  }
+  
+  return assetUrn;
 }
 
 /**
@@ -450,86 +510,134 @@ export async function publishToLinkedIn(
   const hasVideos = videos.length > 0;
   
   // LinkedIn allows either images OR videos, not both mixed
-  let shareMediaCategory: 'IMAGE' | 'VIDEO' | 'NONE' = 'NONE';
-  if (hasVideos) {
-    shareMediaCategory = 'VIDEO';
-  } else if (hasImages) {
-    shareMediaCategory = 'IMAGE';
-  }
+  // For new Posts API, we handle single image/video or use MultiImage for multiple images
 
-  // Prepare the post content
+  // Prepare the post content using new Posts API format
   const postContent: any = {
     author: personUrn,
+    commentary: content,
+    visibility: 'PUBLIC',
+    distribution: {
+      feedDistribution: 'MAIN_FEED',
+      targetEntities: [],
+      thirdPartyDistributionChannels: [],
+    },
     lifecycleState: 'PUBLISHED',
-    specificContent: {
-      'com.linkedin.ugc.ShareContent': {
-        shareCommentary: {
-          text: content,
-        },
-        shareMediaCategory,
-      },
-    },
-    visibility: {
-      'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC',
-    },
+    isReshareDisabledByAuthor: false,
   };
 
   // Upload and attach media assets
   if (assets.length > 0) {
     console.log(`[LINKEDIN] Uploading ${assets.length} media asset(s)...`);
-    const mediaArray: Array<{ status: string; media: string; description?: { text: string } }> = [];
     const errors: string[] = [];
 
-    for (let i = 0; i < assets.length; i++) {
-      const asset = assets[i];
+    // For single image or video
+    if (assets.length === 1) {
+      const asset = assets[0];
       try {
         let assetUrn: string;
         
         if (asset.type === 'video') {
-          console.log(`[LINKEDIN] Uploading video ${i + 1}/${assets.length} from URL: ${asset.url}`);
+          console.log(`[LINKEDIN] Uploading video from URL: ${asset.url}`);
           assetUrn = await uploadLinkedInVideo(accessToken, asset.url, personUrn);
-          console.log(`[LINKEDIN] Video ${i + 1} uploaded successfully, asset URN: ${assetUrn}`);
+          console.log(`[LINKEDIN] Video uploaded successfully, asset URN: ${assetUrn}`);
+          
+          // Add video to content
+          postContent.content = {
+            media: {
+              id: assetUrn,
+              title: 'Video post',
+            },
+          };
         } else {
-          console.log(`[LINKEDIN] Uploading image ${i + 1}/${assets.length} from URL: ${asset.url}`);
+          console.log(`[LINKEDIN] Uploading image from URL: ${asset.url}`);
           assetUrn = await uploadLinkedInImage(accessToken, asset.url, personUrn);
-          console.log(`[LINKEDIN] Image ${i + 1} uploaded successfully, asset URN: ${assetUrn}`);
+          console.log(`[LINKEDIN] Image uploaded successfully, asset URN: ${assetUrn}`);
+          
+          // Add image to content
+          postContent.content = {
+            media: {
+              id: assetUrn,
+              title: 'Image post',
+            },
+          };
         }
-
-        mediaArray.push({
-          status: 'READY',
-          media: assetUrn,
-        });
       } catch (error) {
-        const errorMsg = `Failed to upload ${asset.type} ${i + 1}: ${error instanceof Error ? error.message : 'Unknown error'}`;
+        const errorMsg = `Failed to upload ${asset.type}: ${error instanceof Error ? error.message : 'Unknown error'}`;
+        console.error(`[LINKEDIN] ${errorMsg}`);
+        errors.push(errorMsg);
+      }
+    } else if (hasImages && images.length > 1) {
+      // Multiple images - use MultiImage API (only for non-sponsored posts)
+      console.log(`[LINKEDIN] Uploading ${images.length} images for multi-image post...`);
+      const imageUrns: string[] = [];
+      
+      for (let i = 0; i < images.length; i++) {
+        try {
+          const assetUrn = await uploadLinkedInImage(accessToken, images[i].url, personUrn);
+          imageUrns.push(assetUrn);
+          console.log(`[LINKEDIN] Image ${i + 1}/${images.length} uploaded successfully`);
+      } catch (error) {
+          const errorMsg = `Failed to upload image ${i + 1}: ${error instanceof Error ? error.message : 'Unknown error'}`;
         console.error(`[LINKEDIN] ${errorMsg}`);
         errors.push(errorMsg);
       }
     }
 
-    if (mediaArray.length > 0) {
-      console.log(`[LINKEDIN] Successfully uploaded ${mediaArray.length}/${assets.length} media assets`);
-      postContent.specificContent['com.linkedin.ugc.ShareContent'].media = mediaArray;
+      if (imageUrns.length > 0) {
+        // Use MultiImage format
+        postContent.content = {
+          multiImage: {
+            images: imageUrns.map(urn => ({ id: urn })),
+          },
+        };
+      }
+    } else {
+      // Multiple videos or mixed content - LinkedIn doesn't support this
+      console.warn(`[LINKEDIN] Multiple videos or mixed content not supported. Using first asset only.`);
+      const asset = assets[0];
+      try {
+        if (asset.type === 'video') {
+          const assetUrn = await uploadLinkedInVideo(accessToken, asset.url, personUrn);
+          postContent.content = {
+            media: {
+              id: assetUrn,
+              title: 'Video post',
+            },
+          };
+        } else {
+          const assetUrn = await uploadLinkedInImage(accessToken, asset.url, personUrn);
+          postContent.content = {
+            media: {
+              id: assetUrn,
+              title: 'Image post',
+            },
+          };
+        }
+      } catch (error) {
+        console.error(`[LINKEDIN] Failed to upload first asset: ${error}`);
+      }
+    }
       
       if (errors.length > 0) {
         console.warn(`[LINKEDIN] Some media assets failed to upload: ${errors.join('; ')}`);
-      }
-    } else {
-      console.error(`[LINKEDIN] All media assets failed to upload: ${errors.join('; ')}`);
-      // Continue without media if all uploads failed
-      postContent.specificContent['com.linkedin.ugc.ShareContent'].shareMediaCategory = 'NONE';
     }
   }
 
   console.log(`[LINKEDIN] Publishing post to LinkedIn API...`);
   console.log(`[LINKEDIN] Post content preview: ${JSON.stringify(postContent, null, 2).substring(0, 500)}...`);
 
-  // Publish the post
-  const response = await fetch('https://api.linkedin.com/v2/ugcPosts', {
+  // Use the new Posts API (replaces deprecated ugcPosts API)
+  // LinkedIn-Version header is required (using active version: 202411)
+  // Note: 202412 may not be active yet, using 202411 which should be active
+  const linkedInVersion = '202411'; // November 2024 - update as needed when newer versions become active
+  const response = await fetch('https://api.linkedin.com/rest/posts', {
     method: 'POST',
     headers: {
       Authorization: `Bearer ${accessToken}`,
       'Content-Type': 'application/json',
       'X-Restli-Protocol-Version': '2.0.0',
+      'Linkedin-Version': linkedInVersion,
     },
     body: JSON.stringify(postContent),
   });
@@ -559,13 +667,12 @@ export async function publishToLinkedIn(
     throw new Error(`Failed to parse LinkedIn API response: ${parseError instanceof Error ? parseError.message : 'Unknown error'}`);
   }
   
-  // LinkedIn returns the URN in the Location header or in the response
-  const location = response.headers.get('Location') || '';
-  const locationUrn = location ? location.split('/').pop() || location : '';
-  const responseId = data?.id || data?.value?.id || '';
-  const urn = locationUrn || responseId || '';
+  // New Posts API returns the URN in the x-restli-id header or in the response body
+  const restliId = response.headers.get('x-restli-id') || '';
+  const responseId = data?.id || '';
+  const urn = restliId || responseId || '';
 
-  console.log(`[LINKEDIN] Extracted values - Location header: "${location}", Location URN: "${locationUrn}", Response ID: "${responseId}", Final URN: "${urn}"`);
+  console.log(`[LINKEDIN] Extracted values - x-restli-id header: "${restliId}", Response ID: "${responseId}", Final URN: "${urn}"`);
 
   if (!urn || urn.trim() === '') {
     console.error(`[LINKEDIN] ERROR: No URN or post ID found in response!`);
@@ -576,12 +683,116 @@ export async function publishToLinkedIn(
     throw new Error('LinkedIn API returned success but no post ID or URN in response');
   }
 
+  // The URN from new Posts API can be either urn:li:share:{id} or urn:li:ugcPost:{id}
   const finalUrn = urn.startsWith('urn:li:') ? urn : `urn:li:ugcPost:${urn}`;
-  console.log(`[LINKEDIN] ✓ Post published successfully - Final URN: ${finalUrn}`);
+  // Extract just the ID part for postId (for backward compatibility)
+  const postIdMatch = finalUrn.match(/urn:li:(?:share|ugcPost):(.+)/);
+  const postId = postIdMatch ? postIdMatch[1] : finalUrn;
+  
+  console.log(`[LINKEDIN] ✓ Post published successfully - Final URN: ${finalUrn}, Post ID: ${postId}`);
 
   return {
-    postId: urn,
+    postId: postId,
     urn: finalUrn,
+  };
+}
+
+/**
+ * Post a comment on a LinkedIn post
+ * Uses the v2 legacy API: POST /v2/socialActions/{target}/comments
+ */
+export async function commentOnLinkedInPost(
+  accessToken: string,
+  postUrn: string,
+  commentText: string
+): Promise<{ commentId: string }> {
+  console.log(`[LINKEDIN] Posting comment on post ${postUrn}, comment length: ${commentText.length}`);
+  
+  // Get person URN
+  const personUrn = await getLinkedInPersonUrn(accessToken);
+  
+  // Ensure post URN is in correct format
+  // v2 API typically uses share URNs (urn:li:share:{id}) or activity URNs (urn:li:activity:{id})
+  let formattedPostUrn = postUrn;
+  if (!postUrn.startsWith('urn:li:')) {
+    // If just an ID, assume it's a share
+    formattedPostUrn = `urn:li:share:${postUrn}`;
+  }
+  
+  // For v2 API, convert ugcPost to share/activity format if needed
+  // v2 API typically expects share or activity URNs
+  if (formattedPostUrn.startsWith('urn:li:ugcPost:')) {
+    // Convert ugcPost to share format for v2 API
+    const postId = formattedPostUrn.replace('urn:li:ugcPost:', '');
+    formattedPostUrn = `urn:li:share:${postId}`;
+    console.log(`[LINKEDIN] Converted ugcPost URN to share URN for v2 API: ${formattedPostUrn}`);
+  }
+  
+  // v2 API uses the post URN as both the target in URL and object in body
+  // The object field should be the share/activity URN
+  let objectUrn = formattedPostUrn;
+  
+  // If it's a share URN, we can use it directly, or convert to activity if needed
+  // v2 API typically accepts share URNs as-is
+  if (formattedPostUrn.startsWith('urn:li:share:')) {
+    // For v2 API, we can use share URN directly or convert to activity
+    // Let's try using share URN directly first
+    objectUrn = formattedPostUrn;
+  }
+  
+  // LinkedIn v2 Social Actions API for comments
+  // Endpoint format: POST /v2/socialActions/{shareUrn|activityUrn}/comments
+  const commentPayload = {
+    actor: personUrn,
+    object: objectUrn, // The share or activity URN
+    message: {
+      text: commentText,
+    },
+  };
+
+  console.log(`[LINKEDIN] Posting comment to LinkedIn v2 Social Actions API...`);
+  console.log(`[LINKEDIN] Post URN (URL): ${formattedPostUrn}`);
+  console.log(`[LINKEDIN] Object URN: ${objectUrn}`);
+  
+  const response = await fetch(`https://api.linkedin.com/v2/socialActions/${encodeURIComponent(formattedPostUrn)}/comments`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+      'X-Restli-Protocol-Version': '2.0.0',
+    },
+    body: JSON.stringify(commentPayload),
+  });
+
+  console.log(`[LINKEDIN] Comment API response status: ${response.status} ${response.statusText}`);
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error(`[LINKEDIN] Failed to post comment: ${errorText}`);
+    throw new Error(`Failed to post comment on LinkedIn (${response.status}): ${errorText}`);
+  }
+
+  let data: any = {};
+  try {
+    const responseText = await response.text();
+    if (responseText && responseText.trim() !== '') {
+      data = JSON.parse(responseText);
+      console.log(`[LINKEDIN] Comment response:`, JSON.stringify(data, null, 2));
+    }
+  } catch (parseError) {
+    console.error(`[LINKEDIN] Error parsing comment response:`, parseError);
+  }
+
+  // v2 API returns the comment ID in Location header or x-restli-id header or response body
+  const location = response.headers.get('Location') || '';
+  const locationId = location ? location.split('/').pop() || location : '';
+  const restliId = response.headers.get('x-restli-id') || '';
+  const responseId = data?.id || '';
+  const commentId = locationId || restliId || responseId || 'comment_' + Date.now();
+
+  console.log(`[LINKEDIN] ✓ Comment posted successfully - Comment ID: ${commentId}`);
+  return {
+    commentId,
   };
 }
 

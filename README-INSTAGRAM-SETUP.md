@@ -96,10 +96,13 @@ Your app needs these permissions (scopes):
 
 - `instagram_basic` - Basic access to Instagram account
 - `instagram_content_publish` - Permission to publish content to Instagram
+- `instagram_manage_comments` - Permission to manage comments (post, reply, hide, delete comments)
 - `pages_read_engagement` - Read access to Facebook Page (required since Instagram must be linked to a Page)
 - `pages_show_list` - List Facebook Pages (to select the connected Instagram account)
 
 These permissions are automatically requested during the OAuth flow.
+
+**Important**: If you've already connected your Instagram account and are getting permission errors when posting comments, you'll need to disconnect and reconnect your Instagram account to grant the new permission (`instagram_manage_comments`).
 
 ## Step 9: App Review Status
 

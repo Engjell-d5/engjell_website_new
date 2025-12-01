@@ -287,6 +287,18 @@ export async function uploadTwitterMedia(
   if (!initResponse.ok) {
     const errorText = await initResponse.text();
     console.error(`[TWITTER] Failed to initialize media upload: ${errorText}`);
+    
+    // 403 Forbidden usually means token is invalid, revoked, or missing permissions
+    if (initResponse.status === 403) {
+      let errorMessage = `Failed to initialize Twitter media upload (403 Forbidden): ${errorText}`;
+      errorMessage += '\n\nThis usually means:';
+      errorMessage += '\n1. Your access token has been revoked or expired';
+      errorMessage += '\n2. Your app permissions have changed';
+      errorMessage += '\n3. The token needs to be refreshed';
+      errorMessage += '\n\nPlease disconnect and reconnect your Twitter account to get a new token.';
+      throw new Error(errorMessage);
+    }
+    
     throw new Error(`Failed to initialize Twitter media upload (${initResponse.status}): ${errorText}`);
   }
 
@@ -354,6 +366,18 @@ export async function uploadTwitterMedia(
       const error = await appendResponse.text();
       console.error(`[TWITTER] Failed to append chunk ${segmentIndex + 1} to ${appendUrl}: ${error}`);
       console.error(`[TWITTER] Response status: ${appendResponse.status} ${appendResponse.statusText}`);
+      
+      // 403 Forbidden usually means token is invalid, revoked, or missing permissions
+      if (appendResponse.status === 403) {
+        let errorMessage = `Failed to append Twitter media chunk (403 Forbidden): ${error}`;
+        errorMessage += '\n\nThis usually means:';
+        errorMessage += '\n1. Your access token has been revoked or expired';
+        errorMessage += '\n2. Your app permissions have changed';
+        errorMessage += '\n3. The token needs to be refreshed';
+        errorMessage += '\n\nPlease disconnect and reconnect your Twitter account to get a new token.';
+        throw new Error(errorMessage);
+      }
+      
       throw new Error(`Failed to append Twitter media chunk ${segmentIndex + 1} (${appendResponse.status}): ${error}`);
     }
     
@@ -378,6 +402,18 @@ export async function uploadTwitterMedia(
   if (!finalizeResponse.ok) {
     const error = await finalizeResponse.text();
     console.error(`[TWITTER] Failed to finalize media upload: ${error}`);
+    
+    // 403 Forbidden usually means token is invalid, revoked, or missing permissions
+    if (finalizeResponse.status === 403) {
+      let errorMessage = `Failed to finalize Twitter media upload (403 Forbidden): ${error}`;
+      errorMessage += '\n\nThis usually means:';
+      errorMessage += '\n1. Your access token has been revoked or expired';
+      errorMessage += '\n2. Your app permissions have changed';
+      errorMessage += '\n3. The token needs to be refreshed';
+      errorMessage += '\n\nPlease disconnect and reconnect your Twitter account to get a new token.';
+      throw new Error(errorMessage);
+    }
+    
     throw new Error(`Failed to finalize Twitter media upload (${finalizeResponse.status}): ${error}`);
   }
 
@@ -519,6 +555,18 @@ export async function publishToTwitter(
   if (!response.ok) {
     const errorText = await response.text();
     console.error(`[TWITTER] Twitter API error response: ${errorText}`);
+    
+    // 403 Forbidden usually means token is invalid, revoked, or missing permissions
+    if (response.status === 403) {
+      let errorMessage = `Failed to publish to Twitter (403 Forbidden): ${errorText}`;
+      errorMessage += '\n\nThis usually means:';
+      errorMessage += '\n1. Your access token has been revoked or expired';
+      errorMessage += '\n2. Your app permissions have changed';
+      errorMessage += '\n3. The token needs to be refreshed';
+      errorMessage += '\n\nPlease disconnect and reconnect your Twitter account to get a new token.';
+      throw new Error(errorMessage);
+    }
+    
     throw new Error(`Failed to publish to Twitter (${response.status}): ${errorText}`);
   }
 
@@ -534,6 +582,74 @@ export async function publishToTwitter(
   console.log(`[TWITTER] ✓ Tweet published successfully - Tweet ID: ${tweetId}`);
   return {
     postId: tweetId,
+  };
+}
+
+/**
+ * Post a comment/reply on a Twitter post
+ */
+export async function commentOnTwitterPost(
+  accessToken: string,
+  tweetId: string,
+  commentText: string
+): Promise<{ commentId: string }> {
+  console.log(`[TWITTER] Posting comment/reply on tweet ${tweetId}, comment length: ${commentText.length}`);
+  
+  // Validate content length (Twitter limit is 280 characters)
+  if (commentText.length > 280) {
+    throw new Error(`Twitter comment exceeds 280 characters (${commentText.length})`);
+  }
+
+  // Twitter uses the same POST /2/tweets endpoint but with in_reply_to_tweet_id
+  const replyPayload: any = {
+    text: commentText,
+    reply: {
+      in_reply_to_tweet_id: tweetId,
+    },
+  };
+
+  console.log(`[TWITTER] Posting reply to Twitter API v2...`);
+  const response = await fetch('https://api.twitter.com/2/tweets', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(replyPayload),
+  });
+
+  console.log(`[TWITTER] Reply API response status: ${response.status} ${response.statusText}`);
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error(`[TWITTER] Failed to post reply: ${errorText}`);
+    
+    // 403 Forbidden usually means token is invalid, revoked, or missing permissions
+    if (response.status === 403) {
+      let errorMessage = `Failed to post reply on Twitter (403 Forbidden): ${errorText}`;
+      errorMessage += '\n\nThis usually means:';
+      errorMessage += '\n1. Your access token has been revoked or expired';
+      errorMessage += '\n2. Your app permissions have changed';
+      errorMessage += '\n3. The token needs to be refreshed';
+      errorMessage += '\n\nPlease disconnect and reconnect your Twitter account to get a new token.';
+      throw new Error(errorMessage);
+    }
+    
+    throw new Error(`Failed to post reply on Twitter (${response.status}): ${errorText}`);
+  }
+
+  const data = await response.json();
+  console.log(`[TWITTER] Reply API success response:`, JSON.stringify(data, null, 2));
+
+  const replyId = data.data?.id;
+  if (!replyId) {
+    console.error(`[TWITTER] ERROR: No reply ID found in response!`);
+    throw new Error('Twitter API returned success but no reply ID in response');
+  }
+
+  console.log(`[TWITTER] ✓ Reply posted successfully - Reply ID: ${replyId}`);
+  return {
+    commentId: replyId,
   };
 }
 

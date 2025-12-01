@@ -22,6 +22,7 @@ interface SocialPost {
   publishedOn: string | null;
   errorMessage: string | null;
   timesPosted: number;
+  comments: string | null; // JSON string of string[]
   createdAt: string;
 }
 
@@ -46,6 +47,7 @@ export default function SocialMediaPage() {
     mediaAssets: [] as MediaAsset[],
     platforms: [] as string[],
     scheduledFor: '',
+    comments: [] as string[],
   });
   const [uploading, setUploading] = useState(false);
   const [showRefineModal, setShowRefineModal] = useState(false);
@@ -191,13 +193,14 @@ export default function SocialMediaPage() {
             ...formData,
             mediaAssets: JSON.stringify(formData.mediaAssets),
             platforms: JSON.stringify(formData.platforms),
+            comments: JSON.stringify(formData.comments),
           }),
       });
 
       if (response.ok) {
         setShowForm(false);
         setEditingPost(null);
-        setFormData({ content: '', mediaAssets: [], platforms: [], scheduledFor: '' });
+        setFormData({ content: '', mediaAssets: [], platforms: [], scheduledFor: '', comments: [] });
         setMessage({ type: 'success', text: editingPost ? 'Post updated successfully!' : 'Post scheduled successfully!' });
         fetchPosts();
         // Clear message after 3 seconds
@@ -453,11 +456,22 @@ export default function SocialMediaPage() {
       }
     }
     
+    // Parse comments
+    let comments: string[] = [];
+    if (post.comments) {
+      try {
+        comments = JSON.parse(post.comments);
+      } catch (e) {
+        console.error('Error parsing comments:', e);
+      }
+    }
+    
     setFormData({
       content: post.content,
       mediaAssets,
       platforms: JSON.parse(post.platforms || '[]'),
       scheduledFor: new Date(post.scheduledFor).toISOString().slice(0, 16),
+      comments,
     });
     setShowForm(true);
   };
@@ -733,7 +747,7 @@ export default function SocialMediaPage() {
             onClick={() => {
               setShowForm(true);
               setEditingPost(null);
-              setFormData({ content: '', mediaAssets: [], platforms: [], scheduledFor: '' });
+              setFormData({ content: '', mediaAssets: [], platforms: [], scheduledFor: '', comments: [] });
             }}
             className="px-6 py-3 bg-[var(--primary-mint)] text-black hover:bg-white font-bold uppercase tracking-widest text-xs transition-colors flex items-center gap-2"
           >
@@ -993,6 +1007,53 @@ export default function SocialMediaPage() {
 
             <div>
               <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
+                Comments (Optional) - Posted after the main post
+              </label>
+              <p className="text-[10px] text-gray-500 mb-2">
+                Add comments that will be posted as replies to your main post after it's published. Each comment will be posted separately.
+              </p>
+              <div className="space-y-3">
+                {(formData.comments || []).map((comment, index) => (
+                  <div key={index} className="flex gap-2 items-start">
+                    <textarea
+                      value={comment}
+                      onChange={(e) => {
+                        const newComments = [...(formData.comments || [])];
+                        newComments[index] = e.target.value;
+                        setFormData({ ...formData, comments: newComments });
+                      }}
+                      rows={2}
+                      className="flex-1 bg-black border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors resize-none font-montserrat"
+                      placeholder={`Comment ${index + 1}`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newComments = formData.comments.filter((_, i) => i !== index);
+                        setFormData({ ...formData, comments: newComments });
+                      }}
+                      className="p-2 border border-red-500 hover:border-red-400 hover:bg-red-500 transition-colors"
+                      title="Remove comment"
+                    >
+                      <X className="w-4 h-4 text-red-400" />
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormData({ ...formData, comments: [...(formData.comments || []), ''] });
+                  }}
+                  className="px-4 py-2 border border-[var(--border-color)] hover:border-[var(--primary-mint)] text-white hover:bg-[var(--rich-black)] transition-colors flex items-center gap-2 text-xs"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Comment
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
                 Schedule For
               </label>
               <DateTimePicker
@@ -1016,7 +1077,7 @@ export default function SocialMediaPage() {
                 onClick={() => {
                   setShowForm(false);
                   setEditingPost(null);
-                  setFormData({ content: '', mediaAssets: [], platforms: [], scheduledFor: '' });
+                  setFormData({ content: '', mediaAssets: [], platforms: [], scheduledFor: '', comments: [] });
                 }}
                 className="px-6 py-3 border border-[var(--border-color)] text-white hover:bg-[var(--rich-black)] font-bold uppercase tracking-widest text-xs transition-colors"
               >

@@ -55,7 +55,7 @@ interface AiIntegration {
 }
 
 export default function EmailPage() {
-  const [activeTab, setActiveTab] = useState<'emails' | 'tasks'>('emails');
+  const [activeTab, setActiveTab] = useState<'emails' | 'tasks' | 'cron'>('emails');
   const [threads, setThreads] = useState<EmailThread[]>([]);
   const [tasks, setTasks] = useState<EmailTask[]>([]);
   const [loading, setLoading] = useState(true);
@@ -65,6 +65,7 @@ export default function EmailPage() {
   const [deleting, setDeleting] = useState<string | null>(null);
   const [deletingTask, setDeletingTask] = useState<string | null>(null);
   const [updatingTask, setUpdatingTask] = useState<string | null>(null);
+  const [creatingExternal, setCreatingExternal] = useState<string | null>(null);
   const [connected, setConnected] = useState(false);
   const [connectionEmail, setConnectionEmail] = useState<string | null>(null);
   const [aiIntegrations, setAiIntegrations] = useState<AiIntegration[]>([]);
@@ -84,12 +85,28 @@ export default function EmailPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalThreads, setTotalThreads] = useState(0);
   const [unanalyzedCount, setUnanalyzedCount] = useState(0);
+  
+  // Cron configuration
+  const [cronLoading, setCronLoading] = useState(false);
+  const [cronSaving, setCronSaving] = useState(false);
+  const [cronConfig, setCronConfig] = useState<{
+    isEnabled: boolean;
+    schedule: string;
+    syncEmails: boolean;
+    analyzeEmails: boolean;
+    aiIntegrationId: string | null;
+    nextRun?: string | null;
+    lastRun?: string | null;
+    lastSyncAt?: string | null;
+    lastAnalyzeAt?: string | null;
+  } | null>(null);
 
   useEffect(() => {
     checkConnection();
     fetchEmails();
     fetchTasks();
     fetchAiIntegrations();
+    fetchCronConfig();
   }, []);
 
   const checkConnection = async () => {
@@ -129,13 +146,13 @@ export default function EmailPage() {
         setCurrentPage(data.page || 1);
       }
       
-      // Also fetch count of unanalyzed, unread, relevant emails for the button
-      // This matches the analyze-all filter: isRead: false, isAnalyzed: false, isIrrelevant: false
+      // Also fetch count of unanalyzed, relevant emails for the button
+      // Read status doesn't matter - we want to analyze all unanalyzed relevant emails
       const countParams = new URLSearchParams({
         grouped: 'true',
         page: '1',
         pageSize: '1',
-        readStatus: 'unread', // Must be unread (matches analyze-all requirement)
+        readStatus: 'all', // Read status doesn't matter
         analyzedStatus: 'unanalyzed', // Must be unanalyzed
         relevantStatus: 'relevant', // Must be relevant (not irrelevant)
       });
@@ -184,7 +201,7 @@ export default function EmailPage() {
           grouped: 'true',
           page: '1',
           pageSize: '1',
-          readStatus: 'unread',
+          readStatus: 'all', // Read status doesn't matter
           analyzedStatus: 'unanalyzed',
           relevantStatus: 'relevant',
         });
@@ -223,6 +240,54 @@ export default function EmailPage() {
       }
     } catch (error) {
       console.error('Error fetching AI integrations:', error);
+    }
+  };
+
+  const fetchCronConfig = async () => {
+    setCronLoading(true);
+    try {
+      const response = await fetch('/api/email/cron');
+      if (response.ok) {
+        const data = await response.json();
+        setCronConfig(data.config);
+      }
+    } catch (error) {
+      console.error('Error fetching cron config:', error);
+    } finally {
+      setCronLoading(false);
+    }
+  };
+
+  const handleSaveCronConfig = async () => {
+    if (!cronConfig) return;
+    
+    setCronSaving(true);
+    setMessage(null);
+    try {
+      const response = await fetch('/api/email/cron', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(cronConfig),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCronConfig(data.config);
+        setMessage({
+          type: 'success',
+          text: cronConfig.isEnabled 
+            ? 'Cron job enabled and scheduled successfully' 
+            : 'Cron job disabled successfully',
+        });
+        await fetchCronConfig(); // Refresh to get updated nextRun
+      } else {
+        const error = await response.json();
+        setMessage({ type: 'error', text: error.error || 'Failed to save cron configuration' });
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Failed to save cron configuration' });
+    } finally {
+      setCronSaving(false);
     }
   };
 
@@ -458,6 +523,36 @@ export default function EmailPage() {
     }
   };
 
+  const handleCreateExternalTask = async (taskId: string) => {
+    setCreatingExternal(taskId);
+    setMessage(null);
+    try {
+      const url = `/api/email/tasks/${taskId}/create-external`;
+      console.log('[EMAIL-PAGE] Creating external task:', url, 'Task ID:', taskId);
+      const response = await fetch(url, {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setMessage({ 
+          type: 'success', 
+          text: data.message || 'Task created successfully on external platform' 
+        });
+      } else {
+        const error = await response.json();
+        setMessage({ 
+          type: 'error', 
+          text: error.error || error.details || 'Failed to create task on external platform' 
+        });
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Failed to create task on external platform' });
+    } finally {
+      setCreatingExternal(null);
+    }
+  };
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high':
@@ -501,7 +596,8 @@ export default function EmailPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <>
+      <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -675,10 +771,20 @@ export default function EmailPage() {
             >
               Tasks ({tasks.length})
             </button>
+            <button
+              onClick={() => setActiveTab('cron')}
+              className={`px-6 py-4 text-xs font-bold uppercase tracking-widest border-b-2 transition-colors ${
+                activeTab === 'cron'
+                  ? 'border-[var(--primary-mint)] text-[var(--primary-mint)]'
+                  : 'border-transparent text-gray-400 hover:text-white hover:border-gray-500'
+              }`}
+            >
+              Cron Job
+            </button>
           </nav>
         </div>
 
-          <div className="p-6">
+        <div className="p-6">
             {activeTab === 'emails' ? (
               <div>
                 {threads.length === 0 ? (
@@ -882,7 +988,7 @@ export default function EmailPage() {
                   </div>
                 )}
               </div>
-            ) : (
+            ) : activeTab === 'tasks' ? (
               <div>
                 {tasks.length === 0 ? (
                   <div className="text-center py-12">
@@ -935,6 +1041,15 @@ export default function EmailPage() {
                             <p className="text-xs text-gray-500 mt-2">{formatDate(task.createdAt)}</p>
                           </div>
                           <div className="flex gap-2 ml-4">
+                            <button
+                              onClick={() => handleCreateExternalTask(task.id)}
+                              disabled={creatingExternal === task.id}
+                              className="px-4 py-2 bg-[var(--rich-black)] border border-blue-500/50 text-blue-400 hover:bg-blue-900/20 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1"
+                              title="Create task on external platform"
+                            >
+                              <ExternalLink className={`w-3 h-3 ${creatingExternal === task.id ? 'animate-spin' : ''}`} />
+                              {creatingExternal === task.id ? 'Creating...' : 'Create External'}
+                            </button>
                             {task.status !== 'completed' && (
                               <button
                                 onClick={() => handleMarkTaskDone(task.id)}
@@ -962,7 +1077,178 @@ export default function EmailPage() {
                   </div>
                 )}
               </div>
-            )}
+            ) : activeTab === 'cron' ? (
+              <div>
+                {cronLoading ? (
+                  <div className="text-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--primary-mint)] mx-auto"></div>
+                    <p className="mt-4 text-gray-400">Loading cron configuration...</p>
+                  </div>
+                ) : cronConfig ? (
+                  <div className="space-y-6">
+                    <div>
+                      <h2 className="text-xl text-white font-bebas mb-4">Email Sync & Analyze Cron Job</h2>
+                      <p className="text-sm text-gray-400 mb-6">
+                        Automatically sync emails from Gmail and analyze them for tasks on a schedule.
+                      </p>
+                    </div>
+
+                    {/* Enable/Disable Toggle */}
+                    <div className="border border-[var(--border-color)] p-4">
+                      <div className="flex items-center justify-between mb-4">
+                        <div>
+                          <h3 className="text-lg text-white font-semibold mb-1">Enable Cron Job</h3>
+                          <p className="text-sm text-gray-400">
+                            When enabled, the cron job will automatically sync and analyze emails according to the schedule below.
+                          </p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={cronConfig.isEnabled}
+                            onChange={(e) => setCronConfig({ ...cronConfig, isEnabled: e.target.checked })}
+                            className="sr-only peer"
+                          />
+                          <div className="w-14 h-7 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--primary-mint)]/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[var(--primary-mint)]"></div>
+                        </label>
+                      </div>
+                    </div>
+
+                    {/* Schedule Configuration */}
+                    <div className="border border-[var(--border-color)] p-4">
+                      <h3 className="text-lg text-white font-semibold mb-4">Schedule</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm text-gray-300 mb-2">
+                            Cron Schedule (minute hour day month dayOfWeek)
+                          </label>
+                          <input
+                            type="text"
+                            value={cronConfig.schedule}
+                            onChange={(e) => setCronConfig({ ...cronConfig, schedule: e.target.value })}
+                            placeholder="0 */6 * * *"
+                            className="w-full px-4 py-2 bg-[var(--bg-dark)] border border-[var(--border-color)] text-white placeholder-gray-500 focus:outline-none focus:border-[var(--primary-mint)] transition-colors"
+                          />
+                          <p className="text-xs text-gray-500 mt-2">
+                            Examples: "0 */6 * * *" (every 6 hours), "0 2 * * *" (daily at 2 AM), "*/30 * * * *" (every 30 minutes)
+                          </p>
+                        </div>
+                        {cronConfig.nextRun && (
+                          <div className="p-3 bg-[var(--bg-dark)] border border-[var(--border-color)]">
+                            <p className="text-sm text-gray-400">
+                              <span className="font-medium text-gray-300">Next Run:</span>{' '}
+                              {new Date(cronConfig.nextRun).toLocaleString()}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Options */}
+                    <div className="border border-[var(--border-color)] p-4">
+                      <h3 className="text-lg text-white font-semibold mb-4">Options</h3>
+                      <div className="space-y-4">
+                        <label className="flex items-center gap-3 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={cronConfig.syncEmails}
+                            onChange={(e) => setCronConfig({ ...cronConfig, syncEmails: e.target.checked })}
+                            className="w-4 h-4 text-[var(--primary-mint)] bg-[var(--bg-dark)] border-[var(--border-color)] rounded focus:ring-[var(--primary-mint)]"
+                          />
+                          <div>
+                            <span className="text-white font-medium">Sync Emails</span>
+                            <p className="text-sm text-gray-400">Fetch new emails from Gmail</p>
+                          </div>
+                        </label>
+                        <label className="flex items-center gap-3 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={cronConfig.analyzeEmails}
+                            onChange={(e) => setCronConfig({ ...cronConfig, analyzeEmails: e.target.checked })}
+                            className="w-4 h-4 text-[var(--primary-mint)] bg-[var(--bg-dark)] border-[var(--border-color)] rounded focus:ring-[var(--primary-mint)]"
+                          />
+                          <div>
+                            <span className="text-white font-medium">Analyze Emails</span>
+                            <p className="text-sm text-gray-400">Automatically analyze unanalyzed emails for tasks</p>
+                          </div>
+                        </label>
+                        {cronConfig.analyzeEmails && (
+                          <div className="ml-7">
+                            <label className="block text-sm text-gray-300 mb-2">AI Integration</label>
+                            <select
+                              value={cronConfig.aiIntegrationId || ''}
+                              onChange={(e) => setCronConfig({ ...cronConfig, aiIntegrationId: e.target.value || null })}
+                              className="w-full px-4 py-2 bg-[var(--bg-dark)] border border-[var(--border-color)] text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors"
+                            >
+                              <option value="">Select AI Integration</option>
+                              {aiIntegrations.map((integration) => (
+                                <option key={integration.id} value={integration.id}>
+                                  {integration.name} ({integration.provider})
+                                </option>
+                              ))}
+                            </select>
+                            {aiIntegrations.length === 0 && (
+                              <p className="text-xs text-red-400 mt-2">
+                                No active AI integrations found. Please configure one first.
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Last Run Information */}
+                    {(cronConfig.lastRun || cronConfig.lastSyncAt || cronConfig.lastAnalyzeAt) && (
+                      <div className="border border-[var(--border-color)] p-4">
+                        <h3 className="text-lg text-white font-semibold mb-4">Last Run Information</h3>
+                        <div className="space-y-2 text-sm">
+                          {cronConfig.lastRun && (
+                            <p className="text-gray-400">
+                              <span className="font-medium text-gray-300">Last Run:</span>{' '}
+                              {new Date(cronConfig.lastRun).toLocaleString()}
+                            </p>
+                          )}
+                          {cronConfig.lastSyncAt && (
+                            <p className="text-gray-400">
+                              <span className="font-medium text-gray-300">Last Sync:</span>{' '}
+                              {new Date(cronConfig.lastSyncAt).toLocaleString()}
+                            </p>
+                          )}
+                          {cronConfig.lastAnalyzeAt && (
+                            <p className="text-gray-400">
+                              <span className="font-medium text-gray-300">Last Analysis:</span>{' '}
+                              {new Date(cronConfig.lastAnalyzeAt).toLocaleString()}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Save Button */}
+                    <div className="flex justify-end">
+                      <button
+                        onClick={handleSaveCronConfig}
+                        disabled={cronSaving || (cronConfig.analyzeEmails && !cronConfig.aiIntegrationId)}
+                        className="px-6 py-2 bg-[var(--primary-mint)] text-black hover:bg-[var(--primary-mint)]/90 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2"
+                      >
+                        {cronSaving ? (
+                          <>
+                            <RefreshCw className="w-4 h-4 animate-spin" />
+                            Saving...
+                          </>
+                        ) : (
+                          'Save Configuration'
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-gray-400">Failed to load cron configuration</p>
+                  </div>
+                )}
+              </div>
+            ) : null}
           </div>
         </div>
 
@@ -1042,6 +1328,7 @@ export default function EmailPage() {
             </div>
           </div>
         )}
-    </div>
+      </div>
+    </>
   );
 }

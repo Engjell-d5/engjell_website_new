@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getAuthUser } from '@/lib/auth';
-import { publishToPlatform } from '@/lib/social';
+import { publishToPlatform, ensureValidToken } from '@/lib/social';
+import { commentOnLinkedInPost } from '@/lib/social/linkedin';
+import { commentOnTwitterPost } from '@/lib/social/twitter';
+import { commentOnThreadsPost } from '@/lib/social/threads';
+import { commentOnInstagramPost } from '@/lib/social/instagram';
 
 export async function POST(
   request: NextRequest,
@@ -110,6 +114,80 @@ export async function POST(
       if (result.success && result.postId) {
         console.log(`[PUBLISH-API] ✓ Successfully published to ${platform} for post ${params.id}. Post ID: ${result.postId}`);
         publishedResults[platform] = new Date().toISOString();
+        
+        // Post comments after the main post if comments exist
+        if (post.comments) {
+          try {
+            let commentsArray: string[] = [];
+            try {
+              commentsArray = JSON.parse(post.comments);
+            } catch (e) {
+              console.error(`[PUBLISH-API] Error parsing comments for post ${params.id}:`, e);
+            }
+            
+            if (commentsArray && commentsArray.length > 0) {
+              console.log(`[PUBLISH-API] Posting ${commentsArray.length} comment(s) on ${platform} for post ${params.id}`);
+              
+              // Ensure token is valid (refresh if needed) before posting comments
+              const validToken = await ensureValidToken(connection);
+              
+              // Post each comment with a small delay between them
+              for (let i = 0; i < commentsArray.length; i++) {
+                const comment = commentsArray[i].trim();
+                if (!comment) continue; // Skip empty comments
+                
+                try {
+                  // Add a small delay between comments (1 second)
+                  if (i > 0) {
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                  }
+                  
+                  if (platform === 'linkedin') {
+                    // LinkedIn needs the full URN format
+                    const postUrn = result.postId.startsWith('urn:li:') 
+                      ? result.postId 
+                      : `urn:li:ugcPost:${result.postId}`;
+                    await commentOnLinkedInPost(validToken, postUrn, comment);
+                    console.log(`[PUBLISH-API] ✓ Comment ${i + 1}/${commentsArray.length} posted on LinkedIn`);
+                  } else if (platform === 'twitter') {
+                    await commentOnTwitterPost(validToken, result.postId, comment);
+                    console.log(`[PUBLISH-API] ✓ Comment ${i + 1}/${commentsArray.length} posted on Twitter`);
+                  } else if (platform === 'threads') {
+                    // Get Threads account ID from connection (stored in username field as "username|threads_id")
+                    let threadsAccountId: string | null = null;
+                    if (connection.username) {
+                      const parts = connection.username.split('|');
+                      if (parts.length >= 2) {
+                        threadsAccountId = parts[1]; // Second part is the Threads account ID
+                      }
+                    }
+                    
+                    if (!threadsAccountId) {
+                      throw new Error('Threads account ID not found in connection');
+                    }
+                    
+                    await commentOnThreadsPost(validToken, threadsAccountId, result.postId, comment);
+                    console.log(`[PUBLISH-API] ✓ Comment ${i + 1}/${commentsArray.length} posted on Threads`);
+                  } else if (platform === 'instagram') {
+                    // Instagram uses page access token (same as for posting)
+                    await commentOnInstagramPost(validToken, result.postId, comment);
+                    console.log(`[PUBLISH-API] ✓ Comment ${i + 1}/${commentsArray.length} posted on Instagram`);
+                  } else {
+                    console.log(`[PUBLISH-API] Comment posting not yet implemented for ${platform}, skipping`);
+                  }
+                } catch (commentError) {
+                  const errorMsg = `Failed to post comment ${i + 1} on ${platform}: ${commentError instanceof Error ? commentError.message : 'Unknown error'}`;
+                  console.error(`[PUBLISH-API] ${errorMsg}`);
+                  // Don't fail the whole post if a comment fails, just log it
+                  errors.push(errorMsg);
+                }
+              }
+            }
+          } catch (commentError) {
+            console.error(`[PUBLISH-API] Error processing comments for ${platform}:`, commentError);
+            // Don't fail the whole post if comments fail
+          }
+        }
       } else {
         const errorMsg = `${platform}: ${result.error || 'Unknown error - no postId returned'}`;
         console.error(`[PUBLISH-API] ✗ Failed to publish to ${platform} for post ${params.id}: ${errorMsg}`);

@@ -630,19 +630,21 @@ export async function analyzeEmailAndGenerateTasks(options: AnalyzeEmailOptions)
   const threadSubject = latestEmail.subject || '';
   const threadFrom = latestEmail.from || '';
 
-  const systemPrompt = `You are an email analysis assistant. Analyze email threads (conversations) and extract actionable tasks. For each task, determine its priority:
+  const systemPrompt = `You are an email analysis assistant for Engjell Rraklli and division5. Analyze email threads (conversations) and extract actionable tasks that are relevant to Engjell Rraklli or division5. For each task, determine its priority:
 - HIGH: Urgent actions, deadlines, important requests, time-sensitive items
 - MEDIUM: Important but not urgent, follow-ups needed, standard requests
 - LOW: Nice-to-have items, informational tasks, optional actions
 
 CRITICAL RULES:
-1. ONLY create tasks if there are actual actionable items that require the recipient to DO something
-2. If the email thread is purely informational, contains only acknowledgments, confirmations, or updates with no action required, return an EMPTY array: []
-3. For email threads, consolidate all related actions into a SINGLE comprehensive task
-4. Do NOT create multiple tasks for the same action or related actions mentioned in different messages
-5. Do NOT create tasks for things that are already completed or just informational updates
+1. ONLY create tasks if there are actual actionable items that require Engjell Rraklli or division5 to DO something
+2. Only create tasks about Engjell Rraklli or division5 in relationship to others - do NOT create tasks about other people or companies unless they relate to actions Engjell Rraklli or division5 need to take
+3. If the email thread is purely informational, contains only acknowledgments, confirmations, or updates with no action required, return an EMPTY array: []
+4. For email threads, consolidate all related actions into a SINGLE comprehensive task
+5. Do NOT create multiple tasks for the same action or related actions mentioned in different messages
+6. Do NOT create tasks for things that are already completed or just informational updates
+7. Focus on tasks where Engjell Rraklli or division5 are the ones who need to take action
 
-Return tasks in JSON format: [{"title": "Task title", "description": "Task details", "priority": "high|medium|low"}] or [] if no actionable tasks exist.`;
+Return tasks in JSON format: [{"title": "Task title", "description": "Task details", "priority": "high|medium|low"}] or [] if no actionable tasks exist for Engjell Rraklli or division5.`;
 
   const userPrompt = `Analyze this email thread (conversation) and extract actionable tasks with priorities:
 
@@ -653,10 +655,15 @@ Number of messages in thread: ${threadEmails.length}
 Full conversation:
 ${conversationContext.substring(0, 10000)}
 
+CONTEXT - You are analyzing emails for Engjell Rraklli and division5. 
+- Only create tasks that are about Engjell Rraklli or division5 in relationship to others
+- Do NOT create tasks about other people, companies, or entities unless they relate to actions that Engjell Rraklli or division5 need to take
+- Focus on tasks where Engjell Rraklli or division5 are the ones who need to take action
+
 CRITICAL INSTRUCTIONS:
-1. FIRST determine if there are ANY actionable items that require the recipient to take action
+1. FIRST determine if there are ANY actionable items that require Engjell Rraklli or division5 to take action
 2. If the thread is purely informational (updates, confirmations, acknowledgments, status reports with no action required), return an EMPTY array: []
-3. If there are actionable items, consolidate all related actions from the entire thread into a SINGLE task
+3. If there are actionable items for Engjell Rraklli or division5, consolidate all related actions from the entire thread into a SINGLE task
 4. Do NOT create duplicate tasks - if multiple messages mention the same action or related actions, combine them into one task
 5. Include ALL relevant details and action items in the task description
 6. The task title should be a clear, comprehensive summary of what needs to be done
@@ -668,9 +675,10 @@ Return a JSON array of tasks. Each task must have:
 - priority: "high", "medium", or "low" based on the most urgent item
 
 IMPORTANT: 
-- Only create tasks for items that require ACTION (doing something, completing something, responding with action, etc.)
+- Only create tasks for items that require ACTION by Engjell Rraklli or division5 (doing something, completing something, responding with action, etc.)
 - Do NOT create tasks for informational emails, confirmations, or updates with no action required
-- If no actionable tasks exist, return: []
+- Do NOT create tasks about other people or companies unless they relate to actions Engjell Rraklli or division5 need to take
+- If no actionable tasks exist for Engjell Rraklli or division5, return: []
 - Return ONLY valid JSON, no additional text.`;
 
   let response: string;

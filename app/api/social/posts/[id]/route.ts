@@ -41,7 +41,7 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { content, mediaAssets, platforms, scheduledFor } = body;
+    const { content, mediaAssets, platforms, scheduledFor, comments } = body;
 
     const existingPost = await prisma.socialPost.findUnique({
       where: { id: params.id },
@@ -90,9 +90,15 @@ export async function PUT(
       ? (typeof mediaAssets === 'string' ? mediaAssets : JSON.stringify(mediaAssets))
       : existingPost.mediaAssets;
 
+    // Handle comments - optional array of comment strings
+    const commentsJson = comments !== undefined
+      ? (comments ? (typeof comments === 'string' ? comments : JSON.stringify(comments)) : null)
+      : existingPost.comments;
+
     const updateData: any = {
       content,
       mediaAssets: mediaAssetsJson,
+      comments: commentsJson,
     };
 
     // Only update platforms if they were provided

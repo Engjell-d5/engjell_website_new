@@ -45,11 +45,13 @@ export function getInstagramAuthUrl(state?: string): string {
   // Instagram Graph API requires these permissions:
   // - instagram_basic: Basic access to Instagram account
   // - instagram_content_publish: Permission to publish content
+  // - instagram_manage_comments: Permission to manage comments (post, reply, hide, delete comments)
   // - pages_read_engagement: Read access to Facebook Page (required since Instagram must be linked to a Page)
   // - pages_show_list: List Facebook Pages (to select the connected Instagram account)
   const scopes = [
     'instagram_basic',
     'instagram_content_publish',
+    'instagram_manage_comments',
     'pages_read_engagement',
     'pages_show_list',
   ];
@@ -797,21 +799,32 @@ async function createInstagramMediaContainer(
   }
 
   console.log('[INSTAGRAM] Sending media container creation request to Instagram Graph API...');
-  console.log('[INSTAGRAM] Request URL:', `https://graph.facebook.com/v24.0/${instagramAccountId}/media`);
+  
+  // According to Instagram API docs:
+  // - For Instagram API with Instagram Login: use graph.instagram.com
+  // - For Instagram API with Facebook Login: use graph.facebook.com
+  // Since we're using Facebook Login (OAuth), try graph.facebook.com first
+  // If that fails, we can try graph.instagram.com as a fallback
+  const apiVersion = 'v24.0';
+  
+  // Try graph.facebook.com first (for Facebook Login)
+  let hostUrl = 'graph.facebook.com';
+  let requestUrl = `https://${hostUrl}/${apiVersion}/${instagramAccountId}/media`;
+  
+  console.log('[INSTAGRAM] Request URL:', requestUrl);
   console.log('[INSTAGRAM] Request body:', JSON.stringify(requestBody, null, 2));
   console.log('[INSTAGRAM] Image URL being sent:', absoluteImageUrl);
+  console.log('[INSTAGRAM] Image URL must be publicly accessible - Instagram will fetch it directly');
+  console.log('[INSTAGRAM] Using Facebook Login, so using graph.facebook.com host');
   
-  const response = await fetch(
-    `https://graph.facebook.com/v24.0/${instagramAccountId}/media`,
-    {
+  const response = await fetch(requestUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${pageAccessToken}`,
       },
       body: JSON.stringify(requestBody),
-    }
-  );
+  });
 
   console.log('[INSTAGRAM] Media container creation response status:', response.status, response.statusText);
 
@@ -826,14 +839,24 @@ async function createInstagramMediaContainer(
         errorMessage = `Failed to create Instagram media container (${response.status}): ${apiError.error_user_msg || apiError.message || errorText}`;
         
         // Provide helpful guidance for common errors
-        if (apiError.message?.includes('media URI doesn\'t meet our requirements') || apiError.code === 9004) {
-          errorMessage += '\n\nThis usually means:\n';
-          errorMessage += '1. Image format must be JPEG (not PNG, WebP, etc.)\n';
-          errorMessage += '2. Image file size must be 8 MB or less\n';
-          errorMessage += '3. Image dimensions: width 320-1440px, aspect ratio 4:5 to 1.91:1\n';
-          errorMessage += '4. Image URL must be publicly accessible\n';
-          errorMessage += '5. Image must be properly encoded (not corrupted)\n\n';
-          errorMessage += `Test the URL: ${absoluteImageUrl}`;
+        if (apiError.message?.includes('media URI doesn\'t meet our requirements') || 
+            apiError.message?.includes('not accessible') ||
+            apiError.message?.includes('invalid image') ||
+            apiError.code === 9004 ||
+            apiError.code === 2207001) {
+          errorMessage += '\n\nTroubleshooting steps:\n';
+          errorMessage += '1. Verify image format is JPEG (not PNG, WebP, etc.)\n';
+          errorMessage += '2. Check image file size is 8 MB or less\n';
+          errorMessage += '3. Verify image dimensions: width 320-1440px, aspect ratio 4:5 to 1.91:1\n';
+          errorMessage += '4. Ensure image URL is publicly accessible (no authentication required)\n';
+          errorMessage += '5. Test the URL in a browser: ' + absoluteImageUrl + '\n';
+          errorMessage += '6. Ensure the image server allows requests from Instagram/Facebook crawlers\n';
+          errorMessage += '7. Check that the image URL returns proper Content-Type: image/jpeg header\n';
+          errorMessage += '\nCommon issues:\n';
+          errorMessage += '- Localhost URLs won\'t work (use ngrok or a public server)\n';
+          errorMessage += '- URLs behind authentication won\'t work\n';
+          errorMessage += '- URLs that redirect won\'t work (must be direct link to image)\n';
+          errorMessage += '- CORS restrictions may block Instagram from fetching the image\n';
         }
       }
     } catch (parseError) {
@@ -842,6 +865,7 @@ async function createInstagramMediaContainer(
     }
     
     console.error('[INSTAGRAM] Failed to create media container:', errorText);
+    console.error('[INSTAGRAM] Image URL that failed:', absoluteImageUrl);
     throw new Error(errorMessage);
   }
 
@@ -853,6 +877,126 @@ async function createInstagramMediaContainer(
 
   console.log('[INSTAGRAM] Media container created successfully, ID:', containerId);
   return containerId;
+}
+
+/**
+ * Check media container status and wait until it's ready for publishing
+ * Returns the container ID when ready, or throws an error if it fails
+ */
+async function waitForMediaContainerReady(
+  pageAccessToken: string,
+  containerId: string,
+  maxWaitTime: number = 5 * 60 * 1000, // 5 minutes default (as per Instagram API docs)
+  checkInterval: number = 5 * 1000 // Check every 5 seconds for faster response (images are usually ready quickly)
+): Promise<void> {
+  const hostUrl = 'graph.facebook.com';
+  const apiVersion = 'v24.0';
+  const statusUrl = `https://${hostUrl}/${apiVersion}/${containerId}?fields=status_code`;
+  
+  const startTime = Date.now();
+  let attempts = 0;
+  const maxAttempts = Math.ceil(maxWaitTime / checkInterval);
+  
+  console.log('[INSTAGRAM] Waiting for media container to be ready...');
+  console.log('[INSTAGRAM] Container ID:', containerId);
+  console.log('[INSTAGRAM] Will check status every', checkInterval / 1000, 'seconds for up to', maxWaitTime / 1000, 'seconds');
+  
+  // First check immediately (containers are sometimes ready right away)
+  let firstCheck = true;
+  
+  while (Date.now() - startTime < maxWaitTime) {
+    attempts++;
+    console.log(`[INSTAGRAM] Checking container status (attempt ${attempts}/${maxAttempts})...`);
+    
+    const statusResponse = await fetch(statusUrl, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${pageAccessToken}`,
+      },
+    });
+    
+    if (!statusResponse.ok) {
+      const errorText = await statusResponse.text();
+      console.error('[INSTAGRAM] Failed to check container status:', errorText);
+      throw new Error(`Failed to check media container status (${statusResponse.status}): ${errorText}`);
+    }
+    
+    const statusData = await statusResponse.json();
+    const statusCode = statusData.status_code;
+    
+    console.log('[INSTAGRAM] Container status:', statusCode);
+    
+    if (statusCode === 'FINISHED') {
+      console.log('[INSTAGRAM] ✓ Media container status is FINISHED');
+      // Add a delay after FINISHED to ensure Instagram has fully processed it
+      // Sometimes Instagram needs a moment even after status is FINISHED
+      console.log('[INSTAGRAM] Waiting 5 seconds after FINISHED status to ensure media is fully ready...');
+      await new Promise(resolve => setTimeout(resolve, 5000));
+      
+      // Do one final status check to confirm it's still ready
+      console.log('[INSTAGRAM] Performing final status check before publishing...');
+      const finalStatusResponse = await fetch(statusUrl, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${pageAccessToken}`,
+        },
+      });
+      
+      if (finalStatusResponse.ok) {
+        const finalStatusData = await finalStatusResponse.json();
+        const finalStatusCode = finalStatusData.status_code;
+        console.log('[INSTAGRAM] Final status check result:', finalStatusCode);
+        
+        if (finalStatusCode === 'FINISHED' || finalStatusCode === 'PUBLISHED') {
+          console.log('[INSTAGRAM] ✓ Media container confirmed ready for publishing');
+          return;
+        } else if (finalStatusCode === 'IN_PROGRESS') {
+          console.log('[INSTAGRAM] Status changed back to IN_PROGRESS, continuing to wait...');
+          // Continue waiting
+          if (!firstCheck) {
+            await new Promise(resolve => setTimeout(resolve, checkInterval));
+          }
+          firstCheck = false;
+          continue; // Continue the while loop
+        } else {
+          console.warn('[INSTAGRAM] Unexpected status after FINISHED:', finalStatusCode);
+          // Continue waiting anyway
+          if (!firstCheck) {
+            await new Promise(resolve => setTimeout(resolve, checkInterval));
+          }
+          firstCheck = false;
+          continue;
+        }
+      } else {
+        console.warn('[INSTAGRAM] Failed to perform final status check, proceeding anyway...');
+        return;
+      }
+    } else if (statusCode === 'ERROR') {
+      throw new Error('Media container failed to process. Status: ERROR');
+    } else if (statusCode === 'EXPIRED') {
+      throw new Error('Media container expired. It must be published within 24 hours of creation.');
+    } else if (statusCode === 'PUBLISHED') {
+      console.log('[INSTAGRAM] Media container is already published');
+      return;
+    } else if (statusCode === 'IN_PROGRESS') {
+      console.log('[INSTAGRAM] Media container is still processing, waiting...');
+      // Wait before next check (skip wait on first check)
+      if (!firstCheck) {
+        await new Promise(resolve => setTimeout(resolve, checkInterval));
+      }
+      firstCheck = false;
+    } else {
+      console.warn('[INSTAGRAM] Unknown status code:', statusCode, '- continuing to wait...');
+      // Wait before next check (skip wait on first check)
+      if (!firstCheck) {
+        await new Promise(resolve => setTimeout(resolve, checkInterval));
+      }
+      firstCheck = false;
+    }
+  }
+  
+  // If we've exceeded max wait time, throw an error
+  throw new Error(`Media container did not become ready within ${maxWaitTime / 1000} seconds. Last status check timed out.`);
 }
 
 /**
@@ -889,7 +1033,10 @@ export async function publishToInstagram(
     caption
   );
 
-  // Step 2: Publish the media container
+  // Step 2: Wait for media container to be ready
+  await waitForMediaContainerReady(pageAccessToken, containerId);
+
+  // Step 3: Publish the media container
   console.log('[INSTAGRAM] Publishing media container:', containerId);
   
   // Build request body as JSON per Instagram API documentation
@@ -897,17 +1044,21 @@ export async function publishToInstagram(
     creation_id: containerId,
   };
 
-  const publishResponse = await fetch(
-    `https://graph.facebook.com/v24.0/${instagramAccountId}/media_publish`,
-    {
+  // Use graph.facebook.com for publishing (matching the media container creation)
+  const hostUrl = 'graph.facebook.com';
+  const apiVersion = 'v24.0';
+  const publishUrl = `https://${hostUrl}/${apiVersion}/${instagramAccountId}/media_publish`;
+  
+  console.log('[INSTAGRAM] Publishing to:', publishUrl);
+  
+  const publishResponse = await fetch(publishUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${pageAccessToken}`,
       },
       body: JSON.stringify(publishBody),
-    }
-  );
+  });
 
   console.log('[INSTAGRAM] Publish response status:', publishResponse.status, publishResponse.statusText);
 
@@ -928,6 +1079,81 @@ export async function publishToInstagram(
   console.log('[INSTAGRAM] ✓ Post published successfully - Post ID:', postId);
   return {
     postId: postId,
+  };
+}
+
+/**
+ * Post a comment on an Instagram post
+ * Uses Instagram Graph API: POST /{ig-media-id}/comments
+ */
+export async function commentOnInstagramPost(
+  pageAccessToken: string,
+  postId: string,
+  commentText: string
+): Promise<{ commentId: string }> {
+  console.log('[INSTAGRAM] Posting comment on post', postId, 'comment length:', commentText.length);
+  
+  // Instagram comment limit is 2200 characters (same as captions)
+  if (commentText.length > 2200) {
+    throw new Error(`Instagram comment exceeds 2200 characters (${commentText.length})`);
+  }
+  
+  const hostUrl = 'graph.facebook.com';
+  const apiVersion = 'v24.0';
+  
+  // Instagram API uses query string parameters: POST /<IG_MEDIA_ID>/comments?message=<MESSAGE_CONTENT>
+  // Access token can be in query string or Authorization header
+  const params = new URLSearchParams();
+  params.append('message', commentText);
+  params.append('access_token', pageAccessToken);
+  
+  const commentUrl = `https://${hostUrl}/${apiVersion}/${postId}/comments?${params.toString()}`;
+  
+  console.log('[INSTAGRAM] Posting comment to:', commentUrl.replace(pageAccessToken, 'REDACTED'));
+  
+  const response = await fetch(commentUrl, {
+    method: 'POST',
+    // No Content-Type header needed for query string parameters
+    // Access token is in query string as per Instagram API docs
+  });
+  
+  console.log('[INSTAGRAM] Comment API response status:', response.status, response.statusText);
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error('[INSTAGRAM] Failed to post comment:', errorText);
+    
+    // Check for permission error (code 10)
+    if (response.status === 400) {
+      try {
+        const errorData = JSON.parse(errorText);
+        if (errorData.error?.code === 10) {
+          let errorMessage = `Failed to post comment on Instagram (400): ${errorText}`;
+          errorMessage += '\n\nThis error usually means:';
+          errorMessage += '\n1. Your app is missing required permissions (instagram_manage_comments)';
+          errorMessage += '\n2. You need to disconnect and reconnect your Instagram account to grant the new permissions';
+          errorMessage += '\n3. Your Instagram account must be a Business Account (not Creator account)';
+          errorMessage += '\n\nTo fix: Go to Settings → Social Connections, disconnect Instagram, then reconnect it.';
+          throw new Error(errorMessage);
+        }
+      } catch (parseError) {
+        // If JSON parsing fails, use the original error
+      }
+    }
+    
+    throw new Error(`Failed to post comment on Instagram (${response.status}): ${errorText}`);
+  }
+  
+  const data = await response.json();
+  const commentId = data.id;
+  
+  if (!commentId) {
+    throw new Error('Instagram API returned no comment ID');
+  }
+  
+  console.log('[INSTAGRAM] ✓ Comment posted successfully - Comment ID:', commentId);
+  return {
+    commentId,
   };
 }
 

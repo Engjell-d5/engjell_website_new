@@ -4,6 +4,8 @@ import { analyzeEmailAndGenerateTasks } from '@/lib/ai-service';
 import { createEmailTask } from '@/lib/data';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const user = getAuthUser(request);

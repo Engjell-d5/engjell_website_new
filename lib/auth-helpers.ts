@@ -44,3 +44,6 @@ export function requireAuth(
 export function requireAdmin(request: NextRequest): { user: AuthUser } | NextResponse {
   return requireAuth(request, { requireAdmin: true });
 }
+
+
+

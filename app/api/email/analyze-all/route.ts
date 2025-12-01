@@ -4,6 +4,8 @@ import { analyzeEmailAndGenerateTasks } from '@/lib/ai-service';
 import { createEmailTask, getEmails } from '@/lib/data';
 import { prisma } from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const user = getAuthUser(request);
@@ -20,13 +22,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get all unread, unanalyzed, and relevant emails
+    // Get all unanalyzed and relevant emails
+    // Read status doesn't matter - analyze all unanalyzed relevant emails
     // Exclude irrelevant emails and already analyzed emails
     const emails = await prisma.email.findMany({
       where: {
-        isRead: false, // Unread emails (including read emails with follow-ups)
         isAnalyzed: false, // Not yet analyzed
         isIrrelevant: false, // Only relevant emails
+        // Note: isRead is not filtered - we analyze all unanalyzed relevant emails regardless of read status
       },
       orderBy: { receivedAt: 'desc' },
     });
@@ -34,7 +37,7 @@ export async function POST(request: NextRequest) {
     if (emails.length === 0) {
       return NextResponse.json({
         success: true,
-        message: 'No unread emails to analyze',
+        message: 'No unanalyzed emails to analyze',
         tasksCreated: 0,
       });
     }

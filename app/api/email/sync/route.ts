@@ -3,6 +3,8 @@ import { getAuthUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { getAllEmails, parseGmailMessage, refreshGoogleToken, isGoogleTokenExpired, getThreadDetails } from '@/lib/google-email';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const user = getAuthUser(request);

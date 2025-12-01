@@ -3,6 +3,8 @@ import { getAuthUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { updateEmailTask, deleteEmailTask } from '@/lib/data';
 
+export const dynamic = 'force-dynamic';
+
 /**
  * Update a task (e.g., mark as completed)
  */
