@@ -599,72 +599,76 @@ export default function EmailPage() {
     <>
       <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h1 className="text-3xl text-white font-bebas tracking-wide">Email Management</h1>
-          <p className="text-gray-400 text-sm mt-1">Manage your emails and AI-generated tasks</p>
+          <h1 className="text-2xl md:text-3xl text-white font-bebas tracking-wide">Email Management</h1>
+          <p className="text-gray-400 text-xs md:text-sm mt-1">Manage your emails and AI-generated tasks</p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 md:gap-4 flex-wrap">
           <div className="text-right">
-            <div className="text-2xl text-white font-bold">{threads.length}</div>
+            <div className="text-xl md:text-2xl text-white font-bold">{threads.length}</div>
             <div className="text-xs text-gray-400 uppercase tracking-widest">Threads</div>
           </div>
           <div className="text-right">
-            <div className="text-2xl text-white font-bold">{tasks.length}</div>
+            <div className="text-xl md:text-2xl text-white font-bold">{tasks.length}</div>
             <div className="text-xs text-gray-400 uppercase tracking-widest">Tasks</div>
           </div>
           {connected && unanalyzedCount > 0 && (
             <button
               onClick={handleAnalyzeAll}
               disabled={analyzingAll || aiIntegrations.length === 0}
-              className="px-6 py-2 bg-[var(--primary-mint)] text-black hover:bg-[var(--primary-mint)]/90 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2"
+              className="px-4 md:px-6 py-2 bg-[var(--primary-mint)] text-black hover:bg-[var(--primary-mint)]/90 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2 min-h-[44px]"
             >
-              <Sparkles className={`w-4 h-4 ${analyzingAll ? 'animate-spin' : ''}`} />
-              {analyzingAll ? 'Analyzing...' : `Analyze All (${unanalyzedCount})`}
+              <Sparkles className={`w-4 h-4 flex-shrink-0 ${analyzingAll ? 'animate-spin' : ''}`} />
+              <span className="hidden sm:inline">{analyzingAll ? 'Analyzing...' : `Analyze All (${unanalyzedCount})`}</span>
+              <span className="sm:hidden">{analyzingAll ? 'Analyzing...' : `Analyze (${unanalyzedCount})`}</span>
             </button>
           )}
         </div>
       </div>
 
       {/* Connection Status */}
-      <div className="classic-panel bg-[var(--rich-black)] p-6 border border-[var(--border-color)]">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-lg text-white font-bebas mb-1">Google Account</h2>
+      <div className="classic-panel bg-[var(--rich-black)] p-4 md:p-6 border border-[var(--border-color)]">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-base md:text-lg text-white font-bebas mb-1">Google Account</h2>
             {connected ? (
-              <p className="text-sm text-gray-400">
+              <p className="text-xs md:text-sm text-gray-400 break-words">
                 Connected as <span className="font-medium text-[var(--primary-mint)]">{connectionEmail}</span>
               </p>
             ) : (
-              <p className="text-sm text-gray-400">Not connected</p>
+              <p className="text-xs md:text-sm text-gray-400">Not connected</p>
             )}
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-2 md:gap-3 flex-shrink-0">
             {connected ? (
               <>
                 <button
                   onClick={handleSync}
                   disabled={syncing}
-                  className="px-6 py-2 bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:bg-[var(--rich-black)]/80 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2"
+                  className="px-4 md:px-6 py-2 bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:bg-[var(--rich-black)]/80 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2 min-h-[44px]"
                 >
-                  <RefreshCw className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} />
-                  {syncing ? 'Syncing...' : 'Sync Emails'}
+                  <RefreshCw className={`w-4 h-4 flex-shrink-0 ${syncing ? 'animate-spin' : ''}`} />
+                  <span className="hidden sm:inline">{syncing ? 'Syncing...' : 'Sync Emails'}</span>
+                  <span className="sm:hidden">{syncing ? 'Syncing...' : 'Sync'}</span>
                 </button>
                 <button
                   onClick={handleDisconnect}
-                  className="px-6 py-2 bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:bg-[var(--rich-black)]/80 text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2"
+                  className="px-4 md:px-6 py-2 bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:bg-[var(--rich-black)]/80 text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2 min-h-[44px]"
                 >
-                  <LogOut className="w-4 h-4" />
-                  Disconnect
+                  <LogOut className="w-4 h-4 flex-shrink-0" />
+                  <span className="hidden sm:inline">Disconnect</span>
+                  <span className="sm:hidden">Disconnect</span>
                 </button>
               </>
             ) : (
               <button
                 onClick={handleConnect}
-                className="px-6 py-2 bg-white text-black hover:bg-[var(--primary-mint)] text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2"
+                className="px-4 md:px-6 py-2 bg-white text-black hover:bg-[var(--primary-mint)] text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2 min-h-[44px]"
               >
-                <Mail className="w-4 h-4" />
-                Connect Google Account
+                <Mail className="w-4 h-4 flex-shrink-0" />
+                <span className="hidden sm:inline">Connect Google Account</span>
+                <span className="sm:hidden">Connect</span>
               </button>
             )}
           </div>
@@ -750,10 +754,10 @@ export default function EmailPage() {
       {/* Tabs */}
       <div className="classic-panel bg-[var(--rich-black)] border border-[var(--border-color)]">
         <div className="border-b border-[var(--border-color)]">
-          <nav className="flex -mb-px">
+          <nav className="flex -mb-px overflow-x-auto">
               <button
                 onClick={() => setActiveTab('emails')}
-                className={`px-6 py-4 text-xs font-bold uppercase tracking-widest border-b-2 transition-colors ${
+                className={`px-4 md:px-6 py-3 md:py-4 text-xs font-bold uppercase tracking-widest border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
                   activeTab === 'emails'
                     ? 'border-[var(--primary-mint)] text-[var(--primary-mint)]'
                     : 'border-transparent text-gray-400 hover:text-white hover:border-gray-500'
@@ -763,7 +767,7 @@ export default function EmailPage() {
               </button>
             <button
               onClick={() => setActiveTab('tasks')}
-              className={`px-6 py-4 text-xs font-bold uppercase tracking-widest border-b-2 transition-colors ${
+              className={`px-4 md:px-6 py-3 md:py-4 text-xs font-bold uppercase tracking-widest border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
                 activeTab === 'tasks'
                   ? 'border-[var(--primary-mint)] text-[var(--primary-mint)]'
                   : 'border-transparent text-gray-400 hover:text-white hover:border-gray-500'
@@ -773,7 +777,7 @@ export default function EmailPage() {
             </button>
             <button
               onClick={() => setActiveTab('cron')}
-              className={`px-6 py-4 text-xs font-bold uppercase tracking-widest border-b-2 transition-colors ${
+              className={`px-4 md:px-6 py-3 md:py-4 text-xs font-bold uppercase tracking-widest border-b-2 transition-colors whitespace-nowrap flex-shrink-0 ${
                 activeTab === 'cron'
                   ? 'border-[var(--primary-mint)] text-[var(--primary-mint)]'
                   : 'border-transparent text-gray-400 hover:text-white hover:border-gray-500'
@@ -784,7 +788,7 @@ export default function EmailPage() {
           </nav>
         </div>
 
-        <div className="p-6">
+        <div className="p-4 md:p-6">
             {activeTab === 'emails' ? (
               <div>
                 {threads.length === 0 ? (
@@ -804,30 +808,30 @@ export default function EmailPage() {
                           className="border border-[var(--border-color)] hover:border-[var(--primary-mint)] transition-colors"
                         >
                           {/* Thread Header */}
-                          <div className="p-4">
-                            <div className="flex items-start justify-between">
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-2">
-                                  <h3 className="font-semibold text-white">{thread.subject}</h3>
+                          <div className="p-3 md:p-4">
+                            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-4">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex flex-wrap items-center gap-2 mb-2">
+                                  <h3 className="font-semibold text-white text-sm md:text-base break-words">{thread.subject}</h3>
                                   {!thread.isRead && (
-                                    <span className="w-2 h-2 bg-[var(--primary-mint)] rounded-full"></span>
+                                    <span className="w-2 h-2 bg-[var(--primary-mint)] rounded-full flex-shrink-0"></span>
                                   )}
                                   {thread.totalCount > 1 && (
-                                    <span className="px-2 py-0.5 text-xs bg-[var(--rich-black)] border border-[var(--border-color)] text-gray-400">
+                                    <span className="px-2 py-0.5 text-xs bg-[var(--rich-black)] border border-[var(--border-color)] text-gray-400 flex-shrink-0">
                                       {thread.totalCount} message{thread.totalCount !== 1 ? 's' : ''}
                                     </span>
                                   )}
                                   {thread.unreadCount > 0 && (
-                                    <span className="px-2 py-0.5 text-xs bg-red-900/20 text-red-400 border border-red-500">
+                                    <span className="px-2 py-0.5 text-xs bg-red-900/20 text-red-400 border border-red-500 flex-shrink-0">
                                       {thread.unreadCount} unread
                                     </span>
                                   )}
                                 </div>
-                                <p className="text-sm text-gray-400 mb-1">
+                                <p className="text-xs md:text-sm text-gray-400 mb-1 break-words">
                                   <span className="font-medium text-gray-300">From:</span> {thread.latestEmail.from}
                                 </p>
                                 {thread.latestEmail.snippet && (
-                                  <p className="text-sm text-gray-500 mt-2 line-clamp-2">{thread.latestEmail.snippet}</p>
+                                  <p className="text-xs md:text-sm text-gray-500 mt-2 line-clamp-2 break-words">{thread.latestEmail.snippet}</p>
                                 )}
                                 <p className="text-xs text-gray-500 mt-2">{formatDate(thread.latestEmail.receivedAt)}</p>
                                 {thread.tasks && thread.tasks.length > 0 && (
@@ -838,10 +842,10 @@ export default function EmailPage() {
                                   </div>
                                 )}
                               </div>
-                              <div className="flex gap-2 ml-4">
+                              <div className="flex flex-wrap gap-2 md:ml-4 flex-shrink-0">
                                 <button
                                   onClick={() => setSelectedThread(thread)}
-                                  className="px-4 py-2 bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:bg-[var(--rich-black)]/80 text-xs font-bold uppercase tracking-widest transition-colors"
+                                  className="px-3 md:px-4 py-2 bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:bg-[var(--rich-black)]/80 text-xs font-bold uppercase tracking-widest transition-colors min-h-[44px]"
                                 >
                                   View
                                 </button>
@@ -849,32 +853,33 @@ export default function EmailPage() {
                                   <button
                                     onClick={() => handleAnalyze(thread.threadId)}
                                     disabled={analyzing === thread.threadId}
-                                    className="px-4 py-2 bg-[var(--primary-mint)] text-black hover:bg-[var(--primary-mint)]/90 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1"
+                                    className="px-3 md:px-4 py-2 bg-[var(--primary-mint)] text-black hover:bg-[var(--primary-mint)]/90 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1 min-h-[44px]"
                                   >
-                                    <Sparkles className={`w-3 h-3 ${analyzing === thread.threadId ? 'animate-spin' : ''}`} />
+                                    <Sparkles className={`w-3 h-3 flex-shrink-0 ${analyzing === thread.threadId ? 'animate-spin' : ''}`} />
                                     Analyze
                                   </button>
                                 )}
                                 {thread.isAnalyzed && (
-                                  <span className="px-3 py-2 text-xs text-gray-400 uppercase tracking-widest flex items-center gap-1">
-                                    <CheckCircle className="w-3 h-3" />
+                                  <span className="px-3 py-2 text-xs text-gray-400 uppercase tracking-widest flex items-center gap-1 min-h-[44px]">
+                                    <CheckCircle className="w-3 h-3 flex-shrink-0" />
                                     Analyzed
                                   </span>
                                 )}
                                 <button
                                   onClick={() => handleMarkIrrelevant(thread.threadId, !thread.isIrrelevant)}
-                                  className="px-4 py-2 bg-[var(--rich-black)] border border-gray-500/50 text-gray-400 hover:bg-gray-900/20 text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1"
+                                  className="px-3 md:px-4 py-2 bg-[var(--rich-black)] border border-gray-500/50 text-gray-400 hover:bg-gray-900/20 text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1 min-h-[44px]"
                                   title={thread.isIrrelevant ? 'Mark as relevant' : 'Mark as irrelevant'}
                                 >
-                                  <XSquare className="w-3 h-3" />
-                                  {thread.isIrrelevant ? 'Relevant' : 'Irrelevant'}
+                                  <XSquare className="w-3 h-3 flex-shrink-0" />
+                                  <span className="hidden sm:inline">{thread.isIrrelevant ? 'Relevant' : 'Irrelevant'}</span>
+                                  <span className="sm:hidden">{thread.isIrrelevant ? 'Relevant' : 'Irrel'}</span>
                                 </button>
                                 <button
                                   onClick={() => handleDelete(thread.threadId)}
                                   disabled={deleting === thread.threadId}
-                                  className="px-4 py-2 bg-[var(--rich-black)] border border-red-500/50 text-red-400 hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1"
+                                  className="px-3 md:px-4 py-2 bg-[var(--rich-black)] border border-red-500/50 text-red-400 hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1 min-h-[44px]"
                                 >
-                                  <Trash2 className={`w-3 h-3 ${deleting === thread.threadId ? 'animate-spin' : ''}`} />
+                                  <Trash2 className={`w-3 h-3 flex-shrink-0 ${deleting === thread.threadId ? 'animate-spin' : ''}`} />
                                   Delete
                                 </button>
                               </div>
@@ -1000,25 +1005,25 @@ export default function EmailPage() {
                     {tasks.map((task) => (
                       <div
                         key={task.id}
-                        className={`border border-[var(--border-color)] p-4 hover:border-[var(--primary-mint)] transition-colors ${
+                        className={`border border-[var(--border-color)] p-3 md:p-4 hover:border-[var(--primary-mint)] transition-colors ${
                           task.status === 'completed' ? 'opacity-60' : ''
                         }`}
                       >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-2 flex-wrap">
-                              <h3 className={`font-semibold ${task.status === 'completed' ? 'text-gray-500 line-through' : 'text-white'}`}>
+                        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-4">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2 mb-2">
+                              <h3 className={`font-semibold text-sm md:text-base break-words ${task.status === 'completed' ? 'text-gray-500 line-through' : 'text-white'}`}>
                                 {task.title}
                               </h3>
                               <span
-                                className={`px-2 py-1 text-xs font-medium uppercase tracking-widest border ${getPriorityColor(
+                                className={`px-2 py-1 text-xs font-medium uppercase tracking-widest border flex-shrink-0 ${getPriorityColor(
                                   task.priority
                                 )}`}
                               >
                                 {task.priority}
                               </span>
                               <span
-                                className={`px-2 py-1 text-xs font-medium uppercase tracking-widest border ${getStatusColor(
+                                className={`px-2 py-1 text-xs font-medium uppercase tracking-widest border flex-shrink-0 ${getStatusColor(
                                   task.status
                                 )}`}
                               >
@@ -1026,48 +1031,49 @@ export default function EmailPage() {
                               </span>
                             </div>
                             {task.description && (
-                              <p className={`text-sm mb-2 ${task.status === 'completed' ? 'text-gray-500' : 'text-gray-400'}`}>
+                              <p className={`text-xs md:text-sm mb-2 break-words ${task.status === 'completed' ? 'text-gray-500' : 'text-gray-400'}`}>
                                 {task.description}
                               </p>
                             )}
                             {task.email && (
                               <div className="mt-3 pt-3 border-t border-[var(--border-color)]">
-                                <p className="text-xs text-gray-500">
+                                <p className="text-xs text-gray-500 break-words">
                                   <span className="font-medium text-gray-300">From email:</span> {task.email.subject}
                                 </p>
-                                <p className="text-xs text-gray-500 mt-1">From: {task.email.from}</p>
+                                <p className="text-xs text-gray-500 mt-1 break-words">From: {task.email.from}</p>
                               </div>
                             )}
                             <p className="text-xs text-gray-500 mt-2">{formatDate(task.createdAt)}</p>
                           </div>
-                          <div className="flex gap-2 ml-4">
+                          <div className="flex flex-wrap gap-2 md:ml-4 md:flex-nowrap flex-shrink-0">
                             <button
                               onClick={() => handleCreateExternalTask(task.id)}
                               disabled={creatingExternal === task.id}
-                              className="px-4 py-2 bg-[var(--rich-black)] border border-blue-500/50 text-blue-400 hover:bg-blue-900/20 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1"
+                              className="px-3 md:px-4 py-2 bg-[var(--rich-black)] border border-blue-500/50 text-blue-400 hover:bg-blue-900/20 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1 min-h-[44px]"
                               title="Create task on external platform"
                             >
-                              <ExternalLink className={`w-3 h-3 ${creatingExternal === task.id ? 'animate-spin' : ''}`} />
-                              {creatingExternal === task.id ? 'Creating...' : 'Create External'}
+                              <ExternalLink className={`w-3 h-3 flex-shrink-0 ${creatingExternal === task.id ? 'animate-spin' : ''}`} />
+                              <span className="hidden sm:inline">{creatingExternal === task.id ? 'Creating...' : 'Create External'}</span>
+                              <span className="sm:hidden">External</span>
                             </button>
                             {task.status !== 'completed' && (
                               <button
                                 onClick={() => handleMarkTaskDone(task.id)}
                                 disabled={updatingTask === task.id}
-                                className="px-4 py-2 bg-[var(--primary-mint)] text-black hover:bg-[var(--primary-mint)]/90 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1"
+                                className="px-3 md:px-4 py-2 bg-[var(--primary-mint)] text-black hover:bg-[var(--primary-mint)]/90 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1 min-h-[44px]"
                                 title="Mark as completed"
                               >
-                                <CheckCircle className={`w-3 h-3 ${updatingTask === task.id ? 'animate-spin' : ''}`} />
+                                <CheckCircle className={`w-3 h-3 flex-shrink-0 ${updatingTask === task.id ? 'animate-spin' : ''}`} />
                                 Done
                               </button>
                             )}
                             <button
                               onClick={() => handleDeleteTask(task.id)}
                               disabled={deletingTask === task.id}
-                              className="px-4 py-2 bg-[var(--rich-black)] border border-red-500/50 text-red-400 hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1"
+                              className="px-3 md:px-4 py-2 bg-[var(--rich-black)] border border-red-500/50 text-red-400 hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1 min-h-[44px]"
                               title="Delete task"
                             >
-                              <Trash2 className={`w-3 h-3 ${deletingTask === task.id ? 'animate-spin' : ''}`} />
+                              <Trash2 className={`w-3 h-3 flex-shrink-0 ${deletingTask === task.id ? 'animate-spin' : ''}`} />
                               Delete
                             </button>
                           </div>

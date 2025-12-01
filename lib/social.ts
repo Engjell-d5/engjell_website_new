@@ -219,25 +219,25 @@ export async function publishToPlatform(
       case 'twitter':
         console.log(`[TWITTER] Calling publishToTwitter...`);
         try {
-          const twitterResult = await publishToTwitter(validToken, content, mediaAssets || null);
-          console.log(`[TWITTER] publishToTwitter returned - postId: ${twitterResult.postId}`);
-          
-          // Validate that we actually got a post ID
-          if (!twitterResult.postId || twitterResult.postId.trim() === '') {
-            console.error(`[TWITTER] ERROR: Twitter returned success but no postId!`);
-            return {
-              platform,
-              success: false,
-              error: 'Twitter API returned no post ID',
-            };
-          }
-          
-          console.log(`[TWITTER] ✓ publishToTwitter succeeded with valid postId: ${twitterResult.postId}`);
+        const twitterResult = await publishToTwitter(validToken, content, mediaAssets || null);
+        console.log(`[TWITTER] publishToTwitter returned - postId: ${twitterResult.postId}`);
+        
+        // Validate that we actually got a post ID
+        if (!twitterResult.postId || twitterResult.postId.trim() === '') {
+          console.error(`[TWITTER] ERROR: Twitter returned success but no postId!`);
           return {
             platform,
-            success: true,
-            postId: twitterResult.postId,
+            success: false,
+            error: 'Twitter API returned no post ID',
           };
+        }
+        
+        console.log(`[TWITTER] ✓ publishToTwitter succeeded with valid postId: ${twitterResult.postId}`);
+        return {
+          platform,
+          success: true,
+          postId: twitterResult.postId,
+        };
         } catch (error) {
           // If we get a 403 error, try refreshing the token and retry once
           if (error instanceof Error && error.message.includes('403')) {

@@ -63,6 +63,11 @@ export function createMetadata({
     authors: [{ name: 'Engjell Rraklli' }],
     creator: 'Engjell Rraklli',
     publisher: 'Engjell Rraklli',
+    viewport: {
+      width: 'device-width',
+      initialScale: 1,
+      maximumScale: 5,
+    },
     formatDetection: {
       email: false,
       address: false,
@@ -111,10 +116,20 @@ export function createMetadata({
       icon: [
         { url: '/favicon.ico', sizes: 'any' },
         { url: '/icon.png', type: 'image/png', sizes: '32x32' },
+        { url: '/icon-192.png', type: 'image/png', sizes: '192x192' },
+        { url: '/icon-512.png', type: 'image/png', sizes: '512x512' },
       ],
       apple: [
         { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
+        { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
       ],
     },
+    manifest: '/manifest.json',
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: 'black-translucent',
+      title: 'Admin',
+    },
+    themeColor: '#000000',
   };
 }

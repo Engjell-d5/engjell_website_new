@@ -376,6 +376,18 @@ h1, h2, h3, h4, .brand-font {
   color: var(--text-secondary) !important;
 }
 
+/* Force button stacking on mobile for admin pages */
+@media (max-width: 1023px) {
+  .admin-buttons-container {
+    flex-direction: column !important;
+  }
+  
+  .admin-buttons-container > button {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
 .blog-content pre code {
   background: none !important;
   padding: 0;

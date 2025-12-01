@@ -794,10 +794,10 @@ export default function SocialMediaPage() {
 
       {/* Tabs */}
       <div className="classic-panel p-0 mb-8">
-        <div className="flex border-b border-[var(--border-color)]">
+        <div className="flex border-b border-[var(--border-color)] overflow-x-auto">
           <button
             onClick={() => setActiveTab('connections')}
-            className={`px-6 py-4 font-bebas text-sm uppercase tracking-widest transition-colors ${
+            className={`px-4 md:px-6 py-3 md:py-4 font-bebas text-xs md:text-sm uppercase tracking-widest transition-colors whitespace-nowrap flex-shrink-0 ${
               activeTab === 'connections'
                 ? 'bg-[var(--primary-mint)] text-black border-b-2 border-black'
                 : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -807,7 +807,7 @@ export default function SocialMediaPage() {
           </button>
           <button
             onClick={() => setActiveTab('posts')}
-            className={`px-6 py-4 font-bebas text-sm uppercase tracking-widest transition-colors ${
+            className={`px-4 md:px-6 py-3 md:py-4 font-bebas text-xs md:text-sm uppercase tracking-widest transition-colors whitespace-nowrap flex-shrink-0 ${
               activeTab === 'posts'
                 ? 'bg-[var(--primary-mint)] text-black border-b-2 border-black'
                 : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -817,7 +817,7 @@ export default function SocialMediaPage() {
           </button>
           <button
             onClick={() => setActiveTab('ideas')}
-            className={`px-6 py-4 font-bebas text-sm uppercase tracking-widest transition-colors ${
+            className={`px-4 md:px-6 py-3 md:py-4 font-bebas text-xs md:text-sm uppercase tracking-widest transition-colors whitespace-nowrap flex-shrink-0 ${
               activeTab === 'ideas'
                 ? 'bg-[var(--primary-mint)] text-black border-b-2 border-black'
                 : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -830,8 +830,8 @@ export default function SocialMediaPage() {
 
       {/* Tab Content: Connected Accounts */}
       {activeTab === 'connections' && (
-      <div className="classic-panel p-6 mb-8">
-        <h2 className="text-2xl text-white font-bebas mb-4">CONNECTED ACCOUNTS</h2>
+      <div className="classic-panel p-4 md:p-6 mb-8">
+        <h2 className="text-xl md:text-2xl text-white font-bebas mb-4">CONNECTED ACCOUNTS</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {['linkedin', 'twitter', 'instagram', 'threads'].map((platform) => {
             const connection = connections.find(c => c.platform === platform);
@@ -888,11 +888,11 @@ export default function SocialMediaPage() {
         <>
       {/* Schedule Post Form */}
       {showForm && (
-        <div className="classic-panel p-6 mb-8">
-          <h2 className="text-2xl text-white font-bebas mb-6">
+        <div className="classic-panel p-4 md:p-6 mb-8">
+          <h2 className="text-xl md:text-2xl text-white font-bebas mb-4 md:mb-6">
             {editingPost ? 'EDIT POST' : 'SCHEDULE NEW POST'}
           </h2>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
             <div>
               <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
                 Content
@@ -1067,7 +1067,7 @@ export default function SocialMediaPage() {
             <div className="flex gap-4">
               <button
                 type="submit"
-                className="px-6 py-3 bg-[var(--primary-mint)] text-black hover:bg-white font-bold uppercase tracking-widest text-xs transition-colors flex items-center gap-2"
+                className="px-4 md:px-6 py-3 bg-[var(--primary-mint)] text-black hover:bg-white font-bold uppercase tracking-widest text-xs transition-colors flex items-center gap-2 min-h-[44px]"
               >
                 <Send className="w-4 h-4" />
                 {editingPost ? 'Update Post' : 'Schedule Post'}

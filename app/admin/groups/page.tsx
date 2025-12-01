@@ -168,31 +168,35 @@ export default function GroupsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl text-white font-bebas tracking-wide">Groups</h1>
-          <p className="text-gray-400 text-sm mt-1">Manage subscriber groups</p>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex-shrink-0">
+          <h1 className="text-2xl md:text-3xl text-white font-bebas tracking-wide">Groups</h1>
+          <p className="text-gray-400 text-xs md:text-sm mt-1">Manage subscriber groups</p>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="text-right">
-            <div className="text-2xl text-white font-bold">{groups.length}</div>
+        <div className="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-4 w-full lg:w-auto">
+          <div className="text-right flex-shrink-0">
+            <div className="text-xl md:text-2xl text-white font-bold">{groups.length}</div>
             <div className="text-xs text-gray-400 uppercase tracking-widest">Total</div>
           </div>
-          <button
-            onClick={handleSync}
-            disabled={syncing}
-            className="px-6 py-2 bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:bg-[var(--rich-black)]/80 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2"
-          >
-            <RefreshCw className={`w-4 h-4 ${syncing ? 'animate-spin' : ''}`} />
-            {syncing ? 'Syncing...' : 'Sync from Sender.net'}
-          </button>
-          <button
-            onClick={() => setShowAddForm(true)}
-            className="px-6 py-2 bg-white text-black hover:bg-[var(--primary-mint)] text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2"
-          >
-            <Plus className="w-4 h-4" />
-            Create Group
-          </button>
+          <div className="admin-buttons-container flex flex-col lg:flex-row gap-2 w-full lg:w-auto">
+            <button
+              onClick={handleSync}
+              disabled={syncing}
+              className="w-full lg:w-auto px-4 md:px-6 py-2 bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:bg-[var(--rich-black)]/80 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2 min-h-[44px]"
+            >
+              <RefreshCw className={`w-4 h-4 flex-shrink-0 ${syncing ? 'animate-spin' : ''}`} />
+              <span className="hidden lg:inline">{syncing ? 'Syncing...' : 'Sync from Sender.net'}</span>
+              <span className="lg:hidden">{syncing ? 'Syncing...' : 'Sync'}</span>
+            </button>
+            <button
+              onClick={() => setShowAddForm(true)}
+              className="w-full lg:w-auto px-4 md:px-6 py-2 bg-white text-black hover:bg-[var(--primary-mint)] text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2 min-h-[44px]"
+            >
+              <Plus className="w-4 h-4 flex-shrink-0" />
+              <span className="hidden lg:inline">Create Group</span>
+              <span className="lg:hidden">Create</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -214,7 +218,7 @@ export default function GroupsPage() {
 
       {/* Add Form */}
       {showAddForm && (
-        <div className="classic-panel bg-[var(--rich-black)] p-6 border border-[var(--border-color)]">
+        <div className="classic-panel bg-[var(--rich-black)] p-4 md:p-6 border border-[var(--border-color)]">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl text-white font-bebas">Create New Group</h2>
             <button onClick={() => setShowAddForm(false)} className="text-gray-400 hover:text-white">
@@ -232,20 +236,21 @@ export default function GroupsPage() {
                 className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
               />
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <button
                 onClick={handleAdd}
-                className="px-6 py-2 bg-[var(--primary-mint)] text-black hover:bg-[var(--primary-mint)]/90 text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2"
+                className="px-4 md:px-6 py-2 bg-[var(--primary-mint)] text-black hover:bg-[var(--primary-mint)]/90 text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2 min-h-[44px]"
               >
-                <Save className="w-4 h-4" />
-                Create Group
+                <Save className="w-4 h-4 flex-shrink-0" />
+                <span className="hidden sm:inline">Create Group</span>
+                <span className="sm:hidden">Create</span>
               </button>
               <button
                 onClick={() => {
                   setShowAddForm(false);
                   setNewTitle('');
                 }}
-                className="px-6 py-2 bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:bg-[var(--rich-black)]/80 text-xs font-bold uppercase tracking-widest transition-colors"
+                className="px-4 md:px-6 py-2 bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:bg-[var(--rich-black)]/80 text-xs font-bold uppercase tracking-widest transition-colors min-h-[44px]"
               >
                 Cancel
               </button>
@@ -353,20 +358,22 @@ export default function GroupsPage() {
                     )}
                   </div>
                 </div>
-                <div className="pt-3 border-t border-[var(--border-color)] flex gap-2">
+                <div className="pt-3 border-t border-[var(--border-color)] flex flex-col sm:flex-row gap-2">
                   <Link
                     href={`/admin/subscribers?group=${group.id}`}
-                    className="flex-1 px-4 py-2 bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:bg-[var(--primary-mint)] hover:text-black transition-colors text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2"
+                    className="flex-1 px-3 md:px-4 py-2 bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:bg-[var(--primary-mint)] hover:text-black transition-colors text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 min-h-[44px]"
                   >
-                    <Mail className="w-4 h-4" />
-                    View Subscribers
+                    <Mail className="w-4 h-4 flex-shrink-0" />
+                    <span className="hidden sm:inline">View Subscribers</span>
+                    <span className="sm:hidden">Subscribers</span>
                   </Link>
                   <Link
                     href={`/admin/campaigns?group=${group.id}`}
-                    className="flex-1 px-4 py-2 bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:bg-[var(--primary-mint)] hover:text-black transition-colors text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2"
+                    className="flex-1 px-3 md:px-4 py-2 bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:bg-[var(--primary-mint)] hover:text-black transition-colors text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 min-h-[44px]"
                   >
-                    <Send className="w-4 h-4" />
-                    View Campaigns
+                    <Send className="w-4 h-4 flex-shrink-0" />
+                    <span className="hidden sm:inline">View Campaigns</span>
+                    <span className="sm:hidden">Campaigns</span>
                   </Link>
                 </div>
               </div>
