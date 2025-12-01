@@ -9,6 +9,15 @@ interface Subscriber {
   subscribedAt: string;
   syncedToSender: boolean;
   status: 'active' | 'churned';
+  groupId?: string | null;
+  group?: {
+    id: string;
+    title: string;
+  } | null;
+  groups?: Array<{
+    id: string;
+    title: string;
+  }>;
 }
 
 export default function SubscribersPage() {
@@ -22,11 +31,29 @@ export default function SubscribersPage() {
   const [newStatus, setNewStatus] = useState<'active' | 'churned'>('active');
   const [editEmail, setEditEmail] = useState('');
   const [editStatus, setEditStatus] = useState<'active' | 'churned'>('active');
+  const [editGroupId, setEditGroupId] = useState<string | null>(null);
+  const [editGroupIds, setEditGroupIds] = useState<string[]>([]);
+  const [newGroupId, setNewGroupId] = useState<string | null>(null);
+  const [newGroupIds, setNewGroupIds] = useState<string[]>([]);
+  const [groups, setGroups] = useState<Array<{ id: string; title: string }>>([]);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
     fetchSubscribers();
+    fetchGroups();
   }, []);
+
+  const fetchGroups = async () => {
+    try {
+      const response = await fetch('/api/groups');
+      if (response.ok) {
+        const data = await response.json();
+        setGroups(data.groups || []);
+      }
+    } catch (error) {
+      console.error('Error fetching groups:', error);
+    }
+  };
 
   const fetchSubscribers = async () => {
     try {
@@ -76,10 +103,17 @@ export default function SubscribersPage() {
     }
 
     try {
+      const groupIdsToUse = newGroupIds.length > 0 ? newGroupIds : (newGroupId ? [newGroupId] : []);
+      
       const response = await fetch('/api/subscribers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: newEmail, status: newStatus }),
+        body: JSON.stringify({ 
+          email: newEmail, 
+          status: newStatus, 
+          groupId: newGroupId,
+          groupIds: groupIdsToUse,
+        }),
       });
 
       const data = await response.json();
@@ -102,6 +136,8 @@ export default function SubscribersPage() {
     setEditingId(subscriber.id);
     setEditEmail(subscriber.email);
     setEditStatus(subscriber.status);
+    setEditGroupId(subscriber.groupId || null);
+    setEditGroupIds(subscriber.groups?.map(g => g.id) || []);
   };
 
   const handleUpdate = async (id: string) => {
@@ -111,10 +147,20 @@ export default function SubscribersPage() {
     }
 
     try {
+      // Always use editGroupIds (even if empty array to remove all groups)
+      // The multi-select will always have editGroupIds set, so we use that
+      const groupsToUpdate = editGroupIds;
+      
       const response = await fetch(`/api/subscribers/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: editEmail, status: editStatus }),
+        body: JSON.stringify({ 
+          email: editEmail, 
+          status: editStatus, 
+          groupId: editGroupIds.length > 0 ? editGroupIds[0] : null, // First group for backward compatibility
+          groupIds: groupsToUpdate, // Update multiple groups in local DB (can be empty array)
+          groups: groupsToUpdate, // Also send groups array for Sender.net update (can be empty array)
+        }),
       });
 
       const data = await response.json();
@@ -235,7 +281,7 @@ export default function SubscribersPage() {
             </button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="md:col-span-2">
+            <div>
               <label className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-2 block">Email</label>
               <input
                 type="email"
@@ -256,6 +302,26 @@ export default function SubscribersPage() {
                 <option value="churned">Churned</option>
               </select>
             </div>
+            <div>
+              <label className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-2 block">Groups (Optional)</label>
+              <select
+                multiple
+                value={newGroupIds}
+                onChange={(e) => {
+                  const selected = Array.from(e.target.selectedOptions, option => option.value);
+                  setNewGroupIds(selected);
+                  // Also set newGroupId to first selected for backward compatibility
+                  setNewGroupId(selected.length > 0 ? selected[0] : null);
+                }}
+                className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all min-h-[120px]"
+                size={Math.min(groups.length + 1, 5)}
+              >
+                {groups.map(group => (
+                  <option key={group.id} value={group.id}>{group.title}</option>
+                ))}
+              </select>
+              <p className="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple groups</p>
+            </div>
           </div>
           <div className="flex gap-2 mt-4">
             <button
@@ -270,6 +336,8 @@ export default function SubscribersPage() {
                 setShowAddForm(false);
                 setNewEmail('');
                 setNewStatus('active');
+                setNewGroupId(null);
+                setNewGroupIds([]);
               }}
               className="px-6 py-2 bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:bg-[var(--rich-black)]/80 text-xs font-bold uppercase tracking-widest transition-colors"
             >
@@ -326,6 +394,9 @@ export default function SubscribersPage() {
                   </th>
                   <th className="text-left p-4 text-xs text-gray-400 uppercase tracking-widest font-bold">
                     Status
+                  </th>
+                  <th className="text-left p-4 text-xs text-gray-400 uppercase tracking-widest font-bold">
+                    Group
                   </th>
                   <th className="text-left p-4 text-xs text-gray-400 uppercase tracking-widest font-bold">
                     Sync Status
@@ -385,6 +456,43 @@ export default function SubscribersPage() {
                       )}
                     </td>
                     <td className="p-4">
+                      {editingId === subscriber.id ? (
+                        <select
+                          multiple
+                          value={editGroupIds}
+                          onChange={(e) => {
+                            const selected = Array.from(e.target.selectedOptions, option => option.value);
+                            setEditGroupIds(selected);
+                            // Also set editGroupId to first selected for backward compatibility
+                            setEditGroupId(selected.length > 0 ? selected[0] : null);
+                          }}
+                          className="bg-[var(--rich-black)] border border-[var(--border-color)] p-2 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all min-h-[80px]"
+                          size={Math.min(groups.length + 1, 4)}
+                        >
+                          {groups.map(group => (
+                            <option key={group.id} value={group.id}>{group.title}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <div className="flex flex-wrap gap-1">
+                          {subscriber.groups && subscriber.groups.length > 0 ? (
+                            subscriber.groups.map(group => (
+                              <span 
+                                key={group.id} 
+                                className="text-xs px-2 py-1 bg-[var(--primary-mint)]/20 text-[var(--primary-mint)] border border-[var(--primary-mint)]/30"
+                              >
+                                {group.title}
+                              </span>
+                            ))
+                          ) : subscriber.group ? (
+                            <span className="text-gray-400 text-sm">{subscriber.group.title}</span>
+                          ) : (
+                            <span className="text-gray-400 text-sm">No Group</span>
+                          )}
+                        </div>
+                      )}
+                    </td>
+                    <td className="p-4">
                       {subscriber.syncedToSender ? (
                         <div className="flex items-center gap-2 text-green-400">
                           <CheckCircle className="w-4 h-4" />
@@ -412,6 +520,8 @@ export default function SubscribersPage() {
                               setEditingId(null);
                               setEditEmail('');
                               setEditStatus('active');
+                              setEditGroupId(null);
+                              setEditGroupIds([]);
                             }}
                             className="p-2 text-gray-400 hover:text-white transition-colors"
                             title="Cancel"

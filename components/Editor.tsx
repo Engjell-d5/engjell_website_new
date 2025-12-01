@@ -113,6 +113,7 @@ export default function Editor({ content, onChange }: EditorProps) {
     editorProps: {
       attributes: {
         class: 'prose prose-invert max-w-none focus:outline-none min-h-[400px] p-4',
+        style: 'p { text-indent: 0 !important; padding-left: 0 !important; margin-left: 0 !important; }',
       },
       handleClick: (view, pos, event) => {
         const { state } = view;
@@ -444,7 +445,42 @@ export default function Editor({ content, onChange }: EditorProps) {
       </div>
 
       {/* Editor Content */}
-      <div className="bg-white text-black min-h-[400px]">
+      <div className="bg-[var(--rich-black)] text-[var(--text-secondary)] min-h-[400px] p-4 border border-[var(--border-color)]">
+        <style jsx global>{`
+          .ProseMirror {
+            background: transparent !important;
+            color: var(--text-secondary) !important;
+            outline: none;
+          }
+          .ProseMirror p {
+            text-indent: 0 !important;
+            padding-left: 0 !important;
+            margin-left: 0 !important;
+            color: var(--text-secondary) !important;
+            background: transparent !important;
+          }
+          .ProseMirror h1,
+          .ProseMirror h2,
+          .ProseMirror h3,
+          .ProseMirror h4,
+          .ProseMirror h5,
+          .ProseMirror h6 {
+            color: var(--text-primary) !important;
+            background: transparent !important;
+            font-family: var(--font-bebas), sans-serif;
+          }
+          .ProseMirror a {
+            color: var(--primary-mint) !important;
+            background: transparent !important;
+          }
+          .ProseMirror * {
+            background: transparent !important;
+          }
+          .ProseMirror::placeholder {
+            color: var(--text-secondary);
+            opacity: 0.5;
+          }
+        `}</style>
         <EditorContent editor={editor} />
       </div>
 

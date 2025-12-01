@@ -1,23 +1,43 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { RefreshCw, Clock, Calendar, Trash2 } from 'lucide-react';
+import { RefreshCw, Clock, Calendar, Trash2, Star, StarOff, Eye, EyeOff } from 'lucide-react';
+import Image from 'next/image';
 
 interface Config {
   cronSchedule: string;
   lastVideoFetch: string | null;
 }
 
+interface YouTubeVideo {
+  id: string;
+  videoId: string;
+  title: string;
+  description: string;
+  thumbnailUrl: string;
+  publishedAt: string;
+  duration: string;
+  viewCount: string;
+  channelTitle: string;
+  fetchedAt: string;
+  featured?: boolean;
+  removed?: boolean;
+}
+
 export default function YouTubePage() {
   const [config, setConfig] = useState<Config | null>(null);
+  const [videos, setVideos] = useState<YouTubeVideo[]>([]);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(false);
   const [clearing, setClearing] = useState(false);
+  const [loadingVideos, setLoadingVideos] = useState(true);
+  const [showRemoved, setShowRemoved] = useState(false);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
     fetchConfig();
-  }, []);
+    fetchVideos();
+  }, [showRemoved]);
 
   const fetchConfig = async () => {
     try {
@@ -28,6 +48,21 @@ export default function YouTubePage() {
       }
     } catch (error) {
       console.error('Error fetching config:', error);
+    }
+  };
+
+  const fetchVideos = async () => {
+    setLoadingVideos(true);
+    try {
+      const response = await fetch(`/api/youtube/videos?includeRemoved=${showRemoved}`);
+      if (response.ok) {
+        const data = await response.json();
+        setVideos(data.videos || []);
+      }
+    } catch (error) {
+      console.error('Error fetching videos:', error);
+    } finally {
+      setLoadingVideos(false);
     }
   };
 
@@ -45,6 +80,7 @@ export default function YouTubePage() {
           setMessage(`⚠️ ${data.message || 'No videos found. Check server console for details.'}`);
         }
         fetchConfig();
+        fetchVideos();
       } else {
         const errorMsg = data.error || 'Failed to fetch videos';
         const details = data.details ? `\n\nDetails: ${data.details}` : '';
@@ -99,6 +135,7 @@ export default function YouTubePage() {
       if (response.ok) {
         setMessage('✅ All videos cleared successfully!');
         fetchConfig();
+        fetchVideos();
       } else {
         setMessage(`❌ ${data.error || 'Failed to clear videos'}`);
       }
@@ -112,6 +149,50 @@ export default function YouTubePage() {
   const formatDate = (dateString: string | null) => {
     if (!dateString) return 'Never';
     return new Date(dateString).toLocaleString();
+  };
+
+  const formatVideoDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
+  };
+
+  const formatDuration = (duration: string) => {
+    // Parse ISO 8601 duration (PT4M13S -> 4:13)
+    const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+    if (!match) return duration;
+    
+    const hours = parseInt(match[1] || '0', 10);
+    const minutes = parseInt(match[2] || '0', 10);
+    const seconds = parseInt(match[3] || '0', 10);
+    
+    if (hours > 0) {
+      return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
+    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+  };
+
+  const handleVideoAction = async (videoId: string, action: 'setFeatured' | 'unsetFeatured' | 'remove' | 'restore') => {
+    try {
+      const response = await fetch('/api/youtube/videos', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ videoId, action }),
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        setMessage(`✅ ${data.message || 'Action completed successfully'}`);
+        fetchVideos();
+      } else {
+        setMessage(`❌ ${data.error || 'Failed to perform action'}`);
+      }
+    } catch (error: any) {
+      setMessage(`❌ An error occurred: ${error.message || 'Unknown error'}`);
+    }
   };
 
   return (
@@ -189,7 +270,7 @@ export default function YouTubePage() {
         </div>
       )}
 
-      <div className="classic-panel p-6">
+      <div className="classic-panel p-6 mb-8">
         <h2 className="text-xl text-white font-bebas mb-4">Cron Schedule Examples</h2>
         <div className="space-y-2 text-sm text-gray-400">
           <div className="flex justify-between">
@@ -209,6 +290,124 @@ export default function YouTubePage() {
             <span>Monthly on the 1st at midnight</span>
           </div>
         </div>
+      </div>
+
+      <div className="classic-panel p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl text-white font-bebas">VIDEOS</h2>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setShowRemoved(!showRemoved)}
+              className="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+            >
+              {showRemoved ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              {showRemoved ? 'Hide Removed' : 'Show Removed'}
+            </button>
+            <button
+              onClick={fetchVideos}
+              disabled={loadingVideos}
+              className="text-sm bg-[var(--primary-mint)] text-black hover:bg-white font-bold px-4 py-2 uppercase tracking-widest transition-colors disabled:opacity-50 flex items-center gap-2"
+            >
+              <RefreshCw className={`w-4 h-4 ${loadingVideos ? 'animate-spin' : ''}`} />
+              Refresh
+            </button>
+          </div>
+        </div>
+
+        {loadingVideos ? (
+          <div className="text-center py-12">
+            <div className="animate-pulse text-gray-400">Loading videos...</div>
+          </div>
+        ) : videos.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-400">No videos found. Fetch videos to get started.</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {videos.map((video) => (
+              <div
+                key={video.id}
+                className={`border border-[var(--border-color)] p-4 ${
+                  video.featured ? 'bg-[var(--primary-mint)]/10 border-[var(--primary-mint)]' : ''
+                } ${video.removed ? 'opacity-50' : ''}`}
+              >
+                <div className="flex gap-4">
+                  <div className="relative w-32 h-20 flex-shrink-0 bg-black border border-[var(--border-color)]">
+                    <Image
+                      src={video.thumbnailUrl}
+                      alt={video.title}
+                      fill
+                      className="object-cover"
+                      sizes="128px"
+                    />
+                    {video.featured && (
+                      <div className="absolute top-1 left-1 bg-[var(--primary-mint)] text-black px-2 py-0.5 text-xs font-bold">
+                        FEATURED
+                      </div>
+                    )}
+                    {video.removed && (
+                      <div className="absolute top-1 right-1 bg-red-600 text-white px-2 py-0.5 text-xs font-bold">
+                        REMOVED
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-white font-bold text-sm mb-1 line-clamp-2">{video.title}</h3>
+                    <p className="text-xs text-gray-400 mb-2">
+                      {formatDuration(video.duration)} • {formatVideoDate(video.publishedAt)} • {parseInt(video.viewCount).toLocaleString()} views
+                    </p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      {!video.removed ? (
+                        <>
+                          {video.featured ? (
+                            <button
+                              onClick={() => handleVideoAction(video.videoId, 'unsetFeatured')}
+                              className="text-xs bg-yellow-600 hover:bg-yellow-700 text-white font-bold px-3 py-1.5 uppercase tracking-widest transition-colors flex items-center gap-1.5"
+                            >
+                              <StarOff className="w-3 h-3" />
+                              Unfeature
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleVideoAction(video.videoId, 'setFeatured')}
+                              className="text-xs bg-[var(--primary-mint)] hover:bg-white text-black font-bold px-3 py-1.5 uppercase tracking-widest transition-colors flex items-center gap-1.5"
+                            >
+                              <Star className="w-3 h-3" />
+                              Set Featured
+                            </button>
+                          )}
+                          <button
+                            onClick={() => handleVideoAction(video.videoId, 'remove')}
+                            className="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 uppercase tracking-widest transition-colors flex items-center gap-1.5"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                            Remove
+                          </button>
+                        </>
+                      ) : (
+                        <button
+                          onClick={() => handleVideoAction(video.videoId, 'restore')}
+                          className="text-xs bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-1.5 uppercase tracking-widest transition-colors flex items-center gap-1.5"
+                        >
+                          <Eye className="w-3 h-3" />
+                          Restore
+                        </button>
+                      )}
+                      <a
+                        href={`https://www.youtube.com/watch?v=${video.videoId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-gray-400 hover:text-[var(--primary-mint)] transition-colors"
+                      >
+                        View on YouTube →
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

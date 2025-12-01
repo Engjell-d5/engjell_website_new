@@ -1,5 +1,5 @@
 import 'server-only';
-import { getUnsyncedSubscribers, markSubscriberSynced, getSubscribers, addSubscriber, updateSubscriber } from './data';
+import { getUnsyncedSubscribers, markSubscriberSynced, getSubscribers, addSubscriber, updateSubscriber, getGroups } from './data';
 
 const SENDER_API_KEY = process.env.SENDER_API_KEY || '';
 const SENDER_LIST_ID = process.env.SENDER_LIST_ID || '';
@@ -16,6 +16,10 @@ interface SenderSubscriber {
   };
   bounced_at?: string | null;
   unsubscribed_at?: string | null;
+  subscriber_tags?: Array<{
+    id: string;
+    title: string;
+  }>;
 }
 
 interface SenderResponse {
@@ -199,21 +203,45 @@ export async function syncSubscribersWithSender(): Promise<{
       const localSubscribers = await getSubscribers();
       const localSubscribersMap = new Map(localSubscribers.map(s => [s.email.toLowerCase(), s]));
 
+      // Get all groups to map senderGroupId to local groupId
+      const allGroups = await getGroups();
+      const groupsBySenderId = new Map(
+        allGroups
+          .filter(g => g.senderGroupId !== null)
+          .map(g => [g.senderGroupId!, g.id])
+      );
+
       for (const senderSub of senderSubscribers) {
         try {
           const email = senderSub.email.toLowerCase();
           const localStatus = mapSenderStatusToLocal(senderSub.status.email);
           const localSub = localSubscribersMap.get(email);
 
+          // Determine groups from subscriber_tags (all matching groups)
+          const matchingGroupIds: string[] = [];
+          if (senderSub.subscriber_tags && senderSub.subscriber_tags.length > 0) {
+            for (const tag of senderSub.subscriber_tags) {
+              const localGroupId = groupsBySenderId.get(tag.id);
+              if (localGroupId) {
+                matchingGroupIds.push(localGroupId);
+              }
+            }
+          }
+          // For backward compatibility, also set groupId to first group
+          const groupId = matchingGroupIds.length > 0 ? matchingGroupIds[0] : null;
+
           if (localSub) {
             // Update existing subscriber
             const needsUpdate = 
               localSub.status !== localStatus || 
+              localSub.groupId !== groupId ||
               !localSub.syncedToSender;
 
             if (needsUpdate) {
               await updateSubscriber(localSub.id, {
                 status: localStatus,
+                groupId: groupId,
+                groupIds: matchingGroupIds, // Update multiple groups
               });
               
               // Mark as synced if not already
@@ -226,7 +254,7 @@ export async function syncSubscribersWithSender(): Promise<{
           } else {
             // Create new subscriber (subscribed via Sender.net directly)
             try {
-              await addSubscriber(email, localStatus);
+              await addSubscriber(email, localStatus, groupId, matchingGroupIds);
               await markSubscriberSynced(email);
               pulledCreated++;
             } catch (error: any) {
@@ -234,7 +262,11 @@ export async function syncSubscribersWithSender(): Promise<{
               if (error.message?.includes('already subscribed')) {
                 const existing = localSubscribers.find(s => s.email.toLowerCase() === email);
                 if (existing) {
-                  await updateSubscriber(existing.id, { status: localStatus });
+                  await updateSubscriber(existing.id, { 
+                    status: localStatus, 
+                    groupId: groupId,
+                    groupIds: matchingGroupIds,
+                  });
                   await markSubscriberSynced(email);
                   pulledUpdated++;
                 } else {

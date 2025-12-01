@@ -1,15 +1,19 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Lock } from 'lucide-react';
 
-export default function AdminLogin() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  
+  // Get redirect URL from query params
+  const redirectTo = searchParams.get('redirect') || '/admin';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -17,10 +21,14 @@ export default function AdminLogin() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
+      // Add redirect parameter to the login request
+      const loginUrl = `/api/auth/login?redirect=${encodeURIComponent(redirectTo)}`;
+      
+      const response = await fetch(loginUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
+        credentials: 'include', // Ensure cookies are sent and received
       });
 
       const data = await response.json();
@@ -31,8 +39,11 @@ export default function AdminLogin() {
         return;
       }
 
-      router.push('/admin');
-      router.refresh();
+      // Login successful - cookie is set in the response headers
+      // The browser processes Set-Cookie headers immediately
+      // Redirect with full page reload to ensure cookie is sent
+      const redirectUrl = data.redirect || redirectTo;
+      window.location.href = redirectUrl;
     } catch (err) {
       setError('An error occurred. Please try again.');
       setLoading(false);
@@ -87,6 +98,21 @@ export default function AdminLogin() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function AdminLogin() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[var(--bg-dark)] flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--primary-mint)] mx-auto"></div>
+          <p className="mt-4 text-gray-400">Loading...</p>
+        </div>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }
 

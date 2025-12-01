@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Calendar, Image as ImageIcon, Send, Plus, Edit, Trash2, CheckCircle, XCircle, Clock, Linkedin, Twitter, Instagram, Rocket, Video, X, Upload, Repeat, RefreshCw } from 'lucide-react';
+import { Calendar, Image as ImageIcon, Send, Plus, Edit, Trash2, CheckCircle, XCircle, Clock, Linkedin, Twitter, Instagram, Rocket, Video, X, Upload, Repeat, RefreshCw, Sparkles, Lightbulb } from 'lucide-react';
 import Image from 'next/image';
 import DateTimePicker from '@/components/DateTimePicker';
 
@@ -38,6 +38,7 @@ export default function SocialMediaPage() {
   const [connections, setConnections] = useState<SocialConnection[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
+  const [activeTab, setActiveTab] = useState<'connections' | 'posts' | 'ideas'>('posts');
   const [editingPost, setEditingPost] = useState<SocialPost | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [formData, setFormData] = useState({
@@ -47,11 +48,27 @@ export default function SocialMediaPage() {
     scheduledFor: '',
   });
   const [uploading, setUploading] = useState(false);
+  const [showRefineModal, setShowRefineModal] = useState(false);
+  const [postToRefine, setPostToRefine] = useState<SocialPost | null>(null);
+  const [refinementPrompt, setRefinementPrompt] = useState('');
+  const [refining, setRefining] = useState(false);
+  const [refinedContent, setRefinedContent] = useState('');
+  const [aiIntegrations, setAiIntegrations] = useState<Array<{ id: string; name: string; provider: string; isActive: boolean }>>([]);
+  const [selectedAiIntegration, setSelectedAiIntegration] = useState('');
+  const [showIdeasModal, setShowIdeasModal] = useState(false);
+  const [ideasPrompt, setIdeasPrompt] = useState('');
+  const [ideasCount, setIdeasCount] = useState(5);
+  const [generatingIdeas, setGeneratingIdeas] = useState(false);
+  const [postIdeas, setPostIdeas] = useState<Array<{ id: string; title: string; prompt: string; status: string; createdAt: string }>>([]);
+  const [editingIdea, setEditingIdea] = useState<{ id: string; title: string; prompt: string } | null>(null);
+  const [editIdeaTitle, setEditIdeaTitle] = useState('');
 
   useEffect(() => {
     console.log('[SOCIAL-PAGE] Page loaded, initializing...');
     fetchPosts();
     fetchConnections();
+    fetchAiIntegrations();
+    fetchPostIdeas();
     
     // Initialize cron jobs when social media page loads
     console.log('[SOCIAL-PAGE] Initializing cron jobs...');
@@ -105,6 +122,33 @@ export default function SocialMediaPage() {
       }
     } catch (error) {
       console.error('Error fetching connections:', error);
+    }
+  };
+
+  const fetchAiIntegrations = async () => {
+    try {
+      const response = await fetch('/api/ai/integrations');
+      if (response.ok) {
+        const data = await response.json();
+        setAiIntegrations(data.integrations?.filter((i: any) => i.isActive) || []);
+        if (data.integrations?.filter((i: any) => i.isActive).length > 0) {
+          setSelectedAiIntegration(data.integrations.filter((i: any) => i.isActive)[0].id);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching AI integrations:', error);
+    }
+  };
+
+  const fetchPostIdeas = async () => {
+    try {
+      const response = await fetch('/api/ai/ideas');
+      if (response.ok) {
+        const data = await response.json();
+        setPostIdeas(data.ideas || []);
+      }
+    } catch (error) {
+      console.error('Error fetching post ideas:', error);
     }
   };
 
@@ -365,6 +409,37 @@ export default function SocialMediaPage() {
     }));
   };
 
+  const handleScheduleDraft = async (post: SocialPost) => {
+    try {
+      // Set scheduled date to 24 hours from now (or keep existing if it's in the future)
+      const now = new Date();
+      const existingDate = new Date(post.scheduledFor);
+      const scheduledFor = existingDate > now ? existingDate : new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+      const response = await fetch(`/api/social/posts/${post.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: post.content,
+          mediaAssets: post.mediaAssets,
+          platforms: post.platforms,
+          scheduledFor: scheduledFor.toISOString(),
+        }),
+      });
+
+      if (response.ok) {
+        setMessage({ type: 'success', text: 'Post scheduled successfully!' });
+        fetchPosts();
+      } else {
+        const error = await response.json();
+        setMessage({ type: 'error', text: error.error || 'Failed to schedule post' });
+      }
+    } catch (error: any) {
+      console.error('Error scheduling post:', error);
+      setMessage({ type: 'error', text: 'Failed to schedule post' });
+    }
+  };
+
   const handleEdit = (post: SocialPost) => {
     setEditingPost(post);
     
@@ -429,11 +504,231 @@ export default function SocialMediaPage() {
     return new Date(dateString).toLocaleString();
   };
 
+  const handleRefine = async () => {
+    if (!postToRefine || !refinementPrompt || !selectedAiIntegration) {
+      setMessage({ type: 'error', text: 'Please fill in all fields' });
+      return;
+    }
+
+    setRefining(true);
+    try {
+      const response = await fetch('/api/ai/refine-post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: postToRefine.content,
+          refinementPrompt,
+          aiIntegrationId: selectedAiIntegration,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to refine post');
+      }
+
+      const data = await response.json();
+      setRefinedContent(data.content);
+      setMessage({ type: 'success', text: 'Post refined successfully!' });
+    } catch (error: any) {
+      console.error('Error refining post:', error);
+      setMessage({ type: 'error', text: error.message || 'Failed to refine post' });
+    } finally {
+      setRefining(false);
+    }
+  };
+
+  const handleApplyRefinement = async () => {
+    if (!postToRefine || !refinedContent) return;
+
+    try {
+      const response = await fetch(`/api/social/posts/${postToRefine.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          content: refinedContent,
+          mediaAssets: postToRefine.mediaAssets,
+          platforms: postToRefine.platforms,
+          scheduledFor: postToRefine.scheduledFor,
+        }),
+      });
+
+      if (response.ok) {
+        setMessage({ type: 'success', text: 'Post updated with refined content!' });
+        setShowRefineModal(false);
+        setPostToRefine(null);
+        setRefinedContent('');
+        setRefinementPrompt('');
+        fetchPosts();
+      } else {
+        const error = await response.json();
+        setMessage({ type: 'error', text: error.error || 'Failed to update post' });
+      }
+    } catch (error) {
+      console.error('Error applying refinement:', error);
+      setMessage({ type: 'error', text: 'Failed to update post' });
+    }
+  };
+
+  const handleGenerateIdeas = async () => {
+    if (!ideasPrompt || !selectedAiIntegration) {
+      setMessage({ type: 'error', text: 'Please fill in the prompt and select an AI integration' });
+      return;
+    }
+
+    setGeneratingIdeas(true);
+    try {
+      const response = await fetch('/api/ai/generate-ideas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: ideasPrompt,
+          aiIntegrationId: selectedAiIntegration,
+          count: ideasCount,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to generate ideas');
+      }
+
+      const data = await response.json();
+      // Refresh ideas list to show new ones
+      await fetchPostIdeas();
+      setMessage({ type: 'success', text: `Generated ${data.ideas.length} post ideas!` });
+      setShowIdeasModal(false);
+      setIdeasPrompt('');
+    } catch (error: any) {
+      console.error('Error generating ideas:', error);
+      setMessage({ type: 'error', text: error.message || 'Failed to generate ideas' });
+    } finally {
+      setGeneratingIdeas(false);
+    }
+  };
+
+  const handleEditIdea = (idea: { id: string; title: string; prompt: string }) => {
+    setEditingIdea(idea);
+    setEditIdeaTitle(idea.title);
+  };
+
+  const handleSaveIdea = async () => {
+    if (!editingIdea || !editIdeaTitle.trim()) {
+      setMessage({ type: 'error', text: 'Idea title cannot be empty' });
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/ai/ideas?id=${editingIdea.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: editIdeaTitle }),
+      });
+
+      if (response.ok) {
+        setMessage({ type: 'success', text: 'Idea updated successfully!' });
+        setEditingIdea(null);
+        setEditIdeaTitle('');
+        await fetchPostIdeas();
+      } else {
+        const error = await response.json();
+        setMessage({ type: 'error', text: error.error || 'Failed to update idea' });
+      }
+    } catch (error) {
+      console.error('Error updating idea:', error);
+      setMessage({ type: 'error', text: 'Failed to update idea' });
+    }
+  };
+
+  const handleDeleteIdea = async (ideaId: string) => {
+    if (!confirm('Are you sure you want to delete this idea?')) return;
+
+    try {
+      const response = await fetch(`/api/ai/ideas?id=${ideaId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setMessage({ type: 'success', text: 'Idea deleted successfully!' });
+        await fetchPostIdeas();
+      } else {
+        const error = await response.json();
+        setMessage({ type: 'error', text: error.error || 'Failed to delete idea' });
+      }
+    } catch (error) {
+      console.error('Error deleting idea:', error);
+      setMessage({ type: 'error', text: 'Failed to delete idea' });
+    }
+  };
+
+  const handleGeneratePostFromIdea = async (idea: { id: string; title: string; prompt: string }) => {
+    if (!selectedAiIntegration) {
+      setMessage({ type: 'error', text: 'Please select an AI integration first' });
+      return;
+    }
+
+    try {
+      // Generate post for each platform
+      const platforms = ['linkedin', 'twitter'];
+      const posts = await Promise.all(
+        platforms.map(async (platform) => {
+          const response = await fetch('/api/ai/generate-post', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              prompt: `${idea.prompt}\n\nIdea: ${idea.title}`,
+              platform,
+              aiIntegrationId: selectedAiIntegration,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`Failed to generate post for ${platform}`);
+          }
+
+          const data = await response.json();
+          return { platform, content: data.content };
+        })
+      );
+
+      // Create draft posts
+      const now = new Date();
+      const scheduledFor = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+
+      await Promise.all(
+        posts.map(async (post) => {
+          const response = await fetch('/api/social/posts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              content: post.content,
+              mediaAssets: JSON.stringify([]),
+              platforms: JSON.stringify([post.platform]),
+              scheduledFor: scheduledFor.toISOString(),
+              status: 'draft',
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`Failed to create post for ${post.platform}`);
+          }
+        })
+      );
+
+      setMessage({ type: 'success', text: 'Posts generated from idea and created as drafts!' });
+      fetchPosts();
+    } catch (error: any) {
+      console.error('Error generating post from idea:', error);
+      setMessage({ type: 'error', text: error.message || 'Failed to generate posts from idea' });
+    }
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-4xl text-white font-bebas">SOCIAL MEDIA</h1>
         <div className="flex items-center gap-3">
+          {activeTab === 'posts' && (
           <button
             onClick={() => {
               setShowForm(true);
@@ -445,6 +740,20 @@ export default function SocialMediaPage() {
             <Plus className="w-4 h-4" />
             Schedule Post
           </button>
+          )}
+          {activeTab === 'ideas' && (
+            <button
+              onClick={() => {
+                setShowIdeasModal(true);
+                setIdeasPrompt('');
+                setIdeasCount(5);
+              }}
+              className="px-6 py-3 bg-purple-600 text-white hover:bg-purple-700 font-bold uppercase tracking-widest text-xs transition-colors flex items-center gap-2"
+            >
+              <Lightbulb className="w-4 h-4" />
+              Generate Ideas
+            </button>
+          )}
         </div>
       </div>
 
@@ -469,7 +778,44 @@ export default function SocialMediaPage() {
         </div>
       )}
 
-      {/* Social Connections Status */}
+      {/* Tabs */}
+      <div className="classic-panel p-0 mb-8">
+        <div className="flex border-b border-[var(--border-color)]">
+          <button
+            onClick={() => setActiveTab('connections')}
+            className={`px-6 py-4 font-bebas text-sm uppercase tracking-widest transition-colors ${
+              activeTab === 'connections'
+                ? 'bg-[var(--primary-mint)] text-black border-b-2 border-black'
+                : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
+            }`}
+          >
+            Connected Accounts
+          </button>
+          <button
+            onClick={() => setActiveTab('posts')}
+            className={`px-6 py-4 font-bebas text-sm uppercase tracking-widest transition-colors ${
+              activeTab === 'posts'
+                ? 'bg-[var(--primary-mint)] text-black border-b-2 border-black'
+                : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
+            }`}
+          >
+            Scheduled Posts
+          </button>
+          <button
+            onClick={() => setActiveTab('ideas')}
+            className={`px-6 py-4 font-bebas text-sm uppercase tracking-widest transition-colors ${
+              activeTab === 'ideas'
+                ? 'bg-[var(--primary-mint)] text-black border-b-2 border-black'
+                : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
+            }`}
+          >
+            Post Ideas
+          </button>
+        </div>
+      </div>
+
+      {/* Tab Content: Connected Accounts */}
+      {activeTab === 'connections' && (
       <div className="classic-panel p-6 mb-8">
         <h2 className="text-2xl text-white font-bebas mb-4">CONNECTED ACCOUNTS</h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -521,7 +867,11 @@ export default function SocialMediaPage() {
           })}
         </div>
       </div>
+      )}
 
+      {/* Tab Content: Scheduled Posts */}
+      {activeTab === 'posts' && (
+        <>
       {/* Schedule Post Form */}
       {showForm && (
         <div className="classic-panel p-6 mb-8">
@@ -713,6 +1063,29 @@ export default function SocialMediaPage() {
                     </div>
                   </div>
                   <div className="flex gap-2">
+                    {(post.status === 'scheduled' || post.status === 'draft') && (
+                      <>
+                        <button
+                          onClick={() => {
+                            setPostToRefine(post);
+                            setRefinementPrompt('');
+                            setRefinedContent('');
+                            setShowRefineModal(true);
+                          }}
+                          className="p-2 border border-purple-500 hover:border-purple-400 hover:bg-purple-500 transition-colors"
+                          title="Refine with AI"
+                        >
+                          <Sparkles className="w-4 h-4 text-purple-400 hover:text-white" />
+                        </button>
+                        {post.status === 'draft' && (
+                          <button
+                            onClick={() => handleScheduleDraft(post)}
+                            className="p-2 border border-green-500 hover:border-green-400 hover:bg-green-500 transition-colors"
+                            title="Schedule Post"
+                          >
+                            <Calendar className="w-4 h-4 text-green-400 hover:text-white" />
+                          </button>
+                        )}
                     {post.status === 'scheduled' && (
                       <>
                         <button
@@ -722,6 +1095,8 @@ export default function SocialMediaPage() {
                         >
                           <Rocket className="w-4 h-4 text-[var(--secondary-orange)] hover:text-black" />
                         </button>
+                          </>
+                        )}
                         <button
                           onClick={() => handleEdit(post)}
                           className="p-2 border border-[var(--border-color)] hover:border-[var(--primary-mint)] transition-colors"
@@ -821,6 +1196,255 @@ export default function SocialMediaPage() {
           </div>
         )}
       </div>
+        </>
+      )}
+
+      {/* Tab Content: Post Ideas */}
+      {activeTab === 'ideas' && (
+        <>
+      {/* Post Ideas List */}
+      {postIdeas.length > 0 && (
+        <div className="classic-panel p-6 mt-8">
+          <h2 className="text-2xl text-white font-bebas mb-6">Post Ideas</h2>
+          <div className="space-y-3">
+            {postIdeas.map((idea) => (
+              <div key={idea.id} className="p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
+                {editingIdea?.id === idea.id ? (
+                  <div className="space-y-3">
+                    <textarea
+                      value={editIdeaTitle}
+                      onChange={(e) => setEditIdeaTitle(e.target.value)}
+                      className="w-full bg-[var(--rich-black)] border border-[var(--primary-mint)] p-2 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all resize-none"
+                      placeholder="Idea title and description..."
+                      rows={4}
+                      autoFocus
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        onClick={handleSaveIdea}
+                        className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 font-bold uppercase tracking-widest text-xs transition-colors"
+                      >
+                        Save
+                      </button>
+                      <button
+                        onClick={() => {
+                          setEditingIdea(null);
+                          setEditIdeaTitle('');
+                        }}
+                        className="px-4 py-2 bg-gray-600 text-white hover:bg-gray-700 font-bold uppercase tracking-widest text-xs transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <h3 className="text-sm text-white font-bold mb-2 whitespace-pre-wrap">{idea.title}</h3>
+                      {idea.prompt && (
+                        <p className="text-xs text-gray-400 mb-2 italic">Prompt: {idea.prompt}</p>
+                      )}
+                      <p className="text-[10px] text-gray-500 mb-2">
+                        Created: {new Date(idea.createdAt).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => handleEditIdea(idea)}
+                        className="p-2 border border-[var(--border-color)] hover:border-[var(--primary-mint)] transition-colors"
+                        title="Edit Idea"
+                      >
+                        <Edit className="w-4 h-4 text-white" />
+                      </button>
+                      <button
+                        onClick={() => handleGeneratePostFromIdea(idea)}
+                        className="px-4 py-2 bg-[var(--primary-mint)] text-black hover:bg-white font-bold uppercase tracking-widest text-xs transition-colors flex items-center gap-2"
+                      >
+                        <Sparkles className="w-4 h-4" />
+                        Generate Posts
+                      </button>
+                      <button
+                        onClick={() => handleDeleteIdea(idea.id)}
+                        className="p-2 border border-[var(--border-color)] hover:border-red-400 transition-colors"
+                        title="Delete Idea"
+                      >
+                        <Trash2 className="w-4 h-4 text-white" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {postIdeas.length === 0 && (
+        <div className="classic-panel p-6">
+          <div className="text-center py-12 text-gray-400">
+            <p>No post ideas yet. Click "Generate Ideas" to create some!</p>
+          </div>
+        </div>
+      )}
+        </>
+      )}
+
+      {/* Refine Post Modal */}
+      {showRefineModal && postToRefine && (
+        <div className="fixed inset-0 bg-black/50 flex items-start justify-center z-[99999] p-4 overflow-y-auto">
+          <div className="classic-panel bg-[var(--rich-black)] max-w-3xl w-full p-6 my-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl text-white font-bebas">Refine Post with AI</h2>
+              <button
+                onClick={() => {
+                  setShowRefineModal(false);
+                  setPostToRefine(null);
+                  setRefinedContent('');
+                  setRefinementPrompt('');
+                }}
+                className="text-gray-400 hover:text-white"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
+                  AI Integration
+                </label>
+                <select
+                  value={selectedAiIntegration}
+                  onChange={(e) => setSelectedAiIntegration(e.target.value)}
+                  className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                >
+                  {aiIntegrations.map(integration => (
+                    <option key={integration.id} value={integration.id}>
+                      {integration.name} ({integration.provider})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
+                  Original Post
+                </label>
+                <div className="p-3 bg-[var(--rich-black)] border border-[var(--border-color)] text-sm text-gray-300 whitespace-pre-wrap max-h-40 overflow-y-auto">
+                  {postToRefine.content}
+                </div>
+              </div>
+              <div>
+                <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
+                  Refinement Instructions
+                </label>
+                <textarea
+                  value={refinementPrompt}
+                  onChange={(e) => setRefinementPrompt(e.target.value)}
+                  className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all resize-none"
+                  rows={3}
+                  placeholder="e.g., Make it more engaging, add a call to action, shorten it, make it more professional..."
+                />
+              </div>
+              <button
+                onClick={handleRefine}
+                disabled={refining || !refinementPrompt || !selectedAiIntegration}
+                className="w-full px-6 py-3 bg-purple-600 text-white hover:bg-purple-700 font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                <Sparkles className="w-4 h-4" />
+                {refining ? 'Refining...' : 'Refine Post'}
+              </button>
+              {refinedContent && (
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
+                      Refined Post
+                    </label>
+                    <div className="p-3 bg-[var(--rich-black)] border border-[var(--primary-mint)] text-sm text-white whitespace-pre-wrap max-h-60 overflow-y-auto">
+                      {refinedContent}
+                    </div>
+                  </div>
+                  <button
+                    onClick={handleApplyRefinement}
+                    className="w-full px-6 py-3 bg-green-600 text-white hover:bg-green-700 font-bold uppercase tracking-widest text-xs transition-colors"
+                  >
+                    Apply Refinement
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Generate Ideas Modal */}
+      {showIdeasModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-start justify-center z-[99999] p-4 overflow-y-auto">
+          <div className="classic-panel bg-[var(--rich-black)] max-w-3xl w-full p-6 my-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl text-white font-bebas">Generate Post Ideas</h2>
+              <button
+                onClick={() => {
+                  setShowIdeasModal(false);
+                  setIdeasPrompt('');
+                }}
+                className="text-gray-400 hover:text-white"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
+                  AI Integration
+                </label>
+                <select
+                  value={selectedAiIntegration}
+                  onChange={(e) => setSelectedAiIntegration(e.target.value)}
+                  className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                >
+                  {aiIntegrations.map(integration => (
+                    <option key={integration.id} value={integration.id}>
+                      {integration.name} ({integration.provider})
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
+                  Prompt
+                </label>
+                <textarea
+                  value={ideasPrompt}
+                  onChange={(e) => setIdeasPrompt(e.target.value)}
+                  className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all resize-none"
+                  rows={4}
+                  placeholder="e.g., Generate ideas about tech entrepreneurship, productivity tips, business growth..."
+                />
+              </div>
+              <div>
+                <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
+                  Number of Ideas
+                </label>
+                <input
+                  type="number"
+                  value={ideasCount}
+                  onChange={(e) => setIdeasCount(parseInt(e.target.value) || 5)}
+                  min={1}
+                  max={10}
+                  className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                />
+              </div>
+              <button
+                onClick={handleGenerateIdeas}
+                disabled={generatingIdeas || !ideasPrompt || !selectedAiIntegration}
+                className="w-full px-6 py-3 bg-purple-600 text-white hover:bg-purple-700 font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                <Lightbulb className="w-4 h-4" />
+                {generatingIdeas ? 'Generating...' : 'Generate Ideas'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

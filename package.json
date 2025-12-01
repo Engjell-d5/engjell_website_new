@@ -13,6 +13,7 @@
     "db:generate": "prisma generate",
     "db:seed": "tsx scripts/migrate-to-db.ts",
     "db:setup": "tsx scripts/setup-database.ts",
+    "email:reset-analyzed": "tsx scripts/reset-analyzed-status.ts",
     "ngrok": "powershell -ExecutionPolicy Bypass -File ./scripts/ngrok-start.ps1",
     "ngrok:url": "powershell -ExecutionPolicy Bypass -File ./scripts/ngrok-get-url.ps1",
     "ngrok:simple": "ngrok http 3000"
@@ -28,6 +29,7 @@
     "@tiptap/react": "^2.1.13",
     "@tiptap/starter-kit": "^2.1.13",
     "bcryptjs": "^2.4.3",
+    "jose": "^5.9.6",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.427.0",
     "next": "14.2.5",

@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { email, status } = await request.json();
+    const { email, status, groupId, groupIds } = await request.json();
 
     if (!email || !email.includes('@')) {
       return NextResponse.json(
@@ -50,7 +50,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const subscriber = await addSubscriber(email, (status as 'active' | 'churned') || 'active');
+    // Use groupIds if provided, otherwise fall back to groupId
+    const groupIdsToUse = groupIds && Array.isArray(groupIds) && groupIds.length > 0 
+      ? groupIds 
+      : (groupId ? [groupId] : []);
+    const singleGroupId = groupIdsToUse.length > 0 ? groupIdsToUse[0] : null;
+    
+    const subscriber = await addSubscriber(
+      email, 
+      (status as 'active' | 'churned') || 'active', 
+      singleGroupId,
+      groupIdsToUse
+    );
 
     return NextResponse.json({
       success: true,

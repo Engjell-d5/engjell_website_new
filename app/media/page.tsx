@@ -28,6 +28,8 @@ interface YouTubeVideo {
   duration: string;
   viewCount: string;
   channelTitle: string;
+  featured?: boolean;
+  removed?: boolean;
 }
 
 export default function Media() {
@@ -65,9 +67,12 @@ export default function Media() {
     });
   };
 
-  const featuredVideo = videos[0];
-  const nextVideos = videos.slice(1, videosToShow + 1); // Videos after featured
-  const hasMoreVideos = videos.length > videosToShow + 1;
+  // Get featured video (first video is featured, as returned by API sorted by featured first)
+  const featuredVideo = videos.find(v => v.featured) || videos[0];
+  // Get other videos (excluding featured)
+  const otherVideos = videos.filter(v => !v.featured || v.id !== featuredVideo?.id);
+  const nextVideos = otherVideos.slice(0, videosToShow);
+  const hasMoreVideos = otherVideos.length > videosToShow;
   
   const loadMoreVideos = () => {
     setLoadingMore(true);

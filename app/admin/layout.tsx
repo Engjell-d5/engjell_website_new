@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Users, FileText, LogOut, Home, Youtube, Mic, Mail, MessageSquare, Share2 } from 'lucide-react';
+import { Users, FileText, LogOut, Home, Mic, Mail, MessageSquare, Share2, LayoutDashboard, Sparkles } from 'lucide-react';
 
 export default function AdminLayout({
   children,
@@ -103,14 +103,14 @@ export default function AdminLayout({
         <aside className="w-64 classic-panel min-h-[calc(100vh-4rem)] p-6 border-r border-[var(--border-color)] relative z-0">
           <nav className="space-y-2">
             <Link
-              href="/admin"
+              href="/admin/dashboard"
               className={`flex items-center gap-3 px-4 py-3 rounded-none transition-colors ${
-                pathname === '/admin'
+                pathname === '/admin/dashboard' || pathname === '/admin'
                   ? 'bg-[var(--primary-mint)] text-black'
                   : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
               }`}
             >
-              <FileText className="w-4 h-4 flex-shrink-0" />
+              <LayoutDashboard className="w-4 h-4 flex-shrink-0" />
               <span className="text-sm font-bold uppercase tracking-widest">Dashboard</span>
             </Link>
             {user.role === 'admin' && (
@@ -127,48 +127,37 @@ export default function AdminLayout({
               </Link>
             )}
             <Link
-              href="/admin/blogs"
+              href="/admin/podcast"
               className={`flex items-center gap-3 px-4 py-3 rounded-none transition-colors ${
-                pathname === '/admin/blogs'
-                  ? 'bg-[var(--primary-mint)] text-black'
-                  : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
-              }`}
-            >
-              <FileText className="w-4 h-4 flex-shrink-0" />
-              <span className="text-sm font-bold uppercase tracking-widest">Blogs</span>
-            </Link>
-            <Link
-              href="/admin/youtube"
-              className={`flex items-center gap-3 px-4 py-3 rounded-none transition-colors ${
-                pathname === '/admin/youtube'
-                  ? 'bg-[var(--primary-mint)] text-black'
-                  : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
-              }`}
-            >
-              <Youtube className="w-4 h-4 flex-shrink-0" />
-              <span className="text-sm font-bold uppercase tracking-widest">YouTube</span>
-            </Link>
-            <Link
-              href="/admin/podcast-applications"
-              className={`flex items-center gap-3 px-4 py-3 rounded-none transition-colors ${
-                pathname === '/admin/podcast-applications'
+                pathname === '/admin/podcast' || pathname === '/admin/youtube' || pathname === '/admin/podcast-applications'
                   ? 'bg-[var(--primary-mint)] text-black'
                   : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
               }`}
             >
               <Mic className="w-4 h-4 flex-shrink-0" />
-              <span className="text-sm font-bold uppercase tracking-widest">Podcast Applications</span>
+              <span className="text-sm font-bold uppercase tracking-widest">Podcast</span>
             </Link>
             <Link
-              href="/admin/subscribers"
+              href="/admin/email"
               className={`flex items-center gap-3 px-4 py-3 rounded-none transition-colors ${
-                pathname === '/admin/subscribers'
+                pathname === '/admin/email'
                   ? 'bg-[var(--primary-mint)] text-black'
                   : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
               }`}
             >
               <Mail className="w-4 h-4 flex-shrink-0" />
-              <span className="text-sm font-bold uppercase tracking-widest">Subscribers</span>
+              <span className="text-sm font-bold uppercase tracking-widest">Email</span>
+            </Link>
+            <Link
+              href="/admin/newsletter"
+              className={`flex items-center gap-3 px-4 py-3 rounded-none transition-colors ${
+                pathname === '/admin/newsletter' || pathname === '/admin/subscribers' || pathname === '/admin/groups' || pathname === '/admin/campaigns'
+                  ? 'bg-[var(--primary-mint)] text-black'
+                  : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
+              }`}
+            >
+              <Mail className="w-4 h-4 flex-shrink-0" />
+              <span className="text-sm font-bold uppercase tracking-widest">Newsletter</span>
             </Link>
             <Link
               href="/admin/contact"
@@ -191,6 +180,17 @@ export default function AdminLayout({
             >
               <Share2 className="w-4 h-4 flex-shrink-0" />
               <span className="text-sm font-bold uppercase tracking-widest">Social Media</span>
+            </Link>
+            <Link
+              href="/admin/ai-integrations"
+              className={`flex items-center gap-3 px-4 py-3 rounded-none transition-colors ${
+                pathname === '/admin/ai-integrations'
+                  ? 'bg-[var(--primary-mint)] text-black'
+                  : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
+              }`}
+            >
+              <Sparkles className="w-4 h-4 flex-shrink-0" />
+              <span className="text-sm font-bold uppercase tracking-widest">AI Integrations</span>
             </Link>
           </nav>
         </aside>

@@ -82,6 +82,8 @@ interface YouTubeVideo {
   duration: string;
   viewCount: string;
   channelTitle: string;
+  featured?: boolean;
+  removed?: boolean;
 }
 
 interface Blog {
@@ -127,8 +129,11 @@ export default function Sidebar() {
       if (response.ok) {
         const data = await response.json();
         const videos = data.videos || [];
-        if (videos.length > 0) {
-          setLatestVideo(videos[0]);
+        // Get featured video (first video is featured, as returned by API sorted by featured first)
+        // Fallback to first video if no featured video exists
+        const featured = videos.find((v: YouTubeVideo) => v.featured) || videos[0];
+        if (featured) {
+          setLatestVideo(featured);
         }
       }
     } catch (error) {

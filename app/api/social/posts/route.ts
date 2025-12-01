@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { content, mediaAssets, platforms, scheduledFor } = body;
+    const { content, mediaAssets, platforms, scheduledFor, status } = body;
 
     if (!content || !scheduledFor) {
       return NextResponse.json(
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
         mediaAssets: mediaAssetsJson,
         platforms: JSON.stringify(platformsArray),
         scheduledFor: scheduledDate,
-        status: 'scheduled',
+        status: status || 'scheduled',
         createdBy: user.id,
       },
     });

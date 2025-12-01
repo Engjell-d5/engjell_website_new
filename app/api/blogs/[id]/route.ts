@@ -41,7 +41,7 @@ export async function PUT(
   }
 
   try {
-    const { title, slug, category, excerpt, content, imageUrl, published, seo } = await request.json();
+    const { title, slug, category, excerpt, hook, content, imageUrl, published, seo } = await request.json();
     const blogs = await getBlogs();
     const blogIndex = blogs.findIndex(b => b.id === params.id);
 
@@ -78,6 +78,7 @@ export async function PUT(
       slug: finalSlug,
       category: category || blogs[blogIndex].category,
       excerpt: excerpt || blogs[blogIndex].excerpt,
+      hook: hook !== undefined ? (hook || null) : (blogs[blogIndex] as any).hook || null,
       content: content || blogs[blogIndex].content,
       imageUrl: imageUrl || blogs[blogIndex].imageUrl,
       published: published !== undefined ? published : blogs[blogIndex].published,

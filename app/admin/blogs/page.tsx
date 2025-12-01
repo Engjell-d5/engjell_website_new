@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { Plus, Edit, Trash2, Eye, EyeOff, Upload, Search } from 'lucide-react';
+import { Plus, Edit, Trash2, Eye, EyeOff, Upload, Search, Mail, Link as LinkIcon, X, Sparkles, Linkedin, Twitter, Instagram, Rocket } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import Editor from '@/components/Editor';
@@ -17,6 +17,11 @@ interface Blog {
   publishedAt: string | null;
   createdAt: string;
   updatedAt: string;
+  campaigns?: Array<{
+    id: string;
+    subject: string;
+    status: string;
+  }>;
   seo?: {
     metaTitle?: string;
     metaDescription?: string;
@@ -41,6 +46,7 @@ export default function BlogsPage() {
     slug: '',
     category: '',
     excerpt: '',
+    hook: '',
     content: '',
     imageUrl: '',
     published: false,
@@ -59,7 +65,27 @@ export default function BlogsPage() {
   });
   const [uploadingImage, setUploadingImage] = useState(false);
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(false);
+  const [showLinkCampaignModal, setShowLinkCampaignModal] = useState(false);
+  const [selectedBlogForLink, setSelectedBlogForLink] = useState<Blog | null>(null);
+  const [showConvertToCampaignModal, setShowConvertToCampaignModal] = useState(false);
+  const [selectedBlogForConvert, setSelectedBlogForConvert] = useState<Blog | null>(null);
+  const [selectedGroupIds, setSelectedGroupIds] = useState<string[]>([]);
+  const [groups, setGroups] = useState<Array<{ id: string; senderGroupId: string | null; title: string }>>([]);
+  const [campaigns, setCampaigns] = useState<Array<{ id: string; subject: string; status: string; blogId: string | null }>>([]);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showAiGenerateModal, setShowAiGenerateModal] = useState(false);
+  const [selectedBlogForAi, setSelectedBlogForAi] = useState<Blog | null>(null);
+  const [aiIntegrations, setAiIntegrations] = useState<Array<{ id: string; name: string; provider: string; isActive: boolean }>>([]);
+  const [aiFormData, setAiFormData] = useState({
+    aiIntegrationId: '',
+    prompt: '',
+    platforms: [] as string[],
+    platformCounts: {} as Record<string, number>, // Platform -> count mapping
+  });
+  const [generating, setGenerating] = useState(false);
+  const [generatedPosts, setGeneratedPosts] = useState<Array<{ platform: string; content: string; images?: string[] }>>([]);
+  const [blogImages, setBlogImages] = useState<string[]>([]);
 
   // Generate slug from title
   const generateSlug = (title: string): string => {
@@ -71,7 +97,46 @@ export default function BlogsPage() {
 
   useEffect(() => {
     fetchBlogs();
+    fetchCampaigns();
+    fetchGroups();
+    fetchAiIntegrations();
   }, []);
+
+  const fetchAiIntegrations = async () => {
+    try {
+      const response = await fetch('/api/ai/integrations');
+      if (response.ok) {
+        const data = await response.json();
+        setAiIntegrations(data.integrations?.filter((i: any) => i.isActive) || []);
+      }
+    } catch (error) {
+      console.error('Error fetching AI integrations:', error);
+    }
+  };
+
+  const fetchCampaigns = async () => {
+    try {
+      const response = await fetch('/api/campaigns');
+      if (response.ok) {
+        const data = await response.json();
+        setCampaigns(data.campaigns || []);
+      }
+    } catch (error) {
+      console.error('Error fetching campaigns:', error);
+    }
+  };
+
+  const fetchGroups = async () => {
+    try {
+      const response = await fetch('/api/groups');
+      if (response.ok) {
+        const data = await response.json();
+        setGroups(data.groups || []);
+      }
+    } catch (error) {
+      console.error('Error fetching groups:', error);
+    }
+  };
 
   const fetchBlogs = async () => {
     try {
@@ -108,6 +173,7 @@ export default function BlogsPage() {
           slug: '',
           category: '', 
           excerpt: '', 
+          hook: '',
           content: '', 
           imageUrl: '', 
           published: false,
@@ -201,6 +267,7 @@ export default function BlogsPage() {
       slug: blog.slug,
       category: blog.category,
       excerpt: blog.excerpt,
+      hook: (blog as any).hook || '',
       content: (blog as any).content || '',
       imageUrl: blog.imageUrl,
       published: blog.published,
@@ -228,6 +295,7 @@ export default function BlogsPage() {
       slug: '', 
       category: '', 
       excerpt: '', 
+      hook: '',
       content: '', 
       imageUrl: '', 
       published: false,
@@ -246,6 +314,299 @@ export default function BlogsPage() {
     });
     setSlugManuallyEdited(false);
     setShowModal(true);
+  };
+
+  const openConvertToCampaignModal = (blog: Blog) => {
+    setSelectedBlogForConvert(blog);
+    setSelectedGroupIds([]);
+    setShowConvertToCampaignModal(true);
+  };
+
+  const convertToCampaign = async () => {
+    if (!selectedBlogForConvert) return;
+
+    // Validate that at least one group is selected
+    if (selectedGroupIds.length === 0) {
+      showMessage('error', 'Please select at least one group');
+      return;
+    }
+
+    try {
+      // Convert local group IDs to Sender.net group IDs
+      const senderGroupIds = selectedGroupIds
+        .map(localId => {
+          const group = groups.find(g => g.id === localId);
+          return group?.senderGroupId;
+        })
+        .filter((id): id is string => id !== null && id !== undefined);
+
+      if (senderGroupIds.length === 0) {
+        showMessage('error', 'Selected groups are not synced with Sender.net. Please sync groups first.');
+        return;
+      }
+
+      const response = await fetch('/api/campaigns/from-blog', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          blogId: selectedBlogForConvert.id,
+          createInSender: true,
+          groups: senderGroupIds,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        showMessage('success', 'Campaign created successfully from blog');
+        setShowConvertToCampaignModal(false);
+        setSelectedBlogForConvert(null);
+        setSelectedGroupIds([]);
+        await fetchBlogs();
+        await fetchCampaigns();
+      } else {
+        showMessage('error', data.error || 'Failed to create campaign');
+      }
+    } catch (error) {
+      showMessage('error', 'Failed to create campaign');
+    }
+  };
+
+  const linkToCampaign = async (blog: Blog, campaignId: string) => {
+    try {
+      const response = await fetch('/api/campaigns/link-blog', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          blogId: blog.id,
+          campaignId: campaignId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        showMessage('success', 'Blog linked to campaign successfully');
+        setShowLinkCampaignModal(false);
+        setSelectedBlogForLink(null);
+        await fetchBlogs();
+        await fetchCampaigns();
+      } else {
+        showMessage('error', data.error || 'Failed to link blog to campaign');
+      }
+    } catch (error) {
+      showMessage('error', 'Failed to link blog to campaign');
+    }
+  };
+
+  const showMessage = (type: 'success' | 'error', text: string) => {
+    setMessage({ type, text });
+    setTimeout(() => setMessage(null), 5000);
+  };
+
+  const togglePlatform = (platform: string) => {
+    setAiFormData(prev => {
+      const isSelected = prev.platforms.includes(platform);
+      const newPlatforms = isSelected
+        ? prev.platforms.filter(p => p !== platform)
+        : [...prev.platforms, platform];
+      
+      // Remove count when deselecting, set default to 1 when selecting
+      const newPlatformCounts = { ...prev.platformCounts };
+      if (isSelected) {
+        delete newPlatformCounts[platform];
+      } else {
+        newPlatformCounts[platform] = 1;
+      }
+      
+      return {
+        ...prev,
+        platforms: newPlatforms,
+        platformCounts: newPlatformCounts,
+      };
+    });
+  };
+
+  const getPlatformIcon = (platform: string) => {
+    switch (platform) {
+      case 'linkedin':
+        return <Linkedin className="w-4 h-4" />;
+      case 'twitter':
+        return <Twitter className="w-4 h-4" />;
+      case 'instagram':
+        return <Instagram className="w-4 h-4" />;
+      case 'threads':
+        return <Twitter className="w-4 h-4" />;
+      default:
+        return null;
+    }
+  };
+
+  // Extract images from HTML content
+  const extractImagesFromHtml = (htmlContent: string): string[] => {
+    if (!htmlContent) return [];
+    
+    const images: string[] = [];
+    const imgRegex = /<img[^>]+src=["']([^"']+)["'][^>]*>/gi;
+    let match;
+    
+    while ((match = imgRegex.exec(htmlContent)) !== null) {
+      let src = match[1];
+      
+      // Skip data URIs and empty sources
+      if (!src || src.startsWith('data:')) continue;
+      
+      // Convert relative URLs to absolute if needed
+      // If it starts with /, it's already a path (will work with current domain)
+      // If it starts with http/https, it's already absolute
+      // Otherwise, we might need to handle it differently
+      
+      // Only include valid image URLs
+      if (src.startsWith('http://') || src.startsWith('https://') || src.startsWith('/')) {
+        // Remove duplicates
+        if (!images.includes(src)) {
+          images.push(src);
+        }
+      }
+    }
+    
+    return images;
+  };
+
+  const handleGeneratePosts = async () => {
+    if (!selectedBlogForAi || !aiFormData.aiIntegrationId || aiFormData.platforms.length === 0 || !aiFormData.prompt) {
+      showMessage('error', 'Please fill in all fields and select at least one platform');
+      return;
+    }
+
+    setGenerating(true);
+    setGeneratedPosts([]);
+
+    try {
+      // Fetch full blog content
+      const blogResponse = await fetch(`/api/blogs/${selectedBlogForAi.id}`);
+      if (!blogResponse.ok) {
+        throw new Error('Failed to fetch blog content');
+      }
+      const blogData = await blogResponse.json();
+      const fullBlog = blogData.blog;
+
+      // Extract images from blog content
+      const images = extractImagesFromHtml(fullBlog.content || '');
+      // Also include the blog's main image if available
+      if (fullBlog.imageUrl && !images.includes(fullBlog.imageUrl)) {
+        images.unshift(fullBlog.imageUrl);
+      }
+      setBlogImages(images);
+
+      // Generate posts for each platform (multiple posts per platform if count > 1)
+      const posts: Array<{ platform: string; content: string; images?: string[] }> = [];
+      let imageIndex = 0;
+      
+      for (const platform of aiFormData.platforms) {
+        const count = aiFormData.platformCounts[platform] || 1;
+        
+        const response = await fetch('/api/ai/generate-post', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            blogContent: fullBlog.content,
+            blogTitle: fullBlog.title,
+            blogExcerpt: fullBlog.excerpt,
+            prompt: aiFormData.prompt,
+            platform,
+            aiIntegrationId: aiFormData.aiIntegrationId,
+            count,
+          }),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || `Failed to generate posts for ${platform}`);
+        }
+
+        const data = await response.json();
+        
+        // If multiple posts were generated, add each one with images
+        if (data.contents && Array.isArray(data.contents)) {
+          data.contents.forEach((content: string) => {
+            // Distribute images across posts (1 image per post, cycling through available images)
+            const postImages: string[] = [];
+            if (images.length > 0) {
+              const imageToUse = images[imageIndex % images.length];
+              postImages.push(imageToUse);
+              imageIndex++;
+            }
+            posts.push({ platform, content, images: postImages });
+          });
+        } else {
+          // Fallback for single post - include first image or all images if only one post
+          const postImages: string[] = images.length > 0 ? [images[0]] : [];
+          posts.push({ platform, content: data.content, images: postImages });
+          imageIndex++;
+        }
+      }
+
+      setGeneratedPosts(posts);
+      showMessage('success', `Generated ${posts.length} post(s) successfully!`);
+    } catch (error: any) {
+      console.error('Error generating posts:', error);
+      showMessage('error', error.message || 'Failed to generate posts');
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const handleCreatePosts = async () => {
+    if (generatedPosts.length === 0) return;
+
+    try {
+      // Create draft posts for each generated content
+      const now = new Date();
+      const scheduledFor = new Date(now.getTime() + 24 * 60 * 60 * 1000); // 24 hours from now
+
+      await Promise.all(
+        generatedPosts.map(async (post) => {
+          // Convert image URLs to mediaAssets format
+          const mediaAssets = (post.images || []).map((imageUrl) => {
+            // Extract filename from URL or use a default
+            const urlParts = imageUrl.split('/');
+            const filename = urlParts[urlParts.length - 1] || 'image.jpg';
+            
+            return {
+              type: 'image' as const,
+              url: imageUrl,
+              filename: filename,
+            };
+          });
+
+          const response = await fetch('/api/social/posts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              content: post.content,
+              mediaAssets: JSON.stringify(mediaAssets),
+              platforms: JSON.stringify([post.platform]),
+              scheduledFor: scheduledFor.toISOString(),
+              status: 'draft', // Create as draft
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error(`Failed to create post for ${post.platform}`);
+          }
+        })
+      );
+
+      showMessage('success', 'Posts created successfully in draft mode!');
+      setShowAiGenerateModal(false);
+      setGeneratedPosts([]);
+      setBlogImages([]);
+      setAiFormData({ aiIntegrationId: '', prompt: '', platforms: [], platformCounts: {} });
+    } catch (error: any) {
+      console.error('Error creating posts:', error);
+      showMessage('error', error.message || 'Failed to create posts');
+    }
   };
 
   // Auto-generate slug from title when title changes (if not manually edited)
@@ -300,11 +661,52 @@ export default function BlogsPage() {
             </div>
             <h3 className="text-xl text-white font-bebas mb-2 line-clamp-2">{blog.title}</h3>
             <p className="text-xs text-gray-400 mb-4 line-clamp-2">{blog.excerpt}</p>
+            {blog.campaigns && blog.campaigns.length > 0 && (
+              <div className="mb-3 flex items-center gap-2">
+                <Mail className="w-3 h-3 text-[var(--primary-mint)]" />
+                <span className="text-[9px] text-[var(--primary-mint)] uppercase tracking-widest font-bold">
+                  Linked to Campaign
+                </span>
+              </div>
+            )}
             <div className="flex items-center justify-between pt-4 border-t border-[var(--border-color)]">
               <span className="text-[10px] text-gray-500">
                 {new Date(blog.createdAt).toLocaleDateString()}
               </span>
               <div className="flex items-center gap-2">
+                {!blog.campaigns || blog.campaigns.length === 0 ? (
+                  <>
+                    <button
+                      onClick={() => openConvertToCampaignModal(blog)}
+                      className="p-2 text-[var(--primary-mint)] hover:text-[var(--primary-mint)]/80 transition-colors"
+                      title="Convert to Campaign"
+                    >
+                      <Mail className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedBlogForLink(blog);
+                        setShowLinkCampaignModal(true);
+                      }}
+                      className="p-2 text-blue-400 hover:text-blue-300 transition-colors"
+                      title="Link to Existing Campaign"
+                    >
+                      <LinkIcon className="w-4 h-4" />
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setSelectedBlogForLink(blog);
+                      setShowLinkCampaignModal(true);
+                    }}
+                    className="p-2 text-blue-400 hover:text-blue-300 transition-colors"
+                    title="View/Change Campaign Link"
+                    disabled
+                  >
+                    <LinkIcon className="w-4 h-4 opacity-50" />
+                  </button>
+                )}
                 <button
                   onClick={() => togglePublish(blog)}
                   className="p-2 text-gray-400 hover:text-white transition-colors"
@@ -315,6 +717,18 @@ export default function BlogsPage() {
                   ) : (
                     <EyeOff className="w-4 h-4" />
                   )}
+                </button>
+                <button
+                  onClick={() => {
+                    setSelectedBlogForAi(blog);
+                    setShowAiGenerateModal(true);
+                    setAiFormData({ aiIntegrationId: '', prompt: '', platforms: [], platformCounts: {} });
+                    setGeneratedPosts([]);
+                  }}
+                  className="p-2 text-purple-400 hover:text-purple-300 transition-colors"
+                  title="Generate AI Posts"
+                >
+                  <Sparkles className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => openEditModal(blog)}
@@ -343,6 +757,77 @@ export default function BlogsPage() {
           >
             Create Your First Blog
           </button>
+        </div>
+      )}
+
+      {/* Message */}
+      {message && (
+        <div className={`fixed top-4 right-4 p-4 border z-[99999] ${
+          message.type === 'success' 
+            ? 'bg-green-900/20 border-green-500 text-green-400' 
+            : 'bg-red-900/20 border-red-500 text-red-400'
+        }`}>
+          <div className="flex items-center justify-between">
+            <span>{message.text}</span>
+            <button onClick={() => setMessage(null)} className="hover:opacity-70 ml-4">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Link Campaign Modal */}
+      {showLinkCampaignModal && selectedBlogForLink && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[99999] p-4">
+          <div className="classic-panel bg-[var(--rich-black)] max-w-2xl w-full p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl text-white font-bebas">Link Blog to Campaign</h2>
+              <button
+                onClick={() => {
+                  setShowLinkCampaignModal(false);
+                  setSelectedBlogForLink(null);
+                }}
+                className="text-gray-400 hover:text-white"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm text-gray-400 mb-4">
+                  Select a campaign to link with <strong className="text-white">{selectedBlogForLink.title}</strong>
+                </p>
+                {selectedBlogForLink.campaigns && selectedBlogForLink.campaigns.length > 0 && (
+                  <div className="mb-4 p-3 bg-yellow-900/20 border border-yellow-500 text-yellow-400 text-sm">
+                    This blog is already linked to: <strong>{selectedBlogForLink.campaigns[0].subject}</strong>
+                  </div>
+                )}
+              </div>
+              <div className="max-h-96 overflow-y-auto space-y-2">
+                {campaigns.filter(c => !c.blogId).length === 0 ? (
+                  <p className="text-gray-400 text-sm">No unlinked campaigns available. All campaigns are already linked to blogs.</p>
+                ) : (
+                  campaigns
+                    .filter(c => !c.blogId) // Only show campaigns not linked to a blog
+                    .map((campaign) => (
+                      <button
+                        key={campaign.id}
+                        onClick={() => linkToCampaign(selectedBlogForLink, campaign.id)}
+                        className="w-full text-left p-4 bg-[var(--rich-black)] border border-[var(--border-color)] hover:border-[var(--primary-mint)] transition-colors"
+                      >
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <div className="text-white font-medium">{campaign.subject}</div>
+                            <div className="text-xs text-gray-400 mt-1">Status: {campaign.status}</div>
+                          </div>
+                          <LinkIcon className="w-4 h-4 text-gray-400" />
+                        </div>
+                      </button>
+                    ))
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
@@ -450,14 +935,40 @@ export default function BlogsPage() {
               </div>
               <div>
                 <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
+                  Hook Sentence <span className="text-gray-400">(Required - Attention-grabbing opening sentence)</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.hook}
+                  onChange={(e) => setFormData({ ...formData, hook: e.target.value })}
+                  className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat"
+                  placeholder="e.g., What if I told you that 90% of startups fail in their first year?"
+                  required
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  A compelling opening sentence that hooks the reader and makes them want to continue reading.
+                </p>
+              </div>
+              <div>
+                <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
                   Content
                 </label>
                 <Editor
                   content={formData.content}
-                  onChange={(html) => setFormData({ ...formData, content: html })}
+                  onChange={(html) => {
+                    // Remove leading spaces from paragraphs and ensure they start at the beginning
+                    let processedHtml = html;
+                    // Remove leading spaces/tabs from paragraph tags
+                    processedHtml = processedHtml.replace(/<p[^>]*>\s+/g, '<p>');
+                    // Remove any text-indent styles
+                    processedHtml = processedHtml.replace(/text-indent:\s*[^;]+;?/gi, '');
+                    // Remove padding-left from paragraphs
+                    processedHtml = processedHtml.replace(/padding-left:\s*[^;]+;?/gi, '');
+                    setFormData({ ...formData, content: processedHtml });
+                  }}
                 />
                 <p className="text-xs text-gray-500 mt-2">
-                  💡 Tip: Click on any image in the editor to edit its size and alignment
+                  💡 Tip: Click on any image in the editor to edit its size and alignment. Paragraphs will automatically start at the beginning with no indentation.
                 </p>
               </div>
 
@@ -641,6 +1152,268 @@ export default function BlogsPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Convert to Campaign Modal */}
+      {showConvertToCampaignModal && selectedBlogForConvert && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[99999] p-4">
+          <div className="classic-panel bg-[var(--rich-black)] max-w-2xl w-full p-6">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl text-white font-bebas">Convert Blog to Campaign</h2>
+              <button
+                onClick={() => {
+                  setShowConvertToCampaignModal(false);
+                  setSelectedBlogForConvert(null);
+                  setSelectedGroupIds([]);
+                }}
+                className="text-gray-400 hover:text-white"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm text-gray-400 mb-4">
+                  Select groups for <strong className="text-white">{selectedBlogForConvert.title}</strong>
+                </p>
+              </div>
+              <div>
+                <label className="text-xs text-gray-400 uppercase tracking-widest font-bold mb-2 block">
+                  Groups <span className="text-red-400">*</span>
+                </label>
+                {groups.length === 0 ? (
+                  <div className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-gray-400">
+                    No groups available. Please create groups first.
+                  </div>
+                ) : (
+                  <>
+                    <select
+                      multiple
+                      required
+                      value={selectedGroupIds}
+                      onChange={(e) => {
+                        const selected = Array.from(e.target.selectedOptions, option => option.value);
+                        setSelectedGroupIds(selected);
+                      }}
+                      className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all min-h-[120px]"
+                      size={Math.min(groups.length + 1, 5)}
+                    >
+                      {groups.map(group => (
+                        <option key={group.id} value={group.id}>{group.title}</option>
+                      ))}
+                    </select>
+                    <p className="text-xs text-gray-500 mt-1">Hold Ctrl/Cmd to select multiple groups. At least one group is required.</p>
+                  </>
+                )}
+              </div>
+              <div className="flex gap-2 pt-4">
+                <button
+                  onClick={convertToCampaign}
+                  className="px-6 py-2 bg-[var(--primary-mint)] text-black hover:bg-[var(--primary-mint)]/90 text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2"
+                >
+                  <Mail className="w-4 h-4" />
+                  Create Campaign
+                </button>
+                <button
+                  onClick={() => {
+                    setShowConvertToCampaignModal(false);
+                    setSelectedBlogForConvert(null);
+                    setSelectedGroupIds([]);
+                  }}
+                  className="px-6 py-2 bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:bg-[var(--rich-black)]/80 text-xs font-bold uppercase tracking-widest transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* AI Generate Posts Modal */}
+      {showAiGenerateModal && selectedBlogForAi && (
+        <div className="fixed inset-0 bg-black/50 flex items-start justify-center z-[99999] p-4 overflow-y-auto">
+          <div className="classic-panel bg-[var(--rich-black)] max-w-4xl w-full p-6 my-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl text-white font-bebas">Generate AI Posts from Blog</h2>
+              <button
+                onClick={() => {
+                  setShowAiGenerateModal(false);
+                  setSelectedBlogForAi(null);
+                  setGeneratedPosts([]);
+                  setBlogImages([]);
+                  setAiFormData({ aiIntegrationId: '', prompt: '', platforms: [], platformCounts: {} });
+                }}
+                className="text-gray-400 hover:text-white"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="space-y-6">
+              <div>
+                <p className="text-sm text-gray-400 mb-2">
+                  Generating posts for: <strong className="text-white">{selectedBlogForAi.title}</strong>
+                </p>
+              </div>
+
+              {aiIntegrations.length === 0 ? (
+                <div className="p-4 border border-yellow-500 bg-yellow-900/20 text-yellow-400">
+                  <p className="text-sm">No active AI integrations found. Please create an AI integration first.</p>
+                </div>
+              ) : (
+                <>
+                  <div>
+                    <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
+                      AI Integration
+                    </label>
+                    <select
+                      value={aiFormData.aiIntegrationId}
+                      onChange={(e) => setAiFormData({ ...aiFormData, aiIntegrationId: e.target.value })}
+                      className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                      required
+                    >
+                      <option value="">Select AI Integration</option>
+                      {aiIntegrations.map(integration => (
+                        <option key={integration.id} value={integration.id}>
+                          {integration.name} ({integration.provider})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
+                      Prompt / Instructions
+                    </label>
+                    <textarea
+                      value={aiFormData.prompt}
+                      onChange={(e) => setAiFormData({ ...aiFormData, prompt: e.target.value })}
+                      className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all resize-none"
+                      rows={4}
+                      placeholder="e.g., Create an engaging post that highlights the key takeaways, use a professional tone, include a call to action..."
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
+                      Platforms & Post Count
+                    </label>
+                    <p className="text-xs text-gray-400 mb-3">
+                      Select platforms and specify how many posts to generate for each (default: 1)
+                    </p>
+                    <div className="space-y-3">
+                      {['linkedin', 'twitter', 'instagram', 'threads'].map((platform) => (
+                        <div key={platform} className="flex items-center gap-3">
+                          <button
+                            type="button"
+                            onClick={() => togglePlatform(platform)}
+                            className={`px-4 py-2 border flex items-center gap-2 transition-colors flex-shrink-0 ${
+                              aiFormData.platforms.includes(platform)
+                                ? 'border-[var(--primary-mint)] bg-[var(--primary-mint)] text-black'
+                                : 'border-[var(--border-color)] text-white hover:border-[var(--primary-mint)]'
+                            }`}
+                          >
+                            {getPlatformIcon(platform)}
+                            <span className="text-xs font-bold uppercase">{platform}</span>
+                          </button>
+                          {aiFormData.platforms.includes(platform) && (
+                            <div className="flex items-center gap-2 flex-1">
+                              <label className="text-xs text-gray-400 whitespace-nowrap">Posts:</label>
+                              <input
+                                type="number"
+                                min="1"
+                                max="20"
+                                value={aiFormData.platformCounts[platform] || 1}
+                                onChange={(e) => {
+                                  const count = Math.max(1, Math.min(20, parseInt(e.target.value) || 1));
+                                  setAiFormData({
+                                    ...aiFormData,
+                                    platformCounts: {
+                                      ...aiFormData.platformCounts,
+                                      [platform]: count,
+                                    },
+                                  });
+                                }}
+                                className="w-20 bg-[var(--rich-black)] border border-[var(--border-color)] p-2 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                                placeholder="1"
+                              />
+                              <span className="text-xs text-gray-500">(1-20)</span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={handleGeneratePosts}
+                    disabled={generating || !aiFormData.aiIntegrationId || aiFormData.platforms.length === 0 || !aiFormData.prompt}
+                    className="w-full px-6 py-3 bg-[var(--primary-mint)] text-black hover:bg-white font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    {generating ? 'Generating...' : 'Generate Posts'}
+                  </button>
+
+                  {blogImages.length > 0 && (
+                    <div className="p-4 border border-[var(--border-color)] bg-[var(--rich-black)] rounded">
+                      <p className="text-xs text-gray-400 mb-2">
+                        Found {blogImages.length} image(s) from blog - will be distributed across posts
+                      </p>
+                    </div>
+                  )}
+
+                  {generatedPosts.length > 0 && (
+                    <div className="space-y-4">
+                      <h3 className="text-lg text-white font-bebas">Generated Posts</h3>
+                      {generatedPosts.map((post, index) => (
+                        <div key={index} className="p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
+                          <div className="flex items-center gap-2 mb-2">
+                            {getPlatformIcon(post.platform)}
+                            <span className="text-sm font-bold text-white uppercase">{post.platform}</span>
+                            {post.images && post.images.length > 0 && (
+                              <span className="text-xs text-gray-400 ml-auto">
+                                ({post.images.length} image{post.images.length > 1 ? 's' : ''})
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-white whitespace-pre-wrap mb-3">{post.content}</p>
+                          {post.images && post.images.length > 0 && (
+                            <div className="mt-3 pt-3 border-t border-[var(--border-color)]">
+                              <p className="text-xs text-gray-400 mb-2">Attached Images:</p>
+                              <div className="flex flex-wrap gap-2">
+                                {post.images.map((imageUrl, imgIndex) => (
+                                  <div key={imgIndex} className="relative">
+                                    <img
+                                      src={imageUrl}
+                                      alt={`Post image ${imgIndex + 1}`}
+                                      className="w-20 h-20 object-cover border border-[var(--border-color)] rounded"
+                                      onError={(e) => {
+                                        // Hide broken images
+                                        (e.target as HTMLImageElement).style.display = 'none';
+                                      }}
+                                    />
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                      <button
+                        onClick={handleCreatePosts}
+                        className="w-full px-6 py-3 bg-green-600 text-white hover:bg-green-700 font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2"
+                      >
+                        <Rocket className="w-4 h-4" />
+                        Create Posts as Drafts
+                      </button>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}

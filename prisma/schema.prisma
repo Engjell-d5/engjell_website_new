@@ -30,6 +30,7 @@ model Blog {
   slug        String   @unique
   category    String
   excerpt     String
+  hook         String?  // Hook sentence to grab attention
   content     String   @default("")
   imageUrl    String
   published   Boolean  @default(false)
@@ -51,6 +52,8 @@ model Blog {
   seoTwitterDescription String?
   seoTwitterImage     String?
 
+  campaigns Campaign[]
+
   @@map("blogs")
 }
 
@@ -65,6 +68,8 @@ model YouTubeVideo {
   viewCount   String
   channelTitle String
   fetchedAt   DateTime @default(now())
+  featured    Boolean  @default(false)
+  removed     Boolean  @default(false)
 
   @@map("youtube_videos")
 }
@@ -85,8 +90,44 @@ model Subscriber {
   subscribedAt    DateTime @default(now())
   syncedToSender  Boolean  @default(false)
   status          String   @default("active") // 'active' | 'churned'
+  groupId         String?  // Legacy: single group for backward compatibility
+  group           Group?   @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  groups          SubscriberGroup[]
 
   @@map("subscribers")
+}
+
+model SubscriberGroup {
+  id          String     @id @default(cuid())
+  subscriberId String
+  groupId     String
+  subscriber  Subscriber @relation(fields: [subscriberId], references: [id], onDelete: Cascade)
+  group       Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  createdAt   DateTime   @default(now())
+
+  @@unique([subscriberId, groupId])
+  @@map("subscriber_groups")
+}
+
+model Group {
+  id                    String   @id @default(cuid())
+  senderGroupId         String?  @unique // Sender.net group ID
+  title                 String
+  recipientCount        Int      @default(0)
+  activeSubscribers     Int      @default(0)
+  unsubscribedCount     Int      @default(0)
+  bouncedCount          Int      @default(0)
+  phoneCount            Int      @default(0)
+  activePhoneCount      Int      @default(0)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  syncedAt              DateTime?
+  
+  subscribers           Subscriber[] // Legacy: single group relation
+  subscriberGroups      SubscriberGroup[] // Many-to-many relation
+  campaigns             Campaign[]
+  
+  @@map("groups")
 }
 
 model PodcastApplication {
@@ -147,4 +188,127 @@ model SocialPost {
   createdBy       String?  // User ID who created the post
   
   @@map("social_posts")
+}
+
+model Campaign {
+  id                    String   @id @default(cuid())
+  senderCampaignId      String?  @unique // Sender.net campaign ID
+  blogId                String?  // Optional: link to blog post
+  blog                  Blog?    @relation(fields: [blogId], references: [id], onDelete: SetNull)
+  
+  // Campaign details
+  title                 String?
+  subject               String
+  from                  String
+  preheader             String?
+  replyTo               String
+  contentType           String   @default("html") // 'editor' | 'html' | 'text'
+  content               String   // HTML or text content
+  
+  // Campaign settings
+  googleAnalytics       Boolean  @default(false)
+  autoFollowupActive    Boolean  @default(false)
+  autoFollowupSubject   String?
+  autoFollowupDelay     Int?     // Hours: 12, 24, 48, 72, 96, 120, 144, or 168
+  
+  // Recipients
+  groups                String?  // JSON array of group IDs
+  segments              String?  // JSON array of segment IDs
+  groupId               String?  // Primary group for this campaign
+  group                 Group?   @relation(fields: [groupId], references: [id], onDelete: SetNull)
+  
+  // Status and tracking
+  status                String   @default("DRAFT") // 'DRAFT' | 'SCHEDULED' | 'SENDING' | 'SENT'
+  scheduleTime          DateTime?
+  sentTime              DateTime?
+  recipientCount        Int      @default(0)
+  sentCount             Int      @default(0)
+  opens                 Int      @default(0)
+  clicks                Int      @default(0)
+  bouncesCount          Int      @default(0)
+  
+  // Metadata
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  syncedAt              DateTime? // Last sync with Sender.net
+  
+  @@map("campaigns")
+}
+
+model AiIntegration {
+  id            String   @id @default(cuid())
+  name          String   // Display name (e.g., "My ChatGPT", "Gemini Pro")
+  provider      String   // 'openai' | 'google' | 'anthropic' | etc.
+  apiKey        String   // Encrypted API key
+  model         String?  // Model name (e.g., "gpt-4", "gemini-pro")
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@map("ai_integrations")
+}
+
+model PostIdea {
+  id            String   @id @default(cuid())
+  title         String   // Idea title/description
+  prompt        String   // The prompt that generated this idea
+  content       String?  // Optional: generated content for the idea
+  platforms     String?  // JSON array: ['linkedin', 'twitter', ...]
+  status        String   @default("draft") // 'draft' | 'generated' | 'archived'
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  createdBy     String?  // User ID who created the idea
+  
+  @@map("post_ideas")
+}
+
+model GoogleConnection {
+  id            String   @id @default(cuid())
+  accessToken   String   // Encrypted token
+  refreshToken  String?  // For token refresh
+  expiresAt     DateTime? // Token expiration
+  connectedAt   DateTime @default(now())
+  isActive      Boolean  @default(true)
+  email         String?  // Google account email for display
+  
+  @@map("google_connections")
+}
+
+model Email {
+  id            String   @id @default(cuid())
+  gmailId       String   @unique // Gmail message ID
+  threadId      String   // Gmail thread ID for grouping
+  subject       String
+  from          String   // Sender email
+  to            String?  // Recipient email
+  snippet       String?  // Email preview snippet
+  body          String?  // Full email body (HTML or text)
+  bodyText      String?  // Plain text version
+  receivedAt    DateTime // When email was received
+  isRead        Boolean  @default(false) // Read status from Gmail
+  isAnalyzed    Boolean  @default(false) // Whether this email has been analyzed for tasks
+  isIrrelevant  Boolean  @default(false) // Whether this email is marked as irrelevant
+  syncedAt      DateTime @default(now())
+  lastSyncedAt  DateTime? // Last time this email was synced
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  tasks         EmailTask[] // Tasks generated from this email
+  
+  @@map("emails")
+}
+
+model EmailTask {
+  id            String   @id @default(cuid())
+  emailId       String
+  email         Email    @relation(fields: [emailId], references: [id], onDelete: Cascade)
+  title         String   // Task title
+  description   String?  // Task description
+  priority      String   @default("medium") // 'low' | 'medium' | 'high'
+  status        String   @default("pending") // 'pending' | 'in_progress' | 'completed' | 'cancelled'
+  aiAnalysis    String?  // JSON: AI analysis details
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  @@map("email_tasks")
 }

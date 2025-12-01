@@ -16,6 +16,7 @@ interface Blog {
   slug: string;
   category: string;
   excerpt: string;
+  hook?: string | null;
   content: string;
   imageUrl: string;
   published: boolean;
@@ -238,6 +239,15 @@ export default function BlogPost() {
               </div>
             )}
 
+            {/* Hook Sentence */}
+            {blog.hook && (
+              <div className="mb-8">
+                <p className="text-xl md:text-2xl text-white font-bold leading-relaxed italic border-l-4 border-[var(--primary-mint)] pl-6">
+                  {blog.hook}
+                </p>
+              </div>
+            )}
+
             {/* Content */}
             <BlogContentWithSubscribe content={blog.content || ''} />
 
@@ -289,7 +299,13 @@ export default function BlogPost() {
 // Component to render blog content with subscribe snippets
 function BlogContentWithSubscribe({ content }: { content: string }) {
   if (!content || typeof content !== 'string') {
-    return <div className="blog-content" dangerouslySetInnerHTML={{ __html: content || '' }} />;
+    return (
+      <div 
+        className="blog-content" 
+        dangerouslySetInnerHTML={{ __html: content || '' }}
+        style={{ background: 'transparent', color: 'var(--text-secondary)' }}
+      />
+    );
   }
 
   // Decode HTML entities if needed (server-safe approach)
@@ -400,11 +416,14 @@ function BlogContentWithSubscribe({ content }: { content: string }) {
 
   // Render segments
   return (
-    <div className="blog-content">
+    <div className="blog-content" style={{ background: 'transparent', color: 'var(--text-secondary)' }}>
       {segments.map((segment, index) => (
         <React.Fragment key={index}>
           {segment.type === 'content' && (
-            <div dangerouslySetInnerHTML={{ __html: segment.content }} />
+            <div 
+              dangerouslySetInnerHTML={{ __html: segment.content }}
+              style={{ background: 'transparent', color: 'inherit' }}
+            />
           )}
           {segment.type === 'inline' && <SubscribeFormInline />}
           {segment.type === 'full' && <SubscribeForm />}

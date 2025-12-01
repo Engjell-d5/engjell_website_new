@@ -240,6 +240,21 @@ h1, h2, h3, h4, .brand-font {
   line-height: 1.8;
   font-size: 16px;
   padding: 2rem 0;
+  background: transparent !important;
+  font-family: var(--font-montserrat), sans-serif;
+}
+
+/* Override any white backgrounds from editor content */
+.blog-content * {
+  background: transparent !important;
+  color: inherit;
+}
+
+.blog-content div,
+.blog-content section,
+.blog-content article {
+  background: transparent !important;
+  color: var(--text-secondary) !important;
 }
 
 .blog-content h1,
@@ -262,7 +277,12 @@ h1, h2, h3, h4, .brand-font {
 
 .blog-content p {
   margin-bottom: 1.5em;
-  color: var(--text-secondary);
+  color: var(--text-secondary) !important;
+  text-indent: 0 !important;
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+  background: transparent !important;
+  font-family: var(--font-montserrat), sans-serif;
 }
 
 .blog-content a {
@@ -320,7 +340,8 @@ h1, h2, h3, h4, .brand-font {
 .blog-content ol {
   margin: 1.5em 0;
   padding-left: 2em;
-  color: var(--text-secondary);
+  color: var(--text-secondary) !important;
+  background: transparent !important;
 }
 
 .blog-content li {
@@ -336,24 +357,61 @@ h1, h2, h3, h4, .brand-font {
 }
 
 .blog-content code {
-  background: var(--rich-black);
+  background: var(--rich-black) !important;
   padding: 0.2em 0.4em;
   border-radius: 4px;
   font-size: 0.9em;
   border: 1px solid var(--border-color);
+  color: var(--text-secondary) !important;
+  font-family: 'Courier New', monospace;
 }
 
 .blog-content pre {
-  background: var(--rich-black);
+  background: var(--rich-black) !important;
   padding: 1.5em;
   border-radius: 4px;
   overflow-x: auto;
   margin: 2em 0;
   border: 1px solid var(--border-color);
+  color: var(--text-secondary) !important;
 }
 
 .blog-content pre code {
-  background: none;
+  background: none !important;
   padding: 0;
   border: none;
+  color: var(--text-secondary) !important;
+}
+
+/* Override any table styles */
+.blog-content table {
+  background: transparent !important;
+  color: var(--text-secondary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.blog-content table th,
+.blog-content table td {
+  background: transparent !important;
+  color: var(--text-secondary) !important;
+  border-color: var(--border-color) !important;
+}
+
+/* Override any span or inline element styles */
+.blog-content span {
+  color: inherit !important;
+  background: transparent !important;
+}
+
+/* Ensure strong and em tags use proper colors */
+.blog-content strong,
+.blog-content b {
+  color: var(--text-primary) !important;
+  font-weight: bold;
+}
+
+.blog-content em,
+.blog-content i {
+  color: var(--text-secondary) !important;
+  font-style: italic;
 }

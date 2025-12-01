@@ -27,9 +27,9 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { title, slug, category, excerpt, content, imageUrl, published, seo } = await request.json();
+    const { title, slug, category, excerpt, hook, content, imageUrl, published, seo } = await request.json();
 
-    if (!title || !slug || !category || !excerpt || !content || !imageUrl) {
+    if (!title || !slug || !category || !excerpt || !hook || !content || !imageUrl) {
       return NextResponse.json(
         { error: 'All required fields are missing' },
         { status: 400 }
@@ -52,6 +52,7 @@ export async function POST(request: NextRequest) {
       slug: finalSlug,
       category,
       excerpt,
+      hook: hook || null,
       content,
       imageUrl,
       published: published || false,
