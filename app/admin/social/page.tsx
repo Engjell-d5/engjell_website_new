@@ -999,13 +999,33 @@ export default function SocialMediaPage() {
       {/* Tab Content: Scheduled Posts */}
       {activeTab === 'posts' && (
         <>
-      {/* Schedule Post Form */}
+      {/* Schedule Post Form Modal */}
       {showForm && (
-        <div className="classic-panel p-4 md:p-6 mb-8">
-          <h2 className="text-xl md:text-2xl text-white font-bebas mb-4 md:mb-6">
-            {editingPost ? 'EDIT POST' : 'SCHEDULE NEW POST'}
-          </h2>
-          <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
+        <div className="fixed inset-0 bg-black/50 flex items-start justify-center z-[99999] p-4 overflow-y-auto" onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            setShowForm(false);
+            setEditingPost(null);
+            setFormData({ content: '', mediaAssets: [], platforms: [], scheduledFor: '', comments: [] });
+          }
+        }}>
+          <div className="classic-panel p-4 md:p-6 mb-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto mt-8">
+            <div className="flex items-center justify-between mb-4 md:mb-6">
+              <h2 className="text-xl md:text-2xl text-white font-bebas">
+                {editingPost ? 'EDIT POST' : 'SCHEDULE NEW POST'}
+              </h2>
+              <button
+                onClick={() => {
+                  setShowForm(false);
+                  setEditingPost(null);
+                  setFormData({ content: '', mediaAssets: [], platforms: [], scheduledFor: '', comments: [] });
+                }}
+                className="p-2 hover:bg-[var(--rich-black)] transition-colors"
+                title="Close"
+              >
+                <X className="w-5 h-5 text-white" />
+              </button>
+            </div>
+            <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
             <div>
               <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
                 Content
@@ -1198,6 +1218,7 @@ export default function SocialMediaPage() {
               </button>
             </div>
           </form>
+          </div>
         </div>
       )}
 
