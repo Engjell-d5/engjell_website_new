@@ -480,8 +480,13 @@ export async function publishScheduledPosts() {
     });
     
     console.log(`[LINKEDIN] Total scheduled posts in database: ${allScheduledPosts.length}`);
-    type SocialPostType = Awaited<ReturnType<typeof prisma.socialPost.findMany>>[0];
-    allScheduledPosts.forEach((post: SocialPostType) => {
+    type SocialPostSelect = {
+      id: string;
+      scheduledFor: Date;
+      status: string;
+      content: string;
+    };
+    allScheduledPosts.forEach((post: SocialPostSelect) => {
       console.log(`[LINKEDIN] - Post ${post.id}: scheduledFor=${post.scheduledFor.toISOString()}, status=${post.status}, content=${post.content.substring(0, 50)}...`);
       const scheduledTime = new Date(post.scheduledFor).getTime();
       const nowTime = now.getTime();

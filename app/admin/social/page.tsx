@@ -47,6 +47,9 @@ export default function SocialMediaPage() {
     schedule: string;
   } | null>(null);
   const [cronLoading, setCronLoading] = useState(false);
+  const [cronSchedule, setCronSchedule] = useState('');
+  const [editingSchedule, setEditingSchedule] = useState(false);
+  const [savingSchedule, setSavingSchedule] = useState(false);
   const [editingPost, setEditingPost] = useState<SocialPost | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [formData, setFormData] = useState({
@@ -78,9 +81,56 @@ export default function SocialMediaPage() {
       if (response.ok) {
         const data = await response.json();
         setCronStatus(data.cron);
+        if (data.schedule) {
+          setCronSchedule(data.schedule);
+        }
       }
     } catch (error) {
       console.error('Error fetching cron status:', error);
+    }
+  };
+
+  const handleUpdateSchedule = async () => {
+    if (!cronSchedule.trim()) {
+      setMessage({ type: 'error', text: 'Schedule cannot be empty' });
+      setTimeout(() => setMessage(null), 3000);
+      return;
+    }
+
+    // Validate schedule format
+    const parts = cronSchedule.trim().split(/\s+/);
+    if (parts.length !== 5) {
+      setMessage({ type: 'error', text: 'Invalid cron schedule format. Expected format: "minute hour day month dayOfWeek"' });
+      setTimeout(() => setMessage(null), 3000);
+      return;
+    }
+
+    setSavingSchedule(true);
+    try {
+      const response = await fetch('/api/cron/social', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'updateSchedule', schedule: cronSchedule.trim() }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCronStatus(data.cron);
+        setEditingSchedule(false);
+        setMessage({ type: 'success', text: data.message || 'Schedule updated successfully' });
+        setTimeout(() => setMessage(null), 3000);
+        await fetchCronStatus(); // Refresh to get updated next run time
+      } else {
+        const error = await response.json();
+        setMessage({ type: 'error', text: error.error || 'Failed to update schedule' });
+        setTimeout(() => setMessage(null), 3000);
+      }
+    } catch (error) {
+      console.error('Error updating schedule:', error);
+      setMessage({ type: 'error', text: 'Failed to update schedule' });
+      setTimeout(() => setMessage(null), 3000);
+    } finally {
+      setSavingSchedule(false);
     }
   };
 
@@ -1598,11 +1648,60 @@ export default function SocialMediaPage() {
                 <div className="space-y-3 text-sm">
                   <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-2">
                     <span className="text-gray-400">Schedule:</span>
-                    <span className="text-white font-mono">*/5 * * * *</span>
+                    {editingSchedule ? (
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="text"
+                          value={cronSchedule}
+                          onChange={(e) => setCronSchedule(e.target.value)}
+                          placeholder="*/5 * * * *"
+                          className="px-2 py-1 bg-[var(--rich-black)] border border-[var(--border-color)] text-white font-mono text-sm focus:outline-none focus:border-[var(--primary-mint)] w-32"
+                        />
+                        <button
+                          onClick={handleUpdateSchedule}
+                          disabled={savingSchedule}
+                          className="px-3 py-1 bg-[var(--primary-mint)] text-black hover:bg-white text-xs font-bold uppercase tracking-widest transition-colors disabled:opacity-50"
+                        >
+                          {savingSchedule ? 'Saving...' : 'Save'}
+                        </button>
+                        <button
+                          onClick={() => {
+                            setEditingSchedule(false);
+                            fetchCronStatus(); // Reset to current schedule
+                          }}
+                          disabled={savingSchedule}
+                          className="px-3 py-1 bg-gray-600 text-white hover:bg-gray-700 text-xs font-bold uppercase tracking-widest transition-colors disabled:opacity-50"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <span className="text-white font-mono">{cronSchedule || cronStatus?.schedule || '*/5 * * * *'}</span>
+                        <button
+                          onClick={() => setEditingSchedule(true)}
+                          className="text-[var(--primary-mint)] hover:text-white text-xs"
+                          title="Edit schedule"
+                        >
+                          <Edit className="w-3 h-3" />
+                        </button>
+                      </div>
+                    )}
                   </div>
                   <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-2">
                     <span className="text-gray-400">Frequency:</span>
-                    <span className="text-white">Every 5 minutes</span>
+                    <span className="text-white">
+                      {cronSchedule === '*/5 * * * *' ? 'Every 5 minutes' :
+                       cronSchedule === '*/10 * * * *' ? 'Every 10 minutes' :
+                       cronSchedule === '*/15 * * * *' ? 'Every 15 minutes' :
+                       cronSchedule === '*/30 * * * *' ? 'Every 30 minutes' :
+                       cronSchedule === '0 * * * *' ? 'Every hour' :
+                       cronSchedule === '0 */2 * * *' ? 'Every 2 hours' :
+                       cronSchedule === '0 */6 * * *' ? 'Every 6 hours' :
+                       cronSchedule === '0 0 * * *' ? 'Daily at midnight' :
+                       cronSchedule === '0 2 * * *' ? 'Daily at 2 AM' :
+                       'Custom schedule'}
+                    </span>
                   </div>
                   {cronStatus.nextRun && (
                     <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-2">

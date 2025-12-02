@@ -58,6 +58,7 @@ export interface Config {
   youtubeApiKey: string;
   youtubeChannelId: string;
   cronSchedule: string;
+  socialMediaCronSchedule: string;
   lastVideoFetch: string | null;
 }
 
@@ -188,7 +189,7 @@ export async function getBlogs(): Promise<Blog[]> {
       },
     },
   });
-  type BlogType = Awaited<ReturnType<typeof prisma.blogPost.findMany>>[0];
+  type BlogType = Awaited<ReturnType<typeof prisma.blog.findMany>>[0];
   return blogs.map((blog: BlogType) => ({
     id: blog.id,
     title: blog.title,
@@ -455,6 +456,7 @@ export async function getConfig(): Promise<Config> {
       youtubeApiKey: config.youtubeApiKey || process.env.YOUTUBE_API_KEY || '',
       youtubeChannelId: config.youtubeChannelId || '',
       cronSchedule: config.cronSchedule || '0 2 * * *',
+      socialMediaCronSchedule: config.socialMediaCronSchedule || '*/5 * * * *',
       lastVideoFetch: config.lastVideoFetch?.toISOString() || null,
     };
   }
@@ -464,6 +466,7 @@ export async function getConfig(): Promise<Config> {
       youtubeApiKey: process.env.YOUTUBE_API_KEY || '',
       youtubeChannelId: '',
       cronSchedule: '0 2 * * *',
+      socialMediaCronSchedule: '*/5 * * * *',
       lastVideoFetch: null,
     },
   });
@@ -471,6 +474,7 @@ export async function getConfig(): Promise<Config> {
     youtubeApiKey: defaultConfig.youtubeApiKey || process.env.YOUTUBE_API_KEY || '',
     youtubeChannelId: defaultConfig.youtubeChannelId || '',
     cronSchedule: defaultConfig.cronSchedule || '0 2 * * *',
+    socialMediaCronSchedule: defaultConfig.socialMediaCronSchedule || '*/5 * * * *',
     lastVideoFetch: defaultConfig.lastVideoFetch?.toISOString() || null,
   };
 }
@@ -484,6 +488,7 @@ export async function saveConfig(config: Config): Promise<void> {
         youtubeApiKey: config.youtubeApiKey,
         youtubeChannelId: config.youtubeChannelId,
         cronSchedule: config.cronSchedule,
+        socialMediaCronSchedule: config.socialMediaCronSchedule,
         lastVideoFetch: config.lastVideoFetch ? new Date(config.lastVideoFetch) : null,
       },
     });
@@ -493,6 +498,7 @@ export async function saveConfig(config: Config): Promise<void> {
         youtubeApiKey: config.youtubeApiKey,
         youtubeChannelId: config.youtubeChannelId,
         cronSchedule: config.cronSchedule,
+        socialMediaCronSchedule: config.socialMediaCronSchedule || '*/5 * * * *',
         lastVideoFetch: config.lastVideoFetch ? new Date(config.lastVideoFetch) : null,
       },
     });
@@ -806,7 +812,7 @@ export async function getCampaigns(): Promise<Campaign[]> {
       },
     },
   });
-  type CampaignType = Awaited<ReturnType<typeof prisma.emailCampaign.findMany>>[0];
+  type CampaignType = Awaited<ReturnType<typeof prisma.campaign.findMany>>[0];
   return campaigns.map((campaign: CampaignType) => ({
     id: campaign.id,
     senderCampaignId: campaign.senderCampaignId,
@@ -1807,7 +1813,7 @@ export async function getEmailTasks(): Promise<EmailTask[]> {
     },
   });
   
-  type TaskType = Awaited<ReturnType<typeof prisma.emailTask.findMany>>[0];
+  type TaskType = Awaited<ReturnType<typeof prisma.emailTask.findMany<{ include: { email: true } }>>>[0];
   
   return tasks.map((task: TaskType) => ({
     id: task.id,

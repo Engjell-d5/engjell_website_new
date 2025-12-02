@@ -75,11 +75,12 @@ model YouTubeVideo {
 }
 
 model Config {
-  id              String   @id @default(cuid())
-  youtubeApiKey   String   @default("")
-  youtubeChannelId String  @default("")
-  cronSchedule    String   @default("0 2 * * *")
-  lastVideoFetch  DateTime?
+  id                    String   @id @default(cuid())
+  youtubeApiKey         String   @default("")
+  youtubeChannelId      String   @default("")
+  cronSchedule          String   @default("0 2 * * *")
+  socialMediaCronSchedule String @default("*/5 * * * *")
+  lastVideoFetch        DateTime?
 
   @@map("config")
 }

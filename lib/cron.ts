@@ -66,8 +66,9 @@ export async function startSocialMediaCron() {
     return socialCronJob;
   }
 
-  // Run every 5 minutes to check for scheduled posts
-  const schedule = '*/5 * * * *';
+  // Get schedule from config
+  const config = await getConfig();
+  const schedule = config.socialMediaCronSchedule || '*/5 * * * *';
 
   // Stop existing job if any
   if (socialCronJob) {
@@ -645,7 +646,7 @@ export async function getCronStatusWithNextRun() {
   const status = getCronStatus();
   const config = await getConfig();
   const youtubeSchedule = config.cronSchedule || '0 2 * * *';
-  const socialMediaSchedule = '*/5 * * * *';
+  const socialMediaSchedule = config.socialMediaCronSchedule || '*/5 * * * *';
   const subscriberSyncSchedule = '0 3 * * *';
 
   // Get email cron config
