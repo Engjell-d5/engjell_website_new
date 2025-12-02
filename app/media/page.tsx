@@ -84,7 +84,7 @@ export default function Media() {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
       {/* Left Panel - Latest Video */}
       <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh] order-2 md:order-1">
         {/* Breadcrumbs / Top Bar */}
@@ -225,8 +225,9 @@ export default function Media() {
         </div>
       </main>
 
-      {/* Right Panel - Next 3 Videos */}
-      <aside className="classic-panel md:col-span-3 flex flex-col p-6 gap-6 bg-[var(--rich-black)] sticky-sidebar order-1 md:order-2">
+       {/* Right Panel - Next 3 Videos */}
+       <aside className="classic-panel md:col-span-3 flex flex-col p-6 gap-6 bg-[var(--rich-black)] sticky-sidebar order-1 md:order-2 min-h-[80vh]">
+         <div className="flex flex-col gap-6 sticky-sidebar-content">
         {/* Description */}
         <div className="relative p-6 border-l-4 border-[var(--primary-mint)] bg-[var(--rich-black)]">
           <div className="absolute top-2 left-4 opacity-20">
@@ -247,6 +248,7 @@ export default function Media() {
           <Mic className="w-4 h-4" />
           Apply to Podcast
         </button>
+        </div>
       </aside>
 
       {/* Podcast Application Modal */}

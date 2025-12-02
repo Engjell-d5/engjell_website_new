@@ -181,10 +181,10 @@ export default function Sidebar() {
   const showOnMobile = pathname === '/about' || pathname === '/journal' || pathname === '/ventures' || pathname.startsWith('/journal/') || pathname === '/media';
   
   return (
-    <aside className={`classic-panel md:col-span-3 ${showOnMobile ? 'flex' : 'hidden md:flex'} flex-col p-6 gap-6 bg-[var(--bg-dark)] sticky-sidebar order-1 md:order-2`}>
+    <aside className={`classic-panel md:col-span-3 ${showOnMobile ? 'flex' : 'hidden md:flex'} flex-col p-6 gap-6 bg-[var(--bg-dark)] sticky-sidebar order-1 md:order-2 min-h-[80vh]`}>
       {/* HOME SIDEBAR */}
       {pathname === '/' && (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 sticky-sidebar-content">
           {/* Quick Action - Book Me for Events */}
           <Link href="/contact" className="w-full py-3 bg-white text-black hover:bg-[var(--primary-mint)] text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
             <CalendarPlus className="w-4 h-4" />
@@ -280,7 +280,7 @@ export default function Sidebar() {
 
       {/* ABOUT SIDEBAR */}
       {pathname === '/about' && (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 sticky-sidebar-content">
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)] mb-3">
               <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Timeline</span>
@@ -315,13 +315,13 @@ export default function Sidebar() {
 
       {/* MEDIA SIDEBAR */}
       {pathname === '/media' && (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 sticky-sidebar-content">
             <div className="relative p-6 border-l-4 border-[var(--primary-mint)] bg-[var(--rich-black)]">
               <div className="absolute top-2 left-4 opacity-20">
-                <Quote className="w-12 h-12 text-[var(--primary-mint)]" />
+                <Quote className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 text-[var(--primary-mint)]" />
               </div>
               <div className="relative z-10">
-                <p className="text-sm text-gray-300 leading-relaxed font-light italic pl-6 pt-4">
+                <p className="text-sm text-gray-300 leading-relaxed font-light italic pl-4 md:pl-0 lg:pl-6 pt-2 md:pt-4">
                   "I talk about how to run a business which is more human, which provides real value, and which scales without losing its soul. I am a big believer that businesses should love problems first and make a profit next."
                 </p>
               </div>
@@ -349,14 +349,14 @@ export default function Sidebar() {
 
       {/* JOURNAL SIDEBAR */}
       {(pathname === '/journal' || pathname.startsWith('/journal/')) && (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 sticky-sidebar-content">
           {pathname === '/journal' && (
             <div className="relative p-6 border-l-4 border-[var(--primary-mint)] bg-[var(--rich-black)]">
               <div className="absolute top-2 left-4 opacity-20">
-                <Quote className="w-12 h-12 text-[var(--primary-mint)]" />
+                <Quote className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 text-[var(--primary-mint)]" />
               </div>
               <div className="relative z-10">
-                <p className="text-sm text-gray-300 leading-relaxed font-light italic pl-10 pt-4">
+                <p className="text-sm text-gray-300 leading-relaxed font-light italic pl-4 md:pl-0 lg:pl-10 pt-2 md:pt-4">
                   "When I started as an entrepreneur, I constantly craved a mentor to help me make sense of the chaos. I'm documenting the lessons I've learned so you can navigate your own journey with a little more clarity and a little less stress."
                 </p>
               </div>
@@ -368,13 +368,13 @@ export default function Sidebar() {
 
       {/* VENTURES SIDEBAR */}
       {pathname === '/ventures' && (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 sticky-sidebar-content">
           <div className="relative p-6 border-l-4 border-[var(--primary-mint)] bg-[var(--rich-black)]">
             <div className="absolute top-2 left-4 opacity-20">
-              <Quote className="w-12 h-12 text-[var(--primary-mint)]" />
+              <Quote className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 text-[var(--primary-mint)]" />
             </div>
             <div className="relative z-10">
-              <p className="text-sm text-gray-300 leading-relaxed font-light italic pl-10 pt-4">
+              <p className="text-sm text-gray-300 leading-relaxed font-light italic pl-4 md:pl-0 lg:pl-10 pt-2 md:pt-4">
                 "I specialize in scaling next-generation digital agencies. Through division5, divisionAI, and division3D, I deliver software services, AI solutions, and 3D design experiences."
               </p>
             </div>
@@ -407,7 +407,7 @@ export default function Sidebar() {
 
       {/* CONTACT SIDEBAR */}
       {pathname === '/contact' && (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 sticky-sidebar-content">
           <div className="border border-[var(--border-color)] bg-[var(--rich-black)] p-4">
             <div className="flex justify-between items-center mb-4">
               <span className="text-xs font-bold text-white uppercase tracking-widest">Contact Details</span>

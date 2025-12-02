@@ -112,8 +112,15 @@ h1, h2, h3, h4, .brand-font {
 
 @media (min-width: 768px) {
   .sticky-sidebar {
+    position: relative; /* Container stretches to match grid item */
+    align-self: stretch; /* Ensure it stretches to match grid item */
+    height: auto; /* Allow stretching to match grid item height */
+  }
+  
+  .sticky-sidebar-content {
     position: sticky;
     top: 7rem; /* Offset for header */
+    width: 100%; /* Ensure full width */
   }
 }
 

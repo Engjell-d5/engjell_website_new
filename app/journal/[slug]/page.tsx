@@ -118,7 +118,7 @@ export default function BlogPost() {
 
   if (!mounted || loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
         <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
           <div className="p-10 text-center">
             <p className="text-gray-400">Loading...</p>
@@ -131,7 +131,7 @@ export default function BlogPost() {
 
   if (!blog) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
         <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
           <div className="p-10 text-center">
             <p className="text-gray-400 mb-4">Blog post not found</p>
@@ -181,7 +181,7 @@ export default function BlogPost() {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
       <StructuredData type="Article" data={articleData} />
       <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh] order-2 md:order-1">
         {/* Breadcrumbs / Top Bar */}
