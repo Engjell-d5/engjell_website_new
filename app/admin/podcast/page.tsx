@@ -113,10 +113,62 @@ function YouTubeTab() {
   const [loadingVideos, setLoadingVideos] = useState(true);
   const [showRemoved, setShowRemoved] = useState(false);
   const [message, setMessage] = useState('');
+  const [cronStatus, setCronStatus] = useState<{
+    running: boolean;
+    initialized: boolean;
+    nextRun: string | null;
+    schedule: string;
+  } | null>(null);
+  const [cronLoading, setCronLoading] = useState(false);
+
+  const fetchCronStatus = async () => {
+    try {
+      const response = await fetch('/api/cron/youtube');
+      if (response.ok) {
+        const data = await response.json();
+        setCronStatus(data.cron);
+      }
+    } catch (error) {
+      console.error('Error fetching cron status:', error);
+    }
+  };
+
+  const handleCronAction = async (action: 'start' | 'stop' | 'restart') => {
+    setCronLoading(true);
+    try {
+      const response = await fetch('/api/cron/youtube', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCronStatus(data.cron);
+        setMessage(`✅ ${data.message || `Cron job ${action}ed successfully`}`);
+        setTimeout(() => setMessage(''), 3000);
+      } else {
+        const error = await response.json();
+        setMessage(`❌ ${error.error || `Failed to ${action} cron job`}`);
+        setTimeout(() => setMessage(''), 3000);
+      }
+    } catch (error) {
+      console.error(`Error ${action}ing cron:`, error);
+      setMessage(`❌ Failed to ${action} cron job`);
+      setTimeout(() => setMessage(''), 3000);
+    } finally {
+      setCronLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchConfig();
     fetchVideos();
+    fetchCronStatus();
+    
+    // Refresh cron status every 30 seconds
+    const cronStatusInterval = setInterval(fetchCronStatus, 30000);
+    return () => clearInterval(cronStatusInterval);
   }, [showRemoved]);
 
   const fetchConfig = async () => {
@@ -367,6 +419,97 @@ function YouTubeTab() {
             <span>Monthly on the 1st at midnight</span>
           </div>
         </div>
+      </div>
+
+      {/* Cron Job Management */}
+      <div className="classic-panel p-6 mb-8">
+        <div className="flex items-center gap-3 mb-6">
+          <Clock className="w-6 h-6 text-[var(--primary-mint)]" />
+          <h2 className="text-xl text-white font-bebas">Cron Job Management</h2>
+        </div>
+
+        {cronStatus ? (
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-gray-400">Status:</span>
+              <div className="flex items-center gap-2">
+                {cronStatus.running ? (
+                  <>
+                    <CheckCircle className="w-5 h-5 text-green-500" />
+                    <span className="text-green-500 font-semibold">Running</span>
+                  </>
+                ) : (
+                  <>
+                    <XCircle className="w-5 h-5 text-red-500" />
+                    <span className="text-red-500 font-semibold">Stopped</span>
+                  </>
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-gray-400">Schedule:</span>
+              <span className="text-white font-mono text-sm">{cronStatus.schedule || '0 2 * * *'}</span>
+            </div>
+
+            {cronStatus.nextRun && (
+              <div className="flex items-center gap-3">
+                <span className="text-sm text-gray-400">Next Run:</span>
+                <span className="text-white text-sm">{new Date(cronStatus.nextRun).toLocaleString()}</span>
+              </div>
+            )}
+
+            <div className="flex items-center gap-3">
+              <span className="text-sm text-gray-400">Initialized:</span>
+              {cronStatus.initialized ? (
+                <CheckCircle className="w-5 h-5 text-green-500" />
+              ) : (
+                <XCircle className="w-5 h-5 text-red-500" />
+              )}
+            </div>
+
+            <div className="flex flex-wrap gap-3 pt-4 border-t border-[var(--border-color)]">
+              <button
+                onClick={() => handleCronAction('start')}
+                disabled={cronLoading || cronStatus.running}
+                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-bold text-xs uppercase tracking-widest transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {cronLoading ? 'Starting...' : 'Start Cron Job'}
+              </button>
+              <button
+                onClick={() => handleCronAction('stop')}
+                disabled={cronLoading || !cronStatus.running}
+                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-widest transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {cronLoading ? 'Stopping...' : 'Stop Cron Job'}
+              </button>
+              <button
+                onClick={() => handleCronAction('restart')}
+                disabled={cronLoading}
+                className="px-4 py-2 bg-[var(--secondary-orange)] hover:bg-orange-600 text-white font-bold text-xs uppercase tracking-widest transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {cronLoading ? 'Restarting...' : 'Restart Cron Job'}
+              </button>
+              <button
+                onClick={fetchCronStatus}
+                disabled={cronLoading}
+                className="px-4 py-2 bg-[var(--primary-mint)] hover:bg-white text-black font-bold text-xs uppercase tracking-widest transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                <RefreshCw className={`w-4 h-4 ${cronLoading ? 'animate-spin' : ''}`} />
+                Refresh Status
+              </button>
+            </div>
+
+            <div className="mt-4 p-4 bg-[var(--rich-black)] border border-[var(--border-color)] rounded">
+              <p className="text-xs text-gray-400">
+                <strong className="text-white">How it works:</strong> The cron job automatically fetches videos from your YouTube channel according to the schedule above. 
+                You can start, stop, or restart the cron job at any time. When you update the schedule, you may need to restart the cron job for the changes to take effect.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="text-gray-400 text-sm">Loading cron status...</div>
+        )}
       </div>
 
       <div className="classic-panel p-6">

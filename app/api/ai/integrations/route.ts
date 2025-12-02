@@ -17,8 +17,10 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: 'desc' },
     });
     
+    type AiIntegration = Awaited<ReturnType<typeof prisma.aiIntegration.findMany>>[0];
+    
     // Don't expose full API keys in response
-    const safeIntegrations = integrations.map(integration => ({
+    const safeIntegrations = integrations.map((integration: AiIntegration) => ({
       id: integration.id,
       name: integration.name,
       provider: integration.provider,

@@ -39,7 +39,14 @@ export default function SocialMediaPage() {
   const [connections, setConnections] = useState<SocialConnection[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [activeTab, setActiveTab] = useState<'connections' | 'posts' | 'ideas'>('posts');
+  const [activeTab, setActiveTab] = useState<'connections' | 'posts' | 'ideas' | 'cron'>('posts');
+  const [cronStatus, setCronStatus] = useState<{
+    running: boolean;
+    initialized: boolean;
+    nextRun: string | null;
+    schedule: string;
+  } | null>(null);
+  const [cronLoading, setCronLoading] = useState(false);
   const [editingPost, setEditingPost] = useState<SocialPost | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [formData, setFormData] = useState({
@@ -65,12 +72,53 @@ export default function SocialMediaPage() {
   const [editingIdea, setEditingIdea] = useState<{ id: string; title: string; prompt: string } | null>(null);
   const [editIdeaTitle, setEditIdeaTitle] = useState('');
 
+  const fetchCronStatus = async () => {
+    try {
+      const response = await fetch('/api/cron/social');
+      if (response.ok) {
+        const data = await response.json();
+        setCronStatus(data.cron);
+      }
+    } catch (error) {
+      console.error('Error fetching cron status:', error);
+    }
+  };
+
+  const handleCronAction = async (action: 'start' | 'stop' | 'restart') => {
+    setCronLoading(true);
+    try {
+      const response = await fetch('/api/cron/social', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCronStatus(data.cron);
+        setMessage({ type: 'success', text: data.message || `Cron job ${action}ed successfully` });
+        setTimeout(() => setMessage(null), 3000);
+      } else {
+        const error = await response.json();
+        setMessage({ type: 'error', text: error.error || `Failed to ${action} cron job` });
+        setTimeout(() => setMessage(null), 3000);
+      }
+    } catch (error) {
+      console.error(`Error ${action}ing cron:`, error);
+      setMessage({ type: 'error', text: `Failed to ${action} cron job` });
+      setTimeout(() => setMessage(null), 3000);
+    } finally {
+      setCronLoading(false);
+    }
+  };
+
   useEffect(() => {
     console.log('[SOCIAL-PAGE] Page loaded, initializing...');
     fetchPosts();
     fetchConnections();
     fetchAiIntegrations();
     fetchPostIdeas();
+    fetchCronStatus();
     
     // Initialize cron jobs when social media page loads
     console.log('[SOCIAL-PAGE] Initializing cron jobs...');
@@ -81,10 +129,15 @@ export default function SocialMediaPage() {
       })
       .then(data => {
         console.log('[SOCIAL-PAGE] Cron init result:', data);
+        fetchCronStatus(); // Refresh status after init
       })
       .catch(err => {
         console.error('[SOCIAL-PAGE] Error initializing cron:', err);
       });
+
+    // Refresh cron status every 30 seconds
+    const cronStatusInterval = setInterval(fetchCronStatus, 30000);
+    return () => clearInterval(cronStatusInterval);
     
     // Check for URL parameters (from OAuth callback)
     const params = new URLSearchParams(window.location.search);
@@ -825,6 +878,16 @@ export default function SocialMediaPage() {
           >
             Post Ideas
           </button>
+          <button
+            onClick={() => setActiveTab('cron')}
+            className={`px-4 md:px-6 py-3 md:py-4 font-bebas text-xs md:text-sm uppercase tracking-widest transition-colors whitespace-nowrap flex-shrink-0 ${
+              activeTab === 'cron'
+                ? 'bg-[var(--primary-mint)] text-black border-b-2 border-black'
+                : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
+            }`}
+          >
+            Cron Job
+          </button>
         </div>
       </div>
 
@@ -1503,6 +1566,116 @@ export default function SocialMediaPage() {
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* Tab Content: Cron Job Management */}
+      {activeTab === 'cron' && (
+        <div className="classic-panel p-4 md:p-6 mb-8">
+          <h2 className="text-xl md:text-2xl text-white font-bebas mb-6">CRON JOB MANAGEMENT</h2>
+          
+          {cronStatus ? (
+            <div className="space-y-6">
+              {/* Status Card */}
+              <div className="border border-[var(--border-color)] bg-[var(--rich-black)] p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg text-white font-bebas">Social Media Publishing Cron</h3>
+                  <div className="flex items-center gap-2">
+                    {cronStatus.running ? (
+                      <>
+                        <div className="w-3 h-3 bg-[var(--primary-mint)] rounded-full animate-pulse"></div>
+                        <span className="text-sm text-[var(--primary-mint)] font-bold">RUNNING</span>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
+                        <span className="text-sm text-gray-500 font-bold">STOPPED</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="space-y-3 text-sm">
+                  <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-2">
+                    <span className="text-gray-400">Schedule:</span>
+                    <span className="text-white font-mono">*/5 * * * *</span>
+                  </div>
+                  <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-2">
+                    <span className="text-gray-400">Frequency:</span>
+                    <span className="text-white">Every 5 minutes</span>
+                  </div>
+                  {cronStatus.nextRun && (
+                    <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-2">
+                      <span className="text-gray-400">Next Run:</span>
+                      <span className="text-white">
+                        {new Date(cronStatus.nextRun).toLocaleString()}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between">
+                    <span className="text-gray-400">Initialized:</span>
+                    <span className={cronStatus.initialized ? 'text-[var(--primary-mint)]' : 'text-gray-500'}>
+                      {cronStatus.initialized ? 'Yes' : 'No'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Control Buttons */}
+              <div className="flex flex-wrap gap-4">
+                {!cronStatus.running ? (
+                  <button
+                    onClick={() => handleCronAction('start')}
+                    disabled={cronLoading}
+                    className="px-6 py-3 bg-[var(--primary-mint)] text-black hover:bg-white font-bold uppercase tracking-widest text-xs transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <Rocket className="w-4 h-4" />
+                    {cronLoading ? 'Starting...' : 'Start Cron Job'}
+                  </button>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => handleCronAction('stop')}
+                      disabled={cronLoading}
+                      className="px-6 py-3 bg-red-600 text-white hover:bg-red-700 font-bold uppercase tracking-widest text-xs transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <X className="w-4 h-4" />
+                      {cronLoading ? 'Stopping...' : 'Stop Cron Job'}
+                    </button>
+                    <button
+                      onClick={() => handleCronAction('restart')}
+                      disabled={cronLoading}
+                      className="px-6 py-3 bg-blue-600 text-white hover:bg-blue-700 font-bold uppercase tracking-widest text-xs transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <RefreshCw className="w-4 h-4" />
+                      {cronLoading ? 'Restarting...' : 'Restart Cron Job'}
+                    </button>
+                  </>
+                )}
+                <button
+                  onClick={fetchCronStatus}
+                  disabled={cronLoading}
+                  className="px-6 py-3 bg-gray-600 text-white hover:bg-gray-700 font-bold uppercase tracking-widest text-xs transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                  Refresh Status
+                </button>
+              </div>
+
+              {/* Info Box */}
+              <div className="border-l-4 border-[var(--primary-mint)] bg-[var(--rich-black)] p-4">
+                <p className="text-xs text-gray-300 leading-relaxed">
+                  <strong className="text-white">How it works:</strong> The cron job runs every 5 minutes and checks for scheduled posts. 
+                  Posts scheduled for the current time or earlier will be published automatically. 
+                  For example, a post scheduled for 8:47 will be published at the 8:50 cron run (3-minute delay).
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-gray-400">Loading cron status...</p>
+            </div>
+          )}
         </div>
       )}
 

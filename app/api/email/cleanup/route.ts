@@ -72,7 +72,13 @@ export async function POST(request: NextRequest) {
       select: { id: true, gmailId: true, threadId: true },
     });
 
-    const dbGmailIds = new Set(dbEmails.map(e => e.gmailId));
+    type EmailSelect = {
+      id: string;
+      gmailId: string;
+      threadId: string | null;
+    };
+
+    const dbGmailIds = new Set(dbEmails.map((e: EmailSelect) => e.gmailId));
     
     // Find emails in DB that don't exist in Gmail anymore
     const emailsToRemove: string[] = [];
@@ -84,7 +90,7 @@ export async function POST(request: NextRequest) {
 
     // Find emails with missing or empty threadIds
     const emailsWithMissingThreadId = dbEmails.filter(
-      e => !e.threadId || e.threadId.trim() === ''
+      (e: EmailSelect) => !e.threadId || e.threadId.trim() === ''
     );
 
     // Remove emails that no longer exist in Gmail

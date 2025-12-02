@@ -100,6 +100,65 @@ export default function EmailPage() {
     lastSyncAt?: string | null;
     lastAnalyzeAt?: string | null;
   } | null>(null);
+  const [cronStatus, setCronStatus] = useState<{
+    running: boolean;
+    initialized: boolean;
+    nextRun: string | null;
+    schedule: string;
+    isEnabled: boolean;
+  } | null>(null);
+  const [cronActionLoading, setCronActionLoading] = useState(false);
+
+  const fetchCronStatus = async () => {
+    try {
+      const response = await fetch('/api/cron/email');
+      if (response.ok) {
+        const data = await response.json();
+        setCronStatus(data.cron);
+      }
+    } catch (error) {
+      console.error('Error fetching cron status:', error);
+    }
+  };
+
+  const handleCronAction = async (action: 'start' | 'stop' | 'restart') => {
+    setCronActionLoading(true);
+    try {
+      const response = await fetch('/api/cron/email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCronStatus(data.cron);
+        setMessage({
+          type: 'success',
+          text: data.message || `Cron job ${action}ed successfully`,
+        });
+        setTimeout(() => setMessage(null), 3000);
+        // Refresh cron config to get updated status
+        await fetchCronConfig();
+      } else {
+        const error = await response.json();
+        setMessage({
+          type: 'error',
+          text: error.error || `Failed to ${action} cron job`,
+        });
+        setTimeout(() => setMessage(null), 3000);
+      }
+    } catch (error) {
+      console.error(`Error ${action}ing cron:`, error);
+      setMessage({
+        type: 'error',
+        text: `Failed to ${action} cron job`,
+      });
+      setTimeout(() => setMessage(null), 3000);
+    } finally {
+      setCronActionLoading(false);
+    }
+  };
 
   useEffect(() => {
     checkConnection();
@@ -107,6 +166,11 @@ export default function EmailPage() {
     fetchTasks();
     fetchAiIntegrations();
     fetchCronConfig();
+    fetchCronStatus();
+    
+    // Refresh cron status every 30 seconds
+    const cronStatusInterval = setInterval(fetchCronStatus, 30000);
+    return () => clearInterval(cronStatusInterval);
   }, []);
 
   const checkConnection = async () => {
@@ -280,6 +344,7 @@ export default function EmailPage() {
             : 'Cron job disabled successfully',
         });
         await fetchCronConfig(); // Refresh to get updated nextRun
+        await fetchCronStatus(); // Refresh cron status
       } else {
         const error = await response.json();
         setMessage({ type: 'error', text: error.error || 'Failed to save cron configuration' });
@@ -1097,6 +1162,106 @@ export default function EmailPage() {
                       <p className="text-sm text-gray-400 mb-6">
                         Automatically sync emails from Gmail and analyze them for tasks on a schedule.
                       </p>
+                    </div>
+
+                    {/* Cron Job Management */}
+                    <div className="border border-[var(--border-color)] p-4">
+                      <div className="flex items-center gap-3 mb-6">
+                        <Clock className="w-6 h-6 text-[var(--primary-mint)]" />
+                        <h3 className="text-lg text-white font-bebas">Cron Job Management</h3>
+                      </div>
+
+                      {cronStatus ? (
+                        <div className="space-y-4">
+                          <div className="flex items-center gap-3">
+                            <span className="text-sm text-gray-400">Status:</span>
+                            <div className="flex items-center gap-2">
+                              {cronStatus.running ? (
+                                <>
+                                  <CheckCircle className="w-5 h-5 text-green-500" />
+                                  <span className="text-green-500 font-semibold">Running</span>
+                                </>
+                              ) : (
+                                <>
+                                  <XCircle className="w-5 h-5 text-red-500" />
+                                  <span className="text-red-500 font-semibold">Stopped</span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-3">
+                            <span className="text-sm text-gray-400">Schedule:</span>
+                            <span className="text-white font-mono text-sm">{cronStatus.schedule || '0 */6 * * *'}</span>
+                          </div>
+
+                          {cronStatus.nextRun && (
+                            <div className="flex items-center gap-3">
+                              <span className="text-sm text-gray-400">Next Run:</span>
+                              <span className="text-white text-sm">{new Date(cronStatus.nextRun).toLocaleString()}</span>
+                            </div>
+                          )}
+
+                          <div className="flex items-center gap-3">
+                            <span className="text-sm text-gray-400">Initialized:</span>
+                            {cronStatus.initialized ? (
+                              <CheckCircle className="w-5 h-5 text-green-500" />
+                            ) : (
+                              <XCircle className="w-5 h-5 text-red-500" />
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-3">
+                            <span className="text-sm text-gray-400">Enabled:</span>
+                            {cronStatus.isEnabled ? (
+                              <CheckCircle className="w-5 h-5 text-green-500" />
+                            ) : (
+                              <XCircle className="w-5 h-5 text-red-500" />
+                            )}
+                          </div>
+
+                          <div className="flex flex-wrap gap-3 pt-4 border-t border-[var(--border-color)]">
+                            <button
+                              onClick={() => handleCronAction('start')}
+                              disabled={cronActionLoading || cronStatus.running}
+                              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-bold text-xs uppercase tracking-widest transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {cronActionLoading ? 'Starting...' : 'Start Cron Job'}
+                            </button>
+                            <button
+                              onClick={() => handleCronAction('stop')}
+                              disabled={cronActionLoading || !cronStatus.running}
+                              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-widest transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {cronActionLoading ? 'Stopping...' : 'Stop Cron Job'}
+                            </button>
+                            <button
+                              onClick={() => handleCronAction('restart')}
+                              disabled={cronActionLoading}
+                              className="px-4 py-2 bg-[var(--secondary-orange)] hover:bg-orange-600 text-white font-bold text-xs uppercase tracking-widest transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            >
+                              {cronActionLoading ? 'Restarting...' : 'Restart Cron Job'}
+                            </button>
+                            <button
+                              onClick={fetchCronStatus}
+                              disabled={cronActionLoading}
+                              className="px-4 py-2 bg-[var(--primary-mint)] hover:bg-white text-black font-bold text-xs uppercase tracking-widest transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                            >
+                              <RefreshCw className={`w-4 h-4 ${cronActionLoading ? 'animate-spin' : ''}`} />
+                              Refresh Status
+                            </button>
+                          </div>
+
+                          <div className="mt-4 p-4 bg-[var(--bg-dark)] border border-[var(--border-color)] rounded">
+                            <p className="text-xs text-gray-400">
+                              <strong className="text-white">How it works:</strong> The cron job automatically syncs emails from Gmail and analyzes them for tasks according to the schedule above. 
+                              You can start, stop, or restart the cron job at any time. Note: The cron job will only run if it's enabled in the configuration below.
+                            </p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="text-gray-400 text-sm">Loading cron status...</div>
+                      )}
                     </div>
 
                     {/* Enable/Disable Toggle */}

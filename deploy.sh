@@ -66,11 +66,20 @@ rsync -avz --delete \
     --exclude '.env.*.local' \
     --exclude '*.log' \
     --exclude '.DS_Store' \
+    --exclude 'public/uploads/' \
     -e "ssh -p ${SERVER_PORT}" \
     ./ ${SERVER_USER}@${SERVER_HOST}:${REMOTE_DIR}/
+    
+    # Ensure uploads directory exists on server (but don't delete existing files)
+    echo -e "${YELLOW}📁 Ensuring uploads directory exists on server...${NC}"
+    ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "mkdir -p ${REMOTE_DIR}/public/uploads && chmod 755 ${REMOTE_DIR}/public/uploads"
 else
     # Fallback: Use tar+ssh for Git Bash compatibility
     echo -e "${YELLOW}⚠️  rsync not found, using tar+ssh method...${NC}"
+    # First, ensure uploads directory is preserved on server before extraction
+    echo -e "${YELLOW}📁 Preserving uploads directory on server...${NC}"
+    ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "mkdir -p ${REMOTE_DIR}/public/uploads && chmod 755 ${REMOTE_DIR}/public/uploads"
+    
     tar --exclude='node_modules' \
         --exclude='.git' \
         --exclude='.next' \
@@ -82,7 +91,13 @@ else
         --exclude='.env.*.local' \
         --exclude='*.log' \
         --exclude='.DS_Store' \
+        --exclude='public/uploads' \
+        --exclude='public/uploads/*' \
         -czf - . | ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "cd ${REMOTE_DIR} && tar -xzf -"
+    
+    # Ensure uploads directory still exists and has correct permissions after extraction
+    echo -e "${YELLOW}📁 Verifying uploads directory on server...${NC}"
+    ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} "mkdir -p ${REMOTE_DIR}/public/uploads && chmod 755 ${REMOTE_DIR}/public/uploads"
 fi
 
 # Step 3: Configure firewall to allow app port

@@ -154,8 +154,14 @@ export async function POST(request: NextRequest) {
           select: { id: true, lastSyncedAt: true, syncedAt: true },
         });
         
+        type EmailSync = {
+          id: string;
+          lastSyncedAt: Date | null;
+          syncedAt: Date;
+        };
+        
         // Find the most recent sync time for this thread
-        const mostRecentSync = threadEmails.reduce((latest, email) => {
+        const mostRecentSync = threadEmails.reduce((latest: number, email: EmailSync) => {
           const emailSyncTime = email.lastSyncedAt || email.syncedAt;
           if (!emailSyncTime) return latest;
           const emailTime = emailSyncTime.getTime();

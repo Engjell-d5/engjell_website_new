@@ -82,7 +82,8 @@ export async function POST(
     // Publish to each platform
     for (const platform of platforms) {
       console.log(`[PUBLISH-API] Attempting to publish to ${platform} for post ${params.id}`);
-      const connection = connections.find((c) => c.platform === platform);
+      type SocialConnection = Awaited<ReturnType<typeof prisma.socialConnection.findMany>>[0];
+      const connection = connections.find((c: SocialConnection) => c.platform === platform);
 
       if (!connection) {
         const errorMsg = `${platform}: No active connection`;

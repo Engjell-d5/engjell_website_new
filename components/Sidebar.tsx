@@ -177,11 +177,11 @@ export default function Sidebar() {
     });
   };
 
-  // Show sidebar on mobile for journal, ventures, and media pages
-  const showOnMobile = pathname === '/about' || pathname === '/journal' || pathname === '/ventures' || pathname.startsWith('/journal/') || pathname === '/media';
+  // Show sidebar on mobile for homepage, about, journal, ventures, media, and contact pages
+  const showOnMobile = pathname === '/' || pathname === '/about' || pathname === '/journal' || pathname === '/ventures' || pathname.startsWith('/journal/') || pathname === '/media' || pathname === '/contact';
   
   return (
-    <aside className={`classic-panel md:col-span-3 ${showOnMobile ? 'flex' : 'hidden md:flex'} flex-col p-6 gap-6 bg-[var(--bg-dark)] sticky-sidebar order-1 md:order-2 min-h-[80vh]`}>
+    <aside className={`classic-panel md:col-span-3 ${showOnMobile ? 'flex' : 'hidden md:flex'} flex-col p-6 gap-6 bg-[var(--bg-dark)] sticky-sidebar order-1 md:order-2 md:min-h-[80vh]`}>
       {/* HOME SIDEBAR */}
       {pathname === '/' && (
         <div className="flex flex-col gap-6 sticky-sidebar-content">

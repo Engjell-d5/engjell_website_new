@@ -60,7 +60,9 @@ export async function getActiveAiIntegrations(): Promise<AiIntegration[]> {
     orderBy: { createdAt: 'desc' },
   });
   
-  return integrations.map(integration => ({
+  type AiIntegrationType = Awaited<ReturnType<typeof prisma.aiIntegration.findMany>>[0];
+  
+  return integrations.map((integration: AiIntegrationType) => ({
     id: integration.id,
     name: integration.name,
     provider: integration.provider,

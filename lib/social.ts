@@ -480,7 +480,8 @@ export async function publishScheduledPosts() {
     });
     
     console.log(`[LINKEDIN] Total scheduled posts in database: ${allScheduledPosts.length}`);
-    allScheduledPosts.forEach(post => {
+    type SocialPostType = Awaited<ReturnType<typeof prisma.socialPost.findMany>>[0];
+    allScheduledPosts.forEach((post: SocialPostType) => {
       console.log(`[LINKEDIN] - Post ${post.id}: scheduledFor=${post.scheduledFor.toISOString()}, status=${post.status}, content=${post.content.substring(0, 50)}...`);
       const scheduledTime = new Date(post.scheduledFor).getTime();
       const nowTime = now.getTime();
@@ -501,12 +502,19 @@ export async function publishScheduledPosts() {
     console.log(`[LINKEDIN] Found ${postsToPublish.length} post(s) due for publishing (scheduledFor <= ${now.toISOString()})`);
     
     if (postsToPublish.length > 0) {
-      postsToPublish.forEach(post => {
+      type SocialPostType = Awaited<ReturnType<typeof prisma.socialPost.findMany>>[0];
+      postsToPublish.forEach((post: SocialPostType) => {
         console.log(`[LINKEDIN] Post ${post.id} is due - scheduled: ${post.scheduledFor.toISOString()}`);
       });
     } else {
       console.log(`[LINKEDIN] No posts found that are due. Checking why...`);
-      allScheduledPosts.forEach(post => {
+      type SocialPostSelect = {
+        id: string;
+        scheduledFor: Date;
+        status: string;
+        content: string;
+      };
+      allScheduledPosts.forEach((post: SocialPostSelect) => {
         const isPast = new Date(post.scheduledFor) <= now;
         console.log(`[LINKEDIN] - Post ${post.id}: ${post.scheduledFor.toISOString()} ${isPast ? '✓ IS DUE' : '✗ NOT YET DUE'}`);
       });
@@ -522,8 +530,10 @@ export async function publishScheduledPosts() {
       };
     }
 
+    type SocialPostFullType = Awaited<ReturnType<typeof prisma.socialPost.findMany>>[0];
+    
     const results = await Promise.allSettled(
-      postsToPublish.map(async (post) => {
+      postsToPublish.map(async (post: SocialPostFullType) => {
         console.log(`[LINKEDIN] Processing post ID: ${post.id}, scheduled for: ${post.scheduledFor.toISOString()}`);
         const platforms = JSON.parse(post.platforms || '[]') as string[];
         console.log(`[LINKEDIN] Post ${post.id} platforms: ${platforms.join(', ')}`);
@@ -539,14 +549,16 @@ export async function publishScheduledPosts() {
         });
 
         console.log(`[LINKEDIN] Found ${connections.length} active connection(s) for platforms: ${platforms.join(', ')}`);
-        connections.forEach(conn => {
+        type SocialConnectionType = Awaited<ReturnType<typeof prisma.socialConnection.findMany>>[0];
+        connections.forEach((conn: SocialConnectionType) => {
           console.log(`[LINKEDIN] Connection: platform=${conn.platform}, expiresAt=${conn.expiresAt?.toISOString() || 'N/A'}, isActive=${conn.isActive}`);
         });
 
         // Publish to each platform
         for (const platform of platforms) {
           console.log(`[LINKEDIN] Attempting to publish to ${platform} for post ${post.id}`);
-          const connection = connections.find((c) => c.platform === platform);
+          type SocialConnectionType = Awaited<ReturnType<typeof prisma.socialConnection.findMany>>[0];
+          const connection = connections.find((c: SocialConnectionType) => c.platform === platform);
           
           if (!connection) {
             const errorMsg = `${platform}: No active connection`;
@@ -682,13 +694,15 @@ export async function publishScheduledPosts() {
       })
     );
 
-    const successful = results.filter((r) => r.status === 'fulfilled').length;
-    const failed = results.filter((r) => r.status === 'rejected').length;
+    type PromiseResult = PromiseSettledResult<{ postId: string; success: boolean }>;
+    
+    const successful = results.filter((r: PromiseResult) => r.status === 'fulfilled').length;
+    const failed = results.filter((r: PromiseResult) => r.status === 'rejected').length;
 
     console.log(`[LINKEDIN] Publishing complete: ${successful} succeeded, ${failed} failed, ${postsToPublish.length} total`);
 
     // Log any rejected promises
-    results.forEach((result, index) => {
+    results.forEach((result: PromiseResult, index: number) => {
       if (result.status === 'rejected') {
         console.error(`[LINKEDIN] Post ${postsToPublish[index].id} was rejected:`, result.reason);
       }

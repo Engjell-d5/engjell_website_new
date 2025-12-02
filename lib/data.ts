@@ -137,7 +137,8 @@ export async function getUsers(): Promise<User[]> {
   const users = await prisma.user.findMany({
     orderBy: { createdAt: 'desc' },
   });
-  return users.map(user => ({
+  type UserType = Awaited<ReturnType<typeof prisma.user.findMany>>[0];
+  return users.map((user: UserType) => ({
     id: user.id,
     email: user.email,
     name: user.name,
@@ -187,7 +188,8 @@ export async function getBlogs(): Promise<Blog[]> {
       },
     },
   });
-  return blogs.map(blog => ({
+  type BlogType = Awaited<ReturnType<typeof prisma.blogPost.findMany>>[0];
+  return blogs.map((blog: BlogType) => ({
     id: blog.id,
     title: blog.title,
     slug: blog.slug,
@@ -337,7 +339,8 @@ export async function getVideos(includeRemoved: boolean = false): Promise<YouTub
       { publishedAt: 'desc' }, // Then by published date
     ],
   });
-  return videos.map(video => ({
+  type VideoType = Awaited<ReturnType<typeof prisma.youTubeVideo.findMany>>[0];
+  return videos.map((video: VideoType) => ({
     id: video.id,
     videoId: video.videoId,
     title: video.title,
@@ -773,7 +776,8 @@ export async function getUnsyncedSubscribers(): Promise<Subscriber[]> {
     },
     orderBy: { subscribedAt: 'desc' },
   });
-  return subscribers.map(sub => ({
+  type SubscriberType = Awaited<ReturnType<typeof prisma.subscriber.findMany>>[0];
+  return subscribers.map((sub: SubscriberType) => ({
     id: sub.id,
     email: sub.email,
     subscribedAt: sub.subscribedAt.toISOString(),
@@ -802,7 +806,8 @@ export async function getCampaigns(): Promise<Campaign[]> {
       },
     },
   });
-  return campaigns.map(campaign => ({
+  type CampaignType = Awaited<ReturnType<typeof prisma.emailCampaign.findMany>>[0];
+  return campaigns.map((campaign: CampaignType) => ({
     id: campaign.id,
     senderCampaignId: campaign.senderCampaignId,
     blogId: campaign.blogId,
@@ -1095,7 +1100,8 @@ export async function getPodcastApplications(): Promise<PodcastApplication[]> {
   const applications = await prisma.podcastApplication.findMany({
     orderBy: { submittedAt: 'desc' },
   });
-  return applications.map(app => ({
+  type ApplicationType = Awaited<ReturnType<typeof prisma.podcastApplication.findMany>>[0];
+  return applications.map((app: ApplicationType) => ({
     id: app.id,
     name: app.name,
     email: app.email,
@@ -1185,7 +1191,8 @@ export async function getContactMessages(): Promise<ContactMessage[]> {
   const messages = await prisma.contactMessage.findMany({
     orderBy: { submittedAt: 'desc' },
   });
-  return messages.map(msg => ({
+  type MessageType = Awaited<ReturnType<typeof prisma.contactMessage.findMany>>[0];
+  return messages.map((msg: MessageType) => ({
     id: msg.id,
     name: msg.name,
     email: msg.email,
@@ -1271,7 +1278,8 @@ export async function getGroups(): Promise<Group[]> {
   const groups = await prisma.group.findMany({
     orderBy: { createdAt: 'desc' },
   });
-  return groups.map(group => ({
+  type GroupType = Awaited<ReturnType<typeof prisma.group.findMany>>[0];
+  return groups.map((group: GroupType) => ({
     id: group.id,
     senderGroupId: group.senderGroupId,
     title: group.title,
@@ -1510,7 +1518,21 @@ export async function getEmails(): Promise<Email[]> {
     },
   });
   
-  return emails.map(email => ({
+  type EmailType = Awaited<ReturnType<typeof prisma.email.findMany>>[0] & {
+    tasks: Array<{
+      id: string;
+      emailId: string;
+      title: string;
+      description: string | null;
+      priority: string;
+      status: string;
+      aiAnalysis: string | null;
+      createdAt: Date;
+      updatedAt: Date;
+    }>;
+  };
+  
+  return emails.map((email: EmailType) => ({
     id: email.id,
     gmailId: email.gmailId,
     threadId: email.threadId,
@@ -1528,7 +1550,7 @@ export async function getEmails(): Promise<Email[]> {
     lastSyncedAt: email.lastSyncedAt?.toISOString() || null,
     createdAt: email.createdAt.toISOString(),
     updatedAt: email.updatedAt.toISOString(),
-    tasks: email.tasks.map(task => ({
+    tasks: email.tasks.map((task: { id: string; emailId: string; title: string; description: string | null; priority: string; status: string; aiAnalysis: string | null; createdAt: Date; updatedAt: Date }) => ({
       id: task.id,
       emailId: task.emailId,
       title: task.title,
@@ -1628,7 +1650,7 @@ export async function getEmailThreads(filters?: EmailThreadFilters): Promise<Ema
       lastSyncedAt: email.lastSyncedAt?.toISOString() || null,
       createdAt: email.createdAt.toISOString(),
       updatedAt: email.updatedAt.toISOString(),
-      tasks: email.tasks.map(task => ({
+      tasks: email.tasks.map((task: { id: string; emailId: string; title: string; description: string | null; priority: string; status: string; aiAnalysis: string | null; createdAt: Date; updatedAt: Date }) => ({
         id: task.id,
         emailId: task.emailId,
         title: task.title,
@@ -1760,7 +1782,7 @@ export async function getEmail(id: string): Promise<Email | null> {
     lastSyncedAt: email.lastSyncedAt?.toISOString() || null,
     createdAt: email.createdAt.toISOString(),
     updatedAt: email.updatedAt.toISOString(),
-    tasks: email.tasks.map(task => ({
+    tasks: email.tasks.map((task: { id: string; emailId: string; title: string; description: string | null; priority: string; status: string; aiAnalysis: string | null; createdAt: Date; updatedAt: Date }) => ({
       id: task.id,
       emailId: task.emailId,
       title: task.title,
@@ -1785,7 +1807,9 @@ export async function getEmailTasks(): Promise<EmailTask[]> {
     },
   });
   
-  return tasks.map(task => ({
+  type TaskType = Awaited<ReturnType<typeof prisma.emailTask.findMany>>[0];
+  
+  return tasks.map((task: TaskType) => ({
     id: task.id,
     emailId: task.emailId,
     title: task.title,

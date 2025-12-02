@@ -226,7 +226,7 @@ export default function Media() {
       </main>
 
        {/* Right Panel - Next 3 Videos */}
-       <aside className="classic-panel md:col-span-3 flex flex-col p-6 gap-6 bg-[var(--rich-black)] sticky-sidebar order-1 md:order-2 min-h-[80vh]">
+       <aside className="classic-panel md:col-span-3 flex flex-col p-6 gap-6 bg-[var(--rich-black)] sticky-sidebar order-1 md:order-2 md:min-h-[80vh]">
          <div className="flex flex-col gap-6 sticky-sidebar-content">
         {/* Description */}
         <div className="relative p-6 border-l-4 border-[var(--primary-mint)] bg-[var(--rich-black)]">

@@ -17,8 +17,10 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: 'desc' },
     });
     
+    type PostIdea = Awaited<ReturnType<typeof prisma.postIdea.findMany>>[0];
+    
     return NextResponse.json({ 
-      ideas: ideas.map(idea => ({
+      ideas: ideas.map((idea: PostIdea) => ({
         id: idea.id,
         title: idea.title,
         prompt: idea.prompt,

@@ -98,7 +98,7 @@ h1, h2, h3, h4, .brand-font {
 .sticky-header {
   position: sticky;
   top: 0; /* Pinned to very top */
-  z-index: 10; /* Lower z-index so modals can appear above */
+  z-index: 100; /* High z-index to stay above all content including sticky sidebar */
   background-color: var(--panel-bg); /* Matches panel background */
   backdrop-filter: blur(12px); /* Add blur for legibility when content scrolls under */
   margin-bottom: 1.5rem; /* Visual separation from content */
@@ -115,12 +115,14 @@ h1, h2, h3, h4, .brand-font {
     position: relative; /* Container stretches to match grid item */
     align-self: stretch; /* Ensure it stretches to match grid item */
     height: auto; /* Allow stretching to match grid item height */
+    z-index: 1; /* Lower than header to stay below when scrolling */
   }
   
   .sticky-sidebar-content {
     position: sticky;
     top: 7rem; /* Offset for header */
     width: 100%; /* Ensure full width */
+    z-index: 1; /* Lower than header (z-index: 100) to stay below when scrolling */
   }
 }
 
