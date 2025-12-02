@@ -3,6 +3,7 @@ import { getAuthUser } from '@/lib/auth';
 import { analyzeEmailAndGenerateTasks } from '@/lib/ai-service';
 import { createEmailTask, getEmails } from '@/lib/data';
 import { prisma } from '@/lib/prisma';
+import { sendPushNotificationToUser } from '@/lib/push-notifications';
 
 export const dynamic = 'force-dynamic';
 
@@ -103,6 +104,20 @@ export async function POST(request: NextRequest) {
         console.error(`Error analyzing thread ${threadId}:`, error);
         const subject = threadEmails[0]?.subject || 'Unknown';
         errors.push(`Thread "${subject}": ${error.message}`);
+      }
+    }
+
+    // Send notification if tasks were created
+    if (totalTasksCreated > 0 && user) {
+      try {
+        await sendPushNotificationToUser(user.id, {
+          title: 'New Tasks Created',
+          body: `${totalTasksCreated} new task(s) created from email analysis`,
+          tag: 'new-tasks',
+          data: { url: '/admin/email' },
+        });
+      } catch (notifError) {
+        console.error('Failed to send push notification:', notifError);
       }
     }
 

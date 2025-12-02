@@ -262,23 +262,23 @@ export default function CampaignsPage() {
             <div className="text-xs text-gray-400 uppercase tracking-widest">Total</div>
           </div>
           <div className="admin-buttons-container flex flex-col lg:flex-row gap-2 w-full lg:w-auto">
-            <button
-              onClick={syncCampaigns}
-              disabled={syncing}
+          <button
+            onClick={syncCampaigns}
+            disabled={syncing}
               className="w-full lg:w-auto px-4 md:px-6 py-2 bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:bg-[var(--rich-black)]/80 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2 min-h-[44px]"
-            >
+          >
               <RefreshCw className={`w-4 h-4 flex-shrink-0 ${syncing ? 'animate-spin' : ''}`} />
               <span className="hidden lg:inline">{syncing ? 'Syncing...' : 'Sync from Sender.net'}</span>
               <span className="lg:hidden">{syncing ? 'Syncing...' : 'Sync'}</span>
-            </button>
-            <button
-              onClick={() => setShowCreateForm(true)}
+          </button>
+          <button
+            onClick={() => setShowCreateForm(true)}
               className="w-full lg:w-auto px-4 md:px-6 py-2 bg-white text-black hover:bg-[var(--primary-mint)] text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2 min-h-[44px]"
-            >
+          >
               <Plus className="w-4 h-4 flex-shrink-0" />
               <span className="hidden lg:inline">Create from Blog</span>
               <span className="lg:hidden">Create</span>
-            </button>
+          </button>
           </div>
         </div>
       </div>

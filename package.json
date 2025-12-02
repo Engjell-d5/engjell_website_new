@@ -14,6 +14,7 @@
     "db:seed": "tsx scripts/migrate-to-db.ts",
     "db:setup": "tsx scripts/setup-database.ts",
     "email:reset-analyzed": "tsx scripts/reset-analyzed-status.ts",
+    "generate-vapid-keys": "tsx scripts/generate-vapid-keys.ts",
     "ngrok": "powershell -ExecutionPolicy Bypass -File ./scripts/ngrok-start.ps1",
     "ngrok:url": "powershell -ExecutionPolicy Bypass -File ./scripts/ngrok-get-url.ps1",
     "ngrok:simple": "ngrok http 3000"
@@ -36,7 +37,8 @@
     "node-cron": "^3.0.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "server-only": "^0.0.1"
+    "server-only": "^0.0.1",
+    "web-push": "^3.6.6"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

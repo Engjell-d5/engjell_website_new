@@ -166,7 +166,7 @@ export default function GroupsPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full min-w-0">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex-shrink-0">
@@ -179,23 +179,23 @@ export default function GroupsPage() {
             <div className="text-xs text-gray-400 uppercase tracking-widest">Total</div>
           </div>
           <div className="admin-buttons-container flex flex-col lg:flex-row gap-2 w-full lg:w-auto">
-            <button
-              onClick={handleSync}
-              disabled={syncing}
+          <button
+            onClick={handleSync}
+            disabled={syncing}
               className="w-full lg:w-auto px-4 md:px-6 py-2 bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:bg-[var(--rich-black)]/80 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2 min-h-[44px]"
-            >
+          >
               <RefreshCw className={`w-4 h-4 flex-shrink-0 ${syncing ? 'animate-spin' : ''}`} />
               <span className="hidden lg:inline">{syncing ? 'Syncing...' : 'Sync from Sender.net'}</span>
               <span className="lg:hidden">{syncing ? 'Syncing...' : 'Sync'}</span>
-            </button>
-            <button
-              onClick={() => setShowAddForm(true)}
+          </button>
+          <button
+            onClick={() => setShowAddForm(true)}
               className="w-full lg:w-auto px-4 md:px-6 py-2 bg-white text-black hover:bg-[var(--primary-mint)] text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2 min-h-[44px]"
-            >
+          >
               <Plus className="w-4 h-4 flex-shrink-0" />
               <span className="hidden lg:inline">Create Group</span>
               <span className="lg:hidden">Create</span>
-            </button>
+          </button>
           </div>
         </div>
       </div>
@@ -270,9 +270,9 @@ export default function GroupsPage() {
           <p className="text-gray-400">No groups found.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
           {groups.map((group) => (
-            <div key={group.id} className="classic-panel bg-[var(--rich-black)] p-6">
+            <div key={group.id} className="classic-panel bg-[var(--rich-black)] p-6 min-w-0">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <Users className="w-6 h-6 text-[var(--primary-mint)]" />

@@ -84,11 +84,17 @@ export async function GET(
     const referer = request.headers.get('referer') || 'none';
     const origin = request.headers.get('origin') || 'none';
     
+    // Detect Next.js image optimization requests
+    const isNextImageOptimization = userAgent.includes('next-image-optimizer') || 
+                                    referer.includes('/_next/image') ||
+                                    request.headers.get('accept')?.includes('image/');
+    
     // Log all request details for debugging Instagram crawler access
     console.log('[UPLOADS] Request for file:', filename);
     console.log('[UPLOADS] User-Agent:', userAgent);
     console.log('[UPLOADS] Referer:', referer);
     console.log('[UPLOADS] Origin:', origin);
+    console.log('[UPLOADS] Is Next.js Image Optimization:', isNextImageOptimization);
     
     // Detect Instagram/Facebook crawler
     const isInstagramCrawler = userAgent.includes('facebookexternalhit') || 
@@ -164,7 +170,9 @@ export async function GET(
     const headers: Record<string, string> = {
         'Content-Type': contentType,
         'Content-Length': fileBuffer.length.toString(),
-      'Cache-Control': 'public, max-age=86400, must-revalidate',
+      'Cache-Control': isNextImageOptimization 
+        ? 'public, max-age=31536000, immutable' 
+        : 'public, max-age=86400, must-revalidate',
         // CORS headers to allow Instagram/Facebook servers to fetch images
         'Access-Control-Allow-Origin': '*',
         'Access-Control-Allow-Methods': 'GET, HEAD, OPTIONS',
@@ -174,6 +182,12 @@ export async function GET(
       // Remove X-Content-Type-Options for Instagram compatibility (might cause issues)
       // 'X-Content-Type-Options': 'nosniff',
     };
+    
+    // For Next.js image optimization, ensure proper headers
+    if (isNextImageOptimization) {
+      headers['X-Content-Type-Options'] = 'nosniff';
+      headers['Content-Disposition'] = `inline; filename="${filename}"`;
+    }
 
     // Add additional headers for Instagram crawler if detected
     if (isInstagramCrawler) {

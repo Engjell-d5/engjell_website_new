@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { Users, FileText, LogOut, Home, Mic, Mail, MessageSquare, Share2, LayoutDashboard, Sparkles, Menu, X } from 'lucide-react';
+import PushNotificationManager from '@/components/PushNotificationManager';
 
 export default function AdminLayout({
   children,
@@ -93,7 +94,10 @@ export default function AdminLayout({
             <div className="hidden md:block h-6 w-px bg-[var(--border-color)]"></div>
             <span className="hidden md:inline text-xs text-gray-400">Welcome, {user.name}</span>
           </div>
-          <div className="flex items-center gap-2 md:gap-4">
+          <div className="flex items-center gap-2 md:gap-4 relative">
+            <div className="relative z-10">
+              <PushNotificationManager />
+            </div>
             <Link
               href="/"
               className="text-xs text-gray-400 hover:text-white transition-colors flex items-center gap-2"

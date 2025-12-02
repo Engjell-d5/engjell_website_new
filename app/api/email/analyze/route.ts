@@ -3,6 +3,7 @@ import { getAuthUser } from '@/lib/auth';
 import { analyzeEmailAndGenerateTasks } from '@/lib/ai-service';
 import { createEmailTask } from '@/lib/data';
 import { prisma } from '@/lib/prisma';
+import { sendPushNotificationToUser } from '@/lib/push-notifications';
 
 export const dynamic = 'force-dynamic';
 
@@ -65,6 +66,20 @@ export async function POST(request: NextRequest) {
         })
       )
     );
+
+    // Send notification if tasks were created
+    if (savedTasks.length > 0 && user) {
+      try {
+        await sendPushNotificationToUser(user.id, {
+          title: 'New Tasks Created',
+          body: `${savedTasks.length} new task(s) created from email analysis`,
+          tag: 'new-tasks',
+          data: { url: '/admin/email' },
+        });
+      } catch (notifError) {
+        console.error('Failed to send push notification:', notifError);
+      }
+    }
 
     // Mark all emails in the thread as analyzed
     if (email.threadId) {

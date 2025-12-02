@@ -74,6 +74,8 @@ export default function SocialMediaPage() {
   const [postIdeas, setPostIdeas] = useState<Array<{ id: string; title: string; prompt: string; status: string; createdAt: string }>>([]);
   const [editingIdea, setEditingIdea] = useState<{ id: string; title: string; prompt: string } | null>(null);
   const [editIdeaTitle, setEditIdeaTitle] = useState('');
+  const [generatingPostsFromIdea, setGeneratingPostsFromIdea] = useState<string | null>(null);
+  const [postsToGenerate, setPostsToGenerate] = useState<number>(3); // Default to 3 posts
 
   const fetchCronStatus = async () => {
     try {
@@ -784,59 +786,68 @@ export default function SocialMediaPage() {
       return;
     }
 
+    setGeneratingPostsFromIdea(idea.id);
     try {
-      // Generate post for each platform
-      const platforms = ['linkedin', 'twitter'];
-      const posts = await Promise.all(
-        platforms.map(async (platform) => {
+      // Generate multiple posts from the idea
           const response = await fetch('/api/ai/generate-post', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               prompt: `${idea.prompt}\n\nIdea: ${idea.title}`,
-              platform,
+          platform: 'linkedin', // Default platform, user can change later
               aiIntegrationId: selectedAiIntegration,
+          count: postsToGenerate, // Generate multiple posts
             }),
           });
 
           if (!response.ok) {
-            throw new Error(`Failed to generate post for ${platform}`);
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to generate posts');
           }
 
           const data = await response.json();
-          return { platform, content: data.content };
-        })
-      );
+      const generatedContents = data.contents || [data.content]; // Use contents array if available
 
-      // Create draft posts
+      if (!generatedContents || generatedContents.length === 0) {
+        throw new Error('No posts were generated');
+      }
+
+      // Create separate draft posts for each generated content
       const now = new Date();
       const scheduledFor = new Date(now.getTime() + 24 * 60 * 60 * 1000);
 
-      await Promise.all(
-        posts.map(async (post) => {
+      const createdPosts = await Promise.all(
+        generatedContents.map(async (content: string, index: number) => {
           const response = await fetch('/api/social/posts', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-              content: post.content,
+              content: content.trim(),
               mediaAssets: JSON.stringify([]),
-              platforms: JSON.stringify([post.platform]),
+              platforms: JSON.stringify(['linkedin']), // Default to LinkedIn, user can add more platforms later
               scheduledFor: scheduledFor.toISOString(),
               status: 'draft',
             }),
           });
 
           if (!response.ok) {
-            throw new Error(`Failed to create post for ${post.platform}`);
+            throw new Error(`Failed to create post ${index + 1}`);
           }
+
+          return response.json();
         })
       );
 
-      setMessage({ type: 'success', text: 'Posts generated from idea and created as drafts!' });
+      setMessage({ 
+        type: 'success', 
+        text: `Successfully generated ${createdPosts.length} separate posts from idea and created as drafts!` 
+      });
       fetchPosts();
     } catch (error: any) {
-      console.error('Error generating post from idea:', error);
+      console.error('Error generating posts from idea:', error);
       setMessage({ type: 'error', text: error.message || 'Failed to generate posts from idea' });
+    } finally {
+      setGeneratingPostsFromIdea(null);
     }
   };
 
@@ -1011,8 +1022,8 @@ export default function SocialMediaPage() {
           <div className="classic-panel p-4 md:p-6 mb-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto mt-8">
             <div className="flex items-center justify-between mb-4 md:mb-6">
               <h2 className="text-xl md:text-2xl text-white font-bebas">
-                {editingPost ? 'EDIT POST' : 'SCHEDULE NEW POST'}
-              </h2>
+            {editingPost ? 'EDIT POST' : 'SCHEDULE NEW POST'}
+          </h2>
               <button
                 onClick={() => {
                   setShowForm(false);
@@ -1223,8 +1234,8 @@ export default function SocialMediaPage() {
       )}
 
       {/* Posts List */}
-      <div className="classic-panel p-6">
-        <h2 className="text-2xl text-white font-bebas mb-6">SCHEDULED POSTS</h2>
+      <div className="classic-panel p-4 md:p-6">
+        <h2 className="text-xl md:text-2xl text-white font-bebas mb-4 md:mb-6">SCHEDULED POSTS</h2>
         
         {loading ? (
           <div className="text-gray-400">Loading...</div>
@@ -1237,27 +1248,27 @@ export default function SocialMediaPage() {
             {posts.map((post) => (
               <div
                 key={post.id}
-                className="p-6 border border-[var(--border-color)] bg-[var(--rich-black)]"
+                className="p-4 md:p-6 border border-[var(--border-color)] bg-[var(--rich-black)]"
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    {getStatusIcon(post.status)}
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 md:gap-4 mb-4">
+                  <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
+                    <div className="flex-shrink-0">{getStatusIcon(post.status)}</div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5 md:gap-2 mb-1 flex-wrap">
                         {JSON.parse(post.platforms || '[]').map((platform: string) => (
-                          <div key={platform} className="flex items-center gap-1">
+                          <div key={platform} className="flex items-center gap-1 flex-shrink-0">
                             {getPlatformIcon(platform)}
                           </div>
                         ))}
                       </div>
-                      <p className="text-xs text-gray-400">
+                      <p className="text-[10px] md:text-xs text-gray-400 break-words">
                         {formatDate(post.scheduledFor)}
                         {post.publishedAt && ` • Published: ${formatDate(post.publishedAt)}`}
                         {post.timesPosted > 0 && ` • Posted ${post.timesPosted} time${post.timesPosted > 1 ? 's' : ''}`}
                       </p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex items-center gap-1.5 md:gap-2 flex-wrap flex-shrink-0">
                     {(post.status === 'scheduled' || post.status === 'draft') && (
                       <>
                         <button
@@ -1267,37 +1278,37 @@ export default function SocialMediaPage() {
                             setRefinedContent('');
                             setShowRefineModal(true);
                           }}
-                          className="p-2 border border-purple-500 hover:border-purple-400 hover:bg-purple-500 transition-colors"
+                          className="p-1.5 md:p-2 border border-purple-500 hover:border-purple-400 hover:bg-purple-500 transition-colors min-h-[36px] md:min-h-[auto] flex items-center justify-center flex-shrink-0"
                           title="Refine with AI"
                         >
-                          <Sparkles className="w-4 h-4 text-purple-400 hover:text-white" />
+                          <Sparkles className="w-3.5 h-3.5 md:w-4 md:h-4 text-purple-400 hover:text-white" />
                         </button>
                         {post.status === 'draft' && (
                           <button
                             onClick={() => handleScheduleDraft(post)}
-                            className="p-2 border border-green-500 hover:border-green-400 hover:bg-green-500 transition-colors"
+                            className="p-1.5 md:p-2 border border-green-500 hover:border-green-400 hover:bg-green-500 transition-colors min-h-[36px] md:min-h-[auto] flex items-center justify-center flex-shrink-0"
                             title="Schedule Post"
                           >
-                            <Calendar className="w-4 h-4 text-green-400 hover:text-white" />
+                            <Calendar className="w-3.5 h-3.5 md:w-4 md:h-4 text-green-400 hover:text-white" />
                           </button>
                         )}
                     {post.status === 'scheduled' && (
                       <>
                         <button
                           onClick={() => handlePublishNow(post)}
-                          className="p-2 border border-[var(--secondary-orange)] hover:border-[var(--secondary-orange)] hover:bg-[var(--secondary-orange)] transition-colors"
+                          className="p-1.5 md:p-2 border border-[var(--secondary-orange)] hover:border-[var(--secondary-orange)] hover:bg-[var(--secondary-orange)] transition-colors min-h-[36px] md:min-h-[auto] flex items-center justify-center flex-shrink-0"
                           title="Publish Now"
                         >
-                          <Rocket className="w-4 h-4 text-[var(--secondary-orange)] hover:text-black" />
+                          <Rocket className="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--secondary-orange)] hover:text-black" />
                         </button>
                           </>
                         )}
                         <button
                           onClick={() => handleEdit(post)}
-                          className="p-2 border border-[var(--border-color)] hover:border-[var(--primary-mint)] transition-colors"
+                          className="p-1.5 md:p-2 border border-[var(--border-color)] hover:border-[var(--primary-mint)] transition-colors min-h-[36px] md:min-h-[auto] flex items-center justify-center flex-shrink-0"
                           title="Edit"
                         >
-                          <Edit className="w-4 h-4 text-white" />
+                          <Edit className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
                         </button>
                       </>
                     )}
@@ -1305,30 +1316,30 @@ export default function SocialMediaPage() {
                       <>
                         <button
                           onClick={() => handleEdit(post)}
-                          className="p-2 border border-[var(--border-color)] hover:border-[var(--primary-mint)] transition-colors"
+                          className="p-1.5 md:p-2 border border-[var(--border-color)] hover:border-[var(--primary-mint)] transition-colors min-h-[36px] md:min-h-[auto] flex items-center justify-center flex-shrink-0"
                           title="Edit"
                         >
-                          <Edit className="w-4 h-4 text-white" />
+                          <Edit className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
                         </button>
                         <button
                           onClick={() => handleRepost(post)}
-                          className="p-2 border border-[var(--primary-mint)] hover:border-[var(--primary-mint)] hover:bg-[var(--primary-mint)] transition-colors"
+                          className="p-1.5 md:p-2 border border-[var(--primary-mint)] hover:border-[var(--primary-mint)] hover:bg-[var(--primary-mint)] transition-colors min-h-[36px] md:min-h-[auto] flex items-center justify-center flex-shrink-0"
                           title="Repost"
                         >
-                          <Repeat className="w-4 h-4 text-[var(--primary-mint)] hover:text-black" />
+                          <Repeat className="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--primary-mint)] hover:text-black" />
                         </button>
                       </>
                     )}
                     <button
                       onClick={() => handleDelete(post.id)}
-                      className="p-2 border border-[var(--border-color)] hover:border-red-400 transition-colors"
+                      className="p-1.5 md:p-2 border border-[var(--border-color)] hover:border-red-400 transition-colors min-h-[36px] md:min-h-[auto] flex items-center justify-center flex-shrink-0"
                       title="Delete"
                     >
-                      <Trash2 className="w-4 h-4 text-white" />
+                      <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
                     </button>
                   </div>
                 </div>
-                <p className="text-sm text-white mb-3 whitespace-pre-wrap">{post.content}</p>
+                <p className="text-xs md:text-sm text-white mb-3 whitespace-pre-wrap break-words">{post.content}</p>
                 
                 {/* Display Media Assets */}
                 {(() => {
@@ -1384,7 +1395,7 @@ export default function SocialMediaPage() {
                   return null;
                 })()}
                 {post.errorMessage && (
-                  <p className="text-xs text-red-400 mt-2">Error: {post.errorMessage}</p>
+                  <p className="text-[10px] md:text-xs text-red-400 mt-2 break-words">Error: {post.errorMessage}</p>
                 )}
               </div>
             ))}
@@ -1451,13 +1462,25 @@ export default function SocialMediaPage() {
                       >
                         <Edit className="w-4 h-4 text-white" />
                       </button>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="number"
+                          min="1"
+                          max="10"
+                          value={postsToGenerate}
+                          onChange={(e) => setPostsToGenerate(Math.max(1, Math.min(10, parseInt(e.target.value) || 1)))}
+                          className="w-16 px-2 py-1 bg-[var(--rich-black)] border border-[var(--border-color)] text-white text-xs text-center focus:outline-none focus:border-[var(--primary-mint)]"
+                          title="Number of posts to generate"
+                        />
                       <button
                         onClick={() => handleGeneratePostFromIdea(idea)}
-                        className="px-4 py-2 bg-[var(--primary-mint)] text-black hover:bg-white font-bold uppercase tracking-widest text-xs transition-colors flex items-center gap-2"
+                          disabled={generatingPostsFromIdea === idea.id}
+                          className="px-4 py-2 bg-[var(--primary-mint)] text-black hover:bg-white font-bold uppercase tracking-widest text-xs transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <Sparkles className="w-4 h-4" />
-                        Generate Posts
+                          <Sparkles className={`w-4 h-4 ${generatingPostsFromIdea === idea.id ? 'animate-spin' : ''}`} />
+                          {generatingPostsFromIdea === idea.id ? 'Generating...' : 'Generate Posts'}
                       </button>
+                      </div>
                       <button
                         onClick={() => handleDeleteIdea(idea.id)}
                         className="p-2 border border-[var(--border-color)] hover:border-red-400 transition-colors"

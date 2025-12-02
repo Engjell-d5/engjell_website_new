@@ -4,6 +4,7 @@ import { fetchYouTubeVideos } from './youtube';
 import { getConfig } from './data';
 import { publishScheduledPosts } from './social';
 import { syncSubscribersWithSender } from './sender-sync';
+import { sendPushNotificationToAllAdmins } from './push-notifications';
 
 let cronJob: cron.ScheduledTask | null = null;
 let socialCronJob: cron.ScheduledTask | null = null;
@@ -90,6 +91,17 @@ export async function startSocialMediaCron() {
       console.log(`[CRON] Social media cron complete - published: ${result.published}, failed: ${result.failed}, total: ${result.total}`);
       if (result.published > 0) {
         console.log(`[CRON] ✓ Published ${result.published} social media post(s)`);
+        // Send push notification
+        try {
+          await sendPushNotificationToAllAdmins({
+            title: 'Social Media Posts Published',
+            body: `Successfully published ${result.published} post(s) to social media`,
+            tag: 'social-posts-published',
+            data: { url: '/admin/social' },
+          });
+        } catch (notifError) {
+          console.error('[CRON] Failed to send push notification:', notifError);
+        }
       } else {
         console.log(`[CRON] No posts were published this run`);
       }
@@ -384,6 +396,20 @@ export async function startEmailCron() {
             await prisma.emailCronJob.updateMany({
               data: { lastSyncAt: new Date() },
             });
+            
+            // Send notification if new emails were synced
+            if (newCount > 0) {
+              try {
+                await sendPushNotificationToAllAdmins({
+                  title: 'New Emails Synced',
+                  body: `${newCount} new email(s) synced from Gmail`,
+                  tag: 'new-emails',
+                  data: { url: '/admin/email' },
+                });
+              } catch (notifError) {
+                console.error('[CRON] Failed to send push notification:', notifError);
+              }
+            }
           }
         } catch (error) {
           console.error(`[CRON] Error syncing emails:`, error);
@@ -468,12 +494,38 @@ export async function startEmailCron() {
             await prisma.emailCronJob.updateMany({
               data: { lastAnalyzeAt: new Date() },
             });
+            
+            // Send notification if tasks were created
+            if (totalTasksCreated > 0) {
+              try {
+                await sendPushNotificationToAllAdmins({
+                  title: 'New Tasks Created',
+                  body: `${totalTasksCreated} new task(s) created from email analysis`,
+                  tag: 'new-tasks',
+                  data: { url: '/admin/email' },
+                });
+              } catch (notifError) {
+                console.error('[CRON] Failed to send push notification:', notifError);
+              }
+            }
           } else {
             console.log(`[CRON] No unanalyzed emails to analyze`);
           }
         } catch (error) {
           console.error(`[CRON] Error analyzing emails:`, error);
         }
+      }
+      
+      // Send notification when cron completes
+      try {
+        await sendPushNotificationToAllAdmins({
+          title: 'Email Cron Completed',
+          body: 'Email sync and analysis cron job completed',
+          tag: 'email-cron-complete',
+          data: { url: '/admin/email' },
+        });
+      } catch (notifError) {
+        console.error('[CRON] Failed to send push notification:', notifError);
       }
     } catch (error) {
       console.error('[CRON] Error in email sync/analyze cron job:', error);
