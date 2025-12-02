@@ -156,10 +156,47 @@ export async function generatePost(options: GeneratePostOptions): Promise<string
 }
 
 /**
+ * Remove indentation from content while preserving paragraph structure
+ */
+function removeIndentation(content: string): string {
+  if (!content) return content;
+  
+  // Split into lines
+  const lines = content.split('\n');
+  
+  // Find the minimum indentation (excluding empty lines)
+  let minIndent = Infinity;
+  for (const line of lines) {
+    if (line.trim().length > 0) {
+      const indent = line.match(/^\s*/)?.[0].length || 0;
+      if (indent < minIndent) {
+        minIndent = indent;
+      }
+    }
+  }
+  
+  // If no indentation found, return as is
+  if (minIndent === Infinity || minIndent === 0) {
+    return content;
+  }
+  
+  // Remove the minimum indentation from each line
+  return lines.map(line => {
+    if (line.trim().length === 0) {
+      return line; // Preserve empty lines
+    }
+    return line.substring(minIndent);
+  }).join('\n');
+}
+
+/**
  * Format post content with proper paragraph breaks
  */
 function formatPostWithParagraphs(content: string): string {
   if (!content) return content;
+  
+  // First remove indentation
+  content = removeIndentation(content);
   
   // Normalize line breaks
   content = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n').trim();
@@ -397,20 +434,72 @@ export async function refinePost(options: RefinePostOptions): Promise<string> {
     throw new Error('API key is missing for this AI integration. Please update the integration with a valid API key.');
   }
   
-  const systemPrompt = `You are a social media content editor. Refine and improve social media posts based on user feedback.`;
-  const userPrompt = `Original post:\n${options.content}\n\nUser refinement request: ${options.refinementPrompt}\n\nPlease refine the post according to the user's request while maintaining the core message.`;
+  const systemPrompt = `You are a social media content editor. Refine and improve social media posts based on user feedback. Return ONLY the refined post content without any explanations, introductions, or additional text.`;
+  const userPrompt = `Original post:\n${options.content}\n\nUser refinement request: ${options.refinementPrompt}\n\nRefine the post according to the user's request while maintaining the core message.\n\nIMPORTANT: Return ONLY the refined post content. Do not include any explanations, introductions like "Here is the refined post:" or "Refined version:", or any other text. Return the post content directly, ready to use.`;
   
+  let result: string;
   switch (integration.provider) {
     case 'openai':
-      return await generateWithOpenAI(integration.apiKey, integration.model || 'gpt-4', systemPrompt, userPrompt);
+      result = await generateWithOpenAI(integration.apiKey, integration.model || 'gpt-4', systemPrompt, userPrompt);
+      break;
     case 'google':
       // Use gemini-pro as default (more widely supported) or user-specified model
-      return await generateWithGoogle(integration.apiKey, integration.model || 'gemini-pro', systemPrompt, userPrompt);
+      result = await generateWithGoogle(integration.apiKey, integration.model || 'gemini-pro', systemPrompt, userPrompt);
+      break;
     case 'anthropic':
-      return await generateWithAnthropic(integration.apiKey, integration.model || 'claude-3-opus-20240229', systemPrompt, userPrompt);
+      result = await generateWithAnthropic(integration.apiKey, integration.model || 'claude-3-opus-20240229', systemPrompt, userPrompt);
+      break;
     default:
       throw new Error(`Unsupported AI provider: ${integration.provider}`);
   }
+  
+  // Clean up the result to remove any explanatory text
+  return cleanRefinedContent(result);
+}
+
+/**
+ * Clean refined content to remove any explanatory text or introductions
+ */
+function cleanRefinedContent(content: string): string {
+  if (!content) return content;
+  
+  // Remove common prefixes and explanations
+  const prefixesToRemove = [
+    /^Here is the refined post:\s*/i,
+    /^Refined version:\s*/i,
+    /^Refined post:\s*/i,
+    /^Here's the refined post:\s*/i,
+    /^Here's the refined version:\s*/i,
+    /^Refined content:\s*/i,
+    /^Here is the refined content:\s*/i,
+    /^Here's the refined content:\s*/i,
+    /^Refined:\s*/i,
+    /^Here is the post:\s*/i,
+    /^Here's the post:\s*/i,
+    /^Post:\s*/i,
+    /^Content:\s*/i,
+  ];
+  
+  let cleaned = content.trim();
+  
+  // Remove prefixes
+  for (const prefix of prefixesToRemove) {
+    cleaned = cleaned.replace(prefix, '');
+  }
+  
+  // Remove markdown code blocks if present
+  cleaned = cleaned.replace(/^```[\w]*\n?/g, '').replace(/\n?```$/g, '');
+  
+  // Remove quotes if the entire content is wrapped in quotes
+  if ((cleaned.startsWith('"') && cleaned.endsWith('"')) || 
+      (cleaned.startsWith("'") && cleaned.endsWith("'"))) {
+    cleaned = cleaned.slice(1, -1);
+  }
+  
+  // Format with proper paragraphs
+  cleaned = formatPostWithParagraphs(cleaned);
+  
+  return cleaned.trim();
 }
 
 /**

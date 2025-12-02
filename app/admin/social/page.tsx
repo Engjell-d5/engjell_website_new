@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Calendar, Image as ImageIcon, Send, Plus, Edit, Trash2, CheckCircle, XCircle, Clock, Linkedin, Twitter, Instagram, Rocket, Video, X, Upload, Repeat, RefreshCw, Sparkles, Lightbulb } from 'lucide-react';
+import { Calendar, Image as ImageIcon, Send, Plus, Edit, Trash2, CheckCircle, XCircle, Clock, Linkedin, Twitter, Instagram, Rocket, Video, X, Upload, Repeat, RefreshCw, Sparkles, Lightbulb, MessageSquare, Search, Filter } from 'lucide-react';
 import Image from 'next/image';
 import DateTimePicker from '@/components/DateTimePicker';
 
@@ -76,6 +76,46 @@ export default function SocialMediaPage() {
   const [editIdeaTitle, setEditIdeaTitle] = useState('');
   const [generatingPostsFromIdea, setGeneratingPostsFromIdea] = useState<string | null>(null);
   const [postsToGenerate, setPostsToGenerate] = useState<number>(3); // Default to 3 posts
+  const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set()); // Track which posts are expanded
+  const [searchQuery, setSearchQuery] = useState(''); // Search query for posts
+  const [statusFilter, setStatusFilter] = useState<string>('all'); // Filter by status: 'all', 'scheduled', 'published', 'draft', 'failed'
+  const [platformFilter, setPlatformFilter] = useState<string>('all'); // Filter by platform: 'all', 'linkedin', 'twitter', 'instagram', 'threads'
+  const [creatingPostsFromPost, setCreatingPostsFromPost] = useState(false); // Track if creating posts from post
+  const [targetPlatformForPosts, setTargetPlatformForPosts] = useState<string>('threads'); // Target platform for generated posts
+  const [postsToCreateFromPost, setPostsToCreateFromPost] = useState<number>(3); // Number of posts to create
+  const [adaptationPrompt, setAdaptationPrompt] = useState(''); // Prompt for adapting the post
+
+  // Helper function to remove indentation from content
+  const removeIndentationFromContent = (content: string): string => {
+    if (!content) return content;
+    
+    // Split into lines
+    const lines = content.split('\n');
+    
+    // Find the minimum indentation (excluding empty lines)
+    let minIndent = Infinity;
+    for (const line of lines) {
+      if (line.trim().length > 0) {
+        const indent = line.match(/^\s*/)?.[0].length || 0;
+        if (indent < minIndent) {
+          minIndent = indent;
+        }
+      }
+    }
+    
+    // If no indentation found, return as is
+    if (minIndent === Infinity || minIndent === 0) {
+      return content;
+    }
+    
+    // Remove the minimum indentation from each line
+    return lines.map(line => {
+      if (line.trim().length === 0) {
+        return line; // Preserve empty lines
+      }
+      return line.substring(minIndent);
+    }).join('\n');
+  };
 
   const fetchCronStatus = async () => {
     try {
@@ -599,7 +639,14 @@ export default function SocialMediaPage() {
       case 'instagram':
         return <Instagram className="w-4 h-4" />;
       case 'threads':
-        return <Twitter className="w-4 h-4" />;
+        return (
+          <svg xmlns="http://www.w3.org/2000/svg" shapeRendering="geometricPrecision" textRendering="geometricPrecision" imageRendering="optimizeQuality" fillRule="evenodd" clipRule="evenodd" viewBox="0 0 512 512" className="w-4 h-4" fill="currentColor">
+            <path d="M105 0h302c57.75 0 105 47.25 105 105v302c0 57.75-47.25 105-105 105H105C47.25 512 0 464.75 0 407V105C0 47.25 47.25 0 105 0z"/>
+            <path fillRule="nonzero" d="M337.36 243.58c-1.46-.7-2.95-1.38-4.46-2.02-2.62-48.36-29.04-76.05-73.41-76.33-25.6-.17-48.52 10.27-62.8 31.94l24.4 16.74c10.15-15.4 26.08-18.68 37.81-18.68h.4c14.61.09 25.64 4.34 32.77 12.62 5.19 6.04 8.67 14.37 10.39 24.89-12.96-2.2-26.96-2.88-41.94-2.02-42.18 2.43-69.3 27.03-67.48 61.21.92 17.35 9.56 32.26 24.32 42.01 12.48 8.24 28.56 12.27 45.26 11.35 22.07-1.2 39.37-9.62 51.45-25.01 9.17-11.69 14.97-26.84 17.53-45.92 10.51 6.34 18.3 14.69 22.61 24.73 7.31 17.06 7.74 45.1-15.14 67.96-20.04 20.03-44.14 28.69-80.55 28.96-40.4-.3-70.95-13.26-90.81-38.51-18.6-23.64-28.21-57.79-28.57-101.5.36-43.71 9.97-77.86 28.57-101.5 19.86-25.25 50.41-38.21 90.81-38.51 40.68.3 71.76 13.32 92.39 38.69 10.11 12.44 17.73 28.09 22.76 46.33l28.59-7.63c-6.09-22.45-15.67-41.8-28.72-57.85-26.44-32.53-65.1-49.19-114.92-49.54h-.2c-49.72.35-87.96 17.08-113.64 49.73-22.86 29.05-34.65 69.48-35.04 120.16v.24c.39 50.68 12.18 91.11 35.04 120.16 25.68 32.65 63.92 49.39 113.64 49.73h.2c44.2-.31 75.36-11.88 101.03-37.53 33.58-33.55 32.57-75.6 21.5-101.42-7.94-18.51-23.08-33.55-43.79-43.48zm-76.32 71.76c-18.48 1.04-37.69-7.26-38.64-25.03-.7-13.18 9.38-27.89 39.78-29.64 3.48-.2 6.9-.3 10.25-.3 11.04 0 21.37 1.07 30.76 3.13-3.5 43.74-24.04 50.84-42.15 51.84z"/>
+          </svg>
+        );
+      case 'all':
+        return null; // No icon for "all" filter
       default:
         return null;
     }
@@ -686,6 +733,109 @@ export default function SocialMediaPage() {
     } catch (error) {
       console.error('Error applying refinement:', error);
       setMessage({ type: 'error', text: 'Failed to update post' });
+    }
+  };
+
+  const handleCreatePostsFromPost = async () => {
+    if (!postToRefine || !selectedAiIntegration) {
+      setMessage({ type: 'error', text: 'Please select an AI integration' });
+      return;
+    }
+
+    setCreatingPostsFromPost(true);
+    try {
+      // Determine adaptation prompt based on platform
+      const currentPlatforms = JSON.parse(postToRefine.platforms || '[]');
+      const currentPlatform = currentPlatforms[0] || 'linkedin';
+      
+      let prompt = '';
+      if (currentPlatform === 'linkedin' && (targetPlatformForPosts === 'threads' || targetPlatformForPosts === 'twitter')) {
+        // Break down long LinkedIn post into multiple shorter posts
+        prompt = `Break down this LinkedIn post into ${postsToCreateFromPost} separate, shorter posts optimized for ${targetPlatformForPosts}. Each post should be concise, engaging, and can stand alone. ${adaptationPrompt ? `Additional instructions: ${adaptationPrompt}` : ''}`;
+      } else if ((currentPlatform === 'threads' || currentPlatform === 'twitter') && targetPlatformForPosts === 'linkedin') {
+        // Expand short post into longer LinkedIn post
+        prompt = `Expand this ${currentPlatform} post into a more detailed, professional LinkedIn post. Make it longer and more comprehensive while maintaining the core message. ${adaptationPrompt ? `Additional instructions: ${adaptationPrompt}` : ''}`;
+      } else {
+        // Adapt for different platform or create variations
+        prompt = `Create ${postsToCreateFromPost} ${targetPlatformForPosts} post${postsToCreateFromPost > 1 ? 's' : ''} based on this post. ${adaptationPrompt ? `Additional instructions: ${adaptationPrompt}` : ''}`;
+      }
+
+      const response = await fetch('/api/ai/generate-post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: `${prompt}\n\nOriginal post:\n${postToRefine.content}`,
+          platform: targetPlatformForPosts,
+          aiIntegrationId: selectedAiIntegration,
+          count: postsToCreateFromPost,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to generate posts');
+      }
+
+      const data = await response.json();
+      const generatedContents = data.contents || (data.content ? [data.content] : []); // Use contents array if available
+
+      if (!generatedContents || generatedContents.length === 0) {
+        throw new Error('No content generated. Please try again.');
+      }
+
+      // Create posts for each generated content
+      const createdPosts = [];
+      // Set scheduledFor to 24 hours from now for draft posts
+      const scheduledFor = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
+      
+      for (let i = 0; i < generatedContents.length; i++) {
+        let content = generatedContents[i];
+        
+        // Validate content is not empty
+        if (!content || !content.trim()) {
+          console.warn(`Skipping empty content for post ${i + 1}`);
+          continue;
+        }
+        
+        // Remove indentation from content
+        content = removeIndentationFromContent(content);
+        
+        const postResponse = await fetch('/api/social/posts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            content: content.trim(),
+            mediaAssets: JSON.stringify([]), // No media for generated posts
+            platforms: JSON.stringify([targetPlatformForPosts]),
+            scheduledFor: scheduledFor,
+            comments: JSON.stringify([]),
+            status: 'draft',
+          }),
+        });
+
+        if (postResponse.ok) {
+          createdPosts.push(await postResponse.json());
+        } else {
+          const error = await postResponse.json().catch(() => ({ error: 'Unknown error' }));
+          throw new Error(`Failed to create post ${i + 1}: ${error.error || 'Unknown error'}`);
+        }
+      }
+
+      setMessage({ 
+        type: 'success', 
+        text: `Successfully created ${createdPosts.length} ${targetPlatformForPosts} post${createdPosts.length > 1 ? 's' : ''} as draft${createdPosts.length > 1 ? 's' : ''}!` 
+      });
+      setShowRefineModal(false);
+      setPostToRefine(null);
+      setRefinedContent('');
+      setRefinementPrompt('');
+      setAdaptationPrompt('');
+      fetchPosts();
+    } catch (error: any) {
+      console.error('Error creating posts from post:', error);
+      setMessage({ type: 'error', text: error.message || 'Failed to create posts' });
+    } finally {
+      setCreatingPostsFromPost(false);
     }
   };
 
@@ -1046,7 +1196,7 @@ export default function SocialMediaPage() {
                 onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                 required
                 rows={6}
-                className="w-full bg-black border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors resize-none font-montserrat"
+                className="w-full bg-black border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors resize-y min-h-[120px] font-montserrat"
                 placeholder="What's on your mind?"
               />
             </div>
@@ -1167,7 +1317,7 @@ export default function SocialMediaPage() {
                         setFormData({ ...formData, comments: newComments });
                       }}
                       rows={2}
-                      className="flex-1 bg-black border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors resize-none font-montserrat"
+                      className="flex-1 bg-black border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors resize-y min-h-[60px] font-montserrat"
                       placeholder={`Comment ${index + 1}`}
                     />
                     <button
@@ -1237,21 +1387,144 @@ export default function SocialMediaPage() {
       <div className="classic-panel p-4 md:p-6">
         <h2 className="text-xl md:text-2xl text-white font-bebas mb-4 md:mb-6">SCHEDULED POSTS</h2>
         
+        {/* Search and Filter Controls */}
+        <div className="mb-6 space-y-4">
+          {/* Search Input */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search posts by content..."
+              className="w-full pl-10 pr-4 py-2 bg-[var(--rich-black)] border border-[var(--border-color)] text-white text-sm focus:outline-none focus:border-[var(--primary-mint)] transition-colors"
+            />
+          </div>
+          
+          {/* Filter Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3">
+            {/* Status Filter */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <Filter className="w-4 h-4 text-gray-400 flex-shrink-0" />
+              <span className="text-xs text-gray-400 uppercase tracking-widest font-bold flex-shrink-0">Status:</span>
+              <div className="flex gap-2 flex-wrap">
+                {['all', 'scheduled', 'published', 'draft', 'failed'].map((status) => (
+                  <button
+                    key={status}
+                    onClick={() => setStatusFilter(status)}
+                    className={`px-3 py-1.5 text-xs font-bold uppercase tracking-widest transition-colors min-h-[32px] ${
+                      statusFilter === status
+                        ? 'bg-[var(--primary-mint)] text-black'
+                        : 'bg-[var(--rich-black)] border border-[var(--border-color)] text-gray-400 hover:text-white hover:border-[var(--primary-mint)]'
+                    }`}
+                  >
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Platform Filter */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-xs text-gray-400 uppercase tracking-widest font-bold flex-shrink-0">Platform:</span>
+              <div className="flex gap-2 flex-wrap">
+                {['all', 'linkedin', 'twitter', 'instagram', 'threads'].map((platform) => (
+                  <button
+                    key={platform}
+                    onClick={() => setPlatformFilter(platform)}
+                    className={`px-3 py-1.5 text-xs font-bold uppercase tracking-widest transition-colors min-h-[32px] flex items-center gap-1.5 ${
+                      platformFilter === platform
+                        ? 'bg-[var(--primary-mint)] text-black'
+                        : 'bg-[var(--rich-black)] border border-[var(--border-color)] text-gray-400 hover:text-white hover:border-[var(--primary-mint)]'
+                    }`}
+                  >
+                    {getPlatformIcon(platform)}
+                    <span>{platform.charAt(0).toUpperCase() + platform.slice(1)}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+        
         {loading ? (
           <div className="text-gray-400">Loading...</div>
         ) : posts.length === 0 ? (
           <div className="text-center py-12 text-gray-400">
             <p>No scheduled posts yet. Create your first post above!</p>
           </div>
-        ) : (
-          <div className="space-y-4">
-            {posts.map((post) => (
+        ) : (() => {
+          // Filter posts based on search, status, and platform
+          let filteredPosts = posts.filter((post) => {
+            // Search filter
+            if (searchQuery.trim()) {
+              const query = searchQuery.toLowerCase();
+              const contentMatch = post.content.toLowerCase().includes(query);
+              const platforms = JSON.parse(post.platforms || '[]');
+              const platformMatch = platforms.some((p: string) => p.toLowerCase().includes(query));
+              if (!contentMatch && !platformMatch) {
+                return false;
+              }
+            }
+            
+            // Status filter
+            if (statusFilter !== 'all' && post.status !== statusFilter) {
+              return false;
+            }
+            
+            // Platform filter
+            if (platformFilter !== 'all') {
+              const platforms = JSON.parse(post.platforms || '[]');
+              if (!platforms.includes(platformFilter)) {
+                return false;
+              }
+            }
+            
+            return true;
+          });
+          
+          if (filteredPosts.length === 0) {
+            return (
+              <div className="text-center py-12 text-gray-400">
+                <p>No posts found matching your filters.</p>
+                {(searchQuery || statusFilter !== 'all' || platformFilter !== 'all') && (
+                  <button
+                    onClick={() => {
+                      setSearchQuery('');
+                      setStatusFilter('all');
+                      setPlatformFilter('all');
+                    }}
+                    className="mt-4 px-4 py-2 bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:border-[var(--primary-mint)] text-xs font-bold uppercase tracking-widest transition-colors"
+                  >
+                    Clear Filters
+                  </button>
+                )}
+              </div>
+            );
+          }
+          
+          return (
+            <div className="space-y-4">
+              {filteredPosts.map((post) => {
+              const isExpanded = expandedPosts.has(post.id);
+              return (
               <div
                 key={post.id}
                 className="p-4 md:p-6 border border-[var(--border-color)] bg-[var(--rich-black)]"
               >
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 md:gap-4 mb-4">
-                  <div className="flex items-center gap-2 md:gap-3 min-w-0 flex-1">
+                  <div
+                    onClick={() => {
+                      const newExpanded = new Set(expandedPosts);
+                      if (isExpanded) {
+                        newExpanded.delete(post.id);
+                      } else {
+                        newExpanded.add(post.id);
+                      }
+                      setExpandedPosts(newExpanded);
+                    }}
+                    className="flex items-center gap-2 text-left min-w-0 flex-1 hover:opacity-80 transition-opacity cursor-pointer"
+                  >
                     <div className="flex-shrink-0">{getStatusIcon(post.status)}</div>
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5 md:gap-2 mb-1 flex-wrap">
@@ -1267,6 +1540,13 @@ export default function SocialMediaPage() {
                         {post.timesPosted > 0 && ` • Posted ${post.timesPosted} time${post.timesPosted > 1 ? 's' : ''}`}
                       </p>
                     </div>
+                    <div className="flex-shrink-0 text-gray-400">
+                      {isExpanded ? (
+                        <X className="w-4 h-4" />
+                      ) : (
+                        <span className="text-xs">Click to expand</span>
+                      )}
+                    </div>
                   </div>
                   <div className="flex items-center gap-1.5 md:gap-2 flex-wrap flex-shrink-0">
                     {(post.status === 'scheduled' || post.status === 'draft') && (
@@ -1276,6 +1556,9 @@ export default function SocialMediaPage() {
                             setPostToRefine(post);
                             setRefinementPrompt('');
                             setRefinedContent('');
+                            setAdaptationPrompt('');
+                            setTargetPlatformForPosts('threads');
+                            setPostsToCreateFromPost(3);
                             setShowRefineModal(true);
                           }}
                           className="p-1.5 md:p-2 border border-purple-500 hover:border-purple-400 hover:bg-purple-500 transition-colors min-h-[36px] md:min-h-[auto] flex items-center justify-center flex-shrink-0"
@@ -1339,9 +1622,11 @@ export default function SocialMediaPage() {
                     </button>
                   </div>
                 </div>
-                <p className="text-xs md:text-sm text-white mb-3 whitespace-pre-wrap break-words">{post.content}</p>
-                
-                {/* Display Media Assets */}
+                {isExpanded && (
+                  <>
+                    <p className="text-xs md:text-sm text-white mb-3 whitespace-pre-wrap break-words">{post.content}</p>
+                    
+                    {/* Display Media Assets */}
                 {(() => {
                   let mediaAssets: MediaAsset[] = [];
                   if (post.mediaAssets) {
@@ -1394,13 +1679,17 @@ export default function SocialMediaPage() {
                   }
                   return null;
                 })()}
-                {post.errorMessage && (
-                  <p className="text-[10px] md:text-xs text-red-400 mt-2 break-words">Error: {post.errorMessage}</p>
+                    {post.errorMessage && (
+                      <p className="text-[10px] md:text-xs text-red-400 mt-2 break-words">Error: {post.errorMessage}</p>
+                    )}
+                  </>
                 )}
               </div>
-            ))}
-          </div>
-        )}
+            );
+            })}
+            </div>
+          );
+        })()}
       </div>
         </>
       )}
@@ -1518,6 +1807,7 @@ export default function SocialMediaPage() {
                   setPostToRefine(null);
                   setRefinedContent('');
                   setRefinementPrompt('');
+                  setAdaptationPrompt('');
                 }}
                 className="text-gray-400 hover:text-white"
               >
@@ -1561,14 +1851,76 @@ export default function SocialMediaPage() {
                   placeholder="e.g., Make it more engaging, add a call to action, shorten it, make it more professional..."
                 />
               </div>
-              <button
-                onClick={handleRefine}
-                disabled={refining || !refinementPrompt || !selectedAiIntegration}
-                className="w-full px-6 py-3 bg-purple-600 text-white hover:bg-purple-700 font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                <Sparkles className="w-4 h-4" />
-                {refining ? 'Refining...' : 'Refine Post'}
-              </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={handleRefine}
+                  disabled={refining || !refinementPrompt || !selectedAiIntegration}
+                  className="flex-1 px-6 py-3 bg-purple-600 text-white hover:bg-purple-700 font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  {refining ? 'Refining...' : 'Refine Post'}
+                </button>
+              </div>
+              
+              {/* Create Posts From Post Section */}
+              <div className="border-t border-[var(--border-color)] pt-4 mt-4">
+                <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-3 block">
+                  Create Additional Posts
+                </label>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
+                        Target Platform
+                      </label>
+                      <select
+                        value={targetPlatformForPosts}
+                        onChange={(e) => setTargetPlatformForPosts(e.target.value)}
+                        className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                      >
+                        <option value="linkedin">LinkedIn</option>
+                        <option value="twitter">Twitter</option>
+                        <option value="instagram">Instagram</option>
+                        <option value="threads">Threads</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
+                        Number of Posts
+                      </label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="10"
+                        value={postsToCreateFromPost}
+                        onChange={(e) => setPostsToCreateFromPost(parseInt(e.target.value) || 1)}
+                        className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
+                      Additional Instructions (Optional)
+                    </label>
+                    <textarea
+                      value={adaptationPrompt}
+                      onChange={(e) => setAdaptationPrompt(e.target.value)}
+                      className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all resize-y min-h-[60px]"
+                      rows={2}
+                      placeholder="e.g., Make them more casual, add emojis, focus on different aspects..."
+                    />
+                  </div>
+                  <button
+                    onClick={handleCreatePostsFromPost}
+                    disabled={creatingPostsFromPost || !selectedAiIntegration}
+                    className="w-full px-6 py-3 bg-blue-600 text-white hover:bg-blue-700 font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    <Plus className="w-4 h-4" />
+                    {creatingPostsFromPost ? 'Creating Posts...' : `Create ${postsToCreateFromPost} ${targetPlatformForPosts} Post${postsToCreateFromPost > 1 ? 's' : ''}`}
+                  </button>
+                </div>
+              </div>
+              
               {refinedContent && (
                 <div className="space-y-4">
                   <div>
