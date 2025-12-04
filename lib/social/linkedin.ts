@@ -231,6 +231,119 @@ export async function getLinkedInPersonUrn(accessToken: string): Promise<string>
 }
 
 /**
+ * Search for people to mention in LinkedIn posts using People Typeahead API
+ * Returns up to 10 profiles matching the keyword
+ */
+export async function searchLinkedInPeople(
+  accessToken: string,
+  keywords: string,
+  organizationUrn: string
+): Promise<Array<{
+  member: string; // Person URN
+  photo?: string; // Image URN
+  firstName: string;
+  lastName: string;
+  headline: string;
+}>> {
+  console.log(`[LINKEDIN] Searching for people with keywords: "${keywords}", organization: ${organizationUrn}`);
+  
+  // Validate keywords according to LinkedIn requirements
+  if (keywords.length < 3) {
+    throw new Error('Keywords must be at least 3 characters long');
+  }
+  
+  // Check for invalid characters (only alphabet, space, apostrophe, hyphen, dot allowed)
+  const invalidCharRegex = /[^a-zA-Z\s'\-.]/;
+  if (invalidCharRegex.test(keywords)) {
+    throw new Error('Keywords contain invalid characters. Only letters, spaces, apostrophes, hyphens, and dots are allowed.');
+  }
+  
+  // Check for consecutive special characters
+  if (/[. ]{2,}|['-]{2,}/.test(keywords)) {
+    throw new Error('Consecutive special characters are not allowed');
+  }
+  
+  // Check space count (only one space allowed)
+  const spaceCount = (keywords.match(/ /g) || []).length;
+  if (spaceCount > 1) {
+    throw new Error('Only one space character is allowed');
+  }
+  
+  // If space or dot present, minimum 6 characters required
+  if ((keywords.includes(' ') || keywords.includes('.')) && keywords.length < 6) {
+    throw new Error('Keywords must be at least 6 characters long if they contain spaces or dots');
+  }
+  
+  // URL encode the keywords
+  const encodedKeywords = encodeURIComponent(keywords);
+  const encodedOrgUrn = encodeURIComponent(organizationUrn);
+  
+  const url = `https://api.linkedin.com/rest/peopleTypeahead?q=organizationFollowers&keywords=${encodedKeywords}&organization=${encodedOrgUrn}`;
+  
+  console.log(`[LINKEDIN] Calling People Typeahead API: ${url}`);
+  
+  const linkedInVersion = '202411';
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'X-Restli-Protocol-Version': '2.0.0',
+      'Linkedin-Version': linkedInVersion,
+    },
+  });
+  
+  console.log(`[LINKEDIN] People Typeahead API response status: ${response.status} ${response.statusText}`);
+  
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error(`[LINKEDIN] People Typeahead API error: ${errorText}`);
+    
+    // Parse error if possible
+    try {
+      const errorData = JSON.parse(errorText);
+      const errorMessage = errorData.message || errorText;
+      
+      // Check if it's a permission error (403)
+      if (response.status === 403) {
+        console.warn(`[LINKEDIN] People Typeahead API requires Partner API access or additional permissions. Error: ${errorMessage}`);
+        // Return empty array instead of throwing - allows the feature to degrade gracefully
+        // The frontend will just not show people search results
+        return [];
+      }
+      
+      throw new Error(`Failed to search LinkedIn people (${response.status}): ${errorMessage}`);
+    } catch (parseError) {
+      // If it's already an Error object, re-throw it
+      if (parseError instanceof Error && parseError.message.includes('Failed to search LinkedIn people')) {
+        throw parseError;
+      }
+      
+      // If it's a 403, return empty array for graceful degradation
+      if (response.status === 403) {
+        console.warn(`[LINKEDIN] People Typeahead API access denied. Returning empty results.`);
+        return [];
+      }
+      
+      throw new Error(`Failed to search LinkedIn people (${response.status}): ${errorText}`);
+    }
+  }
+  
+  const data = await response.json();
+  console.log(`[LINKEDIN] People Typeahead API response:`, JSON.stringify(data, null, 2));
+  
+  const elements = data.elements || [];
+  console.log(`[LINKEDIN] Found ${elements.length} people matching "${keywords}"`);
+  
+  return elements.map((element: any) => ({
+    member: element.member, // Person URN
+    photo: element.photo,
+    firstName: element.firstName || '',
+    lastName: element.lastName || '',
+    headline: element.headline || '',
+  }));
+}
+
+/**
  * Upload a video to LinkedIn
  * Returns the video asset URN
  */
@@ -491,12 +604,190 @@ export async function uploadLinkedInImage(
 export async function publishToLinkedIn(
   accessToken: string,
   content: string,
-  mediaAssets?: Array<{ type: 'image' | 'video'; url: string }> | null
+  mediaAssets?: Array<{ type: 'image' | 'video'; url: string }> | null,
+  mentions?: Array<{ 
+    type: 'person' | 'organization';
+    member?: string;
+    organization?: string;
+    firstName?: string;
+    lastName?: string;
+    headline?: string;
+    name?: string;
+  }> | null
 ): Promise<{ postId: string; urn: string }> {
   const assets = mediaAssets || [];
 
-  console.log(`[LINKEDIN] publishToLinkedIn called - content length: ${content.length}, media assets: ${assets.length}`);
+  console.log(`[LINKEDIN] publishToLinkedIn called - content length: ${content.length}, media assets: ${assets.length}, mentions: ${mentions?.length || 0}`);
   console.log(`[LINKEDIN] Access token prefix: ${accessToken.substring(0, 20)}...`);
+  
+  // Process mentions: Convert @PersonName to @[PersonName](urn:li:person:12345) format
+  // and @OrganizationName to @[OrganizationName](urn:li:organization:12345) format
+  // According to LinkedIn docs: The text must match the name exactly (case sensitive)
+  // For person mentions, can match on first name, last name, or full name
+  // For organization mentions, must match the full organization name
+  let processedContent = content;
+  if (mentions && mentions.length > 0) {
+    console.log(`[LINKEDIN] Processing ${mentions.length} mention(s)...`);
+    for (const mention of mentions) {
+      // Escape special regex characters in names
+      const escapeRegex = (str: string) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      
+      // Handle both new format (with type) and old format (without type) for backward compatibility
+      const mentionType = mention.type || (mention.member ? 'person' : mention.organization ? 'organization' : null);
+      
+      if (mentionType === 'person' && mention.member && mention.firstName && mention.lastName) {
+        const fullName = `${mention.firstName} ${mention.lastName}`;
+        const firstName = mention.firstName;
+        const lastName = mention.lastName;
+        
+        const escapedFullName = escapeRegex(fullName);
+        const escapedFirstName = escapeRegex(firstName);
+        const escapedLastName = escapeRegex(lastName);
+        
+        // Try to match in order: full name first, then first name, then last name
+        // Use negative lookahead to avoid matching if followed by word characters or spaces (to avoid partial matches)
+        const fullNamePattern = new RegExp(`@${escapedFullName}(?![\\w\\s])`, 'g');
+        const firstNamePattern = new RegExp(`@${escapedFirstName}(?![\\w\\s])`, 'g');
+        const lastNamePattern = new RegExp(`@${escapedLastName}(?![\\w\\s])`, 'g');
+        
+        // Replace with LinkedIn annotation format: @[FullName](urn:li:person:12345)
+        // Always use full name in the annotation text as per LinkedIn requirements
+        const originalContent = processedContent;
+        
+        // Try full name first (most specific)
+        if (fullNamePattern.test(processedContent)) {
+          fullNamePattern.lastIndex = 0; // Reset regex
+          processedContent = processedContent.replace(fullNamePattern, `@[${fullName}](${mention.member})`);
+          console.log(`[LINKEDIN] Converted full name mention: @${fullName} -> @[${fullName}](${mention.member})`);
+        } else if (firstNamePattern.test(processedContent)) {
+          firstNamePattern.lastIndex = 0; // Reset regex
+          processedContent = processedContent.replace(firstNamePattern, `@[${fullName}](${mention.member})`);
+          console.log(`[LINKEDIN] Converted first name mention: @${firstName} -> @[${fullName}](${mention.member})`);
+        } else if (lastNamePattern.test(processedContent)) {
+          lastNamePattern.lastIndex = 0; // Reset regex
+          processedContent = processedContent.replace(lastNamePattern, `@[${fullName}](${mention.member})`);
+          console.log(`[LINKEDIN] Converted last name mention: @${lastName} -> @[${fullName}](${mention.member})`);
+        }
+        
+        if (processedContent !== originalContent) {
+          console.log(`[LINKEDIN] Content after person mention processing: ${processedContent.substring(0, 200)}...`);
+        }
+      } else if (mention.type === 'organization' && mention.organization && mention.name) {
+        const orgName = mention.name;
+        const escapedOrgName = escapeRegex(orgName);
+        
+        // Organization mentions must match the full name exactly
+        const orgPattern = new RegExp(`@${escapedOrgName}(?![\\w\\s])`, 'g');
+        
+        // Replace with LinkedIn annotation format: @[OrgName](urn:li:organization:12345)
+        const originalContent = processedContent;
+        
+        if (orgPattern.test(processedContent)) {
+          orgPattern.lastIndex = 0; // Reset regex
+          processedContent = processedContent.replace(orgPattern, `@[${orgName}](${mention.organization})`);
+          console.log(`[LINKEDIN] Converted organization mention: @${orgName} -> @[${orgName}](${mention.organization})`);
+        }
+        
+        if (processedContent !== originalContent) {
+          console.log(`[LINKEDIN] Content after organization mention processing: ${processedContent.substring(0, 200)}...`);
+        }
+      } else if (!mentionType) {
+        // Old format mention without type - try to infer from structure
+        if (mention.member && (mention as any).firstName && (mention as any).lastName) {
+          // Old person format
+          const fullName = `${(mention as any).firstName} ${(mention as any).lastName}`;
+          const firstName = (mention as any).firstName;
+          const lastName = (mention as any).lastName;
+          
+          const escapedFullName = escapeRegex(fullName);
+          const escapedFirstName = escapeRegex(firstName);
+          const escapedLastName = escapeRegex(lastName);
+          
+          const fullNamePattern = new RegExp(`@${escapedFullName}(?![\\w\\s])`, 'g');
+          const firstNamePattern = new RegExp(`@${escapedFirstName}(?![\\w\\s])`, 'g');
+          const lastNamePattern = new RegExp(`@${escapedLastName}(?![\\w\\s])`, 'g');
+          
+          const originalContent = processedContent;
+          
+          if (fullNamePattern.test(processedContent)) {
+            fullNamePattern.lastIndex = 0;
+            processedContent = processedContent.replace(fullNamePattern, `@[${fullName}](${mention.member})`);
+            console.log(`[LINKEDIN] Converted old format person mention: @${fullName} -> @[${fullName}](${mention.member})`);
+          } else if (firstNamePattern.test(processedContent)) {
+            firstNamePattern.lastIndex = 0;
+            processedContent = processedContent.replace(firstNamePattern, `@[${fullName}](${mention.member})`);
+            console.log(`[LINKEDIN] Converted old format person mention: @${firstName} -> @[${fullName}](${mention.member})`);
+          } else if (lastNamePattern.test(processedContent)) {
+            lastNamePattern.lastIndex = 0;
+            processedContent = processedContent.replace(lastNamePattern, `@[${fullName}](${mention.member})`);
+            console.log(`[LINKEDIN] Converted old format person mention: @${lastName} -> @[${fullName}](${mention.member})`);
+          }
+          
+          if (processedContent !== originalContent) {
+            console.log(`[LINKEDIN] Content after old format mention processing: ${processedContent.substring(0, 200)}...`);
+          }
+        }
+      }
+    }
+  }
+  
+  // LinkedIn Posts API requires special characters to be escaped to prevent content truncation
+  // Characters that need escaping: ( ) * [ ] { } < > @ | ~ _
+  // BUT: We should NOT escape @ symbols that are part of mention annotations (@[...](...))
+  // See: https://learn.microsoft.com/en-us/linkedin/marketing/integrations/community-management/shares/little-text-format
+  const escapeLinkedInContent = (text: string): string => {
+    // First, protect mention annotations by temporarily replacing them
+    const mentionPlaceholders: string[] = [];
+    const mentionPattern = /@\[([^\]]+)\]\(([^)]+)\)/g;
+    let match;
+    let placeholderIndex = 0;
+    
+    // Replace mention annotations with placeholders
+    let protectedText = text.replace(mentionPattern, (match) => {
+      const placeholder = `__MENTION_${placeholderIndex}__`;
+      mentionPlaceholders[placeholderIndex] = match;
+      placeholderIndex++;
+      return placeholder;
+    });
+    
+    // Escape special characters (but not @ in hashtags - hashtags are handled automatically by LinkedIn)
+    // Escape: ( ) * [ ] { } < > | ~ _ (but NOT @ since we've protected mentions)
+    protectedText = protectedText.replace(/[\(*\)\[\]\{\}<>|~_]/gm, (x) => "\\" + x);
+    
+    // Restore mention annotations (they should not be escaped)
+    let escapedText = protectedText;
+    mentionPlaceholders.forEach((placeholder, index) => {
+      escapedText = escapedText.replace(`__MENTION_${index}__`, placeholder);
+    });
+    
+    return escapedText;
+  };
+  
+  // Escape the content before sending to LinkedIn
+  const escapedContent = escapeLinkedInContent(processedContent);
+  
+  // LinkedIn Posts API has a 3000 character limit for commentary field
+  const LINKEDIN_MAX_LENGTH = 3000;
+  if (escapedContent.length > LINKEDIN_MAX_LENGTH) {
+    console.warn(`[LINKEDIN] WARNING: Escaped content length (${escapedContent.length}) exceeds LinkedIn's limit (${LINKEDIN_MAX_LENGTH}). Content will be truncated.`);
+    console.warn(`[LINKEDIN] Original content length: ${content.length}`);
+    console.warn(`[LINKEDIN] Content preview (first 500 chars): ${content.substring(0, 500)}...`);
+    console.warn(`[LINKEDIN] Content preview (last 500 chars): ...${content.substring(content.length - 500)}`);
+    throw new Error(`Content length (${escapedContent.length} characters after escaping) exceeds LinkedIn's maximum limit of ${LINKEDIN_MAX_LENGTH} characters. Please shorten your post.`);
+  }
+  
+  // Log full content for debugging (first and last 200 chars to avoid huge logs)
+  console.log(`[LINKEDIN] Original content length: ${content.length}, Escaped content length: ${escapedContent.length}`);
+  console.log(`[LINKEDIN] First 200 chars (original): ${content.substring(0, 200)}`);
+  console.log(`[LINKEDIN] First 200 chars (escaped): ${escapedContent.substring(0, 200)}`);
+  if (content.length > 400) {
+    console.log(`[LINKEDIN] ... (${content.length - 400} chars in between) ...`);
+    console.log(`[LINKEDIN] Last 200 chars (original): ${content.substring(content.length - 200)}`);
+    console.log(`[LINKEDIN] Last 200 chars (escaped): ${escapedContent.substring(escapedContent.length - 200)}`);
+  } else {
+    console.log(`[LINKEDIN] Full content (original): ${content}`);
+    console.log(`[LINKEDIN] Full content (escaped): ${escapedContent}`);
+  }
   
   // Get person URN
   console.log(`[LINKEDIN] Fetching person URN...`);
@@ -513,9 +804,11 @@ export async function publishToLinkedIn(
   // For new Posts API, we handle single image/video or use MultiImage for multiple images
 
   // Prepare the post content using new Posts API format
+  // Ensure content is properly trimmed and use escaped content
+  const trimmedContent = escapedContent.trim();
   const postContent: any = {
     author: personUrn,
-    commentary: content,
+    commentary: trimmedContent,
     visibility: 'PUBLIC',
     distribution: {
       feedDistribution: 'MAIN_FEED',
@@ -648,6 +941,7 @@ export async function publishToLinkedIn(
   if (!response.ok) {
     const errorText = await response.text();
     console.error(`[LINKEDIN] LinkedIn API error response: ${errorText}`);
+    console.error(`[LINKEDIN] Content that was sent (length: ${trimmedContent.length}): ${trimmedContent.substring(0, 500)}${trimmedContent.length > 500 ? '...' : ''}`);
     throw new Error(`Failed to publish to LinkedIn (${response.status}): ${errorText}`);
   }
 
@@ -659,6 +953,13 @@ export async function publishToLinkedIn(
     if (responseText && responseText.trim() !== '') {
       data = JSON.parse(responseText);
       console.log(`[LINKEDIN] LinkedIn API success response (parsed):`, JSON.stringify(data, null, 2));
+      
+      // Check if LinkedIn returned a truncated version in the response
+      if (data.commentary && data.commentary.length < trimmedContent.length) {
+        console.warn(`[LINKEDIN] WARNING: LinkedIn response contains shorter commentary (${data.commentary.length} chars) than what was sent (${trimmedContent.length} chars). Content may have been truncated by LinkedIn.`);
+        console.warn(`[LINKEDIN] Sent content length: ${trimmedContent.length}`);
+        console.warn(`[LINKEDIN] Received content length: ${data.commentary.length}`);
+      }
     } else {
       console.log(`[LINKEDIN] LinkedIn API returned empty response body`);
     }

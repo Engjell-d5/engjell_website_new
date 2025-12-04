@@ -166,7 +166,16 @@ export async function publishToPlatform(
   content: string,
   accessToken: string,
   connection?: any,
-  mediaAssets?: Array<{ type: 'image' | 'video'; url: string }> | null
+  mediaAssets?: Array<{ type: 'image' | 'video'; url: string }> | null,
+  mentions?: Array<{ 
+    type: 'person' | 'organization';
+    member?: string;
+    organization?: string;
+    firstName?: string;
+    lastName?: string;
+    headline?: string;
+    name?: string;
+  }> | null
 ): Promise<PublishResult> {
   try {
     console.log(`[LINKEDIN] publishToPlatform called for ${platform}, content length: ${content.length}, mediaAssets: ${mediaAssets?.length || 0}`);
@@ -186,7 +195,7 @@ export async function publishToPlatform(
     switch (platform) {
       case 'linkedin':
         console.log(`[LINKEDIN] Calling publishToLinkedIn...`);
-        const linkedinResult = await publishToLinkedIn(validToken, content, mediaAssets || null);
+        const linkedinResult = await publishToLinkedIn(validToken, content, mediaAssets || null, mentions || null);
         console.log(`[LINKEDIN] publishToLinkedIn returned - postId: ${linkedinResult.postId}, urn: ${linkedinResult.urn}`);
         
         // Validate that we actually got a post ID/URN

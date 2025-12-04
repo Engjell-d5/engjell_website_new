@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Calendar, Image as ImageIcon, Send, Plus, Edit, Trash2, CheckCircle, XCircle, Clock, Linkedin, Twitter, Instagram, Rocket, Video, X, Upload, Repeat, RefreshCw, Sparkles, Lightbulb } from 'lucide-react';
 import Image from 'next/image';
 import DateTimePicker from '@/components/DateTimePicker';
@@ -32,6 +32,140 @@ interface SocialConnection {
   isActive: boolean;
   username: string | null;
   profileImage: string | null;
+  organizations?: string | null; // JSON string of organizations
+}
+
+interface LinkedInOrganizationsManagerProps {
+  connection: SocialConnection;
+  onUpdate: () => void;
+}
+
+function LinkedInOrganizationsManager({ connection, onUpdate }: LinkedInOrganizationsManagerProps) {
+  const [organizations, setOrganizations] = useState<Array<{ id: string; name: string; urn: string }>>([]);
+  const [newOrgName, setNewOrgName] = useState('');
+  const [newOrgUrn, setNewOrgUrn] = useState('');
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (connection.organizations) {
+      try {
+        const parsed = JSON.parse(connection.organizations);
+        setOrganizations(Array.isArray(parsed) ? parsed : []);
+      } catch (e) {
+        console.error('Error parsing organizations:', e);
+        setOrganizations([]);
+      }
+    } else {
+      setOrganizations([]);
+    }
+  }, [connection.organizations]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const response = await fetch('/api/social/connections', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          platform: 'linkedin',
+          organizations,
+        }),
+      });
+
+      if (response.ok) {
+        onUpdate();
+      } else {
+        const error = await response.json();
+        alert(error.error || 'Failed to save organizations');
+      }
+    } catch (error) {
+      console.error('Error saving organizations:', error);
+      alert('Failed to save organizations');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAdd = () => {
+    if (newOrgName.trim() && newOrgUrn.trim()) {
+      const newOrg = {
+        id: Date.now().toString(),
+        name: newOrgName.trim(),
+        urn: newOrgUrn.trim(),
+      };
+      setOrganizations([...organizations, newOrg]);
+      setNewOrgName('');
+      setNewOrgUrn('');
+    }
+  };
+
+  const handleRemove = (id: string) => {
+    setOrganizations(organizations.filter((o) => o.id !== id));
+  };
+
+  return (
+    <div className="mt-6 p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
+      <h3 className="text-lg text-white font-bebas mb-4">LinkedIn Organizations for Mentions</h3>
+      <p className="text-xs text-gray-400 mb-4">
+        Add LinkedIn organization URNs to enable @mention functionality when creating posts. These organizations will be available when you select LinkedIn as a platform.
+      </p>
+      
+      <div className="space-y-3 mb-4">
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            value={newOrgName}
+            onChange={(e) => setNewOrgName(e.target.value)}
+            placeholder="Organization Name (e.g., My Company)"
+            className="flex-1 bg-black border border-[var(--border-color)] p-2 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors font-montserrat"
+          />
+          <input
+            type="text"
+            value={newOrgUrn}
+            onChange={(e) => setNewOrgUrn(e.target.value)}
+            placeholder="urn:li:organization:12345"
+            className="flex-1 bg-black border border-[var(--border-color)] p-2 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors font-montserrat"
+          />
+          <button
+            type="button"
+            onClick={handleAdd}
+            className="px-3 py-2 bg-[var(--primary-mint)] text-black hover:bg-[var(--primary-mint)]/80 transition-colors text-xs font-bold uppercase"
+          >
+            Add
+          </button>
+        </div>
+        
+        {organizations.length > 0 && (
+          <div className="space-y-2">
+            {organizations.map((org) => (
+              <div key={org.id} className="flex items-center justify-between p-2 bg-black border border-[var(--border-color)]">
+                <div className="flex-1">
+                  <span className="text-xs font-semibold text-white">{org.name}</span>
+                  <span className="text-[10px] text-gray-400 ml-2">{org.urn}</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleRemove(org.id)}
+                  className="ml-2 p-1 text-red-400 hover:text-red-300 transition-colors"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+      
+      <button
+        type="button"
+        onClick={handleSave}
+        disabled={saving}
+        className="px-4 py-2 bg-[var(--primary-mint)] text-black hover:bg-[var(--primary-mint)]/80 transition-colors text-xs font-bold uppercase disabled:opacity-50"
+      >
+        {saving ? 'Saving...' : 'Save Organizations'}
+      </button>
+    </div>
+  );
 }
 
 export default function SocialMediaPage() {
@@ -58,7 +192,48 @@ export default function SocialMediaPage() {
     platforms: [] as string[],
     scheduledFor: '',
     comments: [] as string[],
+    mentions: [] as Array<{ 
+      type: 'person' | 'organization';
+      member?: string; // Person URN (urn:li:person:12345)
+      organization?: string; // Organization URN (urn:li:organization:12345)
+      firstName?: string;
+      lastName?: string;
+      headline?: string;
+      name?: string; // Organization name
+    }>,
   });
+  const [mentionAutocomplete, setMentionAutocomplete] = useState<{
+    show: boolean;
+    query: string;
+    results: Array<{ 
+      type: 'person' | 'organization';
+      member?: string;
+      organization?: string;
+      firstName?: string;
+      lastName?: string;
+      headline?: string;
+      name?: string;
+      photo?: string;
+    }>;
+    selectedIndex: number;
+    position: { top: number; left: number };
+    searching: boolean;
+  } | null>(null);
+  const [selectedLinkedInOrgUrn, setSelectedLinkedInOrgUrn] = useState('');
+  const contentTextareaRef = useRef<HTMLTextAreaElement>(null);
+  
+  // Get LinkedIn organizations from connection
+  const linkedInConnection = connections.find(c => c.platform === 'linkedin' && c.isActive);
+  const linkedInOrgUrns: Array<{ id: string; name: string; urn: string }> = linkedInConnection?.organizations 
+    ? (() => {
+        try {
+          const parsed = JSON.parse(linkedInConnection.organizations);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      })()
+    : [];
   const [uploading, setUploading] = useState(false);
   const [showRefineModal, setShowRefineModal] = useState(false);
   const [postToRefine, setPostToRefine] = useState<SocialPost | null>(null);
@@ -297,13 +472,14 @@ export default function SocialMediaPage() {
             mediaAssets: JSON.stringify(formData.mediaAssets),
             platforms: JSON.stringify(formData.platforms),
             comments: JSON.stringify(formData.comments),
+            mentions: JSON.stringify(formData.mentions),
           }),
       });
 
       if (response.ok) {
         setShowForm(false);
         setEditingPost(null);
-        setFormData({ content: '', mediaAssets: [], platforms: [], scheduledFor: '', comments: [] });
+        setFormData({ content: '', mediaAssets: [], platforms: [], scheduledFor: '', comments: [], mentions: [] });
         setMessage({ type: 'success', text: editingPost ? 'Post updated successfully!' : 'Post scheduled successfully!' });
         fetchPosts();
         // Clear message after 3 seconds
@@ -569,12 +745,54 @@ export default function SocialMediaPage() {
       }
     }
     
+    // Parse mentions
+    let mentions: Array<{ 
+      type: 'person' | 'organization';
+      member?: string;
+      organization?: string;
+      firstName?: string;
+      lastName?: string;
+      headline?: string;
+      name?: string;
+    }> = [];
+    if ((post as any).mentions) {
+      try {
+        const parsedMentions = JSON.parse((post as any).mentions);
+        // Convert old format mentions (without type) to new format
+        mentions = Array.isArray(parsedMentions) ? parsedMentions.map((m: any) => {
+          if (m.type) {
+            return m; // Already has type
+          } else if (m.member) {
+            // Old person mention format
+            return {
+              type: 'person' as const,
+              member: m.member,
+              firstName: m.firstName,
+              lastName: m.lastName,
+              headline: m.headline || '',
+            };
+          } else if (m.organization) {
+            // Old organization mention format
+            return {
+              type: 'organization' as const,
+              organization: m.organization,
+              name: m.name,
+            };
+          }
+          return m;
+        }) : [];
+      } catch (e) {
+        console.error('Error parsing mentions:', e);
+      }
+    }
+    
     setFormData({
       content: post.content,
       mediaAssets,
       platforms: JSON.parse(post.platforms || '[]'),
-      scheduledFor: new Date(post.scheduledFor).toISOString().slice(0, 16),
+      scheduledFor: utcToLocalDateTime(post.scheduledFor),
       comments,
+      mentions,
     });
     setShowForm(true);
   };
@@ -586,6 +804,252 @@ export default function SocialMediaPage() {
         ? prev.platforms.filter(p => p !== platform)
         : [...prev.platforms, platform],
     }));
+    // Clear mentions and selected organization if LinkedIn is deselected
+    if (platform === 'linkedin' && formData.platforms.includes('linkedin')) {
+      setFormData(prev => ({ ...prev, mentions: [] }));
+      setMentionAutocomplete(null);
+      setSelectedLinkedInOrgUrn('');
+    }
+  };
+
+  const searchMentions = async (query: string) => {
+    if (!selectedLinkedInOrgUrn || query.trim().length < 3) {
+      // If query is less than 3 chars, still search organizations
+      const orgResults = linkedInOrgUrns
+        .filter(org => org.name.toLowerCase().includes(query.toLowerCase()))
+        .map(org => ({
+          type: 'organization' as const,
+          organization: org.urn,
+          name: org.name,
+        }));
+      return orgResults;
+    }
+
+    const results: Array<{
+      type: 'person' | 'organization';
+      member?: string;
+      organization?: string;
+      firstName?: string;
+      lastName?: string;
+      headline?: string;
+      name?: string;
+      photo?: string;
+    }> = [];
+
+    // Search organizations from the connection
+    const orgResults = linkedInOrgUrns
+      .filter(org => org.name.toLowerCase().includes(query.toLowerCase()))
+      .map(org => ({
+        type: 'organization' as const,
+        organization: org.urn,
+        name: org.name,
+      }));
+    results.push(...orgResults);
+
+    // Search people from LinkedIn API
+    // Note: This requires Partner API access or special permissions from LinkedIn
+    // If unavailable, the API will return empty results and organizations will still work
+    try {
+      const response = await fetch(
+        `/api/social/linkedin/mentions?keywords=${encodeURIComponent(query.trim())}&organizationUrn=${encodeURIComponent(selectedLinkedInOrgUrn)}`
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        const peopleResults = (data.people || []).map((person: any) => ({
+          type: 'person' as const,
+          member: person.member,
+          firstName: person.firstName,
+          lastName: person.lastName,
+          headline: person.headline,
+          photo: person.photo,
+        }));
+        results.push(...peopleResults);
+      } else if (response.status === 400) {
+        // Validation error - don't show people results for invalid queries
+        const errorData = await response.json().catch(() => ({}));
+        console.warn('LinkedIn people search validation error:', errorData.details);
+      } else {
+        // Other errors (including 403 permission errors) - silently fail
+        // People search is optional, organizations will still work
+        console.debug('LinkedIn people search not available or failed');
+      }
+    } catch (error) {
+      // Network or other errors - silently fail, organizations will still work
+      console.debug('Error searching people mentions:', error);
+    }
+
+    return results;
+  };
+
+  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value;
+    const cursorPosition = e.target.selectionStart;
+    
+    setFormData(prev => ({ ...prev, content: value }));
+
+    // Defer mention autocomplete logic to avoid setState during render warning
+    setTimeout(() => {
+      // Check if we're typing after "@" for LinkedIn mentions
+      const currentPlatforms = formData.platforms;
+      if (currentPlatforms.includes('linkedin') && (selectedLinkedInOrgUrn || linkedInOrgUrns.length > 0)) {
+      // Find the last "@" before cursor
+      const textBeforeCursor = value.substring(0, cursorPosition);
+      const lastAtIndex = textBeforeCursor.lastIndexOf('@');
+      
+      if (lastAtIndex !== -1) {
+        // Check if there's a space or newline after @ (if so, it's not a mention)
+        const textAfterAt = textBeforeCursor.substring(lastAtIndex + 1);
+        if (!textAfterAt.includes(' ') && !textAfterAt.includes('\n')) {
+          const mentionQuery = textAfterAt;
+          
+          // Get textarea position for dropdown
+          const textarea = e.target;
+          const rect = textarea.getBoundingClientRect();
+          const scrollTop = textarea.scrollTop;
+          
+          // Calculate position (approximate, based on cursor)
+          const lines = textBeforeCursor.split('\n');
+          const currentLine = lines.length - 1;
+          const lineHeight = 20; // Approximate line height
+          const top = rect.top + (currentLine * lineHeight) - scrollTop + 30;
+          const left = rect.left + 10;
+          
+          if (mentionQuery.length > 0) {
+            setMentionAutocomplete({
+              show: true,
+              query: mentionQuery,
+              results: [],
+              selectedIndex: 0,
+              position: { top, left },
+              searching: mentionQuery.length >= 3,
+            });
+            
+            // Search for mentions asynchronously (organizations show immediately, people need 3+ chars)
+            searchMentions(mentionQuery).then(results => {
+              setMentionAutocomplete(prev => prev ? {
+                ...prev,
+                results,
+                searching: false,
+              } : null);
+            });
+          } else {
+            setMentionAutocomplete(null);
+          }
+        } else {
+          setMentionAutocomplete(null);
+        }
+      } else {
+        setMentionAutocomplete(null);
+      }
+    } else {
+      setMentionAutocomplete(null);
+    }
+    }, 0);
+  };
+
+  const insertMention = (mention: {
+    type: 'person' | 'organization';
+    member?: string;
+    organization?: string;
+    firstName?: string;
+    lastName?: string;
+    headline?: string;
+    name?: string;
+  }) => {
+    const textarea = contentTextareaRef.current;
+    if (!textarea) return;
+
+    const value = formData.content;
+    const cursorPosition = textarea.selectionStart;
+    const textBeforeCursor = value.substring(0, cursorPosition);
+    const lastAtIndex = textBeforeCursor.lastIndexOf('@');
+    
+    if (lastAtIndex !== -1) {
+      const textAfterAt = textBeforeCursor.substring(lastAtIndex + 1);
+      let mentionText: string;
+      let mentionData: any;
+      
+      if (mention.type === 'person' && mention.firstName && mention.lastName) {
+        mentionText = `@${mention.firstName} ${mention.lastName}`;
+        mentionData = {
+          type: 'person' as const,
+          member: mention.member,
+          firstName: mention.firstName,
+          lastName: mention.lastName,
+          headline: mention.headline || '',
+        };
+      } else if (mention.type === 'organization' && mention.name && mention.organization) {
+        mentionText = `@${mention.name}`;
+        mentionData = {
+          type: 'organization' as const,
+          organization: mention.organization,
+          name: mention.name,
+        };
+      } else {
+        return; // Invalid mention data
+      }
+      
+      // Replace from @ to cursor with the mention
+      const newContent = 
+        value.substring(0, lastAtIndex) + 
+        mentionText + 
+        value.substring(cursorPosition);
+      
+      // Update mentions array
+      const existingMentions = formData.mentions || [];
+      const isDuplicate = mention.type === 'person'
+        ? existingMentions.some(m => m.type === 'person' && m.member === mention.member)
+        : existingMentions.some(m => m.type === 'organization' && m.organization === mention.organization);
+      
+      if (!isDuplicate) {
+        setFormData(prev => ({
+          ...prev,
+          content: newContent,
+          mentions: [...existingMentions, mentionData],
+        }));
+      } else {
+        setFormData(prev => ({
+          ...prev,
+          content: newContent,
+        }));
+      }
+      
+      // Set cursor position after the mention
+      setTimeout(() => {
+        const newPosition = lastAtIndex + mentionText.length;
+        textarea.setSelectionRange(newPosition, newPosition);
+        textarea.focus();
+      }, 0);
+    }
+    
+    setMentionAutocomplete(null);
+  };
+
+  const handleContentKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (mentionAutocomplete?.show && mentionAutocomplete) {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setMentionAutocomplete(prev => prev && prev.results ? {
+          ...prev,
+          selectedIndex: Math.min(prev.selectedIndex + 1, prev.results.length - 1),
+        } : null);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setMentionAutocomplete(prev => prev ? {
+          ...prev,
+          selectedIndex: Math.max(prev.selectedIndex - 1, 0),
+        } : null);
+      } else if (e.key === 'Enter' && mentionAutocomplete.results && mentionAutocomplete.results.length > 0) {
+        e.preventDefault();
+        const selectedPerson = mentionAutocomplete.results[mentionAutocomplete.selectedIndex];
+        if (selectedPerson) {
+          insertMention(selectedPerson);
+        }
+      } else if (e.key === 'Escape') {
+        setMentionAutocomplete(null);
+      }
+    }
   };
 
   const getPlatformIcon = (platform: string) => {
@@ -619,6 +1083,19 @@ export default function SocialMediaPage() {
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString();
+  };
+
+  // Convert UTC datetime to local datetime string for datetime-local input
+  // Format: YYYY-MM-DDTHH:mm (no timezone, local time)
+  const utcToLocalDateTime = (utcString: string): string => {
+    const date = new Date(utcString);
+    // Get local date components
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
   };
 
   const handleRefine = async () => {
@@ -850,7 +1327,9 @@ export default function SocialMediaPage() {
             onClick={() => {
               setShowForm(true);
               setEditingPost(null);
-              setFormData({ content: '', mediaAssets: [], platforms: [], scheduledFor: '', comments: [] });
+              setFormData({ content: '', mediaAssets: [], platforms: [], scheduledFor: '', comments: [], mentions: [] });
+            setMentionAutocomplete(null);
+            setSelectedLinkedInOrgUrn('');
             }}
             className="px-6 py-3 bg-[var(--primary-mint)] text-black hover:bg-white font-bold uppercase tracking-widest text-xs transition-colors flex items-center gap-2"
           >
@@ -945,7 +1424,7 @@ export default function SocialMediaPage() {
       {activeTab === 'connections' && (
       <div className="classic-panel p-4 md:p-6 mb-8">
         <h2 className="text-xl md:text-2xl text-white font-bebas mb-4">CONNECTED ACCOUNTS</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           {['linkedin', 'twitter', 'instagram', 'threads'].map((platform) => {
             const connection = connections.find(c => c.platform === platform);
             return (
@@ -993,6 +1472,14 @@ export default function SocialMediaPage() {
             );
           })}
         </div>
+        
+        {/* LinkedIn Organizations Management */}
+        {connections.find(c => c.platform === 'linkedin' && c.isActive) && (
+          <LinkedInOrganizationsManager 
+            connection={connections.find(c => c.platform === 'linkedin')!}
+            onUpdate={fetchConnections}
+          />
+        )}
       </div>
       )}
 
@@ -1005,7 +1492,9 @@ export default function SocialMediaPage() {
           if (e.target === e.currentTarget) {
             setShowForm(false);
             setEditingPost(null);
-            setFormData({ content: '', mediaAssets: [], platforms: [], scheduledFor: '', comments: [] });
+            setFormData({ content: '', mediaAssets: [], platforms: [], scheduledFor: '', comments: [], mentions: [] });
+            setMentionAutocomplete(null);
+            setSelectedLinkedInOrgUrn('');
           }
         }}>
           <div className="classic-panel p-4 md:p-6 mb-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto mt-8">
@@ -1017,7 +1506,9 @@ export default function SocialMediaPage() {
                 onClick={() => {
                   setShowForm(false);
                   setEditingPost(null);
-                  setFormData({ content: '', mediaAssets: [], platforms: [], scheduledFor: '', comments: [] });
+                  setFormData({ content: '', mediaAssets: [], platforms: [], scheduledFor: '', comments: [], mentions: [] });
+            setMentionAutocomplete(null);
+            setSelectedLinkedInOrgUrn('');
                 }}
                 className="p-2 hover:bg-[var(--rich-black)] transition-colors"
                 title="Close"
@@ -1026,19 +1517,122 @@ export default function SocialMediaPage() {
               </button>
             </div>
             <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
-            <div>
+            <div className="relative">
               <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
                 Content
+                {formData.platforms.includes('linkedin') && (
+                  <span className="text-[8px] text-gray-600 ml-2">(Type @ to mention people or organizations)</span>
+                )}
               </label>
               <textarea
+                ref={contentTextareaRef}
                 value={formData.content}
-                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                onChange={handleContentChange}
+                onKeyDown={handleContentKeyDown}
                 required
                 rows={6}
                 className="w-full bg-black border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors resize-none font-montserrat"
                 placeholder="What's on your mind?"
               />
+              
+              {/* Mention Autocomplete Dropdown */}
+              {mentionAutocomplete?.show && formData.platforms.includes('linkedin') && (selectedLinkedInOrgUrn || linkedInOrgUrns.length > 0) && mentionAutocomplete && (
+                <div
+                  className="absolute z-50 bg-[var(--rich-black)] border border-[var(--border-color)] max-h-60 overflow-y-auto w-80 shadow-lg"
+                  style={{
+                    top: `${mentionAutocomplete.position.top}px`,
+                    left: `${mentionAutocomplete.position.left}px`,
+                  }}
+                >
+                  {mentionAutocomplete.searching ? (
+                    <div className="p-3 text-sm text-gray-400">Searching...</div>
+                  ) : (mentionAutocomplete.results && mentionAutocomplete.results.length > 0) ? (
+                    <div className="py-1">
+                      {mentionAutocomplete.results.map((item, index) => {
+                        const key = item.type === 'person' 
+                          ? `person-${item.member}` 
+                          : `org-${item.organization}`;
+                        return (
+                          <div
+                            key={key}
+                            className={`p-3 cursor-pointer transition-colors ${
+                              index === mentionAutocomplete.selectedIndex
+                                ? 'bg-[var(--primary-mint)] text-black'
+                                : 'hover:bg-[var(--bg-dark)] text-white'
+                            }`}
+                            onClick={() => insertMention(item)}
+                          >
+                            <div className="flex items-center gap-2">
+                              <div className="flex-1">
+                                {item.type === 'person' ? (
+                                  <>
+                                    <p className="text-sm font-semibold">
+                                      {item.firstName} {item.lastName}
+                                    </p>
+                                    {item.headline && (
+                                      <p className="text-xs opacity-75">{item.headline}</p>
+                                    )}
+                                    <p className="text-[10px] opacity-50 mt-1">Person</p>
+                                  </>
+                                ) : (
+                                  <>
+                                    <p className="text-sm font-semibold">{item.name}</p>
+                                    <p className="text-[10px] opacity-50 mt-1">Organization</p>
+                                  </>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : mentionAutocomplete.query && mentionAutocomplete.query.length >= 3 ? (
+                    <div className="p-3 text-sm text-gray-400">No results found</div>
+                  ) : (
+                    <div className="p-3 text-sm text-gray-400">Type at least 3 characters...</div>
+                  )}
+                </div>
+              )}
             </div>
+            
+            {/* LinkedIn Organization Selector - Only show if LinkedIn is selected */}
+            {formData.platforms.includes('linkedin') && (
+              <div>
+                <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
+                  LinkedIn Organization (Required for mentions)
+                </label>
+                {linkedInOrgUrns.length > 0 ? (
+                  <select
+                    value={selectedLinkedInOrgUrn}
+                    onChange={(e) => setSelectedLinkedInOrgUrn(e.target.value)}
+                    className="w-full bg-black border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors font-montserrat"
+                  >
+                    <option value="">-- Select Organization --</option>
+                    {linkedInOrgUrns.map((org) => (
+                      <option key={org.id} value={org.urn}>
+                        {org.name} ({org.urn})
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <div className="p-3 border border-[var(--border-color)] bg-[var(--rich-black)]">
+                    <p className="text-xs text-gray-400 mb-2">
+                      No organizations configured. Please add organizations in the "Connected Accounts" tab.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setActiveTab('connections')}
+                      className="text-xs text-[var(--primary-mint)] hover:underline"
+                    >
+                      Go to Connected Accounts →
+                    </button>
+                  </div>
+                )}
+                <p className="text-[10px] text-gray-500 mt-1">
+                  Select the LinkedIn organization to use for @mentions in this post. Manage organizations in the "Connected Accounts" tab.
+                </p>
+              </div>
+            )}
 
             <div>
               <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
@@ -1068,7 +1662,7 @@ export default function SocialMediaPage() {
               </div>
 
               {/* Media Preview Grid */}
-              {formData.mediaAssets.length > 0 && (
+              {formData.mediaAssets && formData.mediaAssets.length > 0 && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                   {formData.mediaAssets.map((asset, index) => (
                     <div
@@ -1137,6 +1731,7 @@ export default function SocialMediaPage() {
                 ))}
               </div>
             </div>
+
 
             <div>
               <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
@@ -1210,7 +1805,9 @@ export default function SocialMediaPage() {
                 onClick={() => {
                   setShowForm(false);
                   setEditingPost(null);
-                  setFormData({ content: '', mediaAssets: [], platforms: [], scheduledFor: '', comments: [] });
+                  setFormData({ content: '', mediaAssets: [], platforms: [], scheduledFor: '', comments: [], mentions: [] });
+            setMentionAutocomplete(null);
+            setSelectedLinkedInOrgUrn('');
                 }}
                 className="px-6 py-3 border border-[var(--border-color)] text-white hover:bg-[var(--rich-black)] font-bold uppercase tracking-widest text-xs transition-colors"
               >

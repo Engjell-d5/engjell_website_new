@@ -111,6 +111,8 @@ The post will automatically publish at the scheduled time!
 - ✅ Schedule posts for future publishing
 - ✅ View connection status
 - ✅ See username of connected account
+- ✅ @mention organizations in posts (requires organization URNs to be configured)
+- ⚠️ @mention people in posts (requires Partner API access - see limitations below)
 
 ## Important Notes
 
@@ -156,6 +158,15 @@ The post will automatically publish at the scheduled time!
 ### Token expiration issues
 - The system should automatically refresh tokens
 - If tokens fail to refresh, you may need to reconnect your LinkedIn account
+
+### People Search (@mentions) Not Working
+- The LinkedIn People Typeahead API requires **Partner API access** or special permissions
+- If you see a `403 ACCESS_DENIED` error for `partnerApiPeopleTypeaheadExternal`, this is expected
+- The feature will gracefully degrade - organization mentions will still work
+- To enable people search, you need to:
+  1. Apply for LinkedIn Partner API access (contact LinkedIn Developer Support)
+  2. Request access to the `partnerApiPeopleTypeaheadExternal.FINDER-organizationFollowers` endpoint
+  3. Note: This is typically only available to LinkedIn Partners and may require a business relationship with LinkedIn
 
 ## API Documentation
 

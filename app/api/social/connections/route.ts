@@ -17,6 +17,7 @@ export async function GET(request: NextRequest) {
         username: true,
         profileImage: true,
         connectedAt: true,
+        organizations: true,
       },
     });
 
@@ -69,6 +70,53 @@ export async function DELETE(request: NextRequest) {
     console.error('Error disconnecting social account:', error);
     return NextResponse.json(
       { error: 'Failed to disconnect account' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const user = await getAuthUser(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { platform, organizations } = body;
+
+    if (!platform) {
+      return NextResponse.json(
+        { error: 'Platform parameter is required' },
+        { status: 400 }
+      );
+    }
+
+    // Update the connection with organizations
+    const connection = await prisma.socialConnection.updateMany({
+      where: {
+        platform: platform.toLowerCase(),
+      },
+      data: {
+        organizations: organizations ? JSON.stringify(organizations) : null,
+      },
+    });
+
+    if (connection.count === 0) {
+      return NextResponse.json(
+        { error: 'Connection not found' },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: 'Organizations updated successfully',
+    });
+  } catch (error) {
+    console.error('Error updating organizations:', error);
+    return NextResponse.json(
+      { error: 'Failed to update organizations' },
       { status: 500 }
     );
   }

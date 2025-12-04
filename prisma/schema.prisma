@@ -168,6 +168,7 @@ model SocialConnection {
   isActive      Boolean  @default(true)
   username      String?  // Platform username for display
   profileImage  String?  // Profile image URL
+  organizations String?  // JSON array: [{'id': '...', 'name': '...', 'urn': '...'}] - LinkedIn organizations for mentions
   
   @@unique([platform])
   @@map("social_connections")

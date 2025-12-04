@@ -104,12 +104,35 @@ export async function POST(
         }
       }
       
+      // Parse mentions from post (if available)
+      let mentions: Array<{ 
+        type: 'person' | 'organization';
+        member?: string;
+        organization?: string;
+        firstName?: string;
+        lastName?: string;
+        headline?: string;
+        name?: string;
+      }> | null = null;
+      if ((post as any).mentions) {
+        try {
+          const mentionsData = JSON.parse((post as any).mentions);
+          if (Array.isArray(mentionsData) && mentionsData.length > 0) {
+            mentions = mentionsData;
+            console.log(`[PUBLISH-API] Found ${mentions.length} mention(s) for post ${params.id}`);
+          }
+        } catch (e) {
+          console.error(`[PUBLISH-API] Error parsing mentions for post ${params.id}:`, e);
+        }
+      }
+      
       const result = await publishToPlatform(
         platform,
         post.content,
         connection.accessToken,
         connection,
-        mediaAssets
+        mediaAssets,
+        mentions
       );
 
       if (result.success && result.postId) {

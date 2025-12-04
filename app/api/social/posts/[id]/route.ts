@@ -41,7 +41,7 @@ export async function PUT(
     }
 
     const body = await request.json();
-    const { content, mediaAssets, platforms, scheduledFor, comments } = body;
+    const { content, mediaAssets, platforms, scheduledFor, comments, mentions } = body;
 
     const existingPost = await prisma.socialPost.findUnique({
       where: { id: params.id },
@@ -95,8 +95,29 @@ export async function PUT(
       ? (comments ? (typeof comments === 'string' ? comments : JSON.stringify(comments)) : null)
       : existingPost.comments;
 
+    // Handle mentions - add @mentions to content for LinkedIn
+    let finalContent = content !== undefined ? content : existingPost.content;
+    if (mentions !== undefined) {
+      try {
+        const mentionsArray = typeof mentions === 'string' ? JSON.parse(mentions) : mentions;
+        const platformsArray = platforms !== undefined 
+          ? (typeof platforms === 'string' ? JSON.parse(platforms) : platforms)
+          : JSON.parse(existingPost.platforms || '[]');
+        
+        if (Array.isArray(mentionsArray) && mentionsArray.length > 0 && platformsArray.includes('linkedin')) {
+          // Add mentions to the content in the format @FirstName LastName
+          const mentionTexts = mentionsArray.map((m: any) => `@${m.firstName} ${m.lastName}`).join(' ');
+          // Add mentions at the end of the content
+          finalContent = `${content || existingPost.content}\n\n${mentionTexts}`;
+        }
+      } catch (e) {
+        console.error('[POSTS-API] Error parsing mentions:', e);
+        // Continue without mentions if parsing fails
+      }
+    }
+
     const updateData: any = {
-      content,
+      content: finalContent,
       mediaAssets: mediaAssetsJson,
       comments: commentsJson,
     };

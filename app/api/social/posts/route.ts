@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { content, mediaAssets, platforms, scheduledFor, status, comments } = body;
+    const { content, mediaAssets, platforms, scheduledFor, status, comments, mentions } = body;
 
     if (!content || !scheduledFor) {
       return NextResponse.json(
@@ -87,9 +87,26 @@ export async function POST(request: NextRequest) {
       ? (typeof comments === 'string' ? comments : JSON.stringify(comments))
       : null;
 
+    // Handle mentions - add @mentions to content for LinkedIn
+    let finalContent = content;
+    if (mentions) {
+      try {
+        const mentionsArray = typeof mentions === 'string' ? JSON.parse(mentions) : mentions;
+        if (Array.isArray(mentionsArray) && mentionsArray.length > 0 && platformsArray.includes('linkedin')) {
+          // Add mentions to the content in the format @FirstName LastName
+          const mentionTexts = mentionsArray.map((m: any) => `@${m.firstName} ${m.lastName}`).join(' ');
+          // Add mentions at the end of the content, or you can customize this
+          finalContent = `${content}\n\n${mentionTexts}`;
+        }
+      } catch (e) {
+        console.error('[POSTS-API] Error parsing mentions:', e);
+        // Continue without mentions if parsing fails
+      }
+    }
+
     const post = await prisma.socialPost.create({
       data: {
-        content,
+        content: finalContent,
         mediaAssets: mediaAssetsJson,
         platforms: JSON.stringify(platformsArray),
         scheduledFor: scheduledDate,
