@@ -235,26 +235,26 @@ export default function SubscribersPage() {
         <div className="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-4 w-full lg:w-auto">
           <div className="text-right flex-shrink-0">
             <div className="text-xl md:text-2xl text-white font-bold">{subscribers.length}</div>
-            <div className="text-xs text-gray-400 uppercase tracking-widest">Total</div>
+          <div className="text-xs text-gray-400 uppercase tracking-widest">Total</div>
           </div>
           <div className="admin-buttons-container flex flex-col lg:flex-row gap-2 w-full lg:w-auto">
-            <button
-              onClick={handleSync}
-              disabled={syncing}
+          <button
+            onClick={handleSync}
+            disabled={syncing}
               className="w-full lg:w-auto px-4 md:px-6 py-2 bg-[var(--primary-mint)] text-black hover:bg-[var(--primary-mint)]/90 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2 min-h-[44px]"
-            >
+          >
               <RefreshCw className={`w-4 h-4 flex-shrink-0 ${syncing ? 'animate-spin' : ''}`} />
               <span className="hidden lg:inline">{syncing ? 'Syncing...' : unsyncedCount > 0 ? `Sync to Sender.net (${unsyncedCount})` : 'Sync with Sender.net'}</span>
               <span className="lg:hidden">{syncing ? 'Syncing...' : 'Sync'}</span>
-            </button>
-            <button
-              onClick={() => setShowAddForm(true)}
+          </button>
+          <button
+            onClick={() => setShowAddForm(true)}
               className="w-full lg:w-auto px-4 md:px-6 py-2 bg-white text-black hover:bg-[var(--primary-mint)] text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2 min-h-[44px]"
-            >
+          >
               <Plus className="w-4 h-4 flex-shrink-0" />
               <span className="hidden lg:inline">Add Subscriber</span>
               <span className="lg:hidden">Add</span>
-            </button>
+          </button>
           </div>
         </div>
       </div>

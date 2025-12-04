@@ -117,11 +117,21 @@ export async function POST(
     const result = await response.json();
     console.log(`[EXTERNAL-API] Task created successfully:`, result);
 
+    // Update the task with the external task ID
+    const externalTaskId = result.taskId || result.id || result.externalTaskId;
+    if (externalTaskId) {
+      await prisma.emailTask.update({
+        where: { id: params.id },
+        data: { externalTaskId },
+      });
+      console.log(`[EXTERNAL-API] Updated task ${params.id} with externalTaskId: ${externalTaskId}`);
+    }
+
     return NextResponse.json({
       success: true,
       message: 'Task created successfully on external platform',
-      taskId: result.taskId,
-      externalTaskId: result.taskId,
+      taskId: result.taskId || result.id,
+      externalTaskId: externalTaskId,
     });
   } catch (error) {
     console.error('[EXTERNAL-API] Error creating external task:', error);

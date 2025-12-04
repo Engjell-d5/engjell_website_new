@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
 import { prisma } from '@/lib/prisma';
 import { getAllEmails, parseGmailMessage, refreshGoogleToken, isGoogleTokenExpired, getThreadDetails } from '@/lib/google-email';
+import { sendPushNotificationToUser } from '@/lib/push-notifications';
 
 export const dynamic = 'force-dynamic';
 
@@ -200,6 +201,20 @@ export async function POST(request: NextRequest) {
           isAnalyzed: false, // Reset analyzed status since thread has been updated
         },
       });
+    }
+
+    // Send notification if new emails were synced
+    if (newCount > 0 && user) {
+      try {
+        await sendPushNotificationToUser(user.id, {
+          title: 'New Emails Synced',
+          body: `${newCount} new email(s) synced from Gmail`,
+          tag: 'new-emails',
+          data: { url: '/admin/email' },
+        });
+      } catch (notifError) {
+        console.error('Failed to send push notification:', notifError);
+      }
     }
 
     return NextResponse.json({

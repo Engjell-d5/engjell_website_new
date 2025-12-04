@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Mail, Send, Users, TrendingUp, ArrowRight } from 'lucide-react';
+import { Mail, Send, Users, TrendingUp, ArrowRight, CheckSquare, Inbox } from 'lucide-react';
 import Link from 'next/link';
 
 interface DashboardStats {
@@ -24,6 +24,13 @@ interface DashboardStats {
     totalRecipients: number;
     totalActive: number;
   };
+  tasks: {
+    total: number;
+    incomplete: number;
+  };
+  emails: {
+    unread: number;
+  };
 }
 
 export default function DashboardPage() {
@@ -36,19 +43,25 @@ export default function DashboardPage() {
 
   const fetchStats = async () => {
     try {
-      const [subscribersRes, campaignsRes, groupsRes] = await Promise.all([
+      const [subscribersRes, campaignsRes, groupsRes, tasksRes, emailsRes] = await Promise.all([
         fetch('/api/subscribers'),
         fetch('/api/campaigns'),
         fetch('/api/groups'),
+        fetch('/api/email/tasks'),
+        fetch('/api/email?grouped=true&readStatus=unread&pageSize=1'),
       ]);
 
       const subscribersData = subscribersRes.ok ? await subscribersRes.json() : { subscribers: [] };
       const campaignsData = campaignsRes.ok ? await campaignsRes.json() : { campaigns: [] };
       const groupsData = groupsRes.ok ? await groupsRes.json() : { groups: [] };
+      const tasksData = tasksRes.ok ? await tasksRes.json() : { tasks: [] };
+      const emailsData = emailsRes.ok ? await emailsRes.json() : { total: 0 };
 
       const subscribers = subscribersData.subscribers || [];
       const campaigns = campaignsData.campaigns || [];
       const groups = groupsData.groups || [];
+      const tasks = tasksData.tasks || [];
+      const unreadEmailsCount = emailsData.total || 0;
 
       // Calculate subscriber stats by group
       const subscriberGroupMap = new Map<string | null, { title: string | null; count: number }>();
@@ -98,6 +111,13 @@ export default function DashboardPage() {
           totalRecipients: groups.reduce((sum: number, g: any) => sum + (g.recipientCount || 0), 0),
           totalActive: groups.reduce((sum: number, g: any) => sum + (g.activeSubscribers || 0), 0),
         },
+        tasks: {
+          total: tasks.length,
+          incomplete: tasks.filter((t: any) => t.status !== 'completed').length,
+        },
+        emails: {
+          unread: unreadEmailsCount,
+        },
       });
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
@@ -131,7 +151,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Subscribers Card */}
         <Link href="/admin/subscribers" className="classic-panel bg-[var(--rich-black)] p-6 hover:border-[var(--primary-mint)] transition-colors">
           <div className="flex items-center justify-between mb-4">
@@ -200,6 +220,47 @@ export default function DashboardPage() {
                 <div className="text-gray-400">Active</div>
                 <div className="text-[var(--primary-mint)] font-bold">{stats.groups.totalActive}</div>
               </div>
+            </div>
+          </div>
+        </Link>
+
+        {/* Tasks Card */}
+        <Link href="/admin/email" className="classic-panel bg-[var(--rich-black)] p-6 hover:border-[var(--primary-mint)] transition-colors">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <CheckSquare className="w-8 h-8 text-[var(--primary-mint)]" />
+              <h2 className="text-xl text-white font-bebas">Tasks</h2>
+            </div>
+            <ArrowRight className="w-5 h-5 text-gray-400" />
+          </div>
+          <div className="space-y-3">
+            <div className="text-3xl text-white font-bold">{stats.tasks.total}</div>
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <div className="text-gray-400">Incomplete</div>
+                <div className="text-yellow-400 font-bold">{stats.tasks.incomplete}</div>
+              </div>
+              <div>
+                <div className="text-gray-400">Completed</div>
+                <div className="text-green-400 font-bold">{stats.tasks.total - stats.tasks.incomplete}</div>
+              </div>
+            </div>
+          </div>
+        </Link>
+
+        {/* Unread Emails Card */}
+        <Link href="/admin/email" className="classic-panel bg-[var(--rich-black)] p-6 hover:border-[var(--primary-mint)] transition-colors">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <Inbox className="w-8 h-8 text-[var(--primary-mint)]" />
+              <h2 className="text-xl text-white font-bebas">Unread Emails</h2>
+            </div>
+            <ArrowRight className="w-5 h-5 text-gray-400" />
+          </div>
+          <div className="space-y-3">
+            <div className="text-3xl text-white font-bold">{stats.emails.unread}</div>
+            <div className="text-sm text-gray-400">
+              {stats.emails.unread === 0 ? 'All caught up!' : 'Requires attention'}
             </div>
           </div>
         </Link>

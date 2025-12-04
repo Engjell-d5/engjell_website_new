@@ -66,16 +66,16 @@ export default function PodcastPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-4xl text-white font-bebas">PODCAST</h1>
+      <div className="flex items-center justify-between mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl lg:text-4xl text-white font-bebas">PODCAST</h1>
       </div>
 
       {/* Tabs */}
-      <div className="classic-panel p-0 mb-8">
-        <div className="flex border-b border-[var(--border-color)]">
+      <div className="classic-panel p-0 mb-6 md:mb-8">
+        <div className="flex border-b border-[var(--border-color)] overflow-x-auto">
           <button
             onClick={() => handleTabChange('youtube')}
-            className={`px-6 py-4 font-bebas text-sm uppercase tracking-widest transition-colors ${
+            className={`px-4 md:px-6 py-3 md:py-4 font-bebas text-xs md:text-sm uppercase tracking-widest transition-colors whitespace-nowrap flex-shrink-0 ${
               activeTab === 'youtube'
                 ? 'bg-[var(--primary-mint)] text-black border-b-2 border-black'
                 : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -85,7 +85,7 @@ export default function PodcastPage() {
           </button>
           <button
             onClick={() => handleTabChange('applications')}
-            className={`px-6 py-4 font-bebas text-sm uppercase tracking-widest transition-colors ${
+            className={`px-4 md:px-6 py-3 md:py-4 font-bebas text-xs md:text-sm uppercase tracking-widest transition-colors whitespace-nowrap flex-shrink-0 ${
               activeTab === 'applications'
                 ? 'bg-[var(--primary-mint)] text-black border-b-2 border-black'
                 : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
@@ -512,24 +512,24 @@ function YouTubeTab() {
         )}
       </div>
 
-      <div className="classic-panel p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl text-white font-bebas">VIDEOS</h2>
-          <div className="flex items-center gap-4">
+      <div className="classic-panel p-4 md:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 md:gap-4 mb-4 md:mb-6">
+          <h2 className="text-lg md:text-xl text-white font-bebas">VIDEOS</h2>
+          <div className="flex items-center gap-2 md:gap-4 flex-wrap">
             <button
               onClick={() => setShowRemoved(!showRemoved)}
-              className="text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-2"
+              className="text-xs md:text-sm text-gray-400 hover:text-white transition-colors flex items-center gap-1.5 md:gap-2 min-h-[44px] px-2 md:px-0"
             >
-              {showRemoved ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              {showRemoved ? 'Hide Removed' : 'Show Removed'}
+              {showRemoved ? <EyeOff className="w-3 h-3 md:w-4 md:h-4 flex-shrink-0" /> : <Eye className="w-3 h-3 md:w-4 md:h-4 flex-shrink-0" />}
+              <span className="whitespace-nowrap">{showRemoved ? 'Hide Removed' : 'Show Removed'}</span>
             </button>
             <button
               onClick={fetchVideos}
               disabled={loadingVideos}
-              className="text-sm bg-[var(--primary-mint)] text-black hover:bg-white font-bold px-4 py-2 uppercase tracking-widest transition-colors disabled:opacity-50 flex items-center gap-2"
+              className="text-xs md:text-sm bg-[var(--primary-mint)] text-black hover:bg-white font-bold px-3 md:px-4 py-2 uppercase tracking-widest transition-colors disabled:opacity-50 flex items-center gap-1.5 md:gap-2 min-h-[44px] flex-shrink-0"
             >
-              <RefreshCw className={`w-4 h-4 ${loadingVideos ? 'animate-spin' : ''}`} />
-              Refresh
+              <RefreshCw className={`w-3 h-3 md:w-4 md:h-4 flex-shrink-0 ${loadingVideos ? 'animate-spin' : ''}`} />
+              <span className="whitespace-nowrap">Refresh</span>
             </button>
           </div>
         </div>
@@ -547,77 +547,77 @@ function YouTubeTab() {
             {videos.map((video) => (
               <div
                 key={video.id}
-                className={`border border-[var(--border-color)] p-4 ${
+                className={`border border-[var(--border-color)] p-3 md:p-4 ${
                   video.featured ? 'bg-[var(--primary-mint)]/10 border-[var(--primary-mint)]' : ''
                 } ${video.removed ? 'opacity-50' : ''}`}
               >
-                <div className="flex gap-4">
-                  <div className="relative w-32 h-20 flex-shrink-0 bg-black border border-[var(--border-color)]">
+                <div className="flex flex-col sm:flex-row gap-3 md:gap-4">
+                  <div className="relative w-full sm:w-32 h-48 sm:h-20 flex-shrink-0 bg-black border border-[var(--border-color)]">
                     <Image
                       src={video.thumbnailUrl}
                       alt={video.title}
                       fill
                       className="object-cover"
-                      sizes="128px"
+                      sizes="(max-width: 640px) 100vw, 128px"
                     />
                     {video.featured && (
-                      <div className="absolute top-1 left-1 bg-[var(--primary-mint)] text-black px-2 py-0.5 text-xs font-bold">
+                      <div className="absolute top-1 left-1 bg-[var(--primary-mint)] text-black px-2 py-0.5 text-[10px] md:text-xs font-bold">
                         FEATURED
                       </div>
                     )}
                     {video.removed && (
-                      <div className="absolute top-1 right-1 bg-red-600 text-white px-2 py-0.5 text-xs font-bold">
+                      <div className="absolute top-1 right-1 bg-red-600 text-white px-2 py-0.5 text-[10px] md:text-xs font-bold">
                         REMOVED
                       </div>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-white font-bold text-sm mb-1 line-clamp-2">{video.title}</h3>
-                    <p className="text-xs text-gray-400 mb-2">
+                    <h3 className="text-white font-bold text-xs md:text-sm mb-1 break-words line-clamp-2">{video.title}</h3>
+                    <p className="text-[10px] md:text-xs text-gray-400 mb-2 break-words">
                       {formatDuration(video.duration)} • {formatVideoDate(video.publishedAt)} • {parseInt(video.viewCount).toLocaleString()} views
                     </p>
-                    <div className="flex items-center gap-2 flex-wrap">
+                    <div className="flex items-center gap-1.5 md:gap-2 flex-wrap">
                       {!video.removed ? (
                         <>
                           {video.featured ? (
                             <button
                               onClick={() => handleVideoAction(video.videoId, 'unsetFeatured')}
-                              className="text-xs bg-yellow-600 hover:bg-yellow-700 text-white font-bold px-3 py-1.5 uppercase tracking-widest transition-colors flex items-center gap-1.5"
+                              className="text-[10px] md:text-xs bg-yellow-600 hover:bg-yellow-700 text-white font-bold px-2 md:px-3 py-1 md:py-1.5 uppercase tracking-widest transition-colors flex items-center gap-1 md:gap-1.5 min-h-[36px] md:min-h-[auto] flex-shrink-0"
                             >
-                              <StarOff className="w-3 h-3" />
-                              Unfeature
+                              <StarOff className="w-3 h-3 flex-shrink-0" />
+                              <span className="whitespace-nowrap">Unfeature</span>
                             </button>
                           ) : (
                             <button
                               onClick={() => handleVideoAction(video.videoId, 'setFeatured')}
-                              className="text-xs bg-[var(--primary-mint)] hover:bg-white text-black font-bold px-3 py-1.5 uppercase tracking-widest transition-colors flex items-center gap-1.5"
+                              className="text-[10px] md:text-xs bg-[var(--primary-mint)] hover:bg-white text-black font-bold px-2 md:px-3 py-1 md:py-1.5 uppercase tracking-widest transition-colors flex items-center gap-1 md:gap-1.5 min-h-[36px] md:min-h-[auto] flex-shrink-0"
                             >
-                              <Star className="w-3 h-3" />
-                              Set Featured
+                              <Star className="w-3 h-3 flex-shrink-0" />
+                              <span className="whitespace-nowrap">Set Featured</span>
                             </button>
                           )}
                           <button
                             onClick={() => handleVideoAction(video.videoId, 'remove')}
-                            className="text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-1.5 uppercase tracking-widest transition-colors flex items-center gap-1.5"
+                            className="text-[10px] md:text-xs bg-red-600 hover:bg-red-700 text-white font-bold px-2 md:px-3 py-1 md:py-1.5 uppercase tracking-widest transition-colors flex items-center gap-1 md:gap-1.5 min-h-[36px] md:min-h-[auto] flex-shrink-0"
                           >
-                            <Trash2 className="w-3 h-3" />
-                            Remove
+                            <Trash2 className="w-3 h-3 flex-shrink-0" />
+                            <span className="whitespace-nowrap">Remove</span>
                           </button>
                         </>
                       ) : (
                         <button
                           onClick={() => handleVideoAction(video.videoId, 'restore')}
-                          className="text-xs bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-1.5 uppercase tracking-widest transition-colors flex items-center gap-1.5"
+                          className="text-[10px] md:text-xs bg-green-600 hover:bg-green-700 text-white font-bold px-2 md:px-3 py-1 md:py-1.5 uppercase tracking-widest transition-colors flex items-center gap-1 md:gap-1.5 min-h-[36px] md:min-h-[auto] flex-shrink-0"
                         >
-                          <Eye className="w-3 h-3" />
-                          Restore
+                          <Eye className="w-3 h-3 flex-shrink-0" />
+                          <span className="whitespace-nowrap">Restore</span>
                         </button>
                       )}
                       <a
                         href={`https://www.youtube.com/watch?v=${video.videoId}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-xs text-gray-400 hover:text-[var(--primary-mint)] transition-colors"
+                        className="text-[10px] md:text-xs text-gray-400 hover:text-[var(--primary-mint)] transition-colors whitespace-nowrap flex-shrink-0"
                       >
                         View on YouTube →
                       </a>

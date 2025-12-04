@@ -1823,6 +1823,7 @@ export async function getEmailTasks(): Promise<EmailTask[]> {
     priority: task.priority as 'low' | 'medium' | 'high',
     status: task.status as 'pending' | 'in_progress' | 'completed' | 'cancelled',
     aiAnalysis: task.aiAnalysis,
+    externalTaskId: task.externalTaskId || null,
     createdAt: task.createdAt.toISOString(),
     updatedAt: task.updatedAt.toISOString(),
     email: task.email ? {

@@ -86,33 +86,33 @@ export default function Media() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
       {/* Left Panel - Latest Video */}
-      <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh] order-2 md:order-1">
+      <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh] order-2 md:order-1 min-w-0">
         {/* Breadcrumbs / Top Bar */}
-        <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
-          <div className="flex items-center gap-3 text-xs text-gray-400">
-            <span className="text-[var(--primary-mint)] font-bold">/</span>
-            <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">Media</span>
+        <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-4 md:px-6 lg:px-8 shrink-0 bg-[var(--rich-black)]">
+          <div className="flex items-center gap-2 md:gap-3 text-xs text-gray-400 min-w-0">
+            <span className="text-[var(--primary-mint)] font-bold flex-shrink-0">/</span>
+            <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[10px] md:text-[11px] truncate">Media</span>
           </div>
-          <div className="font-montserrat text-[10px] text-gray-500 font-bold tracking-[0.15em] hidden md:block">
+          <div className="font-montserrat text-[9px] md:text-[10px] text-gray-500 font-bold tracking-[0.15em] hidden lg:block whitespace-nowrap">
             SMALL STEPS EVERYDAY BEATS 1 BIG STEP A YEAR.
           </div>
         </div>
 
         {/* Content Area */}
-        <div className="p-6 md:p-10">
-          <section className="animate-slide-up">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 border-b border-[var(--border-color)] pb-4">
-              <div>
-                <span className="page-label mb-3 block">Media</span>
-                <h1 className="text-5xl md:text-6xl text-white font-bebas">THE CONVERSATION</h1>
+        <div className="p-4 md:p-6 lg:p-10 min-w-0">
+          <section className="animate-slide-up min-w-0">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 md:mb-8 border-b border-[var(--border-color)] pb-4">
+              <div className="min-w-0">
+                <span className="page-label mb-2 md:mb-3 block">Media</span>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white font-bebas break-words">THE CONVERSATION</h1>
               </div>
               <a 
                 href="https://www.youtube.com/@engjellrraklli" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="bg-white text-black hover:bg-[var(--primary-mint)] px-6 py-3 text-xs font-bold uppercase tracking-widest transition-colors rounded-none flex items-center justify-center gap-2 w-full md:w-auto"
+                className="bg-white text-black hover:bg-[var(--primary-mint)] px-4 md:px-6 py-2 md:py-3 text-xs font-bold uppercase tracking-widest transition-colors rounded-none flex items-center justify-center gap-2 w-full md:w-auto flex-shrink-0"
               >
-                <ExternalLink className="w-4 h-4" />
+                <ExternalLink className="w-4 h-4 flex-shrink-0" />
                 Visit Channel
               </a>
             </div>
@@ -145,41 +145,38 @@ export default function Media() {
                   fill
                   sizes="(max-width: 768px) 100vw, 66vw"
                   priority
-                  className="object-cover img-classic opacity-80"
+                  className="object-cover img-classic opacity-60 group-hover:opacity-90 transition-opacity"
                 />
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                  <div className="w-20 h-20 border border-[var(--border-color)] flex items-center justify-center rounded-full hover:bg-white hover:text-black hover:border-white transition-all duration-300 text-white">
-                    <Play className="w-8 h-8 fill-current ml-1" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-16 h-16 md:w-20 md:h-20 bg-[var(--primary-mint)] rounded-full flex items-center justify-center text-black opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Play className="w-6 h-6 md:w-8 md:h-8 fill-current ml-1" />
                   </div>
                 </div>
-                <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black to-transparent">
-                  <span className="bg-[var(--primary-mint)] text-black text-[9px] font-bold px-2 py-1 uppercase tracking-widest mb-3 inline-block">Latest Video</span>
-                  <h3 className="text-4xl text-white font-bebas tracking-wide">{featuredVideo.title}</h3>
-                  <p className="text-gray-300 text-sm mt-2 max-w-2xl font-light line-clamp-2">
-                    {featuredVideo.description}
-                  </p>
+                <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 lg:p-8 bg-gradient-to-t from-black to-transparent">
+                  <span className="bg-[var(--primary-mint)] text-black text-[8px] md:text-[9px] font-bold px-2 py-1 uppercase tracking-widest mb-2 md:mb-3 inline-block">Latest Video</span>
+                  <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white font-bebas tracking-wide break-words line-clamp-2 md:line-clamp-none">{featuredVideo.title}</h3>
                 </div>
               </a>
             ) : null}
 
             {/* More Videos Section */}
             {!mounted || loading ? null : nextVideos.length > 0 && (
-              <div className="mt-12">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="mt-8 md:mt-12">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
             {nextVideos.map((video) => (
               <a
                 key={video.id}
                 href={`https://www.youtube.com/watch?v=${video.videoId}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group cursor-pointer block"
+                className="group cursor-pointer block min-w-0"
               >
                 <div className="relative aspect-video bg-black border border-[var(--border-color)] mb-2 overflow-hidden group-hover:border-[var(--primary-mint)] transition-colors">
                   <Image 
                     src={video.thumbnailUrl} 
                     alt={`${video.title} - YouTube video thumbnail`} 
                     fill
-                          sizes="(max-width: 768px) 100vw, 33vw"
+                    sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
                     className="object-cover img-classic opacity-60 group-hover:opacity-90 transition-opacity"
                   />
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -188,17 +185,17 @@ export default function Media() {
                     </div>
                   </div>
                 </div>
-                <h4 className="text-sm text-white font-bold leading-tight group-hover:text-[var(--primary-mint)] transition-colors line-clamp-2">
+                <h4 className="text-xs sm:text-sm text-white font-bold leading-tight group-hover:text-[var(--primary-mint)] transition-colors line-clamp-2 break-words">
                   {video.title}
                 </h4>
-                <p className="text-[9px] text-gray-500 mt-1">
+                <p className="text-[8px] sm:text-[9px] text-gray-500 mt-1 break-words">
                   {formatDuration(video.duration)} • <time dateTime={new Date(video.publishedAt).toISOString()}>{formatDate(video.publishedAt)}</time>
                 </p>
               </a>
             ))}
                 </div>
                 {loadingMore && (
-                  <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <div className="mt-6 md:mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                     {[1, 2, 3].map((i) => (
                       <div key={i} className="animate-pulse">
                         <div className="aspect-video bg-gray-800 border border-[var(--border-color)] mb-2 rounded-none"></div>
@@ -209,12 +206,12 @@ export default function Media() {
                   </div>
                 )}
                 {hasMoreVideos && !loadingMore && (
-                  <div className="mt-8 flex justify-center">
+                  <div className="mt-6 md:mt-8 flex justify-center">
                     <button
                       onClick={loadMoreVideos}
-                      className="bg-white text-black hover:bg-[var(--primary-mint)] px-6 py-3 text-xs font-bold uppercase tracking-widest transition-colors rounded-none flex items-center justify-center gap-2"
+                      className="bg-white text-black hover:bg-[var(--primary-mint)] px-4 md:px-6 py-2 md:py-3 text-xs font-bold uppercase tracking-widest transition-colors rounded-none flex items-center justify-center gap-2 min-h-[44px]"
                     >
-                      <ChevronDown className="w-4 h-4" />
+                      <ChevronDown className="w-4 h-4 flex-shrink-0" />
                       Load More
                     </button>
                   </div>
@@ -226,15 +223,15 @@ export default function Media() {
       </main>
 
        {/* Right Panel - Next 3 Videos */}
-       <aside className="classic-panel md:col-span-3 flex flex-col p-6 gap-6 bg-[var(--rich-black)] sticky-sidebar order-1 md:order-2 md:min-h-[80vh]">
-         <div className="flex flex-col gap-6 sticky-sidebar-content">
+       <aside className="classic-panel md:col-span-3 flex flex-col p-4 md:p-6 gap-4 md:gap-6 bg-[var(--rich-black)] sticky-sidebar order-1 md:order-2 md:min-h-[80vh]">
+         <div className="flex flex-col gap-4 md:gap-6 sticky-sidebar-content min-w-0">
         {/* Description */}
-        <div className="relative p-6 border-l-4 border-[var(--primary-mint)] bg-[var(--rich-black)]">
+        <div className="relative p-4 md:p-6 border-l-4 border-[var(--primary-mint)] bg-[var(--rich-black)] min-w-0 overflow-hidden">
           <div className="absolute top-2 left-4 opacity-20">
-            <Quote className="w-12 h-12 text-[var(--primary-mint)]" />
+            <Quote className="w-8 h-8 md:w-12 md:h-12 text-[var(--primary-mint)]" />
           </div>
-          <div className="relative z-10">
-            <p className="text-sm text-gray-300 leading-relaxed font-light italic pl-10 pt-4">
+          <div className="relative z-10 min-w-0">
+            <p className="text-xs md:text-sm text-gray-300 leading-relaxed font-light italic pl-8 md:pl-10 pt-3 md:pt-4 break-words overflow-wrap-anywhere">
               "I talk about how to run a business which is more human, which provides real value, and which scales without losing its soul. I am a big believer that businesses should love problems first and make a profit next."
             </p>
           </div>
@@ -243,9 +240,9 @@ export default function Media() {
         {/* Apply to Podcast Button */}
         <button
           onClick={() => setShowApplicationModal(true)}
-          className="w-full py-3 bg-white text-black hover:bg-[var(--primary-mint)] text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2"
+          className="w-full py-2 md:py-3 bg-white text-black hover:bg-[var(--primary-mint)] text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2 min-h-[44px]"
         >
-          <Mic className="w-4 h-4" />
+          <Mic className="w-4 h-4 flex-shrink-0" />
           Apply to Podcast
         </button>
         </div>

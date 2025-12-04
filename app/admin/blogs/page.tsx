@@ -623,75 +623,76 @@ export default function BlogsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-4xl text-white font-bebas">BLOG MANAGEMENT</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl lg:text-4xl text-white font-bebas">BLOG MANAGEMENT</h1>
         <button
           onClick={openNewModal}
-          className="px-6 py-3 bg-[var(--primary-mint)] text-black hover:bg-white font-bold uppercase tracking-widest text-xs transition-colors flex items-center gap-2"
+          className="px-4 md:px-6 py-2 md:py-3 bg-[var(--primary-mint)] text-black hover:bg-white font-bold uppercase tracking-widest text-xs transition-colors flex items-center justify-center gap-2 min-h-[44px] w-full sm:w-auto"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-4 flex-shrink-0" />
           New Blog
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {blogs.map((blog) => (
-          <div key={blog.id} className="classic-panel p-6 group">
-            <div className="relative w-full h-48 mb-4 overflow-hidden border border-[var(--border-color)]">
+          <div key={blog.id} className="classic-panel p-4 md:p-6 group">
+            <div className="relative w-full h-40 md:h-48 mb-3 md:mb-4 overflow-hidden border border-[var(--border-color)]">
               <Image
                 src={blog.imageUrl}
                 alt={blog.title}
                 fill
                 className="object-cover"
+                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
               />
             </div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest border border-gray-600 px-2 py-0.5">
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
+              <span className="text-[8px] md:text-[9px] font-bold text-gray-500 uppercase tracking-widest border border-gray-600 px-1.5 md:px-2 py-0.5 flex-shrink-0">
                 {blog.category}
               </span>
               {blog.published ? (
-                <span className="text-[9px] font-bold text-[var(--primary-mint)] uppercase tracking-widest">
+                <span className="text-[8px] md:text-[9px] font-bold text-[var(--primary-mint)] uppercase tracking-widest flex-shrink-0">
                   Published
                 </span>
               ) : (
-                <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest">
+                <span className="text-[8px] md:text-[9px] font-bold text-gray-500 uppercase tracking-widest flex-shrink-0">
                   Draft
                 </span>
               )}
             </div>
-            <h3 className="text-xl text-white font-bebas mb-2 line-clamp-2">{blog.title}</h3>
-            <p className="text-xs text-gray-400 mb-4 line-clamp-2">{blog.excerpt}</p>
+            <h3 className="text-lg md:text-xl text-white font-bebas mb-2 line-clamp-2 break-words">{blog.title}</h3>
+            <p className="text-[11px] md:text-xs text-gray-400 mb-3 md:mb-4 line-clamp-2 break-words">{blog.excerpt}</p>
             {blog.campaigns && blog.campaigns.length > 0 && (
               <div className="mb-3 flex items-center gap-2">
-                <Mail className="w-3 h-3 text-[var(--primary-mint)]" />
-                <span className="text-[9px] text-[var(--primary-mint)] uppercase tracking-widest font-bold">
+                <Mail className="w-3 h-3 text-[var(--primary-mint)] flex-shrink-0" />
+                <span className="text-[8px] md:text-[9px] text-[var(--primary-mint)] uppercase tracking-widest font-bold">
                   Linked to Campaign
                 </span>
               </div>
             )}
-            <div className="flex items-center justify-between pt-4 border-t border-[var(--border-color)]">
-              <span className="text-[10px] text-gray-500">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pt-3 md:pt-4 border-t border-[var(--border-color)]">
+              <span className="text-[9px] md:text-[10px] text-gray-500 flex-shrink-0">
                 {new Date(blog.createdAt).toLocaleDateString()}
               </span>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5 md:gap-2 flex-wrap">
                 {!blog.campaigns || blog.campaigns.length === 0 ? (
                   <>
                     <button
                       onClick={() => openConvertToCampaignModal(blog)}
-                      className="p-2 text-[var(--primary-mint)] hover:text-[var(--primary-mint)]/80 transition-colors"
+                      className="p-1.5 md:p-2 text-[var(--primary-mint)] hover:text-[var(--primary-mint)]/80 transition-colors min-h-[36px] md:min-h-[auto] flex items-center justify-center flex-shrink-0"
                       title="Convert to Campaign"
                     >
-                      <Mail className="w-4 h-4" />
+                      <Mail className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     </button>
                     <button
                       onClick={() => {
                         setSelectedBlogForLink(blog);
                         setShowLinkCampaignModal(true);
                       }}
-                      className="p-2 text-blue-400 hover:text-blue-300 transition-colors"
+                      className="p-1.5 md:p-2 text-blue-400 hover:text-blue-300 transition-colors min-h-[36px] md:min-h-[auto] flex items-center justify-center flex-shrink-0"
                       title="Link to Existing Campaign"
                     >
-                      <LinkIcon className="w-4 h-4" />
+                      <LinkIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
                     </button>
                   </>
                 ) : (
@@ -700,22 +701,22 @@ export default function BlogsPage() {
                       setSelectedBlogForLink(blog);
                       setShowLinkCampaignModal(true);
                     }}
-                    className="p-2 text-blue-400 hover:text-blue-300 transition-colors"
+                    className="p-1.5 md:p-2 text-blue-400 hover:text-blue-300 transition-colors min-h-[36px] md:min-h-[auto] flex items-center justify-center flex-shrink-0 disabled:opacity-50"
                     title="View/Change Campaign Link"
                     disabled
                   >
-                    <LinkIcon className="w-4 h-4 opacity-50" />
+                    <LinkIcon className="w-3.5 h-3.5 md:w-4 md:h-4" />
                   </button>
                 )}
                 <button
                   onClick={() => togglePublish(blog)}
-                  className="p-2 text-gray-400 hover:text-white transition-colors"
+                  className="p-1.5 md:p-2 text-gray-400 hover:text-white transition-colors min-h-[36px] md:min-h-[auto] flex items-center justify-center flex-shrink-0"
                   title={blog.published ? 'Unpublish' : 'Publish'}
                 >
                   {blog.published ? (
-                    <Eye className="w-4 h-4" />
+                    <Eye className="w-3.5 h-3.5 md:w-4 md:h-4" />
                   ) : (
-                    <EyeOff className="w-4 h-4" />
+                    <EyeOff className="w-3.5 h-3.5 md:w-4 md:h-4" />
                   )}
                 </button>
                 <button
@@ -725,22 +726,24 @@ export default function BlogsPage() {
                     setAiFormData({ aiIntegrationId: '', prompt: '', platforms: [], platformCounts: {} });
                     setGeneratedPosts([]);
                   }}
-                  className="p-2 text-purple-400 hover:text-purple-300 transition-colors"
+                  className="p-1.5 md:p-2 text-purple-400 hover:text-purple-300 transition-colors min-h-[36px] md:min-h-[auto] flex items-center justify-center flex-shrink-0"
                   title="Generate AI Posts"
                 >
-                  <Sparkles className="w-4 h-4" />
+                  <Sparkles className="w-3.5 h-3.5 md:w-4 md:h-4" />
                 </button>
                 <button
                   onClick={() => openEditModal(blog)}
-                  className="p-2 text-gray-400 hover:text-white transition-colors"
+                  className="p-1.5 md:p-2 text-gray-400 hover:text-white transition-colors min-h-[36px] md:min-h-[auto] flex items-center justify-center flex-shrink-0"
+                  title="Edit"
                 >
-                  <Edit className="w-4 h-4" />
+                  <Edit className="w-3.5 h-3.5 md:w-4 md:h-4" />
                 </button>
                 <button
                   onClick={() => handleDelete(blog.id)}
-                  className="p-2 text-gray-400 hover:text-red-400 transition-colors"
+                  className="p-1.5 md:p-2 text-gray-400 hover:text-red-400 transition-colors min-h-[36px] md:min-h-[auto] flex items-center justify-center flex-shrink-0"
+                  title="Delete"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4" />
                 </button>
               </div>
             </div>
