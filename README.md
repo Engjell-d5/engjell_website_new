@@ -117,7 +117,10 @@ Create a `.env.local` file for production:
 ```
 JWT_SECRET=your-secret-key-here
 ADMIN_PASSWORD=your-secure-password
+NEXT_PUBLIC_GA_ID=your-google-analytics-id-here
 ```
+
+**Note:** `NEXT_PUBLIC_GA_ID` is optional. If not provided, Google Analytics will not be loaded. Get your Google Analytics ID from [Google Analytics](https://analytics.google.com/).
 
 ## Notes
 
