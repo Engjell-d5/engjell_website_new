@@ -274,19 +274,10 @@ ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} << EOF
         exit 1
     fi
     
-    # Check if PM2 process exists, if not add it, otherwise restart
-    if pm2 list | grep -q "${APP_NAME}"; then
-        echo "Restarting existing PM2 process..."
-        # Stop and remove to recreate with correct port
-        pm2 delete ${APP_NAME} || true
-        PORT=${APP_PORT} pm2 start npm --name "${APP_NAME}" -- start
-        pm2 save
-    else
-        echo "Adding new PM2 process..."
-        # Start Next.js on port 7776
-        PORT=${APP_PORT} pm2 start npm --name "${APP_NAME}" -- start
-        pm2 save
-    fi
+    # Start or reload PM2 using ecosystem file (persists config)
+    echo "Starting/reloading PM2 via ecosystem.config.js..."
+    PORT=${APP_PORT} pm2 startOrReload ecosystem.config.js --only "${APP_NAME}" --update-env
+    pm2 save
     
     # Reload nginx
     echo "Reloading nginx..."

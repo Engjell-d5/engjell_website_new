@@ -1,7 +1,5 @@
-'use client';
-
-import React, { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import React from 'react';
+import { notFound, redirect } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { PenTool } from 'lucide-react';
@@ -9,6 +7,7 @@ import Sidebar from '@/components/Sidebar';
 import SubscribeForm from '@/components/SubscribeForm';
 import SubscribeFormInline from '@/components/SubscribeFormInline';
 import StructuredData from '@/components/StructuredData';
+import { getBlogBySlug, getBlogs } from '@/lib/data';
 
 interface Blog {
   id: string;
@@ -37,66 +36,29 @@ interface Blog {
   };
 }
 
-export default function BlogPost() {
-  const params = useParams();
-  const router = useRouter();
-  const [blog, setBlog] = useState<Blog | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [mounted, setMounted] = useState(false);
-  const [relatedBlogs, setRelatedBlogs] = useState<Blog[]>([]);
-  const [loadingRelatedBlogs, setLoadingRelatedBlogs] = useState(true);
+export default async function BlogPost({ params }: { params: Promise<{ slug: string }> | { slug: string } }) {
+  // Handle both sync and async params (Next.js 14 vs 15)
+  const resolvedParams = await Promise.resolve(params);
+  const slug = resolvedParams.slug;
 
-  useEffect(() => {
-    setMounted(true);
-    if (params.slug) {
-      fetchBlog();
-      fetchRelatedBlogs();
-    }
-  }, [params.slug]);
+  // Fetch blog data server-side
+  const blog = await getBlogBySlug(slug);
 
-  const fetchBlog = async () => {
-    try {
-      const response = await fetch(`/api/blogs/slug/${params.slug}`);
-      if (response.ok) {
-        const data = await response.json();
-        setBlog(data.blog);
-      } else if (response.status === 404) {
-        router.push('/journal');
-      }
-    } catch (error) {
-      console.error('Error fetching blog:', error);
-      router.push('/journal');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // If blog doesn't exist or isn't published, show 404
+  if (!blog || !blog.published) {
+    notFound();
+  }
 
-  const fetchRelatedBlogs = async () => {
-    try {
-      const response = await fetch('/api/blogs');
-      if (response.ok) {
-        const data = await response.json();
-        // Get current blog slug from params
-        const currentSlug = params.slug as string;
-        
-        // Filter published blogs, exclude current blog, and sort by publishedAt, most recent first
-        const publishedBlogs = (data.blogs || [])
-          .filter((blog: Blog) => blog.published && blog.slug !== currentSlug)
-          .sort((a: Blog, b: Blog) => {
-            const dateA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
-            const dateB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
-            return dateB - dateA;
-          });
-        
-        // Take first 2
-        setRelatedBlogs(publishedBlogs.slice(0, 2));
-      }
-    } catch (error) {
-      console.error('Error fetching related blogs:', error);
-    } finally {
-      setLoadingRelatedBlogs(false);
-    }
-  };
+  // Fetch related blogs server-side
+  const allBlogs = await getBlogs();
+  const relatedBlogs = allBlogs
+    .filter((b: Blog) => b.published && b.slug !== slug)
+    .sort((a: Blog, b: Blog) => {
+      const dateA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+      const dateB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+      return dateB - dateA;
+    })
+    .slice(0, 2);
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return '';
@@ -115,35 +77,6 @@ export default function BlogPost() {
       year: 'numeric',
     });
   };
-
-  if (!mounted || loading) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-        <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
-          <div className="p-10 text-center">
-            <p className="text-gray-400">Loading...</p>
-          </div>
-        </main>
-        <Sidebar />
-      </div>
-    );
-  }
-
-  if (!blog) {
-    return (
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-        <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
-          <div className="p-10 text-center">
-            <p className="text-gray-400 mb-4">Blog post not found</p>
-            <Link href="/journal" className="text-[var(--primary-mint)] hover:underline">
-              Back to Journal
-            </Link>
-          </div>
-        </main>
-        <Sidebar />
-      </div>
-    );
-  }
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
   
@@ -251,8 +184,8 @@ export default function BlogPost() {
             {/* Content */}
             <BlogContentWithSubscribe content={blog.content || ''} />
 
-            {/* Related Articles - Only render after mount to avoid hydration issues */}
-            {mounted && relatedBlogs.length > 0 && (
+            {/* Related Articles */}
+            {relatedBlogs.length > 0 && (
               <div className="mt-16 pt-8 border-t border-[var(--border-color)]">
                 <div className="flex items-center justify-between mb-6">
                   <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Keep reading</span>
@@ -297,6 +230,7 @@ export default function BlogPost() {
 }
 
 // Component to render blog content with subscribe snippets
+// This can remain a regular component since it doesn't need client-side state
 function BlogContentWithSubscribe({ content }: { content: string }) {
   if (!content || typeof content !== 'string') {
     return (
@@ -432,4 +366,3 @@ function BlogContentWithSubscribe({ content }: { content: string }) {
     </div>
   );
 }
-

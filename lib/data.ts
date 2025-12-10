@@ -264,6 +264,52 @@ export async function getBlog(id: string): Promise<Blog | null> {
   };
 }
 
+export async function getBlogBySlug(slug: string): Promise<Blog | null> {
+  const blog = await prisma.blog.findUnique({
+    where: { slug },
+    include: { 
+      author: true,
+      campaigns: {
+        select: {
+          id: true,
+          subject: true,
+          status: true,
+        },
+        take: 1,
+      },
+    },
+  });
+  
+  if (!blog) return null;
+  
+  return {
+    id: blog.id,
+    title: blog.title,
+    slug: blog.slug,
+    category: blog.category,
+    excerpt: blog.excerpt,
+    content: blog.content,
+    imageUrl: blog.imageUrl,
+    published: blog.published,
+    publishedAt: blog.publishedAt?.toISOString() || null,
+    createdAt: blog.createdAt.toISOString(),
+    updatedAt: blog.updatedAt.toISOString(),
+    authorId: blog.authorId,
+    seo: {
+      metaTitle: blog.seoMetaTitle || undefined,
+      metaDescription: blog.seoMetaDescription || undefined,
+      keywords: blog.seoKeywords || undefined,
+      ogTitle: blog.seoOgTitle || undefined,
+      ogDescription: blog.seoOgDescription || undefined,
+      ogImage: blog.seoOgImage || undefined,
+      twitterCard: blog.seoTwitterCard || undefined,
+      twitterTitle: blog.seoTwitterTitle || undefined,
+      twitterDescription: blog.seoTwitterDescription || undefined,
+      twitterImage: blog.seoTwitterImage || undefined,
+    },
+  };
+}
+
 export async function getBlogCampaign(blogId: string): Promise<{ id: string; subject: string; status: string } | null> {
   const campaign = await prisma.campaign.findFirst({
     where: { blogId },
