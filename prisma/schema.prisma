@@ -336,7 +336,7 @@ model EmailCronJob {
   isEnabled     Boolean  @default(false) // Whether the cron job is enabled
   schedule      String   @default("0 */6 * * *") // Cron schedule (default: every 6 hours)
   syncEmails    Boolean  @default(true) // Whether to sync emails from Gmail
-  analyzeEmails Boolean  @default(true) // Whether to analyze emails after syncing
+  analyzeEmails Boolean  @default(false) // Whether to analyze emails after syncing (default: false - only fetch)
   aiIntegrationId String? // AI Integration ID to use for analysis
   lastRun       DateTime? // Last time the cron job ran
   lastSyncAt    DateTime? // Last time emails were synced

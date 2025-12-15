@@ -352,27 +352,20 @@ export default function SubscribersPage() {
         </div>
       )}
 
-      {/* Filter Buttons */}
-      <div className="flex gap-2 flex-wrap">
-        {([
-          { key: 'all', label: 'All', count: subscribers.length },
-          { key: 'active', label: 'Active', count: activeCount },
-          { key: 'churned', label: 'Churned', count: churnedCount },
-          { key: 'synced', label: 'Synced', count: subscribers.filter(s => s.syncedToSender).length },
-          { key: 'unsynced', label: 'Not Synced', count: unsyncedCount },
-        ] as const).map((filterType) => (
-          <button
-            key={filterType.key}
-            onClick={() => setFilter(filterType.key as typeof filter)}
-            className={`px-4 py-2 text-xs font-bold uppercase tracking-widest transition-colors ${
-              filter === filterType.key
-                ? 'bg-[var(--primary-mint)] text-black'
-                : 'bg-[var(--rich-black)] text-gray-400 hover:text-white border border-[var(--border-color)]'
-            }`}
-          >
-            {filterType.label} ({filterType.count})
-          </button>
-        ))}
+      {/* Filter Dropdown */}
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-gray-400 uppercase tracking-widest font-bold flex-shrink-0">Filter:</span>
+        <select
+          value={filter}
+          onChange={(e) => setFilter(e.target.value as typeof filter)}
+          className="px-3 py-1.5 text-xs font-bold uppercase tracking-widest bg-[var(--rich-black)] border border-[var(--border-color)] text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors min-h-[32px]"
+        >
+          <option value="all">All ({subscribers.length})</option>
+          <option value="active">Active ({activeCount})</option>
+          <option value="churned">Churned ({churnedCount})</option>
+          <option value="synced">Synced ({subscribers.filter(s => s.syncedToSender).length})</option>
+          <option value="unsynced">Not Synced ({unsyncedCount})</option>
+        </select>
       </div>
 
       {/* Subscribers Table */}

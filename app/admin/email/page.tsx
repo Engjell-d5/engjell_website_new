@@ -1,59 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Mail, RefreshCw, Sparkles, CheckCircle, XCircle, AlertCircle, Clock, Trash2, ExternalLink, LogOut, X, Zap, Search, Filter, XSquare, ChevronLeft, ChevronRight } from 'lucide-react';
-
-interface Email {
-  id: string;
-  gmailId: string;
-  threadId: string;
-  subject: string;
-  from: string;
-  to?: string | null;
-  snippet?: string | null;
-  body?: string | null;
-  bodyText?: string | null;
-  receivedAt: string;
-  isRead: boolean;
-  isAnalyzed: boolean;
-  syncedAt: string;
-  lastSyncedAt?: string | null;
-  tasks?: EmailTask[];
-}
-
-interface EmailThread {
-  threadId: string;
-  subject: string;
-  emails: Email[];
-  latestEmail: Email;
-  isRead: boolean;
-  isAnalyzed: boolean;
-  isIrrelevant: boolean;
-  unreadCount: number;
-  totalCount: number;
-  tasks: EmailTask[];
-}
-
-interface EmailTask {
-  id: string;
-  emailId: string;
-  title: string;
-  description?: string | null;
-  priority: 'low' | 'medium' | 'high';
-  status: 'pending' | 'in_progress' | 'completed' | 'cancelled';
-  aiAnalysis?: string | null;
-  externalTaskId?: string | null;
-  createdAt: string;
-  updatedAt: string;
-  email?: Email;
-}
-
-interface AiIntegration {
-  id: string;
-  name: string;
-  provider: string;
-  isActive: boolean;
-}
+import { Mail, RefreshCw, Sparkles, CheckCircle, XCircle, LogOut, Search, Filter, XSquare, Trash2 } from 'lucide-react';
+import type { EmailThread, EmailTask, AiIntegration } from '@/types/admin';
+import EmailsTab from '@/components/admin/email/EmailsTab';
+import TasksTab from '@/components/admin/email/TasksTab';
+import CronTab from '@/components/admin/email/CronTab';
 
 export default function EmailPage() {
   const [activeTab, setActiveTab] = useState<'emails' | 'tasks' | 'cron'>('emails');
@@ -637,6 +589,29 @@ export default function EmailPage() {
     }
   };
 
+  const handleClearAllTasks = async () => {
+    if (!confirm('Are you sure you want to delete ALL tasks? This action cannot be undone.')) {
+      return;
+    }
+
+    setMessage(null);
+    try {
+      const response = await fetch('/api/email/tasks', {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setMessage({ type: 'success', text: 'All tasks deleted successfully' });
+        await fetchTasks();
+      } else {
+        const error = await response.json();
+        setMessage({ type: 'error', text: error.error || 'Failed to delete all tasks' });
+      }
+    } catch (error) {
+      setMessage({ type: 'error', text: 'Failed to delete all tasks' });
+    }
+  };
+
   const getPriorityColor = (priority: string) => {
     switch (priority) {
       case 'high':
@@ -873,636 +848,52 @@ export default function EmailPage() {
         </div>
 
         <div className="p-4 md:p-6">
-            {activeTab === 'emails' ? (
-              <div>
-                {threads.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Mail className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-400">No emails found. Sync your emails to get started.</p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {threads.map((thread) => {
-                      const isExpanded = expandedThreads.has(thread.threadId);
-                      const displayEmails = isExpanded ? thread.emails : [thread.latestEmail];
-                      
-                      return (
-                        <div
-                          key={thread.threadId}
-                          className="border border-[var(--border-color)] hover:border-[var(--primary-mint)] transition-colors"
-                        >
-                          {/* Thread Header */}
-                          <div className="p-3 md:p-4">
-                            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-4">
-                              <div className="flex-1 min-w-0">
-                                <div className="flex flex-wrap items-center gap-2 mb-2">
-                                  <h3 className="font-semibold text-white text-sm md:text-base break-words">{thread.subject}</h3>
-                                  {!thread.isRead && (
-                                    <span className="w-2 h-2 bg-[var(--primary-mint)] rounded-full flex-shrink-0"></span>
-                                  )}
-                                  {thread.totalCount > 1 && (
-                                    <span className="px-2 py-0.5 text-xs bg-[var(--rich-black)] border border-[var(--border-color)] text-gray-400 flex-shrink-0">
-                                      {thread.totalCount} message{thread.totalCount !== 1 ? 's' : ''}
-                                    </span>
-                                  )}
-                                  {thread.unreadCount > 0 && (
-                                    <span className="px-2 py-0.5 text-xs bg-red-900/20 text-red-400 border border-red-500 flex-shrink-0">
-                                      {thread.unreadCount} unread
-                                    </span>
-                                  )}
-                                </div>
-                                <p className="text-xs md:text-sm text-gray-400 mb-1 break-words">
-                                  <span className="font-medium text-gray-300">From:</span> {thread.latestEmail.from}
-                                </p>
-                                {thread.latestEmail.snippet && (
-                                  <p className="text-xs md:text-sm text-gray-500 mt-2 line-clamp-2 break-words">{thread.latestEmail.snippet}</p>
-                                )}
-                                <p className="text-xs text-gray-500 mt-2">{formatDate(thread.latestEmail.receivedAt)}</p>
-                                {thread.tasks && thread.tasks.length > 0 && (
-                                  <div className="mt-3 flex items-center gap-2">
-                                    <span className="text-xs text-gray-500">
-                                      {thread.tasks.length} task{thread.tasks.length !== 1 ? 's' : ''} generated
-                                    </span>
-                                  </div>
-                                )}
-                              </div>
-                              <div className="flex flex-wrap gap-2 md:ml-4 flex-shrink-0">
-                                <button
-                                  onClick={() => setSelectedThread(thread)}
-                                  className="px-3 md:px-4 py-2 bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:bg-[var(--rich-black)]/80 text-xs font-bold uppercase tracking-widest transition-colors min-h-[44px]"
-                                >
-                                  View
-                                </button>
-                                {!thread.isAnalyzed && (
-                                  <button
-                                    onClick={() => handleAnalyze(thread.threadId)}
-                                    disabled={analyzing === thread.threadId}
-                                    className="px-3 md:px-4 py-2 bg-[var(--primary-mint)] text-black hover:bg-[var(--primary-mint)]/90 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1 min-h-[44px]"
-                                  >
-                                    <Sparkles className={`w-3 h-3 flex-shrink-0 ${analyzing === thread.threadId ? 'animate-spin' : ''}`} />
-                                    Analyze
-                                  </button>
-                                )}
-                                {thread.isAnalyzed && (
-                                  <span className="px-3 py-2 text-xs text-gray-400 uppercase tracking-widest flex items-center gap-1 min-h-[44px]">
-                                    <CheckCircle className="w-3 h-3 flex-shrink-0" />
-                                    Analyzed
-                                  </span>
-                                )}
-                                <button
-                                  onClick={() => handleMarkIrrelevant(thread.threadId, !thread.isIrrelevant)}
-                                  className="px-3 md:px-4 py-2 bg-[var(--rich-black)] border border-gray-500/50 text-gray-400 hover:bg-gray-900/20 text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1 min-h-[44px]"
-                                  title={thread.isIrrelevant ? 'Mark as relevant' : 'Mark as irrelevant'}
-                                >
-                                  <XSquare className="w-3 h-3 flex-shrink-0" />
-                                  <span className="hidden sm:inline">{thread.isIrrelevant ? 'Relevant' : 'Irrelevant'}</span>
-                                  <span className="sm:hidden">{thread.isIrrelevant ? 'Relevant' : 'Irrel'}</span>
-                                </button>
-                                <button
-                                  onClick={() => handleDelete(thread.threadId)}
-                                  disabled={deleting === thread.threadId}
-                                  className="px-3 md:px-4 py-2 bg-[var(--rich-black)] border border-red-500/50 text-red-400 hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1 min-h-[44px]"
-                                >
-                                  <Trash2 className={`w-3 h-3 flex-shrink-0 ${deleting === thread.threadId ? 'animate-spin' : ''}`} />
-                                  Delete
-                                </button>
-                              </div>
-                            </div>
-                            
-                            {/* Expand/Collapse Thread */}
-                            {thread.totalCount > 1 && (
-                              <button
-                                onClick={() => toggleThreadExpansion(thread.threadId)}
-                                className="mt-3 text-xs text-gray-400 hover:text-[var(--primary-mint)] transition-colors flex items-center gap-1"
-                              >
-                                {isExpanded ? (
-                                  <>
-                                    <X className="w-3 h-3" />
-                                    Collapse thread
-                                  </>
-                                ) : (
-                                  <>
-                                    <Mail className="w-3 h-3" />
-                                    Show {thread.totalCount - 1} more message{thread.totalCount - 1 !== 1 ? 's' : ''} in thread
-                                  </>
-                                )}
-                              </button>
-                            )}
-                          </div>
-                          
-                          {/* Expanded Thread Messages */}
-                          {isExpanded && thread.emails.length > 1 && (
-                            <div className="border-t border-[var(--border-color)] bg-[var(--rich-black)]/50">
-                              {thread.emails.slice(0, -1).reverse().map((email, idx) => (
-                                <div key={email.id} className="p-4 border-b border-[var(--border-color)] last:border-b-0">
-                                  <div className="flex items-start gap-3">
-                                    <div className="w-1 h-full bg-[var(--border-color)]"></div>
-                                    <div className="flex-1">
-                                      <div className="flex items-center gap-2 mb-1">
-                                        <p className="text-xs text-gray-400">
-                                          <span className="font-medium text-gray-300">From:</span> {email.from}
-                                        </p>
-                                        <span className="text-xs text-gray-500">{formatDate(email.receivedAt)}</span>
-                                        {!email.isRead && (
-                                          <span className="w-1.5 h-1.5 bg-[var(--primary-mint)] rounded-full"></span>
-                                        )}
-                                      </div>
-                                      {email.snippet && (
-                                        <p className="text-sm text-gray-500 mt-1 line-clamp-2">{email.snippet}</p>
-                                      )}
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-                
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="mt-6 flex items-center justify-between border-t border-[var(--border-color)] pt-4">
-                    <div className="text-sm text-gray-400">
-                      Showing {((currentPage - 1) * pageSize) + 1} to {Math.min(currentPage * pageSize, totalThreads)} of {totalThreads} threads
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                        disabled={currentPage === 1}
-                        className="px-3 py-1.5 bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:bg-[var(--rich-black)]/80 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1"
-                      >
-                        <ChevronLeft className="w-4 h-4" />
-                        Previous
-                      </button>
-                      <div className="flex items-center gap-1">
-                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                          let pageNum;
-                          if (totalPages <= 5) {
-                            pageNum = i + 1;
-                          } else if (currentPage <= 3) {
-                            pageNum = i + 1;
-                          } else if (currentPage >= totalPages - 2) {
-                            pageNum = totalPages - 4 + i;
-                          } else {
-                            pageNum = currentPage - 2 + i;
-                          }
-                          
-                          return (
-                            <button
-                              key={pageNum}
-                              onClick={() => setCurrentPage(pageNum)}
-                              className={`px-3 py-1.5 text-xs font-bold uppercase tracking-widest transition-colors ${
-                                currentPage === pageNum
-                                  ? 'bg-[var(--primary-mint)] text-black'
-                                  : 'bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:bg-[var(--rich-black)]/80'
-                              }`}
-                            >
-                              {pageNum}
-                            </button>
-                          );
-                        })}
-                      </div>
-                      <button
-                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                        disabled={currentPage === totalPages}
-                        className="px-3 py-1.5 bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:bg-[var(--rich-black)]/80 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1"
-                      >
-                        Next
-                        <ChevronRight className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ) : activeTab === 'tasks' ? (
-              <div>
-                {/* Task Status Filter */}
-                <div className="mb-6 flex flex-col sm:flex-row sm:items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <Filter className="w-4 h-4 text-gray-400" />
-                    <label className="text-sm text-gray-400 font-medium">Filter by status:</label>
-                  </div>
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setTaskStatusFilter('not_done')}
-                      className={`px-4 py-2 text-xs font-bold uppercase tracking-widest transition-colors ${
-                        taskStatusFilter === 'not_done'
-                          ? 'bg-[var(--primary-mint)] text-black'
-                          : 'bg-[var(--rich-black)] border border-[var(--border-color)] text-gray-400 hover:text-white'
-                      }`}
-                    >
-                      Not Done
-                    </button>
-                    <button
-                      onClick={() => setTaskStatusFilter('done')}
-                      className={`px-4 py-2 text-xs font-bold uppercase tracking-widest transition-colors ${
-                        taskStatusFilter === 'done'
-                          ? 'bg-[var(--primary-mint)] text-black'
-                          : 'bg-[var(--rich-black)] border border-[var(--border-color)] text-gray-400 hover:text-white'
-                      }`}
-                    >
-                      Done
-                    </button>
-                    <button
-                      onClick={() => setTaskStatusFilter('all')}
-                      className={`px-4 py-2 text-xs font-bold uppercase tracking-widest transition-colors ${
-                        taskStatusFilter === 'all'
-                          ? 'bg-[var(--primary-mint)] text-black'
-                          : 'bg-[var(--rich-black)] border border-[var(--border-color)] text-gray-400 hover:text-white'
-                      }`}
-                    >
-                      All
-                    </button>
-                  </div>
-                </div>
-
-                {tasks.length === 0 ? (
-                  <div className="text-center py-12">
-                    <CheckCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <p className="text-gray-400">
-                      {taskStatusFilter === 'not_done' 
-                        ? 'No incomplete tasks found.' 
-                        : taskStatusFilter === 'done'
-                        ? 'No completed tasks found.'
-                        : 'No tasks found. Analyze emails to generate tasks.'}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {tasks.map((task) => (
-                      <div
-                        key={task.id}
-                        className={`border border-[var(--border-color)] p-3 md:p-4 hover:border-[var(--primary-mint)] transition-colors ${
-                          task.status === 'completed' ? 'opacity-60' : ''
-                        }`}
-                      >
-                        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3 md:gap-4">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex flex-wrap items-center gap-2 mb-2">
-                              <h3 className={`font-semibold text-sm md:text-base break-words ${task.status === 'completed' ? 'text-gray-500 line-through' : 'text-white'}`}>
-                                {task.title}
-                              </h3>
-                              <span
-                                className={`px-2 py-1 text-xs font-medium uppercase tracking-widest border flex-shrink-0 ${getPriorityColor(
-                                  task.priority
-                                )}`}
-                              >
-                                {task.priority}
-                              </span>
-                              <span
-                                className={`px-2 py-1 text-xs font-medium uppercase tracking-widest border flex-shrink-0 ${getStatusColor(
-                                  task.status
-                                )}`}
-                              >
-                                {task.status.replace('_', ' ')}
-                              </span>
-                              {task.externalTaskId && (
-                                <span className="px-2 py-1 text-xs font-medium uppercase tracking-widest border border-green-500/50 bg-green-900/20 text-green-400 flex-shrink-0 flex items-center gap-1">
-                                  <ExternalLink className="w-3 h-3" />
-                                  Sent to External
-                                </span>
-                              )}
-                            </div>
-                            {task.description && (
-                              <p className={`text-xs md:text-sm mb-2 break-words ${task.status === 'completed' ? 'text-gray-500' : 'text-gray-400'}`}>
-                                {task.description}
-                              </p>
-                            )}
-                            {task.email && (
-                              <div className="mt-3 pt-3 border-t border-[var(--border-color)]">
-                                <p className="text-xs text-gray-500 break-words">
-                                  <span className="font-medium text-gray-300">From email:</span> {task.email.subject}
-                                </p>
-                                <p className="text-xs text-gray-500 mt-1 break-words">From: {task.email.from}</p>
-                              </div>
-                            )}
-                            <p className="text-xs text-gray-500 mt-2">{formatDate(task.createdAt)}</p>
-                          </div>
-                          <div className="flex flex-wrap gap-2 md:ml-4 md:flex-nowrap flex-shrink-0">
-                            {task.externalTaskId ? (
-                              <button
-                                disabled
-                                className="px-3 md:px-4 py-2 bg-green-900/20 border border-green-500/50 text-green-400 disabled:opacity-100 disabled:cursor-default text-xs font-bold uppercase tracking-widest flex items-center gap-1 min-h-[44px]"
-                                title={`Already sent to external platform (ID: ${task.externalTaskId})`}
-                              >
-                                <CheckCircle className="w-3 h-3 flex-shrink-0" />
-                                <span className="hidden sm:inline">Sent to External</span>
-                                <span className="sm:hidden">Sent</span>
-                              </button>
-                            ) : (
-                              <button
-                                onClick={() => handleCreateExternalTask(task.id)}
-                                disabled={creatingExternal === task.id}
-                                className="px-3 md:px-4 py-2 bg-[var(--rich-black)] border border-blue-500/50 text-blue-400 hover:bg-blue-900/20 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1 min-h-[44px]"
-                                title="Create task on external platform"
-                              >
-                                <ExternalLink className={`w-3 h-3 flex-shrink-0 ${creatingExternal === task.id ? 'animate-spin' : ''}`} />
-                                <span className="hidden sm:inline">{creatingExternal === task.id ? 'Creating...' : 'Create External'}</span>
-                                <span className="sm:hidden">External</span>
-                              </button>
-                            )}
-                            {task.status !== 'completed' && (
-                              <button
-                                onClick={() => handleMarkTaskDone(task.id)}
-                                disabled={updatingTask === task.id}
-                                className="px-3 md:px-4 py-2 bg-[var(--primary-mint)] text-black hover:bg-[var(--primary-mint)]/90 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1 min-h-[44px]"
-                                title="Mark as completed"
-                              >
-                                <CheckCircle className={`w-3 h-3 flex-shrink-0 ${updatingTask === task.id ? 'animate-spin' : ''}`} />
-                                Done
-                              </button>
-                            )}
-                            <button
-                              onClick={() => handleDeleteTask(task.id)}
-                              disabled={deletingTask === task.id}
-                              className="px-3 md:px-4 py-2 bg-[var(--rich-black)] border border-red-500/50 text-red-400 hover:bg-red-900/20 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1 min-h-[44px]"
-                              title="Delete task"
-                            >
-                              <Trash2 className={`w-3 h-3 flex-shrink-0 ${deletingTask === task.id ? 'animate-spin' : ''}`} />
-                              Delete
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ) : activeTab === 'cron' ? (
-              <div>
-                {cronLoading ? (
-                  <div className="text-center py-12">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[var(--primary-mint)] mx-auto"></div>
-                    <p className="mt-4 text-gray-400">Loading cron configuration...</p>
-                  </div>
-                ) : cronConfig ? (
-                  <div className="space-y-6">
-                    <div>
-                      <h2 className="text-xl text-white font-bebas mb-4">Email Sync & Analyze Cron Job</h2>
-                      <p className="text-sm text-gray-400 mb-6">
-                        Automatically sync emails from Gmail and analyze them for tasks on a schedule.
-                      </p>
-                    </div>
-
-                    {/* Cron Job Management */}
-                    <div className="border border-[var(--border-color)] p-4">
-                      <div className="flex items-center gap-3 mb-6">
-                        <Clock className="w-6 h-6 text-[var(--primary-mint)]" />
-                        <h3 className="text-lg text-white font-bebas">Cron Job Management</h3>
-                      </div>
-
-                      {cronStatus ? (
-                        <div className="space-y-4">
-                          <div className="flex items-center gap-3">
-                            <span className="text-sm text-gray-400">Status:</span>
-                            <div className="flex items-center gap-2">
-                              {cronStatus.running ? (
-                                <>
-                                  <CheckCircle className="w-5 h-5 text-green-500" />
-                                  <span className="text-green-500 font-semibold">Running</span>
-                                </>
-                              ) : (
-                                <>
-                                  <XCircle className="w-5 h-5 text-red-500" />
-                                  <span className="text-red-500 font-semibold">Stopped</span>
-                                </>
-                              )}
-                            </div>
-                          </div>
-
-                          <div className="flex items-center gap-3">
-                            <span className="text-sm text-gray-400">Schedule:</span>
-                            <span className="text-white font-mono text-sm">{cronStatus.schedule || '0 */6 * * *'}</span>
-                          </div>
-
-                          {cronStatus.nextRun && (
-                            <div className="flex items-center gap-3">
-                              <span className="text-sm text-gray-400">Next Run:</span>
-                              <span className="text-white text-sm">{new Date(cronStatus.nextRun).toLocaleString()}</span>
-                            </div>
-                          )}
-
-                          <div className="flex items-center gap-3">
-                            <span className="text-sm text-gray-400">Initialized:</span>
-                            {cronStatus.initialized ? (
-                              <CheckCircle className="w-5 h-5 text-green-500" />
-                            ) : (
-                              <XCircle className="w-5 h-5 text-red-500" />
-                            )}
-                          </div>
-
-                          <div className="flex items-center gap-3">
-                            <span className="text-sm text-gray-400">Enabled:</span>
-                            {cronStatus.isEnabled ? (
-                              <CheckCircle className="w-5 h-5 text-green-500" />
-                            ) : (
-                              <XCircle className="w-5 h-5 text-red-500" />
-                            )}
-                          </div>
-
-                          <div className="flex flex-wrap gap-3 pt-4 border-t border-[var(--border-color)]">
-                            <button
-                              onClick={() => handleCronAction('start')}
-                              disabled={cronActionLoading || cronStatus.running}
-                              className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-bold text-xs uppercase tracking-widest transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              {cronActionLoading ? 'Starting...' : 'Start Cron Job'}
-                            </button>
-                            <button
-                              onClick={() => handleCronAction('stop')}
-                              disabled={cronActionLoading || !cronStatus.running}
-                              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs uppercase tracking-widest transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              {cronActionLoading ? 'Stopping...' : 'Stop Cron Job'}
-                            </button>
-                            <button
-                              onClick={() => handleCronAction('restart')}
-                              disabled={cronActionLoading}
-                              className="px-4 py-2 bg-[var(--secondary-orange)] hover:bg-orange-600 text-white font-bold text-xs uppercase tracking-widest transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              {cronActionLoading ? 'Restarting...' : 'Restart Cron Job'}
-                            </button>
-                            <button
-                              onClick={fetchCronStatus}
-                              disabled={cronActionLoading}
-                              className="px-4 py-2 bg-[var(--primary-mint)] hover:bg-white text-black font-bold text-xs uppercase tracking-widest transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                            >
-                              <RefreshCw className={`w-4 h-4 ${cronActionLoading ? 'animate-spin' : ''}`} />
-                              Refresh Status
-                            </button>
-                          </div>
-
-                          <div className="mt-4 p-4 bg-[var(--bg-dark)] border border-[var(--border-color)] rounded">
-                            <p className="text-xs text-gray-400">
-                              <strong className="text-white">How it works:</strong> The cron job automatically syncs emails from Gmail and analyzes them for tasks according to the schedule above. 
-                              You can start, stop, or restart the cron job at any time. Note: The cron job will only run if it's enabled in the configuration below.
-                            </p>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="text-gray-400 text-sm">Loading cron status...</div>
-                      )}
-                    </div>
-
-                    {/* Enable/Disable Toggle */}
-                    <div className="border border-[var(--border-color)] p-4">
-                      <div className="flex items-center justify-between mb-4">
-                        <div>
-                          <h3 className="text-lg text-white font-semibold mb-1">Enable Cron Job</h3>
-                          <p className="text-sm text-gray-400">
-                            When enabled, the cron job will automatically sync and analyze emails according to the schedule below.
-                          </p>
-                        </div>
-                        <label className="relative inline-flex items-center cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={cronConfig.isEnabled}
-                            onChange={(e) => setCronConfig({ ...cronConfig, isEnabled: e.target.checked })}
-                            className="sr-only peer"
-                          />
-                          <div className="w-14 h-7 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[var(--primary-mint)]/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-[var(--primary-mint)]"></div>
-                        </label>
-                      </div>
-                    </div>
-
-                    {/* Schedule Configuration */}
-                    <div className="border border-[var(--border-color)] p-4">
-                      <h3 className="text-lg text-white font-semibold mb-4">Schedule</h3>
-                      <div className="space-y-4">
-                        <div>
-                          <label className="block text-sm text-gray-300 mb-2">
-                            Cron Schedule (minute hour day month dayOfWeek)
-                          </label>
-                          <input
-                            type="text"
-                            value={cronConfig.schedule}
-                            onChange={(e) => setCronConfig({ ...cronConfig, schedule: e.target.value })}
-                            placeholder="0 */6 * * *"
-                            className="w-full px-4 py-2 bg-[var(--bg-dark)] border border-[var(--border-color)] text-white placeholder-gray-500 focus:outline-none focus:border-[var(--primary-mint)] transition-colors"
-                          />
-                          <p className="text-xs text-gray-500 mt-2">
-                            Examples: "0 */6 * * *" (every 6 hours), "0 2 * * *" (daily at 2 AM), "*/30 * * * *" (every 30 minutes)
-                          </p>
-                        </div>
-                        {cronConfig.nextRun && (
-                          <div className="p-3 bg-[var(--bg-dark)] border border-[var(--border-color)]">
-                            <p className="text-sm text-gray-400">
-                              <span className="font-medium text-gray-300">Next Run:</span>{' '}
-                              {new Date(cronConfig.nextRun).toLocaleString()}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Options */}
-                    <div className="border border-[var(--border-color)] p-4">
-                      <h3 className="text-lg text-white font-semibold mb-4">Options</h3>
-                      <div className="space-y-4">
-                        <label className="flex items-center gap-3 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={cronConfig.syncEmails}
-                            onChange={(e) => setCronConfig({ ...cronConfig, syncEmails: e.target.checked })}
-                            className="w-4 h-4 text-[var(--primary-mint)] bg-[var(--bg-dark)] border-[var(--border-color)] rounded focus:ring-[var(--primary-mint)]"
-                          />
-                          <div>
-                            <span className="text-white font-medium">Sync Emails</span>
-                            <p className="text-sm text-gray-400">Fetch new emails from Gmail</p>
-                          </div>
-                        </label>
-                        <label className="flex items-center gap-3 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={cronConfig.analyzeEmails}
-                            onChange={(e) => setCronConfig({ ...cronConfig, analyzeEmails: e.target.checked })}
-                            className="w-4 h-4 text-[var(--primary-mint)] bg-[var(--bg-dark)] border-[var(--border-color)] rounded focus:ring-[var(--primary-mint)]"
-                          />
-                          <div>
-                            <span className="text-white font-medium">Analyze Emails</span>
-                            <p className="text-sm text-gray-400">Automatically analyze unanalyzed emails for tasks</p>
-                          </div>
-                        </label>
-                        {cronConfig.analyzeEmails && (
-                          <div className="ml-7">
-                            <label className="block text-sm text-gray-300 mb-2">AI Integration</label>
-                            <select
-                              value={cronConfig.aiIntegrationId || ''}
-                              onChange={(e) => setCronConfig({ ...cronConfig, aiIntegrationId: e.target.value || null })}
-                              className="w-full px-4 py-2 bg-[var(--bg-dark)] border border-[var(--border-color)] text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors"
-                            >
-                              <option value="">Select AI Integration</option>
-                              {aiIntegrations.map((integration) => (
-                                <option key={integration.id} value={integration.id}>
-                                  {integration.name} ({integration.provider})
-                                </option>
-                              ))}
-                            </select>
-                            {aiIntegrations.length === 0 && (
-                              <p className="text-xs text-red-400 mt-2">
-                                No active AI integrations found. Please configure one first.
-                              </p>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Last Run Information */}
-                    {(cronConfig.lastRun || cronConfig.lastSyncAt || cronConfig.lastAnalyzeAt) && (
-                      <div className="border border-[var(--border-color)] p-4">
-                        <h3 className="text-lg text-white font-semibold mb-4">Last Run Information</h3>
-                        <div className="space-y-2 text-sm">
-                          {cronConfig.lastRun && (
-                            <p className="text-gray-400">
-                              <span className="font-medium text-gray-300">Last Run:</span>{' '}
-                              {new Date(cronConfig.lastRun).toLocaleString()}
-                            </p>
-                          )}
-                          {cronConfig.lastSyncAt && (
-                            <p className="text-gray-400">
-                              <span className="font-medium text-gray-300">Last Sync:</span>{' '}
-                              {new Date(cronConfig.lastSyncAt).toLocaleString()}
-                            </p>
-                          )}
-                          {cronConfig.lastAnalyzeAt && (
-                            <p className="text-gray-400">
-                              <span className="font-medium text-gray-300">Last Analysis:</span>{' '}
-                              {new Date(cronConfig.lastAnalyzeAt).toLocaleString()}
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Save Button */}
-                    <div className="flex justify-end">
-                      <button
-                        onClick={handleSaveCronConfig}
-                        disabled={cronSaving || (cronConfig.analyzeEmails && !cronConfig.aiIntegrationId)}
-                        className="px-6 py-2 bg-[var(--primary-mint)] text-black hover:bg-[var(--primary-mint)]/90 disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-2"
-                      >
-                        {cronSaving ? (
-                          <>
-                            <RefreshCw className="w-4 h-4 animate-spin" />
-                            Saving...
-                          </>
-                        ) : (
-                          'Save Configuration'
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center py-12">
-                    <p className="text-gray-400">Failed to load cron configuration</p>
-                  </div>
-                )}
-              </div>
-            ) : null}
+            {activeTab === 'emails' && (
+              <EmailsTab
+                threads={threads}
+                expandedThreads={expandedThreads}
+                analyzing={analyzing}
+                deleting={deleting}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                pageSize={pageSize}
+                totalThreads={totalThreads}
+                onAnalyze={handleAnalyze}
+                onDelete={handleDelete}
+                onMarkIrrelevant={handleMarkIrrelevant}
+                onToggleExpansion={toggleThreadExpansion}
+                onSelectThread={setSelectedThread}
+                onPageChange={setCurrentPage}
+              />
+            )}
+            {activeTab === 'tasks' && (
+              <TasksTab
+                tasks={tasks}
+                taskStatusFilter={taskStatusFilter}
+                updatingTask={updatingTask}
+                deletingTask={deletingTask}
+                creatingExternal={creatingExternal}
+                onTaskStatusFilterChange={setTaskStatusFilter}
+                onMarkTaskDone={handleMarkTaskDone}
+                onDeleteTask={handleDeleteTask}
+                onCreateExternalTask={handleCreateExternalTask}
+                onClearAllTasks={handleClearAllTasks}
+              />
+            )}
+            {activeTab === 'cron' && (
+              <CronTab
+                cronLoading={cronLoading}
+                cronSaving={cronSaving}
+                cronActionLoading={cronActionLoading}
+                cronConfig={cronConfig}
+                cronStatus={cronStatus}
+                aiIntegrations={aiIntegrations}
+                onCronConfigChange={setCronConfig}
+                onCronAction={handleCronAction}
+                onRefreshStatus={fetchCronStatus}
+                onSaveConfig={handleSaveCronConfig}
+              />
+            )}
           </div>
         </div>
 

@@ -136,11 +136,11 @@ export async function middleware(request: NextRequest) {
     // Set Content-Security-Policy for admin routes
     const csp = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-eval' 'unsafe-inline'", // Needed for Next.js
-      "style-src 'self' 'unsafe-inline'", // Needed for CSS-in-JS
-      "img-src 'self' data: https:",
-      "font-src 'self' data:",
-      "connect-src 'self'",
+      "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com", // Needed for Next.js and Google Analytics
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com", // Needed for CSS-in-JS and Google Fonts
+      "img-src 'self' data: https: https://www.googletagmanager.com https://www.google-analytics.com",
+      "font-src 'self' data: https://fonts.gstatic.com", // Allow Google Fonts
+      "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com", // Allow Google Analytics and Tag Manager
       "frame-ancestors 'none'",
     ].join('; ');
     response.headers.set('Content-Security-Policy', csp);
@@ -153,6 +153,17 @@ export async function middleware(request: NextRequest) {
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('X-Frame-Options', 'SAMEORIGIN');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  
+  // Set Content-Security-Policy for non-admin routes (allows Google Analytics and Fonts)
+  const publicCsp = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com", // Needed for Next.js and Google Analytics
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com", // Needed for CSS-in-JS and Google Fonts
+    "img-src 'self' data: https: https://www.googletagmanager.com https://www.google-analytics.com",
+    "font-src 'self' data: https://fonts.gstatic.com", // Allow Google Fonts
+    "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com", // Allow Google Analytics and Tag Manager
+  ].join('; ');
+  response.headers.set('Content-Security-Policy', publicCsp);
   
   return response;
 }

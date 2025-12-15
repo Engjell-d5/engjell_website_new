@@ -1,172 +1,12 @@
 'use client';
 
 import { useEffect, useState, useRef } from 'react';
-import { Calendar, Image as ImageIcon, Send, Plus, Edit, Trash2, CheckCircle, XCircle, Clock, Linkedin, Twitter, Instagram, Rocket, Video, X, Upload, Repeat, RefreshCw, Sparkles, Lightbulb, MessageSquare, Search, Filter } from 'lucide-react';
-import Image from 'next/image';
-import DateTimePicker from '@/components/DateTimePicker';
-
-interface MediaAsset {
-  type: 'image' | 'video';
-  url: string;
-  filename?: string;
-}
-
-interface SocialPost {
-  id: string;
-  content: string;
-  mediaAssets: string | null; // JSON string of MediaAsset[]
-  platforms: string;
-  scheduledFor: string;
-  publishedAt: string | null;
-  status: string;
-  publishedOn: string | null;
-  errorMessage: string | null;
-  timesPosted: number;
-  comments: string | null; // JSON string of string[]
-  createdAt: string;
-}
-
-interface SocialConnection {
-  id: string;
-  platform: string;
-  isActive: boolean;
-  username: string | null;
-  profileImage: string | null;
-  organizations?: string | null; // JSON string of organizations
-}
-
-interface LinkedInOrganizationsManagerProps {
-  connection: SocialConnection;
-  onUpdate: () => void;
-}
-
-function LinkedInOrganizationsManager({ connection, onUpdate }: LinkedInOrganizationsManagerProps) {
-  const [organizations, setOrganizations] = useState<Array<{ id: string; name: string; urn: string }>>([]);
-  const [newOrgName, setNewOrgName] = useState('');
-  const [newOrgUrn, setNewOrgUrn] = useState('');
-  const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    if (connection.organizations) {
-      try {
-        const parsed = JSON.parse(connection.organizations);
-        setOrganizations(Array.isArray(parsed) ? parsed : []);
-      } catch (e) {
-        console.error('Error parsing organizations:', e);
-        setOrganizations([]);
-      }
-    } else {
-      setOrganizations([]);
-    }
-  }, [connection.organizations]);
-
-  const handleSave = async () => {
-    setSaving(true);
-    try {
-      const response = await fetch('/api/social/connections', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          platform: 'linkedin',
-          organizations,
-        }),
-      });
-
-      if (response.ok) {
-        onUpdate();
-      } else {
-        const error = await response.json();
-        alert(error.error || 'Failed to save organizations');
-      }
-    } catch (error) {
-      console.error('Error saving organizations:', error);
-      alert('Failed to save organizations');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const handleAdd = () => {
-    if (newOrgName.trim() && newOrgUrn.trim()) {
-      const newOrg = {
-        id: Date.now().toString(),
-        name: newOrgName.trim(),
-        urn: newOrgUrn.trim(),
-      };
-      setOrganizations([...organizations, newOrg]);
-      setNewOrgName('');
-      setNewOrgUrn('');
-    }
-  };
-
-  const handleRemove = (id: string) => {
-    setOrganizations(organizations.filter((o) => o.id !== id));
-  };
-
-  return (
-    <div className="mt-6 p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
-      <h3 className="text-lg text-white font-bebas mb-4">LinkedIn Organizations for Mentions</h3>
-      <p className="text-xs text-gray-400 mb-4">
-        Add LinkedIn organization URNs to enable @mention functionality when creating posts. These organizations will be available when you select LinkedIn as a platform.
-      </p>
-      
-      <div className="space-y-3 mb-4">
-        <div className="flex items-center gap-2">
-          <input
-            type="text"
-            value={newOrgName}
-            onChange={(e) => setNewOrgName(e.target.value)}
-            placeholder="Organization Name (e.g., My Company)"
-            className="flex-1 bg-black border border-[var(--border-color)] p-2 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors font-montserrat"
-          />
-          <input
-            type="text"
-            value={newOrgUrn}
-            onChange={(e) => setNewOrgUrn(e.target.value)}
-            placeholder="urn:li:organization:12345"
-            className="flex-1 bg-black border border-[var(--border-color)] p-2 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors font-montserrat"
-          />
-          <button
-            type="button"
-            onClick={handleAdd}
-            className="px-3 py-2 bg-[var(--primary-mint)] text-black hover:bg-[var(--primary-mint)]/80 transition-colors text-xs font-bold uppercase"
-          >
-            Add
-          </button>
-        </div>
-        
-        {organizations.length > 0 && (
-          <div className="space-y-2">
-            {organizations.map((org) => (
-              <div key={org.id} className="flex items-center justify-between p-2 bg-black border border-[var(--border-color)]">
-                <div className="flex-1">
-                  <span className="text-xs font-semibold text-white">{org.name}</span>
-                  <span className="text-[10px] text-gray-400 ml-2">{org.urn}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleRemove(org.id)}
-                  className="ml-2 p-1 text-red-400 hover:text-red-300 transition-colors"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-      
-      <button
-        type="button"
-        onClick={handleSave}
-        disabled={saving}
-        className="px-4 py-2 bg-[var(--primary-mint)] text-black hover:bg-[var(--primary-mint)]/80 transition-colors text-xs font-bold uppercase disabled:opacity-50"
-      >
-        {saving ? 'Saving...' : 'Save Organizations'}
-      </button>
-    </div>
-  );
-}
+import { Plus, Lightbulb, XCircle, RefreshCw, Linkedin, Twitter, Instagram, Rocket, CheckCircle, Clock, X, Sparkles } from 'lucide-react';
+import type { SocialPost, SocialConnection, MediaAsset, PostIdea } from '@/types/admin';
+import ConnectionsTab from '@/components/admin/social/ConnectionsTab';
+import PostsTab from '@/components/admin/social/PostsTab';
+import IdeasTab from '@/components/admin/social/IdeasTab';
+import CronTab from '@/components/admin/social/CronTab';
 
 export default function SocialMediaPage() {
   const [posts, setPosts] = useState<SocialPost[]>([]);
@@ -253,7 +93,7 @@ export default function SocialMediaPage() {
   const [postsToGenerate, setPostsToGenerate] = useState<number>(3); // Default to 3 posts
   const [expandedPosts, setExpandedPosts] = useState<Set<string>>(new Set()); // Track which posts are expanded
   const [searchQuery, setSearchQuery] = useState(''); // Search query for posts
-  const [statusFilter, setStatusFilter] = useState<string>('all'); // Filter by status: 'all', 'scheduled', 'published', 'draft', 'failed'
+  const [statusFilter, setStatusFilter] = useState<string>('scheduled'); // Filter by status: 'all', 'scheduled', 'published', 'draft', 'failed'
   const [platformFilter, setPlatformFilter] = useState<string>('all'); // Filter by platform: 'all', 'linkedin', 'twitter', 'instagram', 'threads'
   const [creatingPostsFromPost, setCreatingPostsFromPost] = useState(false); // Track if creating posts from post
   const [targetPlatformForPosts, setTargetPlatformForPosts] = useState<string>('threads'); // Target platform for generated posts
@@ -1134,6 +974,16 @@ export default function SocialMediaPage() {
     return new Date(dateString).toLocaleString();
   };
 
+  const handleRefinePost = (post: SocialPost) => {
+    setPostToRefine(post);
+    setRefinementPrompt('');
+    setRefinedContent('');
+    setAdaptationPrompt('');
+    setTargetPlatformForPosts('threads');
+    setPostsToCreateFromPost(3);
+    setShowRefineModal(true);
+  };
+
   // Convert UTC datetime to local datetime string for datetime-local input
   // Format: YYYY-MM-DDTHH:mm (no timezone, local time)
   const utcToLocalDateTime = (utcString: string): string => {
@@ -1583,813 +1433,75 @@ export default function SocialMediaPage() {
 
       {/* Tab Content: Connected Accounts */}
       {activeTab === 'connections' && (
-      <div className="classic-panel p-4 md:p-6 mb-8">
-        <h2 className="text-xl md:text-2xl text-white font-bebas mb-4">CONNECTED ACCOUNTS</h2>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-          {['linkedin', 'twitter', 'instagram', 'threads'].map((platform) => {
-            const connection = connections.find(c => c.platform === platform);
-            return (
-              <div
-                key={platform}
-                className={`p-4 border ${
-                  connection?.isActive
-                    ? 'border-[var(--primary-mint)] bg-[var(--rich-black)]'
-                    : 'border-[var(--border-color)] bg-[var(--rich-black)] opacity-50'
-                }`}
-              >
-                <div className="flex items-center gap-3 mb-2">
-                  {getPlatformIcon(platform)}
-                  <span className="text-sm font-bold text-white uppercase">{platform}</span>
-                </div>
-                {connection?.isActive ? (
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <CheckCircle className="w-4 h-4 text-[var(--primary-mint)]" />
-                      <span className="text-xs text-gray-400">Connected</span>
-                    </div>
-                    {connection.username && (
-                      <p className="text-[10px] text-gray-500 truncate mb-2">
-                        {connection.platform === 'instagram' && connection.username.includes('|')
-                          ? connection.username.split('|')[0]
-                          : connection.username}
-                      </p>
-                    )}
-                    <button
-                      onClick={() => handleDisconnect(platform)}
-                      className="text-xs text-red-400 hover:text-red-300 hover:underline transition-colors"
-                    >
-                      Disconnect
-                    </button>
-                  </div>
-                ) : (
-                  <a
-                    href={`/api/social/connect/${platform}`}
-                    className="text-xs text-[var(--primary-mint)] hover:underline"
-                  >
-                    Connect Account
-                  </a>
-                )}
-              </div>
-            );
-          })}
-        </div>
-        
-        {/* LinkedIn Organizations Management */}
-        {connections.find(c => c.platform === 'linkedin' && c.isActive) && (
-          <LinkedInOrganizationsManager 
-            connection={connections.find(c => c.platform === 'linkedin')!}
-            onUpdate={fetchConnections}
-          />
-        )}
-      </div>
+        <ConnectionsTab
+          connections={connections}
+          onDisconnect={handleDisconnect}
+          onRefresh={fetchConnections}
+        />
       )}
 
       {/* Tab Content: Scheduled Posts */}
       {activeTab === 'posts' && (
-        <>
-      {/* Schedule Post Form Modal */}
-      {showForm && (
-        <div className="fixed inset-0 bg-black/50 flex items-start justify-center z-[99999] p-4 overflow-y-auto" onClick={(e) => {
-          if (e.target === e.currentTarget) {
-            setShowForm(false);
-            setEditingPost(null);
-            setFormData({ content: '', mediaAssets: [], platforms: [], scheduledFor: '', comments: [], mentions: [] });
-            setMentionAutocomplete(null);
-            setSelectedLinkedInOrgUrn('');
-          }
-        }}>
-          <div className="classic-panel p-4 md:p-6 mb-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto mt-8">
-            <div className="flex items-center justify-between mb-4 md:mb-6">
-              <h2 className="text-xl md:text-2xl text-white font-bebas">
-            {editingPost ? 'EDIT POST' : 'SCHEDULE NEW POST'}
-          </h2>
-              <button
-                onClick={() => {
-                  setShowForm(false);
-                  setEditingPost(null);
-                  setFormData({ content: '', mediaAssets: [], platforms: [], scheduledFor: '', comments: [], mentions: [] });
-            setMentionAutocomplete(null);
-            setSelectedLinkedInOrgUrn('');
-                }}
-                className="p-2 hover:bg-[var(--rich-black)] transition-colors"
-                title="Close"
-              >
-                <X className="w-5 h-5 text-white" />
-              </button>
-            </div>
-            <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
-            <div className="relative">
-              <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
-                Content
-                {formData.platforms.includes('linkedin') && (
-                  <span className="text-[8px] text-gray-600 ml-2">(Type @ to mention people or organizations)</span>
-                )}
-              </label>
-              <textarea
-                ref={contentTextareaRef}
-                value={formData.content}
-                onChange={handleContentChange}
-                onKeyDown={handleContentKeyDown}
-                required
-                rows={6}
-                className="w-full bg-black border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors resize-y min-h-[120px] font-montserrat"
-                placeholder="What's on your mind?"
-              />
-              
-              {/* Mention Autocomplete Dropdown */}
-              {mentionAutocomplete?.show && formData.platforms.includes('linkedin') && (selectedLinkedInOrgUrn || linkedInOrgUrns.length > 0) && mentionAutocomplete && (
-                <div
-                  className="absolute z-50 bg-[var(--rich-black)] border border-[var(--border-color)] max-h-60 overflow-y-auto w-80 shadow-lg"
-                  style={{
-                    top: `${mentionAutocomplete.position.top}px`,
-                    left: `${mentionAutocomplete.position.left}px`,
-                  }}
-                >
-                  {mentionAutocomplete.searching ? (
-                    <div className="p-3 text-sm text-gray-400">Searching...</div>
-                  ) : (mentionAutocomplete.results && mentionAutocomplete.results.length > 0) ? (
-                    <div className="py-1">
-                      {mentionAutocomplete.results.map((item, index) => {
-                        const key = item.type === 'person' 
-                          ? `person-${item.member}` 
-                          : `org-${item.organization}`;
-                        return (
-                          <div
-                            key={key}
-                            className={`p-3 cursor-pointer transition-colors ${
-                              index === mentionAutocomplete.selectedIndex
-                                ? 'bg-[var(--primary-mint)] text-black'
-                                : 'hover:bg-[var(--bg-dark)] text-white'
-                            }`}
-                            onClick={() => insertMention(item)}
-                          >
-                            <div className="flex items-center gap-2">
-                              <div className="flex-1">
-                                {item.type === 'person' ? (
-                                  <>
-                                    <p className="text-sm font-semibold">
-                                      {item.firstName} {item.lastName}
-                                    </p>
-                                    {item.headline && (
-                                      <p className="text-xs opacity-75">{item.headline}</p>
-                                    )}
-                                    <p className="text-[10px] opacity-50 mt-1">Person</p>
-                                  </>
-                                ) : (
-                                  <>
-                                    <p className="text-sm font-semibold">{item.name}</p>
-                                    <p className="text-[10px] opacity-50 mt-1">Organization</p>
-                                  </>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  ) : mentionAutocomplete.query && mentionAutocomplete.query.length >= 3 ? (
-                    <div className="p-3 text-sm text-gray-400">No results found</div>
-                  ) : (
-                    <div className="p-3 text-sm text-gray-400">Type at least 3 characters...</div>
-                  )}
-                </div>
-              )}
-            </div>
-            
-            {/* LinkedIn Organization Selector - Only show if LinkedIn is selected */}
-            {formData.platforms.includes('linkedin') && (
-              <div>
-                <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
-                  LinkedIn Organization (Required for mentions)
-                </label>
-                {linkedInOrgUrns.length > 0 ? (
-                  <select
-                    value={selectedLinkedInOrgUrn}
-                    onChange={(e) => setSelectedLinkedInOrgUrn(e.target.value)}
-                    className="w-full bg-black border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors font-montserrat"
-                  >
-                    <option value="">-- Select Organization --</option>
-                    {linkedInOrgUrns.map((org) => (
-                      <option key={org.id} value={org.urn}>
-                        {org.name} ({org.urn})
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <div className="p-3 border border-[var(--border-color)] bg-[var(--rich-black)]">
-                    <p className="text-xs text-gray-400 mb-2">
-                      No organizations configured. Please add organizations in the "Connected Accounts" tab.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => setActiveTab('connections')}
-                      className="text-xs text-[var(--primary-mint)] hover:underline"
-                    >
-                      Go to Connected Accounts →
-                    </button>
-                  </div>
-                )}
-                <p className="text-[10px] text-gray-500 mt-1">
-                  Select the LinkedIn organization to use for @mentions in this post. Manage organizations in the "Connected Accounts" tab.
-                </p>
-              </div>
-            )}
-
-            <div>
-              <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
-                Media Assets (Images & Videos) - Optional
-              </label>
-              
-              {/* File Upload Input */}
-              <div className="mb-4">
-                <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 border border-[var(--border-color)] hover:border-[var(--primary-mint)] transition-colors">
-                  <Upload className="w-4 h-4" />
-                  <span className="text-xs font-bold uppercase">Upload Files</span>
-                  <input
-                    type="file"
-                    multiple
-                    accept="image/*,video/*"
-                    onChange={handleFileSelect}
-                    className="hidden"
-                    disabled={uploading}
-                  />
-                </label>
-                {uploading && (
-                  <span className="ml-3 text-xs text-gray-400">Uploading...</span>
-                )}
-                <p className="text-[10px] text-gray-500 mt-1">
-                  Supported: Images (JPEG, PNG, GIF, WebP - max 20MB) and Videos (MP4, MOV, AVI, WebM - max 200MB)
-                </p>
-              </div>
-
-              {/* Media Preview Grid */}
-              {formData.mediaAssets && formData.mediaAssets.length > 0 && (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                  {formData.mediaAssets.map((asset, index) => (
-                    <div
-                      key={index}
-                      className="relative group border border-[var(--border-color)] aspect-square overflow-hidden"
-                    >
-                      {asset.type === 'image' ? (
-                        <Image
-                          src={asset.url}
-                          alt={`Media ${index + 1}`}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 768px) 50vw, 25vw"
-                        />
-                      ) : (
-                        <video
-                          src={asset.url}
-                          className="w-full h-full object-cover"
-                          controls={false}
-                        >
-                          Your browser does not support the video tag.
-                        </video>
-                      )}
-                      <button
-                        type="button"
-                        onClick={() => removeMediaAsset(index)}
-                        className="absolute top-1 right-1 p-1 bg-red-600 hover:bg-red-700 opacity-0 group-hover:opacity-100 transition-opacity"
-                        title="Remove"
-                      >
-                        <X className="w-4 h-4 text-white" />
-                      </button>
-                      <div className="absolute bottom-1 left-1 px-2 py-1 bg-black bg-opacity-75 text-xs">
-                        {asset.type === 'video' ? (
-                          <Video className="w-3 h-3 inline mr-1" />
-                        ) : (
-                          <ImageIcon className="w-3 h-3 inline mr-1" />
-                        )}
-                        {asset.type}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-            </div>
-
-            <div>
-              <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
-                Platforms
-              </label>
-              <div className="flex flex-wrap gap-3">
-                {['linkedin', 'twitter', 'instagram', 'threads'].map((platform) => (
-                  <button
-                    key={platform}
-                    type="button"
-                    onClick={() => togglePlatform(platform)}
-                    className={`px-4 py-2 border flex items-center gap-2 transition-colors ${
-                      formData.platforms.includes(platform)
-                        ? 'border-[var(--primary-mint)] bg-[var(--primary-mint)] text-black'
-                        : 'border-[var(--border-color)] text-white hover:border-[var(--primary-mint)]'
-                    }`}
-                  >
-                    {getPlatformIcon(platform)}
-                    <span className="text-xs font-bold uppercase">{platform}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-
-            <div>
-              <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
-                Comments (Optional) - Posted after the main post
-              </label>
-              <p className="text-[10px] text-gray-500 mb-2">
-                Add comments that will be posted as replies to your main post after it's published. Each comment will be posted separately.
-              </p>
-              <div className="space-y-3">
-                {(formData.comments || []).map((comment, index) => (
-                  <div key={index} className="flex gap-2 items-start">
-                    <textarea
-                      value={comment}
-                      onChange={(e) => {
-                        const newComments = [...(formData.comments || [])];
-                        newComments[index] = e.target.value;
-                        setFormData({ ...formData, comments: newComments });
-                      }}
-                      rows={2}
-                      className="flex-1 bg-black border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors resize-y min-h-[60px] font-montserrat"
-                      placeholder={`Comment ${index + 1}`}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const newComments = formData.comments.filter((_, i) => i !== index);
-                        setFormData({ ...formData, comments: newComments });
-                      }}
-                      className="p-2 border border-red-500 hover:border-red-400 hover:bg-red-500 transition-colors"
-                      title="Remove comment"
-                    >
-                      <X className="w-4 h-4 text-red-400" />
-                    </button>
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFormData({ ...formData, comments: [...(formData.comments || []), ''] });
-                  }}
-                  className="px-4 py-2 border border-[var(--border-color)] hover:border-[var(--primary-mint)] text-white hover:bg-[var(--rich-black)] transition-colors flex items-center gap-2 text-xs"
-                >
-                  <Plus className="w-4 h-4" />
-                  Add Comment
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">
-                Schedule For
-              </label>
-              <DateTimePicker
-                value={formData.scheduledFor}
-                onChange={(value) => setFormData({ ...formData, scheduledFor: value })}
-                min={new Date().toISOString().slice(0, 16)}
-                required
-              />
-            </div>
-
-            <div className="flex gap-4">
-              <button
-                type="submit"
-                className="px-4 md:px-6 py-3 bg-[var(--primary-mint)] text-black hover:bg-white font-bold uppercase tracking-widest text-xs transition-colors flex items-center gap-2 min-h-[44px]"
-              >
-                <Send className="w-4 h-4" />
-                {editingPost ? 'Update Post' : 'Schedule Post'}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setShowForm(false);
-                  setEditingPost(null);
-                  setFormData({ content: '', mediaAssets: [], platforms: [], scheduledFor: '', comments: [], mentions: [] });
-            setMentionAutocomplete(null);
-            setSelectedLinkedInOrgUrn('');
-                }}
-                className="px-6 py-3 border border-[var(--border-color)] text-white hover:bg-[var(--rich-black)] font-bold uppercase tracking-widest text-xs transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </form>
-          </div>
-        </div>
-      )}
-
-      {/* Posts List */}
-      <div className="classic-panel p-4 md:p-6">
-        <h2 className="text-xl md:text-2xl text-white font-bebas mb-4 md:mb-6">SCHEDULED POSTS</h2>
-        
-        {/* Search and Filter Controls */}
-        <div className="mb-6 space-y-4">
-          {/* Search Input */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search posts by content..."
-              className="w-full pl-10 pr-4 py-2 bg-[var(--rich-black)] border border-[var(--border-color)] text-white text-sm focus:outline-none focus:border-[var(--primary-mint)] transition-colors"
-            />
-          </div>
-          
-          {/* Filter Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            {/* Status Filter */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <Filter className="w-4 h-4 text-gray-400 flex-shrink-0" />
-              <span className="text-xs text-gray-400 uppercase tracking-widest font-bold flex-shrink-0">Status:</span>
-              <div className="flex gap-2 flex-wrap">
-                {['all', 'scheduled', 'published', 'draft', 'failed'].map((status) => (
-                  <button
-                    key={status}
-                    onClick={() => setStatusFilter(status)}
-                    className={`px-3 py-1.5 text-xs font-bold uppercase tracking-widest transition-colors min-h-[32px] ${
-                      statusFilter === status
-                        ? 'bg-[var(--primary-mint)] text-black'
-                        : 'bg-[var(--rich-black)] border border-[var(--border-color)] text-gray-400 hover:text-white hover:border-[var(--primary-mint)]'
-                    }`}
-                  >
-                    {status.charAt(0).toUpperCase() + status.slice(1)}
-                  </button>
-                ))}
-              </div>
-            </div>
-            
-            {/* Platform Filter */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-xs text-gray-400 uppercase tracking-widest font-bold flex-shrink-0">Platform:</span>
-              <div className="flex gap-2 flex-wrap">
-                {['all', 'linkedin', 'twitter', 'instagram', 'threads'].map((platform) => (
-                  <button
-                    key={platform}
-                    onClick={() => setPlatformFilter(platform)}
-                    className={`px-3 py-1.5 text-xs font-bold uppercase tracking-widest transition-colors min-h-[32px] flex items-center gap-1.5 ${
-                      platformFilter === platform
-                        ? 'bg-[var(--primary-mint)] text-black'
-                        : 'bg-[var(--rich-black)] border border-[var(--border-color)] text-gray-400 hover:text-white hover:border-[var(--primary-mint)]'
-                    }`}
-                  >
-                    {getPlatformIcon(platform)}
-                    <span>{platform.charAt(0).toUpperCase() + platform.slice(1)}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {loading ? (
-          <div className="text-gray-400">Loading...</div>
-        ) : posts.length === 0 ? (
-          <div className="text-center py-12 text-gray-400">
-            <p>No scheduled posts yet. Create your first post above!</p>
-          </div>
-        ) : (() => {
-          // Filter posts based on search, status, and platform
-          let filteredPosts = posts.filter((post) => {
-            // Search filter
-            if (searchQuery.trim()) {
-              const query = searchQuery.toLowerCase();
-              const contentMatch = post.content.toLowerCase().includes(query);
-              const platforms = JSON.parse(post.platforms || '[]');
-              const platformMatch = platforms.some((p: string) => p.toLowerCase().includes(query));
-              if (!contentMatch && !platformMatch) {
-                return false;
-              }
-            }
-            
-            // Status filter
-            if (statusFilter !== 'all' && post.status !== statusFilter) {
-              return false;
-            }
-            
-            // Platform filter
-            if (platformFilter !== 'all') {
-              const platforms = JSON.parse(post.platforms || '[]');
-              if (!platforms.includes(platformFilter)) {
-                return false;
-              }
-            }
-            
-            return true;
-          });
-          
-          if (filteredPosts.length === 0) {
-            return (
-              <div className="text-center py-12 text-gray-400">
-                <p>No posts found matching your filters.</p>
-                {(searchQuery || statusFilter !== 'all' || platformFilter !== 'all') && (
-                  <button
-                    onClick={() => {
-                      setSearchQuery('');
-                      setStatusFilter('all');
-                      setPlatformFilter('all');
-                    }}
-                    className="mt-4 px-4 py-2 bg-[var(--rich-black)] border border-[var(--border-color)] text-white hover:border-[var(--primary-mint)] text-xs font-bold uppercase tracking-widest transition-colors"
-                  >
-                    Clear Filters
-                  </button>
-                )}
-              </div>
-            );
-          }
-          
-          return (
-            <div className="space-y-4">
-              {filteredPosts.map((post) => {
-              const isExpanded = expandedPosts.has(post.id);
-              return (
-              <div
-                key={post.id}
-                className="p-4 md:p-6 border border-[var(--border-color)] bg-[var(--rich-black)]"
-              >
-                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 md:gap-4 mb-4">
-                  <div
-                    onClick={() => {
-                      const newExpanded = new Set(expandedPosts);
-                      if (isExpanded) {
-                        newExpanded.delete(post.id);
-                      } else {
-                        newExpanded.add(post.id);
-                      }
-                      setExpandedPosts(newExpanded);
-                    }}
-                    className="flex items-center gap-2 text-left min-w-0 flex-1 hover:opacity-80 transition-opacity cursor-pointer"
-                  >
-                    <div className="flex-shrink-0">{getStatusIcon(post.status)}</div>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5 md:gap-2 mb-1 flex-wrap">
-                        {JSON.parse(post.platforms || '[]').map((platform: string) => (
-                          <div key={platform} className="flex items-center gap-1 flex-shrink-0">
-                            {getPlatformIcon(platform)}
-                          </div>
-                        ))}
-                      </div>
-                      <p className="text-[10px] md:text-xs text-gray-400 break-words">
-                        {formatDate(post.scheduledFor)}
-                        {post.publishedAt && ` • Published: ${formatDate(post.publishedAt)}`}
-                        {post.timesPosted > 0 && ` • Posted ${post.timesPosted} time${post.timesPosted > 1 ? 's' : ''}`}
-                      </p>
-                    </div>
-                    <div className="flex-shrink-0 text-gray-400">
-                      {isExpanded ? (
-                        <X className="w-4 h-4" />
-                      ) : (
-                        <span className="text-xs">Click to expand</span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-1.5 md:gap-2 flex-wrap flex-shrink-0">
-                    {(post.status === 'scheduled' || post.status === 'draft') && (
-                      <>
-                        <button
-                          onClick={() => {
-                            setPostToRefine(post);
-                            setRefinementPrompt('');
-                            setRefinedContent('');
-                            setAdaptationPrompt('');
-                            setTargetPlatformForPosts('threads');
-                            setPostsToCreateFromPost(3);
-                            setShowRefineModal(true);
-                          }}
-                          className="p-1.5 md:p-2 border border-purple-500 hover:border-purple-400 hover:bg-purple-500 transition-colors min-h-[36px] md:min-h-[auto] flex items-center justify-center flex-shrink-0"
-                          title="Refine with AI"
-                        >
-                          <Sparkles className="w-3.5 h-3.5 md:w-4 md:h-4 text-purple-400 hover:text-white" />
-                        </button>
-                        {post.status === 'draft' && (
-                          <button
-                            onClick={() => handleScheduleDraft(post)}
-                            className="p-1.5 md:p-2 border border-green-500 hover:border-green-400 hover:bg-green-500 transition-colors min-h-[36px] md:min-h-[auto] flex items-center justify-center flex-shrink-0"
-                            title="Schedule Post"
-                          >
-                            <Calendar className="w-3.5 h-3.5 md:w-4 md:h-4 text-green-400 hover:text-white" />
-                          </button>
-                        )}
-                    {post.status === 'scheduled' && (
-                      <>
-                        <button
-                          onClick={() => handlePublishNow(post)}
-                          className="p-1.5 md:p-2 border border-[var(--secondary-orange)] hover:border-[var(--secondary-orange)] hover:bg-[var(--secondary-orange)] transition-colors min-h-[36px] md:min-h-[auto] flex items-center justify-center flex-shrink-0"
-                          title="Publish Now"
-                        >
-                          <Rocket className="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--secondary-orange)] hover:text-black" />
-                        </button>
-                          </>
-                        )}
-                        <button
-                          onClick={() => handleEdit(post)}
-                          className="p-1.5 md:p-2 border border-[var(--border-color)] hover:border-[var(--primary-mint)] transition-colors min-h-[36px] md:min-h-[auto] flex items-center justify-center flex-shrink-0"
-                          title="Edit"
-                        >
-                          <Edit className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
-                        </button>
-                      </>
-                    )}
-                    {post.status === 'published' && (
-                      <>
-                        <button
-                          onClick={() => handleEdit(post)}
-                          className="p-1.5 md:p-2 border border-[var(--border-color)] hover:border-[var(--primary-mint)] transition-colors min-h-[36px] md:min-h-[auto] flex items-center justify-center flex-shrink-0"
-                          title="Edit"
-                        >
-                          <Edit className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
-                        </button>
-                        <button
-                          onClick={() => handleRepost(post)}
-                          className="p-1.5 md:p-2 border border-[var(--primary-mint)] hover:border-[var(--primary-mint)] hover:bg-[var(--primary-mint)] transition-colors min-h-[36px] md:min-h-[auto] flex items-center justify-center flex-shrink-0"
-                          title="Repost"
-                        >
-                          <Repeat className="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--primary-mint)] hover:text-black" />
-                        </button>
-                      </>
-                    )}
-                    <button
-                      onClick={() => handleDelete(post.id)}
-                      className="p-1.5 md:p-2 border border-[var(--border-color)] hover:border-red-400 transition-colors min-h-[36px] md:min-h-[auto] flex items-center justify-center flex-shrink-0"
-                      title="Delete"
-                    >
-                      <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
-                    </button>
-                  </div>
-                </div>
-                {isExpanded && (
-                  <>
-                    <p className="text-xs md:text-sm text-white mb-3 whitespace-pre-wrap break-words">{post.content}</p>
-                    
-                    {/* Display Media Assets */}
-                {(() => {
-                  let mediaAssets: MediaAsset[] = [];
-                  if (post.mediaAssets) {
-                    try {
-                      mediaAssets = JSON.parse(post.mediaAssets);
-                    } catch (e) {
-                      console.error('Error parsing mediaAssets:', e);
-                    }
-                  }
-
-                  if (mediaAssets.length > 0) {
-                    return (
-                      <div className={`grid gap-3 mb-3 ${mediaAssets.length === 1 ? 'grid-cols-1' : 'grid-cols-2 md:grid-cols-3'}`}>
-                        {mediaAssets.map((asset, index) => (
-                          <div
-                            key={index}
-                            className={`relative border border-[var(--border-color)] aspect-square overflow-hidden ${
-                              mediaAssets.length === 1 ? 'max-w-md mx-auto' : 'w-full'
-                            }`}
-                          >
-                            {asset.type === 'image' ? (
-                              <Image
-                                src={asset.url}
-                                alt={`Media ${index + 1}`}
-                                fill
-                                className="object-cover"
-                                sizes={mediaAssets.length === 1 ? "512px" : "(max-width: 768px) 50vw, 33vw"}
-                              />
-                            ) : (
-                              <video
-                                src={asset.url}
-                                className="w-full h-full object-cover"
-                                controls
-                              >
-                                Your browser does not support the video tag.
-                              </video>
-                            )}
-                            <div className="absolute top-1 right-1 px-2 py-1 bg-black bg-opacity-75 text-xs">
-                              {asset.type === 'video' ? (
-                                <Video className="w-3 h-3 inline mr-1" />
-                              ) : (
-                                <ImageIcon className="w-3 h-3 inline mr-1" />
-                              )}
-                              {asset.type}
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    );
-                  }
-                  return null;
-                })()}
-                    {post.errorMessage && (
-                      <p className="text-[10px] md:text-xs text-red-400 mt-2 break-words">Error: {post.errorMessage}</p>
-                    )}
-                  </>
-                )}
-              </div>
-            );
-            })}
-            </div>
-          );
-        })()}
-      </div>
-        </>
+        <PostsTab
+          posts={posts}
+          loading={loading}
+          showForm={showForm}
+          editingPost={editingPost}
+          formData={formData}
+          mentionAutocomplete={mentionAutocomplete}
+          selectedLinkedInOrgUrn={selectedLinkedInOrgUrn}
+          linkedInOrgUrns={linkedInOrgUrns}
+          uploading={uploading}
+          searchQuery={searchQuery}
+          statusFilter={statusFilter}
+          platformFilter={platformFilter}
+          expandedPosts={expandedPosts}
+          onShowFormChange={setShowForm}
+          onEditingPostChange={setEditingPost}
+          onFormDataChange={setFormData}
+          onMentionAutocompleteChange={setMentionAutocomplete}
+          onSelectedLinkedInOrgUrnChange={setSelectedLinkedInOrgUrn}
+          onSearchQueryChange={setSearchQuery}
+          onStatusFilterChange={setStatusFilter}
+          onPlatformFilterChange={setPlatformFilter}
+          onExpandedPostsChange={setExpandedPosts}
+          onActiveTabChange={setActiveTab}
+          handleSubmit={handleSubmit}
+          handleContentChange={handleContentChange}
+          handleContentKeyDown={handleContentKeyDown}
+          insertMention={insertMention}
+          togglePlatform={togglePlatform}
+          handleFileSelect={handleFileSelect}
+          removeMediaAsset={removeMediaAsset}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+          handlePublishNow={handlePublishNow}
+          handleRepost={handleRepost}
+          handleScheduleDraft={handleScheduleDraft}
+          formatDate={formatDate}
+          onRefinePost={handleRefinePost}
+        />
       )}
 
       {/* Tab Content: Post Ideas */}
       {activeTab === 'ideas' && (
-        <>
-      {/* Post Ideas List */}
-      {postIdeas.length > 0 && (
-        <div className="classic-panel p-6 mt-8">
-          <h2 className="text-2xl text-white font-bebas mb-6">Post Ideas</h2>
-          <div className="space-y-3">
-            {postIdeas.map((idea) => (
-              <div key={idea.id} className="p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
-                {editingIdea?.id === idea.id ? (
-                  <div className="space-y-3">
-                    <textarea
-                      value={editIdeaTitle}
-                      onChange={(e) => setEditIdeaTitle(e.target.value)}
-                      className="w-full bg-[var(--rich-black)] border border-[var(--primary-mint)] p-2 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all resize-none"
-                      placeholder="Idea title and description..."
-                      rows={4}
-                      autoFocus
-                    />
-                    <div className="flex gap-2">
-                      <button
-                        onClick={handleSaveIdea}
-                        className="px-4 py-2 bg-green-600 text-white hover:bg-green-700 font-bold uppercase tracking-widest text-xs transition-colors"
-                      >
-                        Save
-                      </button>
-                      <button
-                        onClick={() => {
-                          setEditingIdea(null);
-                          setEditIdeaTitle('');
-                        }}
-                        className="px-4 py-2 bg-gray-600 text-white hover:bg-gray-700 font-bold uppercase tracking-widest text-xs transition-colors"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <h3 className="text-sm text-white font-bold mb-2 whitespace-pre-wrap">{idea.title}</h3>
-                      {idea.prompt && (
-                        <p className="text-xs text-gray-400 mb-2 italic">Prompt: {idea.prompt}</p>
-                      )}
-                      <p className="text-[10px] text-gray-500 mb-2">
-                        Created: {new Date(idea.createdAt).toLocaleDateString()}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleEditIdea(idea)}
-                        className="p-2 border border-[var(--border-color)] hover:border-[var(--primary-mint)] transition-colors"
-                        title="Edit Idea"
-                      >
-                        <Edit className="w-4 h-4 text-white" />
-                      </button>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="number"
-                          min="1"
-                          max="10"
-                          value={postsToGenerate}
-                          onChange={(e) => setPostsToGenerate(Math.max(1, Math.min(10, parseInt(e.target.value) || 1)))}
-                          className="w-16 px-2 py-1 bg-[var(--rich-black)] border border-[var(--border-color)] text-white text-xs text-center focus:outline-none focus:border-[var(--primary-mint)]"
-                          title="Number of posts to generate"
-                        />
-                      <button
-                        onClick={() => handleGeneratePostFromIdea(idea)}
-                          disabled={generatingPostsFromIdea === idea.id}
-                          className="px-4 py-2 bg-[var(--primary-mint)] text-black hover:bg-white font-bold uppercase tracking-widest text-xs transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                          <Sparkles className={`w-4 h-4 ${generatingPostsFromIdea === idea.id ? 'animate-spin' : ''}`} />
-                          {generatingPostsFromIdea === idea.id ? 'Generating...' : 'Generate Posts'}
-                      </button>
-                      </div>
-                      <button
-                        onClick={() => handleDeleteIdea(idea.id)}
-                        className="p-2 border border-[var(--border-color)] hover:border-red-400 transition-colors"
-                        title="Delete Idea"
-                      >
-                        <Trash2 className="w-4 h-4 text-white" />
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-      {postIdeas.length === 0 && (
-        <div className="classic-panel p-6">
-          <div className="text-center py-12 text-gray-400">
-            <p>No post ideas yet. Click "Generate Ideas" to create some!</p>
-          </div>
-        </div>
-      )}
-        </>
+        <IdeasTab
+          postIdeas={postIdeas}
+          editingIdea={editingIdea}
+          editIdeaTitle={editIdeaTitle}
+          postsToGenerate={postsToGenerate}
+          generatingPostsFromIdea={generatingPostsFromIdea}
+          onEditIdea={handleEditIdea}
+          onSaveIdea={handleSaveIdea}
+          onCancelEdit={() => {
+            setEditingIdea(null);
+            setEditIdeaTitle('');
+          }}
+          onDeleteIdea={handleDeleteIdea}
+          onGeneratePostsFromIdea={handleGeneratePostFromIdea}
+          onPostsToGenerateChange={setPostsToGenerate}
+          onEditIdeaTitleChange={setEditIdeaTitle}
+        />
       )}
 
       {/* Refine Post Modal */}
@@ -2614,161 +1726,18 @@ export default function SocialMediaPage() {
 
       {/* Tab Content: Cron Job Management */}
       {activeTab === 'cron' && (
-        <div className="classic-panel p-4 md:p-6 mb-8">
-          <h2 className="text-xl md:text-2xl text-white font-bebas mb-6">CRON JOB MANAGEMENT</h2>
-          
-          {cronStatus ? (
-            <div className="space-y-6">
-              {/* Status Card */}
-              <div className="border border-[var(--border-color)] bg-[var(--rich-black)] p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-lg text-white font-bebas">Social Media Publishing Cron</h3>
-                  <div className="flex items-center gap-2">
-                    {cronStatus.running ? (
-                      <>
-                        <div className="w-3 h-3 bg-[var(--primary-mint)] rounded-full animate-pulse"></div>
-                        <span className="text-sm text-[var(--primary-mint)] font-bold">RUNNING</span>
-                      </>
-                    ) : (
-                      <>
-                        <div className="w-3 h-3 bg-gray-500 rounded-full"></div>
-                        <span className="text-sm text-gray-500 font-bold">STOPPED</span>
-                      </>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="space-y-3 text-sm">
-                  <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-2">
-                    <span className="text-gray-400">Schedule:</span>
-                    {editingSchedule ? (
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="text"
-                          value={cronSchedule}
-                          onChange={(e) => setCronSchedule(e.target.value)}
-                          placeholder="*/5 * * * *"
-                          className="px-2 py-1 bg-[var(--rich-black)] border border-[var(--border-color)] text-white font-mono text-sm focus:outline-none focus:border-[var(--primary-mint)] w-32"
-                        />
-                        <button
-                          onClick={handleUpdateSchedule}
-                          disabled={savingSchedule}
-                          className="px-3 py-1 bg-[var(--primary-mint)] text-black hover:bg-white text-xs font-bold uppercase tracking-widest transition-colors disabled:opacity-50"
-                        >
-                          {savingSchedule ? 'Saving...' : 'Save'}
-                        </button>
-                        <button
-                          onClick={() => {
-                            setEditingSchedule(false);
-                            fetchCronStatus(); // Reset to current schedule
-                          }}
-                          disabled={savingSchedule}
-                          className="px-3 py-1 bg-gray-600 text-white hover:bg-gray-700 text-xs font-bold uppercase tracking-widest transition-colors disabled:opacity-50"
-                        >
-                          Cancel
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <span className="text-white font-mono">{cronSchedule || cronStatus?.schedule || '*/5 * * * *'}</span>
-                        <button
-                          onClick={() => setEditingSchedule(true)}
-                          className="text-[var(--primary-mint)] hover:text-white text-xs"
-                          title="Edit schedule"
-                        >
-                          <Edit className="w-3 h-3" />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-2">
-                    <span className="text-gray-400">Frequency:</span>
-                    <span className="text-white">
-                      {cronSchedule === '*/5 * * * *' ? 'Every 5 minutes' :
-                       cronSchedule === '*/10 * * * *' ? 'Every 10 minutes' :
-                       cronSchedule === '*/15 * * * *' ? 'Every 15 minutes' :
-                       cronSchedule === '*/30 * * * *' ? 'Every 30 minutes' :
-                       cronSchedule === '0 * * * *' ? 'Every hour' :
-                       cronSchedule === '0 */2 * * *' ? 'Every 2 hours' :
-                       cronSchedule === '0 */6 * * *' ? 'Every 6 hours' :
-                       cronSchedule === '0 0 * * *' ? 'Daily at midnight' :
-                       cronSchedule === '0 2 * * *' ? 'Daily at 2 AM' :
-                       'Custom schedule'}
-                    </span>
-                  </div>
-                  {cronStatus.nextRun && (
-                    <div className="flex items-center justify-between border-b border-[var(--border-color)] pb-2">
-                      <span className="text-gray-400">Next Run:</span>
-                      <span className="text-white">
-                        {new Date(cronStatus.nextRun).toLocaleString()}
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-400">Initialized:</span>
-                    <span className={cronStatus.initialized ? 'text-[var(--primary-mint)]' : 'text-gray-500'}>
-                      {cronStatus.initialized ? 'Yes' : 'No'}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Control Buttons */}
-              <div className="flex flex-wrap gap-4">
-                {!cronStatus.running ? (
-                  <button
-                    onClick={() => handleCronAction('start')}
-                    disabled={cronLoading}
-                    className="px-6 py-3 bg-[var(--primary-mint)] text-black hover:bg-white font-bold uppercase tracking-widest text-xs transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <Rocket className="w-4 h-4" />
-                    {cronLoading ? 'Starting...' : 'Start Cron Job'}
-                  </button>
-                ) : (
-                  <>
-                    <button
-                      onClick={() => handleCronAction('stop')}
-                      disabled={cronLoading}
-                      className="px-6 py-3 bg-red-600 text-white hover:bg-red-700 font-bold uppercase tracking-widest text-xs transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <X className="w-4 h-4" />
-                      {cronLoading ? 'Stopping...' : 'Stop Cron Job'}
-                    </button>
-                    <button
-                      onClick={() => handleCronAction('restart')}
-                      disabled={cronLoading}
-                      className="px-6 py-3 bg-blue-600 text-white hover:bg-blue-700 font-bold uppercase tracking-widest text-xs transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <RefreshCw className="w-4 h-4" />
-                      {cronLoading ? 'Restarting...' : 'Restart Cron Job'}
-                    </button>
-                  </>
-                )}
-                <button
-                  onClick={fetchCronStatus}
-                  disabled={cronLoading}
-                  className="px-6 py-3 bg-gray-600 text-white hover:bg-gray-700 font-bold uppercase tracking-widest text-xs transition-colors flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  <RefreshCw className="w-4 h-4" />
-                  Refresh Status
-                </button>
-              </div>
-
-              {/* Info Box */}
-              <div className="border-l-4 border-[var(--primary-mint)] bg-[var(--rich-black)] p-4">
-                <p className="text-xs text-gray-300 leading-relaxed">
-                  <strong className="text-white">How it works:</strong> The cron job runs every 5 minutes and checks for scheduled posts. 
-                  Posts scheduled for the current time or earlier will be published automatically. 
-                  For example, a post scheduled for 8:47 will be published at the 8:50 cron run (3-minute delay).
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="text-center py-8">
-              <p className="text-gray-400">Loading cron status...</p>
-            </div>
-          )}
-        </div>
+        <CronTab
+          cronStatus={cronStatus}
+          cronLoading={cronLoading}
+          cronSchedule={cronSchedule}
+          editingSchedule={editingSchedule}
+          savingSchedule={savingSchedule}
+          onCronAction={handleCronAction}
+          onUpdateSchedule={handleUpdateSchedule}
+          onRefreshStatus={fetchCronStatus}
+          onScheduleChange={setCronSchedule}
+          onEditingScheduleChange={setEditingSchedule}
+        />
       )}
 
     </div>

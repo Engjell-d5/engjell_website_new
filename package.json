@@ -29,7 +29,7 @@
     "migrate:sqlite-to-postgres": "tsx scripts/migrate-sqlite-to-postgres.ts"
   },
   "dependencies": {
-    "@next/third-parties": "^16.0.8",
+    "@next/third-parties": "^14.2.5",
     "@prisma/client": "^5.19.1",
     "@tiptap/extension-color": "^2.1.13",
     "@tiptap/extension-image": "^2.1.13",

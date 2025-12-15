@@ -28,6 +28,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        # Pass NEXT_PUBLIC_* variables as build arguments
+        # These must be available at build time for Next.js
+        NEXT_PUBLIC_GA_ID: ${NEXT_PUBLIC_GA_ID:-}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-}
+        NEXT_PUBLIC_VAPID_PUBLIC_KEY: ${NEXT_PUBLIC_VAPID_PUBLIC_KEY:-}
     container_name: engjell-website-app
     restart: unless-stopped
     environment:
@@ -35,8 +41,42 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER:-engjell}:${POSTGRES_PASSWORD:-changeme}@postgres:5432/${POSTGRES_DB:-engjell_website}?schema=public
       PORT: 3000
       JWT_SECRET: ${JWT_SECRET:-change-this-secret-key}
-      # Add other environment variables as needed
-      # NEXT_PUBLIC_GA_ID: ${NEXT_PUBLIC_GA_ID:-}
+      # Social Media OAuth Credentials
+      THREADS_APP_ID: ${THREADS_APP_ID:-}
+      THREADS_APP_SECRET: ${THREADS_APP_SECRET:-}
+      FACEBOOK_APP_ID: ${FACEBOOK_APP_ID:-}
+      FACEBOOK_APP_SECRET: ${FACEBOOK_APP_SECRET:-}
+      LINKEDIN_CLIENT_ID: ${LINKEDIN_CLIENT_ID:-}
+      LINKEDIN_CLIENT_SECRET: ${LINKEDIN_CLIENT_SECRET:-}
+      TWITTER_CLIENT_ID: ${TWITTER_CLIENT_ID:-}
+      TWITTER_CLIENT_SECRET: ${TWITTER_CLIENT_SECRET:-}
+      TWITTER_BEARER_TOKEN: ${TWITTER_BEARER_TOKEN:-}
+      # Site URL
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-}
+      # Optional: Pre-configured Threads User Access Token
+      THREADS_USER_ACCESS_TOKEN: ${THREADS_USER_ACCESS_TOKEN:-}
+      # YouTube API
+      YOUTUBE_API_KEY: ${YOUTUBE_API_KEY:-}
+      # Sender (Newsletter) API Credentials
+      SENDER_API_KEY: ${SENDER_API_KEY:-}
+      SENDER_LIST_ID: ${SENDER_LIST_ID:-}
+      SENDER_REPLY_TO: ${SENDER_REPLY_TO:-}
+      SENDER_FROM_NAME: ${SENDER_FROM_NAME:-}
+      # Google Email OAuth Credentials
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      # Push Notifications (VAPID)
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+      NEXT_PUBLIC_VAPID_PUBLIC_KEY: ${NEXT_PUBLIC_VAPID_PUBLIC_KEY:-}
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-}
+      # Cron Job Security
+      CRON_SECRET: ${CRON_SECRET:-}
+      # External API (for email tasks)
+      PUBLIC_API_BASE_URL: ${PUBLIC_API_BASE_URL:-}
+      PUBLIC_API_KEY: ${PUBLIC_API_KEY:-}
+      PUBLIC_API_BOARD_ID: ${PUBLIC_API_BOARD_ID:-}
+      # Analytics (optional)
+      NEXT_PUBLIC_GA_ID: ${NEXT_PUBLIC_GA_ID:-}
     ports:
       - "${APP_PORT:-7776}:3000"
     volumes:

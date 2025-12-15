@@ -157,6 +157,52 @@ NODE_ENV=production
 APP_PORT=7776
 NGINX_PORT=8080
 JWT_SECRET=change-this-to-a-secure-random-string
+
+# Social Media OAuth Credentials
+THREADS_APP_ID=
+THREADS_APP_SECRET=
+FACEBOOK_APP_ID=
+FACEBOOK_APP_SECRET=
+LINKEDIN_CLIENT_ID=
+LINKEDIN_CLIENT_SECRET=
+TWITTER_CLIENT_ID=
+TWITTER_CLIENT_SECRET=
+TWITTER_BEARER_TOKEN=
+
+# Site URL
+NEXT_PUBLIC_SITE_URL=
+
+# Optional: Pre-configured Threads User Access Token
+THREADS_USER_ACCESS_TOKEN=
+
+# YouTube API
+YOUTUBE_API_KEY=
+
+# Sender (Newsletter) API Credentials
+SENDER_API_KEY=
+SENDER_LIST_ID=
+SENDER_REPLY_TO=
+SENDER_FROM_NAME=
+
+# Google Email OAuth Credentials
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+# Push Notifications (VAPID)
+VAPID_PRIVATE_KEY=
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=
+VAPID_SUBJECT=
+
+# Cron Job Security
+CRON_SECRET=
+
+# External API (for email tasks)
+PUBLIC_API_BASE_URL=
+PUBLIC_API_KEY=
+PUBLIC_API_BOARD_ID=
+
+# Analytics (optional)
+NEXT_PUBLIC_GA_ID=
 ENV_EOF
             echo "⚠️  Please edit .env file with your secure passwords and configuration!"
         fi

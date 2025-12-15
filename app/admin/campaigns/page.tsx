@@ -364,27 +364,20 @@ export default function CampaignsPage() {
         </div>
       )}
 
-      {/* Filter Buttons */}
-      <div className="flex gap-2 flex-wrap">
-        {([
-          { key: 'all', label: 'All', count: campaigns.length },
-          { key: 'DRAFT', label: 'Draft', count: campaigns.filter(c => c.status === 'DRAFT').length },
-          { key: 'SCHEDULED', label: 'Scheduled', count: campaigns.filter(c => c.status === 'SCHEDULED').length },
-          { key: 'SENDING', label: 'Sending', count: campaigns.filter(c => c.status === 'SENDING').length },
-          { key: 'SENT', label: 'Sent', count: campaigns.filter(c => c.status === 'SENT').length },
-        ] as const).map((filterType) => (
-          <button
-            key={filterType.key}
-            onClick={() => setFilter(filterType.key as typeof filter)}
-            className={`px-4 py-2 text-xs font-bold uppercase tracking-widest transition-colors ${
-              filter === filterType.key
-                ? 'bg-[var(--primary-mint)] text-black'
-                : 'bg-[var(--rich-black)] text-gray-400 hover:text-white border border-[var(--border-color)]'
-            }`}
-          >
-            {filterType.label} ({filterType.count})
-          </button>
-        ))}
+      {/* Filter Dropdown */}
+      <div className="flex items-center gap-2">
+        <span className="text-xs text-gray-400 uppercase tracking-widest font-bold flex-shrink-0">Filter:</span>
+        <select
+          value={filter}
+          onChange={(e) => setFilter(e.target.value as typeof filter)}
+          className="px-3 py-1.5 text-xs font-bold uppercase tracking-widest bg-[var(--rich-black)] border border-[var(--border-color)] text-white focus:outline-none focus:border-[var(--primary-mint)] transition-colors min-h-[32px]"
+        >
+          <option value="all">All ({campaigns.length})</option>
+          <option value="DRAFT">Draft ({campaigns.filter(c => c.status === 'DRAFT').length})</option>
+          <option value="SCHEDULED">Scheduled ({campaigns.filter(c => c.status === 'SCHEDULED').length})</option>
+          <option value="SENDING">Sending ({campaigns.filter(c => c.status === 'SENDING').length})</option>
+          <option value="SENT">Sent ({campaigns.filter(c => c.status === 'SENT').length})</option>
+        </select>
       </div>
 
       {/* Campaigns Table */}

@@ -8,6 +8,18 @@ const THREADS_APP_ID = process.env.THREADS_APP_ID || process.env.FACEBOOK_APP_ID
 const THREADS_APP_SECRET = process.env.THREADS_APP_SECRET || process.env.FACEBOOK_APP_SECRET; // Fallback to Facebook App Secret for backward compatibility
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
+// Debug logging for environment variables (only log first few chars for security)
+if (process.env.NODE_ENV === 'development') {
+  console.log('[THREADS] Environment check:', {
+    hasTHREADS_APP_ID: !!process.env.THREADS_APP_ID,
+    hasTHREADS_APP_SECRET: !!process.env.THREADS_APP_SECRET,
+    hasFACEBOOK_APP_ID: !!process.env.FACEBOOK_APP_ID,
+    hasFACEBOOK_APP_SECRET: !!process.env.FACEBOOK_APP_SECRET,
+    resolvedTHREADS_APP_ID: !!THREADS_APP_ID,
+    resolvedTHREADS_APP_SECRET: !!THREADS_APP_SECRET,
+  });
+}
+
 /**
  * Normalize redirect URI to ensure it matches Facebook's requirements
  * - Removes trailing slashes
@@ -102,7 +114,14 @@ export async function getThreadsAccessToken(code: string): Promise<{
   token_type?: string;
 }> {
   if (!THREADS_APP_ID || !THREADS_APP_SECRET) {
-    throw new Error('Threads OAuth credentials not configured. Please set THREADS_APP_ID and THREADS_APP_SECRET (or FACEBOOK_APP_ID/FACEBOOK_APP_SECRET as fallback).');
+    const missingVars = [];
+    if (!THREADS_APP_ID && !process.env.FACEBOOK_APP_ID) missingVars.push('THREADS_APP_ID or FACEBOOK_APP_ID');
+    if (!THREADS_APP_SECRET && !process.env.FACEBOOK_APP_SECRET) missingVars.push('THREADS_APP_SECRET or FACEBOOK_APP_SECRET');
+    
+    throw new Error(
+      `Threads OAuth credentials not configured. Missing: ${missingVars.join(', ')}. ` +
+      `Please set THREADS_APP_ID and THREADS_APP_SECRET (or FACEBOOK_APP_ID/FACEBOOK_APP_SECRET as fallback) in your .env file and restart the server.`
+    );
   }
 
   // Use the same normalization function to ensure exact match

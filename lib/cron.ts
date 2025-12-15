@@ -226,7 +226,7 @@ export async function startEmailCron() {
         isEnabled: false,
         schedule: '0 */6 * * *', // Default: every 6 hours
         syncEmails: true,
-        analyzeEmails: true,
+        analyzeEmails: false, // Default: only fetch, don't analyze automatically
       },
     });
   }
@@ -245,12 +245,12 @@ export async function startEmailCron() {
     emailCronJob = null;
   }
 
-  console.log(`[CRON-INIT] Starting email sync/analyze cron job with schedule: ${schedule}`);
+  console.log(`[CRON-INIT] Starting email sync cron job with schedule: ${schedule}${emailCronConfig.analyzeEmails ? ' (with analysis)' : ' (fetch only)'}`);
 
   emailCronJob = cron.schedule(schedule, async () => {
     const runTime = new Date().toISOString();
     console.log(`[CRON] ============================================`);
-    console.log(`[CRON] Running email sync/analyze cron job at ${runTime}`);
+    console.log(`[CRON] Running email sync cron job at ${runTime}`);
     console.log(`[CRON] ============================================`);
     
     try {
@@ -518,9 +518,10 @@ export async function startEmailCron() {
       
       // Send notification when cron completes
       try {
+        const cronAction = config.analyzeEmails ? 'sync and analysis' : 'sync';
         await sendPushNotificationToAllAdmins({
           title: 'Email Cron Completed',
-          body: 'Email sync and analysis cron job completed',
+          body: `Email ${cronAction} cron job completed`,
           tag: 'email-cron-complete',
           data: { url: '/admin/email' },
         });
@@ -528,7 +529,7 @@ export async function startEmailCron() {
         console.error('[CRON] Failed to send push notification:', notifError);
       }
     } catch (error) {
-      console.error('[CRON] Error in email sync/analyze cron job:', error);
+      console.error('[CRON] Error in email sync cron job:', error);
       if (error instanceof Error) {
         console.error('[CRON] Error details:', error.message, error.stack);
       }
@@ -553,7 +554,7 @@ export function stopEmailCron() {
     emailCronJob.stop();
     emailCronJob = null;
     emailCronInitialized = false;
-    console.log('Email sync/analyze cron job stopped');
+    console.log('Email sync cron job stopped');
   }
 }
 

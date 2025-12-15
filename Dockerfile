@@ -25,6 +25,17 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
 
+# Accept build arguments for NEXT_PUBLIC_* variables
+# These need to be available at build time for Next.js
+ARG NEXT_PUBLIC_GA_ID
+ARG NEXT_PUBLIC_SITE_URL
+ARG NEXT_PUBLIC_VAPID_PUBLIC_KEY
+
+# Set as environment variables for the build
+ENV NEXT_PUBLIC_GA_ID=${NEXT_PUBLIC_GA_ID}
+ENV NEXT_PUBLIC_SITE_URL=${NEXT_PUBLIC_SITE_URL}
+ENV NEXT_PUBLIC_VAPID_PUBLIC_KEY=${NEXT_PUBLIC_VAPID_PUBLIC_KEY}
+
 # Generate Prisma Client
 RUN npx prisma generate
 
