@@ -1,9 +1,9 @@
 #!/bin/bash
 
 ###############################################################################
-# Deploy Script for Engjell Rraklli Website
+# Deploy Script for Engjell Rraklli Website (PM2-based)
 #
-# This script deploys the Next.js application to the production server.
+# This script deploys the Next.js application to the production server using PM2.
 # It:
 # 1. Syncs code files to the server (excluding node_modules, .git, data, etc.)
 # 2. Builds the Next.js app on the server
@@ -19,9 +19,11 @@
 # - Node.js and npm installed on the server
 # - PM2 installed globally on the server
 # - Nginx installed and running on the server
-# - SQLite3 installed on the server (for database operations)
+# - PostgreSQL or SQLite3 installed on the server (for database operations)
 #
 # Usage: ./deploy.sh
+#
+# NOTE: For Docker deployment, use ./deploy-docker.sh instead
 ###############################################################################
 
 set -e  # Exit on any error
@@ -265,6 +267,10 @@ ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} << EOF
         echo "⚠️  If this is first deployment, run 'npm run db:seed' manually after deployment"
     fi
     
+    # Clear .next directory to ensure clean build (prevents stale build errors)
+    echo "Clearing .next directory for clean build..."
+    rm -rf .next
+    
     # Build the Next.js application
     echo "Building Next.js application..."
     npm run build
@@ -274,10 +280,54 @@ ssh -p ${SERVER_PORT} ${SERVER_USER}@${SERVER_HOST} << EOF
         exit 1
     fi
     
-    # Start or reload PM2 using ecosystem file (persists config)
-    echo "Starting/reloading PM2 via ecosystem.config.js..."
-    PORT=${APP_PORT} pm2 startOrReload ecosystem.config.js --only "${APP_NAME}" --update-env
-    pm2 save
+    # Verify .next directory exists and contains build files
+    echo "Verifying build output..."
+    if [ ! -d ".next" ]; then
+        echo "❌ .next directory not found after build!"
+        exit 1
+    fi
+    
+    # Check for critical build files
+    if [ ! -f ".next/BUILD_ID" ] && [ ! -d ".next/server" ]; then
+        echo "❌ Build incomplete - missing critical files in .next directory!"
+        echo "Checking .next directory contents:"
+        ls -la .next/ || true
+        exit 1
+    fi
+    
+    echo "✅ Build verification complete - .next directory exists with build files"
+    
+    # Stop and delete existing PM2 process if it exists
+    echo "Stopping existing PM2 process..."
+        pm2 delete ${APP_NAME} || true
+    
+    # Wait a moment for process to fully stop
+    sleep 2
+    
+    # Start PM2 using ecosystem file with explicit PORT
+    echo "Starting PM2 via ecosystem.config.js..."
+    PORT=${APP_PORT} pm2 start ecosystem.config.js --only "${APP_NAME}"
+        pm2 save
+    
+    # Wait a moment for the app to start
+    sleep 3
+    
+    # Verify PM2 process is running
+    if ! pm2 list | grep -q "${APP_NAME}.*online"; then
+        echo "❌ PM2 process is not online! Checking logs..."
+        pm2 logs ${APP_NAME} --lines 50 --nostream
+        exit 1
+    fi
+    
+    # Verify the app is listening on the correct port
+    echo "Verifying app is listening on port ${APP_PORT}..."
+    if ! (netstat -tuln 2>/dev/null | grep -q ":${APP_PORT} " || ss -tuln 2>/dev/null | grep -q ":${APP_PORT} "); then
+        echo "⚠️  Warning: App might not be listening on port ${APP_PORT} yet. Checking PM2 logs..."
+        pm2 logs ${APP_NAME} --lines 20 --nostream
+        echo "⚠️  Continuing anyway - app might still be starting..."
+    else
+        echo "✅ App is listening on port ${APP_PORT}"
+    fi
     
     # Reload nginx
     echo "Reloading nginx..."

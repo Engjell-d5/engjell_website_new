@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getCronStatusWithNextRun, initializeAllCronJobs } from '@/lib/cron';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   let status = await getCronStatusWithNextRun();
   

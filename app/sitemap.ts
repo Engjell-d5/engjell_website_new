@@ -45,6 +45,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   // Dynamic blog routes
+  // Skip database queries during build if DATABASE_URL is not available
+  if (!process.env.DATABASE_URL) {
+    console.warn('DATABASE_URL not set during build, skipping dynamic blog routes in sitemap');
+    return staticRoutes;
+  }
+
   try {
     const blogs = await getBlogs();
     const publishedBlogs = blogs.filter((blog: any) => blog.published);

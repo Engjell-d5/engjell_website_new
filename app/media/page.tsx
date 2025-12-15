@@ -5,6 +5,9 @@ import VideoList from '@/components/VideoList';
 import PodcastApplicationButton from '@/components/PodcastApplicationButton';
 import { getVideos } from '@/lib/data';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 interface YouTubeVideo {
   id: string;
   videoId: string;

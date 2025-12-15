@@ -35,6 +35,8 @@ const nextConfig = {
   swcMinify: true,
   // Optimize font loading to prevent render blocking
   optimizeFonts: true,
+  // Enable standalone output for Docker
+  output: 'standalone',
   // Headers for caching and security
   async headers() {
     return [

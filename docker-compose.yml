@@ -1,0 +1,78 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: engjell-website-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-engjell}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_DB: ${POSTGRES_DB:-engjell_website}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # PostgreSQL port mapping (exposed for migration script access from host)
+    # Using 5434 to avoid conflict with other PostgreSQL containers
+    ports:
+      - "${POSTGRES_PORT:-5434}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-engjell}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - engjell-network
+
+  # Next.js Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: engjell-website-app
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-engjell}:${POSTGRES_PASSWORD:-changeme}@postgres:5432/${POSTGRES_DB:-engjell_website}?schema=public
+      PORT: 3000
+      JWT_SECRET: ${JWT_SECRET:-change-this-secret-key}
+      # Add other environment variables as needed
+      # NEXT_PUBLIC_GA_ID: ${NEXT_PUBLIC_GA_ID:-}
+    ports:
+      - "${APP_PORT:-7776}:3000"
+    volumes:
+      # Persist uploads directory
+      - ./public/uploads:/app/public/uploads
+      # Persist data directory (for migrations, etc.)
+      - ./data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - engjell-network
+    entrypoint: ["/app/docker-entrypoint.sh"]
+    command: ["node", "server.js"]
+
+  # Nginx Reverse Proxy (optional, for production)
+  nginx:
+    image: nginx:alpine
+    container_name: engjell-website-nginx
+    restart: unless-stopped
+    ports:
+      - "${NGINX_PORT:-8080}:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app
+    networks:
+      - engjell-network
+    profiles:
+      - production
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  engjell-network:
+    driver: bridge
+
