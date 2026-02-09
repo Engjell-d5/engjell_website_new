@@ -215,6 +215,7 @@ export default function Sidebar() {
                     src={latestVideo.thumbnailUrl} 
                     alt={latestVideo.title} 
                     fill
+                    sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 100vw"
                     className="object-cover opacity-60 group-hover:opacity-90 transition-opacity"
                   />
                   <div className="absolute inset-0 flex items-center justify-center">
@@ -337,6 +338,7 @@ export default function Sidebar() {
                 alt="Playlist" 
                 width={400}
                 height={225}
+                sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 100vw"
                 className="w-full h-full object-cover img-classic opacity-60 group-hover:opacity-90"
               />
               <div className="absolute bottom-2 left-2 right-2">

@@ -43,8 +43,10 @@ export default function Home() {
             <div className="relative w-[calc(100%+3rem)] md:w-[calc(100%+5rem)] h-[600px] border-b border-[var(--border-color)] overflow-hidden group mb-8 -ml-6 -mr-6 -mt-6 md:-ml-10 md:-mr-10 md:-mt-10 rounded-none">
               <Image 
                 src="/IMG_0425.JPG" 
-                  alt="Engjell Rraklli - Tech Entrepreneur building the future in Albania" 
+                alt="Engjell Rraklli - Tech Entrepreneur building the future in Albania" 
                 fill
+                priority
+                sizes="100vw"
                 className="object-cover img-classic"
                 style={{ objectPosition: 'center 20%' }}
               />
@@ -71,6 +73,8 @@ export default function Home() {
                   src="/_DSC0142.JPG" 
                   alt="Engjell Rraklli portrait - Tech entrepreneur and founder" 
                   fill
+                  priority
+                  sizes="(min-width: 768px) 33vw, 100vw"
                   className="object-cover img-classic group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[var(--rich-black)]/80 md:hidden"></div>

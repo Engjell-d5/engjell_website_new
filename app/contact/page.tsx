@@ -65,6 +65,8 @@ export default function Contact() {
                     src="/IMG_0456 (1).JPG" 
                     alt="Engjell Rraklli smiling portrait - Available for speaking and consulting" 
                     fill
+                    priority
+                    sizes="(min-width: 768px) 50vw, 100vw"
                     className="object-cover img-classic opacity-80 group-hover:opacity-100"
                   />
                 </div>

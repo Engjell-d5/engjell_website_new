@@ -114,6 +114,7 @@ export default function Journal() {
                         src={blog.imageUrl} 
                         alt={`${blog.title} - ${blog.category} article`} 
                         fill
+                        sizes="(min-width: 768px) 224px, 100vw"
                         className="object-cover img-classic"
                       />
                     </div>

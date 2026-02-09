@@ -54,6 +54,8 @@ export default function About() {
                     src="/IMG_0466.JPG" 
                     alt="Engjell Rraklli - About page portrait, tech entrepreneur in Tirana" 
                     fill
+                    priority
+                    sizes="(min-width: 768px) 42vw, 100vw"
                     className="object-cover img-classic group-hover:scale-105 transition-transform duration-700"
                   />
                 </div>

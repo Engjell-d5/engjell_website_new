@@ -167,6 +167,8 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                   src={blog.imageUrl}
                   alt={`${blog.title} - Featured image`}
                   fill
+                  priority
+                  sizes="100vw"
                   className="object-cover img-classic"
                 />
               </div>
@@ -203,6 +205,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                           src={relatedBlog.imageUrl} 
                           alt={relatedBlog.title} 
                           fill
+                          sizes="(min-width: 768px) 50vw, 100vw"
                           className="object-cover opacity-60 group-hover:opacity-90 transition-opacity"
                         />
                       </div>
@@ -248,11 +251,17 @@ function BlogContentWithSubscribe({ content }: { content: string }) {
     return html.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
   };
 
+  // Add lazy loading and async decoding to blog content images for faster page load
+  const optimizeContentImages = (html: string) => {
+    return html.replace(/<img(\s)/gi, '<img loading="lazy" decoding="async"$1');
+  };
+
   let decodedContent = content;
   const needsDecoding = content.includes('&lt;');
   if (needsDecoding) {
     decodedContent = decodeHtml(content);
   }
+  decodedContent = optimizeContentImages(decodedContent);
 
   // Define all possible placeholder formats (both regular and HTML-encoded)
   const inlinePlaceholderVariants = [

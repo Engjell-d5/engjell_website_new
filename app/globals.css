@@ -232,11 +232,43 @@ h1, h2, h3, h4, .brand-font {
   height: auto;
   display: block;
   margin: 1em 0;
+  /* Smooth loading transition */
+  transition: opacity 0.3s ease-in-out;
 }
 
 .ProseMirror img.editor-image {
   cursor: pointer;
   transition: opacity 0.2s;
+}
+
+/* Smooth image loading with fade-in effect */
+img {
+  transition: opacity 0.3s ease-in-out;
+}
+
+/* Image loading state - show placeholder while loading */
+img[loading="lazy"] {
+  opacity: 0;
+  animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Next.js Image component optimizations */
+.next-image-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.next-image-wrapper img {
+  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
 }
 
 .ProseMirror img.editor-image:hover {

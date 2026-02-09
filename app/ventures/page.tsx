@@ -51,9 +51,11 @@ export default function Ventures() {
               {/* Venture 1: Division5 - Main/First */}
               <a href="https://division5.co" target="_blank" rel="noopener noreferrer" className="group relative h-[300px] border border-[var(--border-color)] overflow-hidden hover:border-[var(--primary-mint)] transition-all md:col-span-2">
                 <Image 
-                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=800&q=80" 
+                  src="/ventures-division5.jpg" 
                   alt="Division5 - Staff Augmentation" 
                   fill
+                  priority
+                  sizes="(min-width: 768px) 50vw, 100vw"
                   className="object-cover img-classic opacity-40"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[var(--rich-black)] via-[var(--rich-black)]/80 to-transparent z-10"></div>
@@ -83,9 +85,11 @@ export default function Ventures() {
               {/* Venture 2: DivisionAI */}
               <a href="https://divisionai.co" target="_blank" rel="noopener noreferrer" className="group relative h-[300px] border border-[var(--border-color)] overflow-hidden hover:border-[var(--primary-mint)] transition-all">
                 <Image 
-                  src="https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=800&q=80" 
+                  src="/ventures-divisionai.jpg" 
                   alt="DivisionAI - AI Coding" 
                   fill
+                  priority
+                  sizes="(min-width: 768px) 50vw, 100vw"
                   className="object-cover img-classic opacity-40"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[var(--rich-black)] via-[var(--rich-black)]/80 to-transparent z-10"></div>
@@ -115,9 +119,11 @@ export default function Ventures() {
               {/* Venture 3: Division3D */}
               <a href="https://division3d.co" target="_blank" rel="noopener noreferrer" className="group relative h-[300px] border border-[var(--border-color)] overflow-hidden hover:border-[var(--primary-mint)] transition-all">
                 <Image 
-                  src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=80" 
+                  src="/ventures-division3d.jpg" 
                   alt="Division3D - 3D Design" 
                   fill
+                  priority
+                  sizes="(min-width: 768px) 50vw, 100vw"
                   className="object-cover img-classic opacity-40"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[var(--rich-black)] via-[var(--rich-black)]/80 to-transparent z-10"></div>
