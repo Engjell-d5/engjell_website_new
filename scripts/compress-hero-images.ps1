@@ -8,7 +8,7 @@ param(
 # Hero images flagged in audit
 $targets = @(
     'IMG_0425.JPG',
-    'IMG_0456 (1).JPG',
+    'IMG_0456.JPG',
     'IMG_0466.JPG',
     '_DSC0037.JPG',
     '_DSC0048.JPG',
@@ -51,6 +51,31 @@ foreach ($name in $targets) {
     # Load from backup to preserve original quality
     $img = [System.Drawing.Image]::FromFile($backupPath)
     try {
+        # Honor EXIF orientation. Phone cameras store portrait shots as
+        # landscape pixels + an orientation tag that viewers (browsers,
+        # macOS Preview) apply on render. System.Drawing does NOT apply it
+        # automatically, so the saved file would render unrotated.
+        $orientation = 1
+        try {
+            $prop = $img.GetPropertyItem(0x0112)
+            $orientation = [BitConverter]::ToUInt16($prop.Value, 0)
+        } catch { }
+
+        switch ($orientation) {
+            2 { $img.RotateFlip([System.Drawing.RotateFlipType]::RotateNoneFlipX) }
+            3 { $img.RotateFlip([System.Drawing.RotateFlipType]::Rotate180FlipNone) }
+            4 { $img.RotateFlip([System.Drawing.RotateFlipType]::Rotate180FlipX) }
+            5 { $img.RotateFlip([System.Drawing.RotateFlipType]::Rotate90FlipX) }
+            6 { $img.RotateFlip([System.Drawing.RotateFlipType]::Rotate90FlipNone) }
+            7 { $img.RotateFlip([System.Drawing.RotateFlipType]::Rotate270FlipX) }
+            8 { $img.RotateFlip([System.Drawing.RotateFlipType]::Rotate270FlipNone) }
+        }
+
+        # Drop the EXIF orientation tag so the rotation isn't applied a second time.
+        if ($orientation -ne 1) {
+            try { $img.RemovePropertyItem(0x0112) } catch { }
+        }
+
         $origW = $img.Width
         $origH = $img.Height
 
