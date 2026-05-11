@@ -42,12 +42,14 @@ export default function SubscribeFormInline() {
     <div className="blog-subscribe-snippet-inline my-8 flex justify-center">
       <div>
         <form onSubmit={handleSubmit} className="flex items-center">
-          <input 
-            type="email" 
-            placeholder="Email" 
+          <input
+            type="email"
+            name="email"
+            autoComplete="email"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="bg-[var(--rich-black)] border border-[var(--border-color)] border-r-0 p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all h-12 font-montserrat disabled:opacity-50" 
+            className="bg-[var(--rich-black)] border border-[var(--border-color)] border-r-0 p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all h-12 font-montserrat disabled:opacity-50"
             required
             disabled={loading}
           />

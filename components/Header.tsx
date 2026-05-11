@@ -35,9 +35,9 @@ export default function Header() {
       {/* Brand */}
       <div className="flex items-center gap-3 md:gap-5 shrink-0 min-w-0 flex-1">
         <Link href="/" className="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center hover:opacity-80 transition-opacity group flex-shrink-0">
-          <img 
-            src="/Engjell_Rraklli_White_Logo_Mark.svg" 
-            alt="ER Logo" 
+          <img
+            src="/Engjell_Rraklli_White_Logo_Mark.svg"
+            alt="Engjell Rraklli logo"
             className="w-full h-full object-contain group-hover:brightness-110 transition-all"
           />
         </Link>

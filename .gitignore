@@ -45,3 +45,9 @@ next-env.d.ts
 
 # uploaded files
 /public/uploads/
+
+# locally-kept originals of hero images (compressed versions live in /public)
+/public/_originals_backup/
+
+# Claude Code local workspace
+/.claude/

@@ -65,26 +65,28 @@ export default function ContactForm() {
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div>
           <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">Name</label>
-          <input 
-            type="text" 
+          <input
+            type="text"
             name="name"
+            autoComplete="name"
             value={formData.name}
             onChange={handleChange}
             required
             disabled={loading}
-            className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat disabled:opacity-50" 
+            className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat disabled:opacity-50"
           />
         </div>
         <div>
           <label className="text-[9px] text-gray-500 uppercase font-bold tracking-widest mb-1 block">Email</label>
-          <input 
-            type="email" 
+          <input
+            type="email"
             name="email"
+            autoComplete="email"
             value={formData.email}
             onChange={handleChange}
             required
             disabled={loading}
-            className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat disabled:opacity-50" 
+            className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat disabled:opacity-50"
           />
         </div>
         <div>

@@ -44,12 +44,14 @@ function SubscribeForm() {
         <h4 className="text-xl text-white font-bebas tracking-wide mb-3">SUBSCRIBE</h4>
         <p className="text-xs text-gray-400 leading-relaxed mb-4 font-light">Get my weekly tech trends.</p>
         <form onSubmit={handleSubmit} className="space-y-2">
-          <input 
-            type="email" 
-            placeholder="Email" 
+          <input
+            type="email"
+            name="email"
+            autoComplete="email"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat disabled:opacity-50" 
+            className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat disabled:opacity-50"
             required
             disabled={loading}
           />
@@ -333,9 +335,9 @@ export default function Sidebar() {
           </div>
           <div className="space-y-4">
             <div className="relative group cursor-pointer border border-[var(--border-color)] aspect-[16/9] hover:border-[var(--primary-mint)] transition-colors">
-              <Image 
-                src="/_DSC0048.JPG" 
-                alt="Playlist" 
+              <Image
+                src="/_DSC0048.JPG"
+                alt="Startup 101 playlist — tech entrepreneurship video series"
                 width={400}
                 height={225}
                 sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 100vw"

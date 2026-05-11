@@ -1,10 +1,11 @@
 {
-  "name": "Engjell Rraklli Admin",
-  "short_name": "Admin",
-  "description": "Admin interface for managing content and social media",
-  "start_url": "/admin",
+  "name": "Engjell Rraklli",
+  "short_name": "Engjell",
+  "description": "Engjell Rraklli — entrepreneur, tech leader, and founder. Articles, podcasts, and ventures.",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#0a0a0a",
   "theme_color": "#000000",
   "orientation": "portrait-primary",
   "icons": [
@@ -21,21 +22,28 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["productivity", "business"],
+  "categories": ["business", "lifestyle", "news"],
   "screenshots": [],
   "shortcuts": [
     {
-      "name": "Social Media",
-      "short_name": "Social",
-      "description": "Manage social media posts",
-      "url": "/admin/social",
+      "name": "Journal",
+      "short_name": "Journal",
+      "description": "Read latest articles",
+      "url": "/journal",
       "icons": [{ "src": "/android-launchericon-192-192.png", "sizes": "192x192" }]
     },
     {
-      "name": "Email Tasks",
-      "short_name": "Emails",
-      "description": "View email tasks",
-      "url": "/admin/email",
+      "name": "Media",
+      "short_name": "Media",
+      "description": "Watch the latest videos and podcasts",
+      "url": "/media",
+      "icons": [{ "src": "/android-launchericon-192-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Contact",
+      "short_name": "Contact",
+      "description": "Get in touch",
+      "url": "/contact",
       "icons": [{ "src": "/android-launchericon-192-192.png", "sizes": "192x192" }]
     }
   ]

@@ -1,12 +1,28 @@
 import Image from 'next/image';
 import { Play, ExternalLink, Quote } from 'lucide-react';
+import type { Metadata } from 'next';
 import Sidebar from '@/components/Sidebar';
 import VideoList from '@/components/VideoList';
 import PodcastApplicationButton from '@/components/PodcastApplicationButton';
+import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
+import { createMetadata } from '@/lib/metadata';
 import { getVideos } from '@/lib/data';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 3600;
+
+export const metadata: Metadata = createMetadata({
+  title: 'Media | Podcasts, Talks & Video Conversations',
+  description: 'Watch Engjell Rraklli\'s podcast episodes, talks, and video conversations on building tech businesses, leadership, and entrepreneurship in Albania.',
+  path: '/media',
+  keywords: [
+    'Engjell Rraklli Podcast',
+    'Tech Podcast Albania',
+    'Entrepreneurship Videos',
+    'Startup Conversations',
+    'Tech Leader Talks',
+    'YouTube Tech Albania',
+  ],
+});
 
 interface YouTubeVideo {
   id: string;
@@ -25,14 +41,57 @@ interface YouTubeVideo {
 export default async function Media() {
   // Fetch videos server-side
   const allVideos = await getVideos(false); // Exclude removed videos
-  
+
   // Get featured video (first video is featured, as returned by API sorted by featured first)
   const featuredVideo = allVideos.find(v => v.featured) || allVideos[0];
   // Get other videos (excluding featured)
   const otherVideos = allVideos.filter(v => !v.featured || v.id !== featuredVideo?.id);
 
+  // Build VideoObject schema for the visible videos (featured + up to 9 others)
+  const schemaVideos = [featuredVideo, ...otherVideos.slice(0, 9)].filter(Boolean) as YouTubeVideo[];
+  const videoObjectSchema = schemaVideos.map(v => ({
+    '@context': 'https://schema.org',
+    '@type': 'VideoObject',
+    name: v.title,
+    description: v.description?.slice(0, 500) || v.title,
+    thumbnailUrl: v.thumbnailUrl,
+    uploadDate: v.publishedAt,
+    duration: v.duration,
+    embedUrl: `https://www.youtube.com/embed/${v.videoId}`,
+    contentUrl: `https://www.youtube.com/watch?v=${v.videoId}`,
+    publisher: {
+      '@type': 'Person',
+      name: 'Engjell Rraklli',
+    },
+    interactionStatistic: v.viewCount ? {
+      '@type': 'InteractionCounter',
+      interactionType: { '@type': 'WatchAction' },
+      userInteractionCount: parseInt(v.viewCount, 10) || 0,
+    } : undefined,
+  }));
+
+  const itemListData = schemaVideos.length > 0
+    ? {
+        name: 'Engjell Rraklli — Video conversations and podcasts',
+        itemListElement: schemaVideos.map((v, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          url: `https://www.youtube.com/watch?v=${v.videoId}`,
+          name: v.title,
+        })),
+      }
+    : null;
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+      <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Media', url: '/media' }]} />
+      {itemListData && <StructuredData type="ItemList" data={itemListData} />}
+      {videoObjectSchema.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(videoObjectSchema) }}
+        />
+      )}
       {/* Left Panel - Latest Video */}
       <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh] order-2 md:order-1 min-w-0">
         {/* Breadcrumbs / Top Bar */}

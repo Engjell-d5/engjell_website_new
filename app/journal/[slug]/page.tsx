@@ -3,11 +3,48 @@ import { notFound, redirect } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { PenTool } from 'lucide-react';
+import type { Metadata } from 'next';
 import Sidebar from '@/components/Sidebar';
 import SubscribeForm from '@/components/SubscribeForm';
 import SubscribeFormInline from '@/components/SubscribeFormInline';
-import StructuredData from '@/components/StructuredData';
+import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
+import { createMetadata } from '@/lib/metadata';
 import { getBlogBySlug, getBlogs } from '@/lib/data';
+import { toCategorySlug } from '@/lib/category-slug';
+
+export async function generateMetadata(
+  { params }: { params: Promise<{ slug: string }> | { slug: string } }
+): Promise<Metadata> {
+  const resolved = await Promise.resolve(params);
+  const blog = await getBlogBySlug(resolved.slug);
+
+  if (!blog || !blog.published) {
+    return createMetadata({
+      title: 'Article Not Found',
+      description: 'The article you are looking for could not be found.',
+      path: `/journal/${resolved.slug}`,
+    });
+  }
+
+  const seo = blog.seo || {};
+  const title = seo.metaTitle || blog.title;
+  const description = seo.metaDescription || blog.excerpt;
+  const ogImage = seo.ogImage || blog.imageUrl;
+  const keywords = seo.keywords
+    ? seo.keywords.split(',').map((k: string) => k.trim()).filter(Boolean)
+    : [blog.category, 'Engjell Rraklli', 'Tech', 'Entrepreneurship'];
+
+  return createMetadata({
+    title,
+    description,
+    path: `/journal/${blog.slug}`,
+    image: ogImage,
+    type: 'article',
+    publishedTime: blog.publishedAt || undefined,
+    modifiedTime: blog.updatedAt || undefined,
+    keywords,
+  });
+}
 
 interface Blog {
   id: string;
@@ -116,6 +153,13 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
       <StructuredData type="Article" data={articleData} />
+      <Breadcrumbs
+        items={[
+          { name: 'Home', url: '/' },
+          { name: 'Journal', url: '/journal' },
+          { name: blog.title, url: `/journal/${blog.slug}` },
+        ]}
+      />
       <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh] order-2 md:order-1">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
@@ -138,9 +182,12 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             {/* Header */}
             <div className="mb-8 border-b border-[var(--border-color)] pb-6">
               <div className="flex items-center gap-3 mb-4">
-                <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest border border-[var(--border-color)] px-2 py-0.5">
+                <Link
+                  href={`/journal/category/${toCategorySlug(blog.category)}`}
+                  className="text-[9px] font-bold text-gray-500 hover:text-[var(--primary-mint)] uppercase tracking-widest border border-[var(--border-color)] hover:border-[var(--primary-mint)] px-2 py-0.5 transition-colors"
+                >
                   {blog.category}
-                </span>
+                </Link>
                 {blog.publishedAt && (
                   <time 
                     dateTime={new Date(blog.publishedAt).toISOString()}

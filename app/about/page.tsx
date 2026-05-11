@@ -1,12 +1,52 @@
 import Image from 'next/image';
 import { Heart, Mountain, ShieldCheck, Hourglass } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
+import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
 import { createMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
+
+const profilePageData = {
+  name: 'About Engjell Rraklli',
+  url: `${siteUrl}/about`,
+  mainEntity: {
+    '@type': 'Person',
+    name: 'Engjell Rraklli',
+    jobTitle: 'Tech Entrepreneur',
+    description: 'Albanian tech entrepreneur and startup founder building scalable technology in Tirana.',
+    url: siteUrl,
+    image: `${siteUrl}/IMG_0466.JPG`,
+    nationality: { '@type': 'Country', name: 'Albania' },
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: 'Tirana',
+      addressCountry: 'AL',
+    },
+    sameAs: [
+      'https://www.linkedin.com/in/engjell-rraklli-a8b20a68/',
+      'https://x.com/RraklliEngjell',
+      'https://www.youtube.com/@engjellrraklli',
+    ],
+    knowsAbout: [
+      'Technology',
+      'Entrepreneurship',
+      'Software Development',
+      'Startups',
+      'Artificial Intelligence',
+      '3D Design',
+    ],
+    worksFor: [
+      { '@type': 'Organization', name: 'division5', url: 'https://division5.co' },
+      { '@type': 'Organization', name: 'divisionAI', url: 'https://divisionai.co' },
+      { '@type': 'Organization', name: 'division3D', url: 'https://division3d.co' },
+    ],
+  },
+};
+
 export const metadata: Metadata = createMetadata({
   title: 'About Engjell Rraklli | Albanian Tech Entrepreneur',
-  description: 'Engjell Rraklli - Albanian tech entrepreneur building world-class technology in Tirana. Startup founder creating software development opportunities and tech innovation in Albania.',
+  description: 'Engjell Rraklli — Albanian tech entrepreneur and startup founder building world-class software in Tirana. 11+ years scaling tech ventures across the Balkans.',
   path: '/about',
   keywords: [
     'About Engjell Rraklli',
@@ -23,6 +63,8 @@ export const metadata: Metadata = createMetadata({
 export default function About() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+      <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'About', url: '/about' }]} />
+      <StructuredData type="ProfilePage" data={profilePageData} />
       <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">

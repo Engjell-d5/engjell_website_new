@@ -7,9 +7,9 @@ export default function Footer() {
       <div className="grid grid-cols-1 md:grid-cols-5 gap-8 max-w-[1600px] mx-auto">
         <div className="md:col-span-2">
           <div className="flex items-center gap-3 mb-4">
-            <img 
-              src="/Engjell_Rraklli_White_Logo_Mark.svg" 
-              alt="ER Logo" 
+            <img
+              src="/Engjell_Rraklli_White_Logo_Mark.svg"
+              alt="Engjell Rraklli logo"
               className="w-12 h-12 object-contain"
             />
             <span className="text-xl text-white font-bebas tracking-widest">ENGJELL RRAKLLI</span>

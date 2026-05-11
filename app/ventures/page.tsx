@@ -1,8 +1,34 @@
 import Image from 'next/image';
 import { Briefcase, BrainCircuit, Cuboid, ArrowUpRight } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
+import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
 import { createMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
+
+const VENTURES = [
+  {
+    name: 'division5',
+    url: 'https://division5.co',
+    description: 'Software development services and staff augmentation.',
+  },
+  {
+    name: 'divisionAI',
+    url: 'https://divisionai.co',
+    description: 'Artificial intelligence solutions and AI-powered products.',
+  },
+  {
+    name: 'division3D',
+    url: 'https://division3d.co',
+    description: 'Immersive 3D experiences and design.',
+  },
+];
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
+const FOUNDER = {
+  '@type': 'Person',
+  name: 'Engjell Rraklli',
+  url: siteUrl,
+} as const;
 
 export const metadata: Metadata = createMetadata({
   title: 'Tech Ventures Albania | division5, divisionAI, division3D',
@@ -25,6 +51,19 @@ export const metadata: Metadata = createMetadata({
 export default function Ventures() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+      <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Ventures', url: '/ventures' }]} />
+      {VENTURES.map((v) => (
+        <StructuredData
+          key={v.name}
+          type="Organization"
+          data={{
+            name: v.name,
+            url: v.url,
+            description: v.description,
+            founder: FOUNDER,
+          }}
+        />
+      ))}
       <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh] order-2 md:order-1">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
@@ -84,11 +123,10 @@ export default function Ventures() {
 
               {/* Venture 2: DivisionAI */}
               <a href="https://divisionai.co" target="_blank" rel="noopener noreferrer" className="group relative h-[300px] border border-[var(--border-color)] overflow-hidden hover:border-[var(--primary-mint)] transition-all">
-                <Image 
-                  src="/ventures-divisionai.jpg" 
-                  alt="DivisionAI - AI Coding" 
+                <Image
+                  src="/ventures-divisionai.jpg"
+                  alt="DivisionAI - AI Coding"
                   fill
-                  priority
                   sizes="(min-width: 768px) 50vw, 100vw"
                   className="object-cover img-classic opacity-40"
                 />
@@ -118,11 +156,10 @@ export default function Ventures() {
 
               {/* Venture 3: Division3D */}
               <a href="https://division3d.co" target="_blank" rel="noopener noreferrer" className="group relative h-[300px] border border-[var(--border-color)] overflow-hidden hover:border-[var(--primary-mint)] transition-all">
-                <Image 
-                  src="/ventures-division3d.jpg" 
-                  alt="Division3D - 3D Design" 
+                <Image
+                  src="/ventures-division3d.jpg"
+                  alt="Division3D - 3D Design"
                   fill
-                  priority
                   sizes="(min-width: 768px) 50vw, 100vw"
                   className="object-cover img-classic opacity-40"
                 />

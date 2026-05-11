@@ -83,6 +83,18 @@ export default function RootLayout({
 
   return (
     <html lang="en" className={`${montserrat.variable} ${bebasNeue.variable}`}>
+      <head>
+        {/* Preconnect / DNS prefetch hints for third-party origins used across the site */}
+        <link rel="preconnect" href="https://i.ytimg.com" crossOrigin="" />
+        <link rel="preconnect" href="https://i9.ytimg.com" crossOrigin="" />
+        <link rel="dns-prefetch" href="https://www.youtube.com" />
+        {gaId && (
+          <>
+            <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="" />
+            <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+          </>
+        )}
+      </head>
       <body className={`${montserrat.className} flex flex-col p-2 md:p-6 gap-0 max-w-[1600px] mx-auto`}>
         <StructuredData type="Person" data={personData} />
         <StructuredData type="WebSite" data={websiteData} />

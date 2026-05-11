@@ -1,61 +1,83 @@
-'use client';
-
-import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import Sidebar from '@/components/Sidebar';
+import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
+import { createMetadata } from '@/lib/metadata';
+import { getBlogs } from '@/lib/data';
+import { toCategorySlug } from '@/lib/category-slug';
 
-interface Blog {
-  id: string;
-  title: string;
-  slug: string;
-  category: string;
-  excerpt: string;
-  imageUrl: string;
-  publishedAt: string | null;
-}
+export const revalidate = 300;
 
-export default function Journal() {
-  const [blogs, setBlogs] = useState<Blog[]>([]);
-  const [loading, setLoading] = useState(true);
+export const metadata: Metadata = createMetadata({
+  title: 'Journal | Field Notes on Tech & Entrepreneurship',
+  description: 'Engjell Rraklli\'s field notes on building tech ventures, scaling startups, and software development in Albania. Articles on entrepreneurship and leadership.',
+  path: '/journal',
+  keywords: [
+    'Tech Blog Albania',
+    'Entrepreneurship Articles',
+    'Startup Advice',
+    'Software Development Blog',
+    'Albanian Tech Writer',
+    'Engjell Rraklli Articles',
+  ],
+});
 
-  useEffect(() => {
-    fetchBlogs();
-  }, []);
+const formatDate = (dateString: string | null) => {
+  if (!dateString) return '';
+  return new Date(dateString).toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  });
+};
 
-  const fetchBlogs = async () => {
-    try {
-      const response = await fetch('/api/blogs');
-      if (response.ok) {
-        const data = await response.json();
-        // Sort by publishedAt, most recent first
-        const sortedBlogs = (data.blogs || [])
-          .filter((blog: any) => blog.published)
-          .sort((a: any, b: any) => {
-            const dateA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
-            const dateB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
-            return dateB - dateA;
-          });
-        setBlogs(sortedBlogs);
-      }
-    } catch (error) {
-      console.error('Error fetching blogs:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
+export default async function Journal() {
+  const all = await getBlogs();
+  const blogs = all
+    .filter((b) => b.published)
+    .sort((a, b) => {
+      const dateA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+      const dateB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
+      return dateB - dateA;
     });
+
+  // Distinct categories for the topic-pill nav, each linking to its own category page.
+  // Deduplicate by slug so two categories that slugify to the same value (rare) merge into one pill.
+  const categories = Array.from(
+    new Map(
+      blogs
+        .filter((b) => b.category)
+        .map((b) => [toCategorySlug(b.category), b.category])
+    ).entries()
+  ).map(([slug, name]) => ({ slug, name }));
+
+  // "Read next" picks: top 3 most recent posts not the very first card on the page
+  const readNext = blogs.slice(1, 4);
+
+  const collectionData = {
+    name: 'Engjell Rraklli — Field Notes',
+    description: 'Articles on tech entrepreneurship, software development, and building startups in Albania.',
+    url: `${siteUrl}/journal`,
+    inLanguage: 'en',
+    isPartOf: { '@type': 'WebSite', url: siteUrl, name: 'Engjell Rraklli' },
+    mainEntity: {
+      '@type': 'ItemList',
+      itemListElement: blogs.slice(0, 20).map((b, i) => ({
+        '@type': 'ListItem',
+        position: i + 1,
+        url: `${siteUrl}/journal/${b.slug}`,
+        name: b.title,
+      })),
+    },
   };
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+      <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Journal', url: '/journal' }]} />
+      <StructuredData type="CollectionPage" data={collectionData} />
       <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh] order-2 md:order-1">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
@@ -77,71 +99,91 @@ export default function Journal() {
                 <h1 className="text-5xl md:text-6xl text-white font-bebas">FIELD NOTES</h1>
               </div>
             </div>
-            
-            {loading ? (
-              <div className="grid gap-6">
-                {[1, 2, 3].map((i) => (
-                  <div key={i} className="p-6 border border-[var(--border-color)] bg-[var(--rich-black)] flex flex-col md:flex-row gap-8 animate-pulse">
-                    <div className="w-full md:w-56 h-36 bg-gray-800 shrink-0 border border-[var(--border-color)]/30"></div>
-                    <div className="flex-1 py-1 space-y-3">
-                      <div className="flex items-center gap-3">
-                        <div className="h-4 w-16 bg-gray-800 rounded-none"></div>
-                        <div className="h-4 w-24 bg-gray-800 rounded-none"></div>
-                      </div>
-                      <div className="h-8 w-3/4 bg-gray-800 rounded-none"></div>
-                      <div className="space-y-2">
-                        <div className="h-4 w-full bg-gray-800 rounded-none"></div>
-                        <div className="h-4 w-5/6 bg-gray-800 rounded-none"></div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : blogs.length === 0 ? (
+
+            {blogs.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-gray-400">No blog posts yet. Check back soon!</p>
               </div>
             ) : (
+              <>
+              {categories.length > 1 && (
+                <nav aria-label="Browse by topic" className="mb-8">
+                  <h2 className="text-[10px] text-gray-500 uppercase font-bold tracking-widest mb-3">Browse by topic</h2>
+                  <ul className="flex flex-wrap gap-2">
+                    {categories.map(({ slug, name }) => (
+                      <li key={slug}>
+                        <Link
+                          href={`/journal/category/${slug}`}
+                          className="text-[10px] text-gray-300 hover:text-[var(--primary-mint)] uppercase tracking-widest border border-[var(--border-color)] px-3 py-1 transition-colors"
+                        >
+                          {name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              )}
               <div className="grid gap-6">
-                {blogs.map((blog) => (
-                  <Link
-                    key={blog.id}
-                    href={`/journal/${blog.slug}`}
-                    className="p-6 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-all cursor-pointer group flex flex-col md:flex-row gap-8"
-                  >
-                    <div className="w-full md:w-56 h-36 bg-black shrink-0 overflow-hidden border border-[var(--border-color)]/30 relative">
-                      <Image 
-                        src={blog.imageUrl} 
-                        alt={`${blog.title} - ${blog.category} article`} 
-                        fill
-                        sizes="(min-width: 768px) 224px, 100vw"
-                        className="object-cover img-classic"
-                      />
-                    </div>
-                    <div className="flex-1 py-1">
-                      <div className="flex items-center gap-3 mb-3">
-                        <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest border border-[var(--border-color)] px-2 py-0.5">
-                          {blog.category}
-                        </span>
-                        {blog.publishedAt && (
-                          <time 
-                            dateTime={new Date(blog.publishedAt).toISOString()}
-                            className="text-[10px] text-gray-500 uppercase tracking-widest"
-                          >
-                          {formatDate(blog.publishedAt)}
-                          </time>
-                        )}
+                {blogs.map((blog, idx) => (
+                  <article key={blog.id}>
+                    <Link
+                      href={`/journal/${blog.slug}`}
+                      className="p-6 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-all cursor-pointer group flex flex-col md:flex-row gap-8"
+                    >
+                      <div className="w-full md:w-56 h-36 bg-black shrink-0 overflow-hidden border border-[var(--border-color)]/30 relative">
+                        <Image
+                          src={blog.imageUrl}
+                          alt={`${blog.title} - ${blog.category} article`}
+                          fill
+                          sizes="(min-width: 768px) 224px, 100vw"
+                          className="object-cover img-classic"
+                          priority={idx === 0}
+                        />
                       </div>
-                      <h3 className="text-3xl text-white font-bebas mb-3 group-hover:text-[var(--primary-mint)] transition-colors">
-                        {blog.title}
-                      </h3>
-                      <p className="text-sm text-gray-400 leading-relaxed font-light">
-                        {blog.excerpt}
-                      </p>
-                    </div>
-                  </Link>
+                      <div className="flex-1 py-1">
+                        <div className="flex items-center gap-3 mb-3">
+                          <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest border border-[var(--border-color)] px-2 py-0.5">
+                            {blog.category}
+                          </span>
+                          {blog.publishedAt && (
+                            <time
+                              dateTime={new Date(blog.publishedAt).toISOString()}
+                              className="text-[10px] text-gray-500 uppercase tracking-widest"
+                            >
+                              {formatDate(blog.publishedAt)}
+                            </time>
+                          )}
+                        </div>
+                        <h2 className="text-3xl text-white font-bebas mb-3 group-hover:text-[var(--primary-mint)] transition-colors">
+                          {blog.title}
+                        </h2>
+                        <p className="text-sm text-gray-400 leading-relaxed font-light">
+                          {blog.excerpt}
+                        </p>
+                      </div>
+                    </Link>
+                  </article>
                 ))}
               </div>
+              {readNext.length > 0 && (
+                <aside className="mt-16 pt-8 border-t border-[var(--border-color)]">
+                  <h2 className="text-[10px] text-gray-500 uppercase font-bold tracking-widest mb-4">Read next</h2>
+                  <ul className="grid gap-2 md:grid-cols-3">
+                    {readNext.map((b) => (
+                      <li key={b.id}>
+                        <Link
+                          href={`/journal/${b.slug}`}
+                          className="block p-4 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-all"
+                        >
+                          <span className="text-[9px] text-gray-500 uppercase tracking-widest block mb-2">{b.category}</span>
+                          <span className="text-sm text-white font-medium leading-snug block">{b.title}</span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </aside>
+              )}
+              </>
             )}
           </section>
         </div>
@@ -150,4 +192,3 @@ export default function Journal() {
     </div>
   );
 }
-

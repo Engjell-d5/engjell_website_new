@@ -2,12 +2,42 @@ import Image from 'next/image';
 import { Contact as ContactIcon } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import ContactForm from '@/components/ContactForm';
+import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
 import { createMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
+
+const contactPageData = {
+  name: 'Contact Engjell Rraklli',
+  url: `${siteUrl}/contact`,
+  description: 'Get in touch with Engjell Rraklli for speaking engagements, technical consulting, and partnership opportunities.',
+  mainEntity: {
+    '@type': 'Person',
+    name: 'Engjell Rraklli',
+    url: siteUrl,
+    contactPoint: [
+      {
+        '@type': 'ContactPoint',
+        contactType: 'business inquiries',
+        url: `${siteUrl}/contact`,
+        areaServed: ['AL', 'EU', 'Worldwide'],
+        availableLanguage: ['English', 'Albanian'],
+      },
+      {
+        '@type': 'ContactPoint',
+        contactType: 'speaking engagements',
+        url: `${siteUrl}/contact`,
+        areaServed: ['AL', 'EU', 'Worldwide'],
+        availableLanguage: ['English', 'Albanian'],
+      },
+    ],
+  },
+};
+
 export const metadata: Metadata = createMetadata({
   title: 'Contact Engjell Rraklli | Speaking, Consulting, Partnerships',
-  description: 'Contact Engjell Rraklli for speaking engagements, technical consultation, and business partnership opportunities. Available for tech consulting and entrepreneurship advice in Albania and the Balkans.',
+  description: 'Contact Engjell Rraklli for speaking, technical consulting, and partnership opportunities. Tech and startup advice for founders in Albania and the Balkans.',
   path: '/contact',
   keywords: [
     'Contact Engjell Rraklli',
@@ -23,6 +53,8 @@ export const metadata: Metadata = createMetadata({
 export default function Contact() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+      <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Contact', url: '/contact' }]} />
+      <StructuredData type="ContactPage" data={contactPageData} />
       <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
@@ -62,7 +94,7 @@ export default function Contact() {
                 {/* Personal Image - Above the form */}
                 <div className="w-full h-64 rounded-none overflow-hidden border border-[var(--border-color)] relative group">
                   <Image 
-                    src="/IMG_0456 (1).JPG" 
+                    src="/IMG_0456.JPG"
                     alt="Engjell Rraklli smiling portrait - Available for speaking and consulting" 
                     fill
                     priority

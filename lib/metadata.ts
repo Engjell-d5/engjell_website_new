@@ -39,7 +39,7 @@ export function createMetadata({
       pageImage = `${siteUrl}/${image}`;
     }
   } else {
-    pageImage = `${siteUrl}/IMG_0425.JPG`;
+    pageImage = `${siteUrl}/og-image.jpg`;
   }
 
   // Default keywords (base set for all pages)
@@ -128,7 +128,7 @@ export function createMetadata({
     appleWebApp: {
       capable: true,
       statusBarStyle: 'black-translucent',
-      title: 'Admin',
+      title: siteName,
     },
     themeColor: '#000000',
   };

@@ -44,12 +44,14 @@ export default function SubscribeForm() {
         <h4 className="text-xl text-white font-bebas tracking-wide mb-3">SUBSCRIBE</h4>
         <p className="text-xs text-gray-400 leading-relaxed mb-4 font-light">Get my weekly tech trends.</p>
         <form onSubmit={handleSubmit} className="space-y-2">
-          <input 
-            type="email" 
-            placeholder="Email" 
+          <input
+            type="email"
+            name="email"
+            autoComplete="email"
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat disabled:opacity-50" 
+            className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat disabled:opacity-50"
             required
             disabled={loading}
           />
