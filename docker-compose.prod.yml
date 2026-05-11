@@ -1,0 +1,106 @@
+###############################################################################
+# Production compose file — used on the server.
+#
+# Unlike docker-compose.yml (which builds the image locally), this file PULLS
+# the prebuilt image from GHCR. Built and pushed by the GitHub Actions workflow
+# at .github/workflows/build-and-deploy.yml.
+#
+# Server usage:
+#   docker compose -f docker-compose.prod.yml pull
+#   docker compose -f docker-compose.prod.yml up -d
+#
+# To pin a specific image, set IMAGE_TAG=sha-abc1234 in the environment.
+###############################################################################
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: engjell-website-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-engjell}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+      POSTGRES_DB: ${POSTGRES_DB:-engjell_website}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT:-5434}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-engjell}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - engjell-network
+
+  app:
+    image: ghcr.io/engjell-d5/engjell_website_new:${IMAGE_TAG:-latest}
+    container_name: engjell-website-app
+    restart: unless-stopped
+    pull_policy: always
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-engjell}:${POSTGRES_PASSWORD:-changeme}@postgres:5432/${POSTGRES_DB:-engjell_website}?schema=public
+      PORT: 3000
+      JWT_SECRET: ${JWT_SECRET:-change-this-secret-key}
+      # Social Media OAuth Credentials
+      THREADS_APP_ID: ${THREADS_APP_ID:-}
+      THREADS_APP_SECRET: ${THREADS_APP_SECRET:-}
+      FACEBOOK_APP_ID: ${FACEBOOK_APP_ID:-}
+      FACEBOOK_APP_SECRET: ${FACEBOOK_APP_SECRET:-}
+      LINKEDIN_CLIENT_ID: ${LINKEDIN_CLIENT_ID:-}
+      LINKEDIN_CLIENT_SECRET: ${LINKEDIN_CLIENT_SECRET:-}
+      TWITTER_CLIENT_ID: ${TWITTER_CLIENT_ID:-}
+      TWITTER_CLIENT_SECRET: ${TWITTER_CLIENT_SECRET:-}
+      TWITTER_BEARER_TOKEN: ${TWITTER_BEARER_TOKEN:-}
+      # Site URL (also baked at build time, but kept here for server-side code that reads env)
+      NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:-}
+      # Optional: Pre-configured Threads User Access Token
+      THREADS_USER_ACCESS_TOKEN: ${THREADS_USER_ACCESS_TOKEN:-}
+      # YouTube API
+      YOUTUBE_API_KEY: ${YOUTUBE_API_KEY:-}
+      # Sender (Newsletter) API Credentials
+      SENDER_API_KEY: ${SENDER_API_KEY:-}
+      SENDER_LIST_ID: ${SENDER_LIST_ID:-}
+      SENDER_REPLY_TO: ${SENDER_REPLY_TO:-}
+      SENDER_FROM_NAME: ${SENDER_FROM_NAME:-}
+      # Google Email OAuth Credentials
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      # Push Notifications (VAPID)
+      VAPID_PRIVATE_KEY: ${VAPID_PRIVATE_KEY:-}
+      NEXT_PUBLIC_VAPID_PUBLIC_KEY: ${NEXT_PUBLIC_VAPID_PUBLIC_KEY:-}
+      VAPID_SUBJECT: ${VAPID_SUBJECT:-}
+      # Cron Job Security
+      CRON_SECRET: ${CRON_SECRET:-}
+      # External API (for email tasks)
+      PUBLIC_API_BASE_URL: ${PUBLIC_API_BASE_URL:-}
+      PUBLIC_API_KEY: ${PUBLIC_API_KEY:-}
+      PUBLIC_API_BOARD_ID: ${PUBLIC_API_BOARD_ID:-}
+      # Analytics (also baked at build time)
+      NEXT_PUBLIC_GA_ID: ${NEXT_PUBLIC_GA_ID:-}
+    ports:
+      - "${APP_PORT:-7776}:3000"
+    volumes:
+      # Persist uploads directory
+      - ./public/uploads:/app/public/uploads
+      # Persist data directory (for migrations, etc.)
+      - ./data:/app/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - engjell-network
+    # docker-entrypoint.sh is baked into the image (see Dockerfile) and runs migrations
+    # before starting the server. The image's CMD is ["node", "server.js"].
+    entrypoint: ["/app/docker-entrypoint.sh"]
+    command: ["node", "server.js"]
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  engjell-network:
+    driver: bridge

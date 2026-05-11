@@ -1,0 +1,6 @@
+# Public key is safe to commit (used as a reference for the server's authorized_keys).
+# Anything else in this directory is private and must NOT be committed.
+*
+!.gitignore
+!github-actions.pub
+!README.md
