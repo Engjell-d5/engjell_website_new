@@ -34,8 +34,20 @@ const formatDate = (dateString: string | null) => {
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 
+async function loadBlogsSafe() {
+  // Build runs without DATABASE_URL; treat as empty in that case and rely on
+  // ISR to populate the page on the first real request.
+  if (!process.env.DATABASE_URL) return [];
+  try {
+    return await getBlogs();
+  } catch (err) {
+    console.error('[journal] getBlogs failed; falling back to empty list:', err);
+    return [];
+  }
+}
+
 export default async function Journal() {
-  const all = await getBlogs();
+  const all = await loadBlogsSafe();
   const blogs = all
     .filter((b) => b.published)
     .sort((a, b) => {

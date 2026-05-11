@@ -38,9 +38,20 @@ interface YouTubeVideo {
   removed?: boolean;
 }
 
+async function loadVideosSafe() {
+  // Build runs without DATABASE_URL; treat as empty and rely on ISR.
+  if (!process.env.DATABASE_URL) return [];
+  try {
+    return await getVideos(false);
+  } catch (err) {
+    console.error('[media] getVideos failed; falling back to empty list:', err);
+    return [];
+  }
+}
+
 export default async function Media() {
   // Fetch videos server-side
-  const allVideos = await getVideos(false); // Exclude removed videos
+  const allVideos = await loadVideosSafe();
 
   // Get featured video (first video is featured, as returned by API sorted by featured first)
   const featuredVideo = allVideos.find(v => v.featured) || allVideos[0];

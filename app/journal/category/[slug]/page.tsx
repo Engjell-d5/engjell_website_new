@@ -13,7 +13,16 @@ export const revalidate = 300;
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 
 async function getCategoryPosts(slug: string) {
-  const all = await getBlogs();
+  if (!process.env.DATABASE_URL) {
+    return { posts: [], displayName: titleFromCategorySlug(slug) };
+  }
+  let all: Awaited<ReturnType<typeof getBlogs>>;
+  try {
+    all = await getBlogs();
+  } catch (err) {
+    console.error('[journal/category] getBlogs failed:', err);
+    return { posts: [], displayName: titleFromCategorySlug(slug) };
+  }
   const published = all
     .filter((b) => b.published)
     .sort((a, b) => {
