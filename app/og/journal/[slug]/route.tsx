@@ -24,20 +24,27 @@ export async function GET(
   let title = 'Field Notes on Building Tech';
   let category = 'Journal';
 
-  try {
-    const origin = new URL(request.url).origin;
-    const res = await fetch(`${origin}/api/blogs/slug/${params.slug}`, {
-      cache: 'no-store',
-    });
-    if (res.ok) {
-      const data = await res.json();
-      if (data?.blog?.published) {
-        title = data.blog.title || title;
-        category = data.blog.category || category;
+  // Try the app's own listener first: in production the container often
+  // cannot reach its public hostname (hairpin through the reverse proxy),
+  // so the public origin is only the fallback. Generic card if both fail.
+  const origin = new URL(request.url).origin;
+  for (const base of ['http://127.0.0.1:3000', origin]) {
+    try {
+      const res = await fetch(`${base}/api/blogs/slug/${params.slug}`, {
+        cache: 'no-store',
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data?.blog?.published) {
+          title = data.blog.title || title;
+          category = data.blog.category || category;
+        }
+        break;
       }
+      if (res.status === 404) break; // Post genuinely missing; keep generic card
+    } catch {
+      // Try the next base.
     }
-  } catch {
-    // Keep the generic card on any lookup failure.
   }
 
   if (title.length > 120) title = `${title.slice(0, 117)}…`;
