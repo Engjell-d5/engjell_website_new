@@ -7,20 +7,16 @@ import { createMetadata } from '@/lib/metadata';
 import { getBlogs } from '@/lib/data';
 import { toCategorySlug } from '@/lib/category-slug';
 
-export const revalidate = 300;
+// Rendered per request. ISR (revalidate) is wedged in the deployed
+// standalone/proxy environment: pages prerendered empty at build (no
+// DATABASE_URL in CI) kept serving the empty fallback and never revalidated.
+// Force-dynamic matches the previously-deployed, known-good behavior.
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = createMetadata({
-  title: 'Journal | Field Notes on Tech & Entrepreneurship',
+  title: 'Journal — Field Notes on Building Tech',
   description: 'Engjell Rraklli\'s field notes on building tech ventures, scaling startups, and software development in Albania. Articles on entrepreneurship and leadership.',
   path: '/journal',
-  keywords: [
-    'Tech Blog Albania',
-    'Entrepreneurship Articles',
-    'Startup Advice',
-    'Software Development Blog',
-    'Albanian Tech Writer',
-    'Engjell Rraklli Articles',
-  ],
 });
 
 const formatDate = (dateString: string | null) => {

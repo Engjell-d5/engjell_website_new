@@ -3,6 +3,7 @@ interface StructuredDataProps {
     | 'Person'
     | 'Organization'
     | 'Article'
+    | 'BlogPosting'
     | 'WebSite'
     | 'BreadcrumbList'
     | 'VideoObject'

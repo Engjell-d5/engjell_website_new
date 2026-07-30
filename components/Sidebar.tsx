@@ -4,7 +4,8 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Mic, PenTool, CalendarPlus, History, ListVideo, Contact, Mail, MapPin, Clock, Linkedin, Twitter, Play, Heart, Mountain, ShieldCheck, Hourglass, Briefcase, BrainCircuit, Cuboid, Quote } from 'lucide-react';
+import { PenTool, CalendarPlus, History, Contact, Mail, MapPin, Clock, Linkedin, Twitter, Play, Briefcase, Quote } from 'lucide-react';
+import { yearsOfBuilding } from '@/lib/site';
 
 function SubscribeForm() {
   const [email, setEmail] = useState('');
@@ -111,19 +112,27 @@ const formatDuration = (duration: string): string => {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 };
 
-export default function Sidebar() {
+interface SidebarProps {
+  // When the page already fetched these server-side (homepage), pass them in
+  // so the content is in the initial HTML and no client fetch happens.
+  initialVideo?: YouTubeVideo | null;
+  initialBlog?: Blog | null;
+}
+
+export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}) {
   const pathname = usePathname();
-  const [latestVideo, setLatestVideo] = useState<YouTubeVideo | null>(null);
-  const [loadingVideo, setLoadingVideo] = useState(true);
-  const [latestBlog, setLatestBlog] = useState<Blog | null>(null);
-  const [loadingBlog, setLoadingBlog] = useState(true);
+  const hasServerData = initialVideo !== undefined || initialBlog !== undefined;
+  const [latestVideo, setLatestVideo] = useState<YouTubeVideo | null>(initialVideo ?? null);
+  const [loadingVideo, setLoadingVideo] = useState(!hasServerData);
+  const [latestBlog, setLatestBlog] = useState<Blog | null>(initialBlog ?? null);
+  const [loadingBlog, setLoadingBlog] = useState(!hasServerData);
 
   useEffect(() => {
-    if (pathname === '/') {
+    if (pathname === '/' && !hasServerData) {
       fetchLatestVideo();
       fetchLatestBlog();
     }
-  }, [pathname]);
+  }, [pathname, hasServerData]);
 
   const fetchLatestVideo = async () => {
     try {
@@ -310,42 +319,7 @@ export default function Sidebar() {
           <div className="mt-auto">
             <div className="p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
               <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Years Active</p>
-              <p className="text-2xl font-bebas text-white">11+</p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* MEDIA SIDEBAR */}
-      {pathname === '/media' && (
-        <div className="flex flex-col gap-6 sticky-sidebar-content">
-            <div className="relative p-6 border-l-4 border-[var(--primary-mint)] bg-[var(--rich-black)]">
-              <div className="absolute top-2 left-4 opacity-20">
-                <Quote className="w-8 h-8 md:w-10 md:h-10 lg:w-12 lg:h-12 text-[var(--primary-mint)]" />
-              </div>
-              <div className="relative z-10">
-                <p className="text-sm text-gray-300 leading-relaxed font-light italic pl-4 md:pl-0 lg:pl-6 pt-2 md:pt-4">
-                  "I talk about how to run a business which is more human, which provides real value, and which scales without losing its soul. I am a big believer that businesses should love problems first and make a profit next."
-                </p>
-              </div>
-            </div>
-          <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)]">
-            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Curated Playlists</span>
-            <ListVideo className="w-4 h-4 text-gray-500" />
-          </div>
-          <div className="space-y-4">
-            <div className="relative group cursor-pointer border border-[var(--border-color)] aspect-[16/9] hover:border-[var(--primary-mint)] transition-colors">
-              <Image
-                src="/_DSC0048.JPG"
-                alt="Startup 101 playlist — tech entrepreneurship video series"
-                width={400}
-                height={225}
-                sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 100vw"
-                className="w-full h-full object-cover img-classic opacity-60 group-hover:opacity-90"
-              />
-              <div className="absolute bottom-2 left-2 right-2">
-                <p className="text-[10px] font-bold text-white uppercase tracking-wider">Startup 101</p>
-              </div>
+              <p className="text-2xl font-bebas text-white">{yearsOfBuilding()}+</p>
             </div>
           </div>
         </div>
@@ -391,7 +365,7 @@ export default function Sidebar() {
             <div className="space-y-3">
               <div className="p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
                 <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Total Experience</p>
-                <p className="text-2xl font-bebas text-white">11+ Years</p>
+                <p className="text-2xl font-bebas text-white">{yearsOfBuilding()}+ Years</p>
               </div>
               <div className="p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
                 <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Active Ventures</p>

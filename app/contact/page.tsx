@@ -36,18 +36,9 @@ const contactPageData = {
 };
 
 export const metadata: Metadata = createMetadata({
-  title: 'Contact Engjell Rraklli | Speaking, Consulting, Partnerships',
+  title: 'Contact Engjell Rraklli — Speaking & Consulting',
   description: 'Contact Engjell Rraklli for speaking, technical consulting, and partnership opportunities. Tech and startup advice for founders in Albania and the Balkans.',
   path: '/contact',
-  keywords: [
-    'Contact Engjell Rraklli',
-    'Tech Consulting Albania',
-    'Speaking Engagements Albania',
-    'Business Partnership Albania',
-    'Entrepreneurship Advice Albania',
-    'Technical Consultation Albania',
-    'Startup Consulting Albania',
-  ],
 });
 
 export default function Contact() {
@@ -55,7 +46,7 @@ export default function Contact() {
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
       <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Contact', url: '/contact' }]} />
       <StructuredData type="ContactPage" data={contactPageData} />
-      <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
+      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-gray-400">
@@ -78,15 +69,15 @@ export default function Contact() {
                 
                 <div className="prose prose-invert max-w-none text-gray-300 font-light text-sm leading-7">
                   <p className="mb-6">
-                    Open for speaking engagements, technical consultation, and business partnership opportunities. I am passionate about the entrepreneurial potential of Albania and the Balkans, and I'm here to provide tech consulting and entrepreneurship advice.
+                    Open for speaking engagements, technical consulting, and partnership opportunities. I'm passionate about the entrepreneurial potential of Albania and the Balkans.
                   </p>
-                  
+
                   <p className="mb-6">
-                    I work at the intersection of strategy and implementation. Whether I am consulting on technical architecture or advising on market entry for Albania business opportunities, my goal is to build resilient, scalable ventures. I am eager to connect with fellow builders who see the potential in this market through startup consulting.
+                    I work at the intersection of strategy and implementation. Whether it's technical architecture or entering the Albanian market, my goal is the same: build ventures that last. If you're a builder who sees what this region can become, let's talk.
                   </p>
-                  
+
                   <p className="mb-6">
-                    Whether you have a question about the nuances of building in Albania or want to discuss a potential venture, I'm all ears. Contact me for speaking engagements, technical consultation, or partnership discussions.
+                    Have a question about the nuances of building in Albania, or a venture you want to discuss? I'm all ears.
                   </p>
                 </div>
               </div>

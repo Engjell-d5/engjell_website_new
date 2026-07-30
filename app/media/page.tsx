@@ -8,20 +8,13 @@ import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
 import { createMetadata } from '@/lib/metadata';
 import { getVideos } from '@/lib/data';
 
-export const revalidate = 3600;
+// Rendered per request — see app/journal/page.tsx for why ISR is not used.
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = createMetadata({
-  title: 'Media | Podcasts, Talks & Video Conversations',
+  title: 'Podcast & Talks — The Conversation',
   description: 'Watch Engjell Rraklli\'s podcast episodes, talks, and video conversations on building tech businesses, leadership, and entrepreneurship in Albania.',
   path: '/media',
-  keywords: [
-    'Engjell Rraklli Podcast',
-    'Tech Podcast Albania',
-    'Entrepreneurship Videos',
-    'Startup Conversations',
-    'Tech Leader Talks',
-    'YouTube Tech Albania',
-  ],
 });
 
 interface YouTubeVideo {
@@ -95,7 +88,7 @@ export default async function Media() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-      <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Media', url: '/media' }]} />
+      <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Podcast', url: '/media' }]} />
       {itemListData && <StructuredData type="ItemList" data={itemListData} />}
       {videoObjectSchema.length > 0 && (
         <script
@@ -104,12 +97,12 @@ export default async function Media() {
         />
       )}
       {/* Left Panel - Latest Video */}
-      <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh] order-2 md:order-1 min-w-0">
+      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh] order-2 md:order-1 min-w-0">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-4 md:px-6 lg:px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-2 md:gap-3 text-xs text-gray-400 min-w-0">
             <span className="text-[var(--primary-mint)] font-bold flex-shrink-0">/</span>
-            <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[10px] md:text-[11px] truncate">Media</span>
+            <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[10px] md:text-[11px] truncate">Podcast</span>
           </div>
           <div className="font-montserrat text-[9px] md:text-[10px] text-gray-500 font-bold tracking-[0.15em] hidden lg:block whitespace-nowrap">
             SMALL STEPS EVERYDAY BEATS 1 BIG STEP A YEAR.
@@ -121,7 +114,7 @@ export default async function Media() {
           <section className="animate-slide-up min-w-0">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 md:mb-8 border-b border-[var(--border-color)] pb-4">
               <div className="min-w-0">
-                <span className="page-label mb-2 md:mb-3 block">Media</span>
+                <span className="page-label mb-2 md:mb-3 block">The Podcast</span>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white font-bebas break-words">THE CONVERSATION</h1>
               </div>
               <a 
@@ -161,7 +154,7 @@ export default async function Media() {
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 lg:p-8 bg-gradient-to-t from-black to-transparent">
                   <span className="bg-[var(--primary-mint)] text-black text-[8px] md:text-[9px] font-bold px-2 py-1 uppercase tracking-widest mb-2 md:mb-3 inline-block">Latest Video</span>
-                  <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white font-bebas tracking-wide break-words line-clamp-2 md:line-clamp-none">{featuredVideo.title}</h3>
+                  <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white font-bebas tracking-wide break-words line-clamp-2 md:line-clamp-none">{featuredVideo.title}</h2>
                 </div>
               </a>
             ) : null}

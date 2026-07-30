@@ -1,7 +1,6 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Montserrat } from "next/font/google";
 import localFont from "next/font/local";
-import dynamic from "next/dynamic";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import "./globals.css";
 import Header from "@/components/Header";
@@ -9,35 +8,35 @@ import Footer from "@/components/Footer";
 import { createMetadata } from "@/lib/metadata";
 import StructuredData from "@/components/StructuredData";
 
-// Dynamically import Sidebar to reduce initial bundle size
-const Sidebar = dynamic(() => import("@/components/Sidebar"), {
-  ssr: false, // Sidebar is client-only anyway
-});
-
-// Optimize Montserrat font loading - non-blocking
 const montserrat = Montserrat({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
-  display: "swap", // Prevents render blocking
+  display: "swap",
   variable: "--font-montserrat",
-  preload: false, // Changed to false - let Next.js optimize
+  preload: true,
   adjustFontFallback: true,
 });
 
-// Optimize Bebas Neue font loading - non-blocking
 // Font file is in app/fonts directory
 const bebasNeue = localFont({
   src: "./fonts/BebasNeue-Bold.ttf",
   weight: "700",
   style: "normal",
-  display: "swap", // Prevents render blocking
+  display: "swap",
   variable: "--font-bebas",
-  preload: false, // Changed to false - let Next.js optimize
+  preload: true,
   fallback: ['sans-serif', 'Arial', 'Helvetica'],
   adjustFontFallback: false,
 });
 
 export const metadata: Metadata = createMetadata({});
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#000000',
+};
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 
@@ -47,6 +46,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   const personData = {
+    '@id': `${siteUrl}/#person`,
     name: 'Engjell Rraklli',
     jobTitle: 'Tech Entrepreneur',
     description: 'Building scalable tech and human potential in Tirana. Creative at heart, resilient by practice.',
@@ -75,6 +75,7 @@ export default function RootLayout({
     description: 'Building scalable tech and human potential in Tirana',
     publisher: {
       '@type': 'Person',
+      '@id': `${siteUrl}/#person`,
       name: 'Engjell Rraklli',
     },
   };

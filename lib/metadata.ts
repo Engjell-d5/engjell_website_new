@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 const siteName = 'Engjell Rraklli';
-const defaultTitle = 'Engjell Rraklli | Tech Entrepreneur Building the Future in Albania';
+const defaultTitle = 'Engjell Rraklli — Tech Entrepreneur in Tirana, Albania';
 const defaultDescription = 'Albanian tech entrepreneur building scalable technology in Tirana. Software development, startups, and tech innovation in Albania.';
 
 export function createMetadata({
@@ -13,7 +13,7 @@ export function createMetadata({
   type = 'website',
   publishedTime,
   modifiedTime,
-  keywords,
+  noindex = false,
 }: {
   title?: string;
   description?: string;
@@ -22,12 +22,19 @@ export function createMetadata({
   type?: 'website' | 'article';
   publishedTime?: string;
   modifiedTime?: string;
-  keywords?: string[];
+  noindex?: boolean;
 }): Metadata {
-  const pageTitle = title ? `${title} | ${siteName}` : defaultTitle;
+  // Append the brand suffix only when the title doesn't already carry the
+  // name — avoids "About Engjell Rraklli | ... | Engjell Rraklli". Keep page
+  // titles short: Google truncates around 60 characters.
+  const pageTitle = title
+    ? title.includes(siteName)
+      ? title
+      : `${title} | ${siteName}`
+    : defaultTitle;
   const pageDescription = description || defaultDescription;
   const pageUrl = `${siteUrl}${path}`;
-  
+
   // Ensure image URL is absolute
   let pageImage: string;
   if (image) {
@@ -42,32 +49,13 @@ export function createMetadata({
     pageImage = `${siteUrl}/og-image.jpg`;
   }
 
-  // Default keywords (base set for all pages)
-  const defaultKeywords = [
-    'Engjell Rraklli',
-    'Tech Entrepreneur',
-    'Albania',
-    'Tirana',
-  ];
-
-  // Merge default keywords with page-specific keywords
-  const pageKeywords = keywords 
-    ? [...defaultKeywords, ...keywords]
-    : defaultKeywords;
-
   return {
     metadataBase: new URL(siteUrl),
     title: pageTitle,
     description: pageDescription,
-    keywords: pageKeywords,
     authors: [{ name: 'Engjell Rraklli' }],
     creator: 'Engjell Rraklli',
     publisher: 'Engjell Rraklli',
-    viewport: {
-      width: 'device-width',
-      initialScale: 1,
-      maximumScale: 5,
-    },
     formatDetection: {
       email: false,
       address: false,
@@ -97,21 +85,27 @@ export function createMetadata({
       description: pageDescription,
       images: [pageImage],
       creator: '@RraklliEngjell',
+      site: '@RraklliEngjell',
     },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
-    },
-    alternates: {
-      canonical: pageUrl,
-    },
+    robots: noindex
+      ? {
+          index: false,
+          follow: false,
+        }
+      : {
+          index: true,
+          follow: true,
+          googleBot: {
+            index: true,
+            follow: true,
+            'max-video-preview': -1,
+            'max-image-preview': 'large',
+            'max-snippet': -1,
+          },
+        },
+    // A noindex page should not declare a canonical. Explicit null is required
+    // to unset the value inherited from the root layout's metadata.
+    alternates: noindex ? null : { canonical: pageUrl },
     icons: {
       icon: [
         { url: '/favicon.ico', sizes: 'any' },
@@ -130,6 +124,5 @@ export function createMetadata({
       statusBarStyle: 'black-translucent',
       title: siteName,
     },
-    themeColor: '#000000',
   };
 }

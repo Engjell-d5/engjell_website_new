@@ -8,7 +8,8 @@ import { createMetadata } from '@/lib/metadata';
 import { getBlogs } from '@/lib/data';
 import { toCategorySlug, titleFromCategorySlug } from '@/lib/category-slug';
 
-export const revalidate = 300;
+// Rendered per request — see app/journal/page.tsx for why ISR is not used.
+export const dynamic = 'force-dynamic';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 
@@ -37,25 +38,6 @@ async function getCategoryPosts(slug: string) {
   return { posts: matching, displayName };
 }
 
-export async function generateStaticParams() {
-  // Only used during build; safe to skip if DB unavailable.
-  if (!process.env.DATABASE_URL) return [];
-  try {
-    const all = await getBlogs();
-    const slugs = Array.from(
-      new Set(
-        all
-          .filter((b) => b.published)
-          .map((b) => toCategorySlug(b.category))
-          .filter(Boolean)
-      )
-    );
-    return slugs.map((slug) => ({ slug }));
-  } catch {
-    return [];
-  }
-}
-
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string }> | { slug: string } }
 ): Promise<Metadata> {
@@ -74,7 +56,6 @@ export async function generateMetadata(
     title: `${displayName} — Articles by Engjell Rraklli`,
     description: `${posts.length} article${posts.length === 1 ? '' : 's'} on ${displayName}. Field notes on tech, entrepreneurship, and building startups in Albania.`,
     path: `/journal/category/${resolved.slug}`,
-    keywords: [displayName, 'Engjell Rraklli', 'Tech Blog', 'Entrepreneurship Articles'],
   });
 }
 

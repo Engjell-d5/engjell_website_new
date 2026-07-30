@@ -3,6 +3,7 @@ import { Heart, Mountain, ShieldCheck, Hourglass } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
 import { createMetadata } from '@/lib/metadata';
+import { yearsOfBuilding } from '@/lib/site';
 import type { Metadata } from 'next';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
@@ -12,6 +13,7 @@ const profilePageData = {
   url: `${siteUrl}/about`,
   mainEntity: {
     '@type': 'Person',
+    '@id': `${siteUrl}/#person`,
     name: 'Engjell Rraklli',
     jobTitle: 'Tech Entrepreneur',
     description: 'Albanian tech entrepreneur and startup founder building scalable technology in Tirana.',
@@ -45,19 +47,9 @@ const profilePageData = {
 };
 
 export const metadata: Metadata = createMetadata({
-  title: 'About Engjell Rraklli | Albanian Tech Entrepreneur',
-  description: 'Engjell Rraklli — Albanian tech entrepreneur and startup founder building world-class software in Tirana. 11+ years scaling tech ventures across the Balkans.',
+  title: 'About Engjell Rraklli — Albanian Tech Entrepreneur',
+  description: 'Engjell Rraklli — Albanian tech entrepreneur and startup founder building world-class software in Tirana. Over a decade scaling tech ventures across the Balkans.',
   path: '/about',
-  keywords: [
-    'About Engjell Rraklli',
-    'Albanian Tech Entrepreneur',
-    'Tech Entrepreneur Story',
-    'Tirana Technology',
-    'Software Development Albania',
-    'Startup Founder Albania',
-    'Tech Leadership Albania',
-    'Albania Tech Ecosystem',
-  ],
 });
 
 export default function About() {
@@ -65,7 +57,7 @@ export default function About() {
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
       <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'About', url: '/about' }]} />
       <StructuredData type="ProfilePage" data={profilePageData} />
-      <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
+      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-gray-400">
@@ -84,7 +76,7 @@ export default function About() {
               <div className="text-center mb-8">
                 <span className="page-label mb-3 block">My Story</span>
                 <h1 className="text-5xl md:text-6xl text-white font-bebas mb-6">THE JOURNEY</h1>
-                <p className="text-sm text-gray-400 mt-2 font-light">11 YEARS OF BUILDING</p>
+                <p className="text-sm text-gray-400 mt-2 font-light">{yearsOfBuilding()} YEARS OF BUILDING</p>
                 <div className="h-[1px] w-24 bg-gray-600 mx-auto mt-4"></div>
               </div>
               
@@ -105,10 +97,10 @@ export default function About() {
                 <div className="md:col-span-7 flex flex-col justify-center">
               <div className="prose prose-invert max-w-none text-gray-300 font-light text-sm leading-7">
                 <p className="mb-6 first-letter:text-4xl first-letter:font-bold first-letter:text-white first-letter:mr-1 first-letter:float-left">
-                  My work is grounded in the conviction that Tirana is fertile ground for world-class technology. Ten years ago, I stepped away from traditional education to build my own path. As a creative at heart, I fell in love with the act of building—whether it was software development or companies. I failed more times than I succeeded, but those experiences shaped me into the tech entrepreneur and startup founder I am today.
+                  My work is grounded in the conviction that Tirana is fertile ground for world-class technology. Over a decade ago, I stepped away from traditional education to build my own path. As a creative at heart, I fell in love with the act of building—whether it was software development or companies. I failed more times than I succeeded, but those experiences shaped me into the tech entrepreneur and startup founder I am today.
                 </p>
                     <p className="mb-0">
-                  Now, as the founder of division5, I apply those learnings to deliver global-standard software services. But my true focus isn't just scaling a business; it is scaling human potential. I am building the infrastructure that allows young Albanian talents to apply their skills at a global level without leaving their homes—proving that the best way to predict our country's future is to empower the youth who will build it. This is my story as an Albanian entrepreneur contributing to the Albania tech ecosystem.
+                  Now, as the founder of division5, I apply those learnings to deliver global-standard software services. But my true focus isn't just scaling a business; it is scaling human potential. I am building the infrastructure that allows young Albanian talents to apply their skills at a global level without leaving their homes—proving that the best way to predict our country's future is to empower the youth who will build it.
                 </p>
                   </div>
                 </div>
@@ -116,33 +108,33 @@ export default function About() {
 
               {/* Core Values Grid */}
               <div className="mt-8">
-                <h2 className="text-2xl text-white font-bebas mb-6 tracking-wide">Tech Entrepreneur Values and Principles</h2>
+                <h2 className="text-2xl text-white font-bebas mb-6 tracking-wide">What I Value</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="p-6 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-colors group">
                     <div className="flex items-center gap-3 mb-2">
                       <Heart className="w-5 h-5 text-white" />
-                      <h4 className="text-lg text-white font-bebas tracking-wide">Kindness</h4>
+                      <h3 className="text-lg text-white font-bebas tracking-wide">Kindness</h3>
                     </div>
                     <p className="text-xs text-gray-400">Business is ultimately about people. Treating every stakeholder with genuine respect and empathy is non-negotiable.</p>
                   </div>
                   <div className="p-6 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-colors group">
                     <div className="flex items-center gap-3 mb-2">
                       <Mountain className="w-5 h-5 text-white" />
-                      <h4 className="text-lg text-white font-bebas tracking-wide">Persistence</h4>
+                      <h3 className="text-lg text-white font-bebas tracking-wide">Persistence</h3>
                     </div>
                     <p className="text-xs text-gray-400">The path is never straight. Success belongs to those who show up every day, regardless of the obstacles.</p>
                   </div>
                   <div className="p-6 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-colors group">
                     <div className="flex items-center gap-3 mb-2">
                       <ShieldCheck className="w-5 h-5 text-white" />
-                      <h4 className="text-lg text-white font-bebas tracking-wide">Discipline</h4>
+                      <h3 className="text-lg text-white font-bebas tracking-wide">Discipline</h3>
                     </div>
                     <p className="text-xs text-gray-400">Motivation gets you started; discipline keeps you going. It is the bridge between goals and accomplishment.</p>
                   </div>
                   <div className="p-6 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-colors group">
                     <div className="flex items-center gap-3 mb-2">
                       <Hourglass className="w-5 h-5 text-white" />
-                      <h4 className="text-lg text-white font-bebas tracking-wide">Patience</h4>
+                      <h3 className="text-lg text-white font-bebas tracking-wide">Patience</h3>
                     </div>
                     <p className="text-xs text-gray-400">Real value takes time to build. We play the long game, focusing on sustainable growth over quick wins.</p>
                   </div>

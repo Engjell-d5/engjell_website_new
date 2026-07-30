@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
 import { getBlogs, saveBlogs, Blog } from '@/lib/data';
+import { normalizeCategory } from '@/lib/category-normalize';
 
 export async function GET(request: NextRequest) {
   const authUser = getAuthUser(request);
@@ -50,7 +51,7 @@ export async function POST(request: NextRequest) {
       id: Date.now().toString(),
       title,
       slug: finalSlug,
-      category,
+      category: normalizeCategory(category),
       excerpt,
       hook: hook || null,
       content,

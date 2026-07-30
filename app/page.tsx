@@ -1,30 +1,78 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Quote, MapPin, BookOpen } from 'lucide-react';
+import { Quote, MapPin, BookOpen, Play } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import { createMetadata } from '@/lib/metadata';
+import { getBlogs, getVideos } from '@/lib/data';
+import { yearsOfBuilding } from '@/lib/site';
 import type { Metadata } from 'next';
 
+// Rendered per request — see app/journal/page.tsx for why ISR is not used.
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = createMetadata({
-  title: 'Tech Entrepreneur Albania | Building the Future in Tirana',
   description: 'Engjell Rraklli - Albanian tech entrepreneur building scalable technology in Tirana. Software development, startups, and tech innovation in Albania.',
   path: '/',
-  keywords: [
-    'Tech Entrepreneur Albania',
-    'Albanian Tech Entrepreneur',
-    'Tirana Startup',
-    'Software Development Albania',
-    'Technology Albania',
-    'Startups Tirana',
-    'Tech Innovation Albania',
-    'Entrepreneurship Albania',
-  ],
 });
 
-export default function Home() {
+// Fetch the freshest video and blog server-side so the homepage's newest
+// internal links are in the initial HTML (crawlable) instead of a client fetch.
+// Only the fields the sidebar renders are passed to the client component —
+// never the full blog (its `content` would bloat the page payload).
+async function loadLatestContent() {
+  if (!process.env.DATABASE_URL) return { video: null, blog: null };
+  try {
+    const [videos, blogs] = await Promise.all([
+      getVideos(false).catch(() => []),
+      getBlogs().catch(() => []),
+    ]);
+    const v = videos.find((vid: any) => vid.featured) || videos[0] || null;
+    const video = v
+      ? {
+          id: v.id,
+          videoId: v.videoId,
+          title: v.title,
+          description: '',
+          thumbnailUrl: v.thumbnailUrl,
+          publishedAt: v.publishedAt,
+          duration: v.duration,
+          viewCount: v.viewCount,
+          channelTitle: v.channelTitle,
+          featured: v.featured,
+        }
+      : null;
+    const b =
+      blogs
+        .filter((blog: any) => blog.published)
+        .sort((a: any, z: any) => {
+          const dateA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
+          const dateB = z.publishedAt ? new Date(z.publishedAt).getTime() : 0;
+          return dateB - dateA;
+        })[0] || null;
+    const blog = b
+      ? {
+          id: b.id,
+          title: b.title,
+          slug: b.slug,
+          category: b.category,
+          excerpt: '',
+          imageUrl: b.imageUrl,
+          published: b.published,
+          publishedAt: b.publishedAt,
+        }
+      : null;
+    return { video, blog };
+  } catch (err) {
+    console.error('[home] loading latest content failed:', err);
+    return { video: null, blog: null };
+  }
+}
+
+export default async function Home() {
+  const { video, blog } = await loadLatestContent();
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-      <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
+      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-gray-400">
@@ -62,6 +110,15 @@ export default function Home() {
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">FUTURE</span><br />
                   IN ALBANIA.
                 </h1>
+                <div className="mt-6 flex flex-wrap items-center gap-3">
+                  <Link href="/media" className="px-6 py-3 bg-[var(--primary-mint)] text-[var(--rich-black)] hover:bg-white text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center gap-2">
+                    <Play className="w-4 h-4 fill-current" />
+                    Listen to the Podcast
+                  </Link>
+                  <Link href="/contact" className="px-6 py-3 border border-white/40 text-white hover:border-[var(--primary-mint)] hover:text-[var(--primary-mint)] text-[10px] font-bold uppercase tracking-widest transition-colors">
+                    Work With Me
+                  </Link>
+                </div>
               </div>
             </div>
 
@@ -86,9 +143,9 @@ export default function Home() {
                 </div>
                 <div>
                   <Quote className="w-8 h-8 text-[var(--primary-mint)] mb-4 opacity-50" />
-                  <h2 className="text-white font-bebas text-3xl mb-4 tracking-wide">Tech Entrepreneur Mission in Albania</h2>
+                  <h2 className="text-white font-bebas text-3xl mb-4 tracking-wide">Why I Build in Tirana</h2>
                   <p className="text-gray-300 text-sm leading-relaxed font-light max-w-2xl">
-                    My mission is to empower young Albanian talent to build their future at home. By creating an ecosystem of world-class technology and software development in Tirana, I am providing the mentorship, structure, and opportunities the next generation needs to succeed without leaving the country. Through entrepreneurship and tech innovation, we're building the Albanian tech startup ecosystem.
+                    My mission is to empower young Albanian talent to build their future at home. By creating an ecosystem of world-class technology and software development in Tirana, I am providing the mentorship, structure, and opportunities the next generation needs to succeed without leaving the country.
                   </p>
                 </div>
                 <div className="mt-8 flex items-center gap-4">
@@ -104,7 +161,7 @@ export default function Home() {
             <div className="grid grid-cols-2 md:grid-cols-4 border-t border-b border-[var(--border-color)] bg-[var(--rich-black)]">
               <div className="p-6 border-r border-[var(--border-color)] text-center">
                 <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Experience</p>
-                <p className="text-3xl font-bebas text-white">11+ Years</p>
+                <p className="text-3xl font-bebas text-white">{yearsOfBuilding()}+ Years</p>
               </div>
               <div className="p-6 border-r border-[var(--border-color)] text-center">
                 <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Ventures</p>
@@ -122,7 +179,7 @@ export default function Home() {
           </section>
         </div>
       </main>
-      <Sidebar />
+      <Sidebar initialVideo={video} initialBlog={blog} />
     </div>
   );
 }

@@ -1,5 +1,14 @@
 import Link from 'next/link';
 import Sidebar from '@/components/Sidebar';
+import { createMetadata } from '@/lib/metadata';
+import type { Metadata } from 'next';
+
+// 404s must not be indexed and must not canonicalize to the homepage.
+export const metadata: Metadata = createMetadata({
+  title: 'Page Not Found',
+  description: 'The page you are looking for does not exist or has been moved.',
+  noindex: true,
+});
 
 export default function NotFound() {
   return (

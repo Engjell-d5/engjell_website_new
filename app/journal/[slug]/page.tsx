@@ -23,6 +23,7 @@ export async function generateMetadata(
       title: 'Article Not Found',
       description: 'The article you are looking for could not be found.',
       path: `/journal/${resolved.slug}`,
+      noindex: true,
     });
   }
 
@@ -30,9 +31,6 @@ export async function generateMetadata(
   const title = seo.metaTitle || blog.title;
   const description = seo.metaDescription || blog.excerpt;
   const ogImage = seo.ogImage || blog.imageUrl;
-  const keywords = seo.keywords
-    ? seo.keywords.split(',').map((k: string) => k.trim()).filter(Boolean)
-    : [blog.category, 'Engjell Rraklli', 'Tech', 'Entrepreneurship'];
 
   return createMetadata({
     title,
@@ -42,7 +40,6 @@ export async function generateMetadata(
     type: 'article',
     publishedTime: blog.publishedAt || undefined,
     modifiedTime: blog.updatedAt || undefined,
-    keywords,
   });
 }
 
@@ -126,20 +123,25 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
 
   const readingTime = blog.content ? calculateReadingTime(blog.content) : 5;
 
-  // Article structured data
+  // BlogPosting structured data; @id ties author/publisher to the site-wide
+  // Person node declared in the root layout so Google merges them.
   const articleData = {
     headline: blog.title,
     description: blog.excerpt || '',
     image: blog.imageUrl ? (blog.imageUrl.startsWith('http') ? blog.imageUrl : `${siteUrl}${blog.imageUrl}`) : `${siteUrl}/IMG_0425.JPG`,
     datePublished: blog.publishedAt || blog.createdAt,
     dateModified: blog.updatedAt,
+    inLanguage: 'en',
+    articleSection: blog.category || undefined,
     author: {
       '@type': 'Person',
+      '@id': `${siteUrl}/#person`,
       name: 'Engjell Rraklli',
       url: siteUrl,
     },
     publisher: {
       '@type': 'Person',
+      '@id': `${siteUrl}/#person`,
       name: 'Engjell Rraklli',
       url: siteUrl,
     },
@@ -152,7 +154,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-      <StructuredData type="Article" data={articleData} />
+      <StructuredData type="BlogPosting" data={articleData} />
       <Breadcrumbs
         items={[
           { name: 'Home', url: '/' },

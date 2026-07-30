@@ -2,9 +2,11 @@ import { MetadataRoute } from 'next';
 import { getBlogs } from '@/lib/data';
 import { toCategorySlug } from '@/lib/category-slug';
 
-// The Docker build runs without DATABASE_URL, so the build-time sitemap has no
-// blog routes. Revalidate hourly so it regenerates at runtime with DB access.
-export const revalidate = 3600;
+// The Docker build runs without DATABASE_URL, so a build-time sitemap would
+// have no blog routes — and ISR revalidation is wedged in the deployed
+// environment (see app/journal/page.tsx). Generate per request instead;
+// sitemap traffic is rare enough that the DB cost is negligible.
+export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';

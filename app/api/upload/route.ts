@@ -60,7 +60,43 @@ export async function POST(request: NextRequest) {
     }
 
     const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    let buffer: Buffer = Buffer.from(bytes);
+    let outMimeType = file.type;
+    let extension = file.name.split('.').pop();
+
+    // Compress images on ingest: these files are served raw as og:image /
+    // twitter:image, where X caps images at 5MB and Facebook at 8MB, and they
+    // are the LCP asset on blog posts. Resize to a sane maximum and re-encode.
+    // GIFs are left untouched (animation), videos are never processed.
+    const compressibleTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!isVideo && compressibleTypes.includes(file.type)) {
+      try {
+        const sharp = (await import('sharp')).default;
+        // .rotate() applies EXIF orientation so photos can't come out sideways
+        const img = sharp(buffer).rotate();
+        const meta = await img.metadata();
+        const resized = img.resize({ width: 1600, withoutEnlargement: true });
+
+        if (file.type === 'image/png' && meta.hasAlpha) {
+          // Keep transparency; recompress the PNG
+          buffer = await resized.png({ compressionLevel: 9, palette: true }).toBuffer();
+        } else if (file.type === 'image/webp') {
+          buffer = await resized.webp({ quality: 82 }).toBuffer();
+        } else {
+          // JPEGs and opaque PNGs become quality-82 JPEG
+          buffer = await resized.jpeg({ quality: 82, mozjpeg: true }).toBuffer();
+          outMimeType = 'image/jpeg';
+          extension = 'jpg';
+        }
+        console.log(`[UPLOAD] Compressed ${file.name}: ${(file.size / 1024).toFixed(0)}KB -> ${(buffer.length / 1024).toFixed(0)}KB`);
+      } catch (err) {
+        // Never fail an upload over compression; store the original instead
+        console.error('[UPLOAD] Image compression failed, storing original:', err);
+        buffer = Buffer.from(bytes);
+        outMimeType = file.type;
+        extension = file.name.split('.').pop();
+      }
+    }
 
     // Create uploads directory if it doesn't exist
     const uploadsDir = join(process.cwd(), 'public', 'uploads');
@@ -71,7 +107,6 @@ export async function POST(request: NextRequest) {
     // Generate unique filename
     const timestamp = Date.now();
     const randomStr = Math.random().toString(36).substring(2, 15);
-    const extension = file.name.split('.').pop();
     const filename = `${timestamp}-${randomStr}.${extension}`;
     const filepath = join(uploadsDir, filename);
 
@@ -87,12 +122,12 @@ export async function POST(request: NextRequest) {
     // This ensures images/videos are available immediately without needing to restart the app
     const url = `/api/uploads/${filename}`;
     const fileType = isVideo ? 'video' : 'image';
-    return NextResponse.json({ 
-      url, 
+    return NextResponse.json({
+      url,
       filename,
       type: fileType,
-      mimeType: file.type,
-      size: file.size,
+      mimeType: outMimeType,
+      size: buffer.length,
     });
   } catch (error) {
     console.error('Upload error:', error);

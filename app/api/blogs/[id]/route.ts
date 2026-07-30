@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
 import { getBlogs, saveBlogs, Blog } from '@/lib/data';
+import { normalizeCategory } from '@/lib/category-normalize';
 
 export async function GET(
   request: NextRequest,
@@ -76,7 +77,7 @@ export async function PUT(
       ...blogs[blogIndex],
       title: title || blogs[blogIndex].title,
       slug: finalSlug,
-      category: category || blogs[blogIndex].category,
+      category: category ? normalizeCategory(category) : blogs[blogIndex].category,
       excerpt: excerpt || blogs[blogIndex].excerpt,
       hook: hook !== undefined ? (hook || null) : (blogs[blogIndex] as any).hook || null,
       content: content || blogs[blogIndex].content,

@@ -26,26 +26,15 @@ const VENTURES = [
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 const FOUNDER = {
   '@type': 'Person',
+  '@id': `${siteUrl}/#person`,
   name: 'Engjell Rraklli',
   url: siteUrl,
 } as const;
 
 export const metadata: Metadata = createMetadata({
-  title: 'Tech Ventures Albania | division5, divisionAI, division3D',
+  title: 'division5, divisionAI & division3D',
   description: 'Engjell Rraklli\'s tech ventures in Albania: division5 (software services), divisionAI (AI solutions), and division3D (3D design). Building scalable tech businesses from Tirana.',
   path: '/ventures',
-  keywords: [
-    'Tech Ventures Albania',
-    'division5 Albania',
-    'divisionAI Albania',
-    'division3D Albania',
-    'Software Services Albania',
-    'AI Solutions Albania',
-    '3D Design Albania',
-    'Staff Augmentation Albania',
-    'Tech Startups Tirana',
-    'Albanian Tech Companies',
-  ],
 });
 
 export default function Ventures() {
@@ -64,7 +53,7 @@ export default function Ventures() {
           }}
         />
       ))}
-      <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh] order-2 md:order-1">
+      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh] order-2 md:order-1">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-gray-400">
@@ -89,9 +78,9 @@ export default function Ventures() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Venture 1: Division5 - Main/First */}
               <a href="https://division5.co" target="_blank" rel="noopener noreferrer" className="group relative h-[300px] border border-[var(--border-color)] overflow-hidden hover:border-[var(--primary-mint)] transition-all md:col-span-2">
-                <Image 
-                  src="/ventures-division5.jpg" 
-                  alt="Division5 - Staff Augmentation" 
+                <Image
+                  src="/ventures-division5.jpg"
+                  alt="division5 — software development services and staff augmentation"
                   fill
                   priority
                   sizes="(min-width: 768px) 50vw, 100vw"
@@ -105,8 +94,8 @@ export default function Ventures() {
                       <Briefcase className="w-6 h-6 text-white" />
                     </div>
                   </div>
-                  <h3 className="text-4xl text-white font-bebas mb-2">DIVISION 5</h3>
-                  <p className="text-sm text-gray-400 mb-6 font-light border-l border-[var(--border-color)]/50 pl-3">Building scalable service-based businesses.</p>
+                  <h2 className="text-4xl text-white font-bebas mb-2">division5</h2>
+                  <p className="text-sm text-gray-400 mb-6 font-light border-l border-[var(--border-color)]/50 pl-3">Software development services and staff augmentation.</p>
                   
                   <div className="grid grid-cols-2 gap-4 border-t border-[var(--border-color)]/30 pt-4">
                     <div>
@@ -125,7 +114,7 @@ export default function Ventures() {
               <a href="https://divisionai.co" target="_blank" rel="noopener noreferrer" className="group relative h-[300px] border border-[var(--border-color)] overflow-hidden hover:border-[var(--primary-mint)] transition-all">
                 <Image
                   src="/ventures-divisionai.jpg"
-                  alt="DivisionAI - AI Coding"
+                  alt="divisionAI — artificial intelligence solutions"
                   fill
                   sizes="(min-width: 768px) 50vw, 100vw"
                   className="object-cover img-classic opacity-40"
@@ -138,7 +127,7 @@ export default function Ventures() {
                       <BrainCircuit className="w-6 h-6 text-white" />
                     </div>
                   </div>
-                  <h3 className="text-4xl text-white font-bebas mb-2">DIVISION AI</h3>
+                  <h2 className="text-4xl text-white font-bebas mb-2">divisionAI</h2>
                   <p className="text-sm text-gray-400 mb-6 font-light border-l border-[var(--border-color)]/50 pl-3">Artificial Intelligence solutions.</p>
                   
                   <div className="grid grid-cols-2 gap-4 border-t border-[var(--border-color)]/30 pt-4">
@@ -158,7 +147,7 @@ export default function Ventures() {
               <a href="https://division3d.co" target="_blank" rel="noopener noreferrer" className="group relative h-[300px] border border-[var(--border-color)] overflow-hidden hover:border-[var(--primary-mint)] transition-all">
                 <Image
                   src="/ventures-division3d.jpg"
-                  alt="Division3D - 3D Design"
+                  alt="division3D — immersive 3D experiences and design"
                   fill
                   sizes="(min-width: 768px) 50vw, 100vw"
                   className="object-cover img-classic opacity-40"
@@ -171,7 +160,7 @@ export default function Ventures() {
                       <Cuboid className="w-6 h-6 text-white" />
                     </div>
                   </div>
-                  <h3 className="text-4xl text-white font-bebas mb-2">DIVISION 3D</h3>
+                  <h2 className="text-4xl text-white font-bebas mb-2">division3D</h2>
                   <p className="text-sm text-gray-400 mb-6 font-light border-l border-[var(--border-color)]/50 pl-3">Immersive 3D experiences and design.</p>
                   
                   <div className="grid grid-cols-2 gap-4 border-t border-[var(--border-color)]/30 pt-4">

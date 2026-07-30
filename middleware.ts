@@ -70,6 +70,13 @@ export async function middleware(request: NextRequest) {
 
   // Protect admin routes server-side
   if (pathname.startsWith('/admin')) {
+    // Admin pages must never be indexed. The admin layout is a client
+    // component and cannot export metadata, so enforce it at the header level.
+    const noindex = (res: NextResponse) => {
+      res.headers.set('X-Robots-Tag', 'noindex, nofollow');
+      return res;
+    };
+
     // Allow login page without auth (but check if already authenticated)
     if (pathname === '/admin/login') {
       const token = request.cookies.get('auth-token')?.value;
@@ -77,10 +84,10 @@ export async function middleware(request: NextRequest) {
         const user = await verifyToken(token);
         // If already authenticated, redirect to admin dashboard
         if (user) {
-          return NextResponse.redirect(new URL('/admin', request.url));
+          return noindex(NextResponse.redirect(new URL('/admin', request.url)));
         }
       }
-      return NextResponse.next();
+      return noindex(NextResponse.next());
     }
 
     // Check authentication for all other admin routes
@@ -99,7 +106,7 @@ export async function middleware(request: NextRequest) {
       }
       const loginUrl = new URL('/admin/login', request.url);
       loginUrl.searchParams.set('redirect', pathname);
-      return NextResponse.redirect(loginUrl);
+      return noindex(NextResponse.redirect(loginUrl));
     }
 
     const user = await verifyToken(token);
@@ -115,7 +122,7 @@ export async function middleware(request: NextRequest) {
       loginUrl.searchParams.set('redirect', pathname);
       const response = NextResponse.redirect(loginUrl);
       response.cookies.delete('auth-token');
-      return response;
+      return noindex(response);
     }
     
     // Log successful auth in development
@@ -149,8 +156,8 @@ export async function middleware(request: NextRequest) {
       "frame-ancestors 'none'",
     ].join('; ');
     response.headers.set('Content-Security-Policy', csp);
-    
-    return response;
+
+    return noindex(response);
   }
 
   // Add basic security headers to all routes
