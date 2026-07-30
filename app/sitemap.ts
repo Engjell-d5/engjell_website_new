@@ -2,6 +2,10 @@ import { MetadataRoute } from 'next';
 import { getBlogs } from '@/lib/data';
 import { toCategorySlug } from '@/lib/category-slug';
 
+// The Docker build runs without DATABASE_URL, so the build-time sitemap has no
+// blog routes. Revalidate hourly so it regenerates at runtime with DB access.
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 
@@ -34,7 +38,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Skip database queries during build if DATABASE_URL is not available
   if (!process.env.DATABASE_URL) {
     console.warn('DATABASE_URL not set during build, skipping dynamic blog routes in sitemap');
-    return staticRoutes;
+    return [
+      ...staticRoutes,
+      { url: `${baseUrl}/journal`, changeFrequency: 'daily', priority: 0.9 },
+      { url: `${baseUrl}/media`, changeFrequency: 'weekly', priority: 0.8 },
+    ];
   }
 
   try {

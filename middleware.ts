@@ -57,10 +57,15 @@ export async function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
   const hostname = request.headers.get('host') || '';
 
-  // Redirect www to non-www
+  // Redirect www to non-www. Build the target URL explicitly: behind the
+  // reverse proxy request.nextUrl carries the internal origin (port 3000),
+  // so cloning it would leak that port into the public redirect.
   if (hostname.startsWith('www.')) {
-    url.hostname = hostname.replace('www.', '');
-    return NextResponse.redirect(url, 301);
+    const bareHost = hostname.slice(4).replace(/:\d+$/, '');
+    return NextResponse.redirect(
+      new URL(`${url.pathname}${url.search}`, `https://${bareHost}`),
+      301
+    );
   }
 
   // Protect admin routes server-side
@@ -140,7 +145,7 @@ export async function middleware(request: NextRequest) {
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com", // Needed for CSS-in-JS and Google Fonts
       "img-src 'self' data: https: https://www.googletagmanager.com https://www.google-analytics.com",
       "font-src 'self' data: https://fonts.gstatic.com", // Allow Google Fonts
-      "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com", // Allow Google Analytics and Tag Manager
+      "connect-src 'self' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.google.com", // GA4 sends beacons to regional hosts (e.g. region1.google-analytics.com)
       "frame-ancestors 'none'",
     ].join('; ');
     response.headers.set('Content-Security-Policy', csp);
@@ -161,7 +166,7 @@ export async function middleware(request: NextRequest) {
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com", // Needed for CSS-in-JS and Google Fonts
     "img-src 'self' data: https: https://www.googletagmanager.com https://www.google-analytics.com",
     "font-src 'self' data: https://fonts.gstatic.com", // Allow Google Fonts
-    "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com", // Allow Google Analytics and Tag Manager
+    "connect-src 'self' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.google.com", // GA4 sends beacons to regional hosts (e.g. region1.google-analytics.com)
   ].join('; ');
   response.headers.set('Content-Security-Policy', publicCsp);
   

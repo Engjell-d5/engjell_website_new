@@ -7,7 +7,10 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: '*',
-        allow: '/',
+        // Uploaded blog images are served from /api/uploads/ — the more
+        // specific Allow overrides the /api/ Disallow (longest match wins),
+        // so Googlebot/Twitterbot can crawl featured and OG images.
+        allow: ['/', '/api/uploads/'],
         disallow: ['/admin/', '/api/'],
       },
       {
