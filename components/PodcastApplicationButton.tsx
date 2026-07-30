@@ -11,7 +11,7 @@ export default function PodcastApplicationButton() {
     <>
       <button
         onClick={() => setShowApplicationModal(true)}
-        className="w-full py-2 md:py-3 bg-white text-black hover:bg-[var(--primary-mint)] text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2 min-h-[44px]"
+        className="w-full py-2 md:py-3 bg-[var(--primary-mint)] text-black hover:bg-white text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2 min-h-[44px]"
       >
         <Mic className="w-4 h-4 flex-shrink-0" />
         Apply to Podcast

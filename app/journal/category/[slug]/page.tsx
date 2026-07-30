@@ -105,7 +105,7 @@ export default async function CategoryPage(
         ]}
       />
       <StructuredData type="CollectionPage" data={collectionData} />
-      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh] order-2 md:order-1">
+      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-gray-400">
@@ -116,7 +116,7 @@ export default async function CategoryPage(
             <span className="text-gray-500">/</span>
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">{displayName}</span>
           </div>
-          <div className="font-montserrat text-[10px] text-gray-500 font-bold tracking-[0.15em] hidden md:block">
+          <div className="font-montserrat text-[10px] text-gray-400 font-bold tracking-[0.15em] hidden md:block">
             A KIND WORLD IS A BETTER WORLD.
           </div>
         </div>
@@ -159,13 +159,13 @@ export default async function CategoryPage(
                     </div>
                     <div className="flex-1 py-1">
                       <div className="flex items-center gap-3 mb-3">
-                        <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest border border-[var(--border-color)] px-2 py-0.5">
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest border border-[var(--border-color)] px-2 py-0.5">
                           {blog.category}
                         </span>
                         {blog.publishedAt && (
                           <time
                             dateTime={new Date(blog.publishedAt).toISOString()}
-                            className="text-[10px] text-gray-500 uppercase tracking-widest"
+                            className="text-[10px] text-gray-400 uppercase tracking-widest"
                           >
                             {formatDate(blog.publishedAt)}
                           </time>

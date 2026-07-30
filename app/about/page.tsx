@@ -1,5 +1,6 @@
 import Image from 'next/image';
-import { Heart, Mountain, ShieldCheck, Hourglass } from 'lucide-react';
+import Link from 'next/link';
+import { Heart, Mountain, ShieldCheck, Hourglass, Play } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
 import { createMetadata } from '@/lib/metadata';
@@ -64,7 +65,7 @@ export default function About() {
             <span className="text-[var(--primary-mint)] font-bold">/</span>
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">About</span>
           </div>
-          <div className="font-montserrat text-[10px] text-gray-500 font-bold tracking-[0.15em] hidden md:block">
+          <div className="font-montserrat text-[10px] text-gray-400 font-bold tracking-[0.15em] hidden md:block">
             THERE IS NO SHORTCUT TO HARD WORK.
           </div>
         </div>
@@ -138,6 +139,23 @@ export default function About() {
                     </div>
                     <p className="text-xs text-gray-400">Real value takes time to build. We play the long game, focusing on sustainable growth over quick wins.</p>
                   </div>
+                </div>
+              </div>
+
+              {/* End-of-story CTA */}
+              <div className="mt-10 p-8 border border-[var(--border-color)] bg-[var(--rich-black)] text-center">
+                <h2 className="text-3xl text-white font-bebas tracking-wide mb-3">LET'S BUILD SOMETHING</h2>
+                <p className="text-sm text-gray-300 font-light max-w-md mx-auto mb-6">
+                  If any of this resonates — whether you want to work together or just hear more of the story — here's where to go next.
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-3">
+                  <Link href="/contact" className="px-6 py-3 bg-[var(--primary-mint)] text-[var(--rich-black)] hover:bg-white text-[10px] font-bold uppercase tracking-widest transition-colors">
+                    Work With Me
+                  </Link>
+                  <Link href="/media" className="px-6 py-3 border border-white/40 text-white hover:border-[var(--primary-mint)] hover:text-[var(--primary-mint)] text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center gap-2">
+                    <Play className="w-4 h-4" />
+                    Listen to the Podcast
+                  </Link>
                 </div>
               </div>
             </div>

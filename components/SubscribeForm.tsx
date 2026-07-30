@@ -69,7 +69,7 @@ export default function SubscribeForm() {
           <button 
             type="submit"
             disabled={loading}
-            className="w-full bg-white hover:bg-[var(--primary-mint)] text-black font-bold py-4 transition-all tracking-[0.15em] uppercase text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full bg-[var(--primary-mint)] hover:bg-white text-black font-bold py-4 transition-all tracking-[0.15em] uppercase text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <Mail className="w-4 h-4" />
             {loading ? 'Subscribing...' : 'Join'}

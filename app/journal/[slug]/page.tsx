@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { PenTool } from 'lucide-react';
 import type { Metadata } from 'next';
 import Sidebar from '@/components/Sidebar';
+import ShareRow from '@/components/ShareRow';
 import SubscribeForm from '@/components/SubscribeForm';
 import SubscribeFormInline from '@/components/SubscribeFormInline';
 import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
@@ -30,7 +31,8 @@ export async function generateMetadata(
   const seo = blog.seo || {};
   const title = seo.metaTitle || blog.title;
   const description = seo.metaDescription || blog.excerpt;
-  const ogImage = seo.ogImage || blog.imageUrl;
+  // Default to the branded share card; an admin-set seo.ogImage still wins.
+  const ogImage = seo.ogImage || `/og/journal/${blog.slug}`;
 
   return createMetadata({
     title,
@@ -162,7 +164,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
           { name: blog.title, url: `/journal/${blog.slug}` },
         ]}
       />
-      <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh] order-2 md:order-1">
+      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-gray-400">
@@ -173,7 +175,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             <span className="text-gray-500">/</span>
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">{blog.slug}</span>
           </div>
-          <div className="font-montserrat text-[10px] text-gray-500 font-bold tracking-[0.15em] hidden md:block">
+          <div className="font-montserrat text-[10px] text-gray-400 font-bold tracking-[0.15em] hidden md:block">
             A KIND WORLD IS A BETTER WORLD.
           </div>
         </div>
@@ -186,18 +188,19 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
               <div className="flex items-center gap-3 mb-4">
                 <Link
                   href={`/journal/category/${toCategorySlug(blog.category)}`}
-                  className="text-[9px] font-bold text-gray-500 hover:text-[var(--primary-mint)] uppercase tracking-widest border border-[var(--border-color)] hover:border-[var(--primary-mint)] px-2 py-0.5 transition-colors"
+                  className="text-[10px] font-bold text-gray-400 hover:text-[var(--primary-mint)] uppercase tracking-widest border border-[var(--border-color)] hover:border-[var(--primary-mint)] px-2 py-0.5 transition-colors"
                 >
                   {blog.category}
                 </Link>
                 {blog.publishedAt && (
-                  <time 
+                  <time
                     dateTime={new Date(blog.publishedAt).toISOString()}
-                    className="text-[10px] text-gray-500 uppercase tracking-widest"
+                    className="text-[10px] text-gray-400 uppercase tracking-widest"
                   >
                   {formatDate(blog.publishedAt)}
                   </time>
                 )}
+                <span className="text-[10px] text-gray-400 uppercase tracking-widest">{readingTime} min read</span>
               </div>
               <h1 className="text-5xl md:text-6xl text-white font-bebas tracking-wide mb-4">
                 {blog.title}
@@ -207,6 +210,9 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                   {blog.excerpt}
                 </p>
               )}
+              <div className="mt-5">
+                <ShareRow url={`${siteUrl}/journal/${blog.slug}`} title={blog.title} />
+              </div>
             </div>
 
             {/* Featured Image */}
@@ -239,7 +245,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             {relatedBlogs.length > 0 && (
               <div className="mt-16 pt-8 border-t border-[var(--border-color)]">
                 <div className="flex items-center justify-between mb-6">
-                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Keep reading</span>
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Keep reading</span>
                   <PenTool className="w-4 h-4 text-gray-500" />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -261,7 +267,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                       <p className="text-sm text-white font-bold leading-tight group-hover:text-[var(--primary-mint)] transition-colors line-clamp-2 mb-1">
                         {relatedBlog.title}
                       </p>
-                      <p className="text-[9px] text-gray-500">
+                      <p className="text-[10px] text-gray-500">
                         {relatedBlog.publishedAt && (
                           <time dateTime={new Date(relatedBlog.publishedAt).toISOString()}>
                             {formatDateShort(relatedBlog.publishedAt)}

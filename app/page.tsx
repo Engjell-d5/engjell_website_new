@@ -20,7 +20,7 @@ export const metadata: Metadata = createMetadata({
 // Only the fields the sidebar renders are passed to the client component —
 // never the full blog (its `content` would bloat the page payload).
 async function loadLatestContent() {
-  if (!process.env.DATABASE_URL) return { video: null, blog: null };
+  if (!process.env.DATABASE_URL) return { video: null, blog: null, videoCount: null, blogCount: null };
   try {
     const [videos, blogs] = await Promise.all([
       getVideos(false).catch(() => []),
@@ -61,15 +61,17 @@ async function loadLatestContent() {
           publishedAt: b.publishedAt,
         }
       : null;
-    return { video, blog };
+    const videoCount = videos.length || null;
+    const blogCount = blogs.filter((blog: any) => blog.published).length || null;
+    return { video, blog, videoCount, blogCount };
   } catch (err) {
     console.error('[home] loading latest content failed:', err);
-    return { video: null, blog: null };
+    return { video: null, blog: null, videoCount: null, blogCount: null };
   }
 }
 
 export default async function Home() {
-  const { video, blog } = await loadLatestContent();
+  const { video, blog, videoCount, blogCount } = await loadLatestContent();
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
       <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
@@ -79,7 +81,7 @@ export default async function Home() {
             <span className="text-[var(--primary-mint)] font-bold">/</span>
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">Home</span>
           </div>
-          <div className="font-montserrat text-[10px] text-gray-500 font-bold tracking-[0.15em] hidden md:block">
+          <div className="font-montserrat text-[10px] text-gray-400 font-bold tracking-[0.15em] hidden md:block">
             IF IT WAS EASY, EVERYONE WOULD DO IT.
           </div>
         </div>
@@ -88,7 +90,7 @@ export default async function Home() {
         <div className="p-6 md:p-10">
           <section className="animate-slide-up">
             {/* Full Width Hero */}
-            <div className="relative w-[calc(100%+3rem)] md:w-[calc(100%+5rem)] h-[600px] border-b border-[var(--border-color)] overflow-hidden group mb-8 -ml-6 -mr-6 -mt-6 md:-ml-10 md:-mr-10 md:-mt-10 rounded-none">
+            <div className="relative w-[calc(100%+3rem)] md:w-[calc(100%+5rem)] h-[70vh] min-h-[440px] max-h-[600px] md:h-[600px] md:max-h-none border-b border-[var(--border-color)] overflow-hidden group mb-8 -ml-6 -mr-6 -mt-6 md:-ml-10 md:-mr-10 md:-mt-10 rounded-none">
               <Image 
                 src="/IMG_0425.JPG" 
                 alt="Engjell Rraklli - Tech Entrepreneur building the future in Albania" 
@@ -107,7 +109,7 @@ export default async function Home() {
                 </div>
                 <h1 className="text-6xl md:text-8xl text-white font-bebas leading-[0.85] tracking-tight max-w-4xl">
                   BUILDING THE<br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">FUTURE</span><br />
+                  <span className="text-[var(--primary-mint)]">FUTURE</span><br />
                   IN ALBANIA.
                 </h1>
                 <div className="mt-6 flex flex-wrap items-center gap-3">
@@ -149,7 +151,7 @@ export default async function Home() {
                   </p>
                 </div>
                 <div className="mt-8 flex items-center gap-4">
-                  <Link href="/about" className="px-6 py-2 bg-white text-black hover:bg-[var(--primary-mint)] text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
+                  <Link href="/about" className="px-6 py-2 border border-white/40 text-white hover:border-[var(--primary-mint)] hover:text-[var(--primary-mint)] text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
                     <BookOpen className="w-4 h-4" />
                     Read My Story
                   </Link>
@@ -160,21 +162,35 @@ export default async function Home() {
             {/* Metrics Strip */}
             <div className="grid grid-cols-2 md:grid-cols-4 border-t border-b border-[var(--border-color)] bg-[var(--rich-black)]">
               <div className="p-6 border-r border-[var(--border-color)] text-center">
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Experience</p>
+                <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Experience</p>
                 <p className="text-3xl font-bebas text-white">{yearsOfBuilding()}+ Years</p>
               </div>
               <div className="p-6 border-r border-[var(--border-color)] text-center">
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Ventures</p>
+                <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Ventures</p>
                 <p className="text-3xl font-bebas text-white">3 Active</p>
               </div>
-              <div className="p-6 border-r border-[var(--border-color)] text-center">
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Mission</p>
-                <p className="text-3xl font-bebas text-white">Local Growth</p>
-              </div>
-              <div className="p-6 text-center">
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Status</p>
-                <p className="text-3xl font-bebas text-[var(--primary-mint)]">Building</p>
-              </div>
+              {videoCount ? (
+                <div className="p-6 border-r border-[var(--border-color)] text-center">
+                  <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Podcast</p>
+                  <p className="text-3xl font-bebas text-white">{videoCount} Episodes</p>
+                </div>
+              ) : (
+                <div className="p-6 border-r border-[var(--border-color)] text-center">
+                  <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Mission</p>
+                  <p className="text-3xl font-bebas text-white">Local Growth</p>
+                </div>
+              )}
+              {blogCount ? (
+                <div className="p-6 text-center">
+                  <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Journal</p>
+                  <p className="text-3xl font-bebas text-[var(--primary-mint)]">{blogCount} Articles</p>
+                </div>
+              ) : (
+                <div className="p-6 text-center">
+                  <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Status</p>
+                  <p className="text-3xl font-bebas text-[var(--primary-mint)]">Building</p>
+                </div>
+              )}
             </div>
           </section>
         </div>

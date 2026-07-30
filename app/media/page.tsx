@@ -97,14 +97,14 @@ export default async function Media() {
         />
       )}
       {/* Left Panel - Latest Video */}
-      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh] order-2 md:order-1 min-w-0">
+      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh] min-w-0">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-4 md:px-6 lg:px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-2 md:gap-3 text-xs text-gray-400 min-w-0">
             <span className="text-[var(--primary-mint)] font-bold flex-shrink-0">/</span>
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[10px] md:text-[11px] truncate">Podcast</span>
           </div>
-          <div className="font-montserrat text-[9px] md:text-[10px] text-gray-500 font-bold tracking-[0.15em] hidden lg:block whitespace-nowrap">
+          <div className="font-montserrat text-[10px] md:text-[10px] text-gray-400 font-bold tracking-[0.15em] hidden lg:block whitespace-nowrap">
             SMALL STEPS EVERYDAY BEATS 1 BIG STEP A YEAR.
           </div>
         </div>
@@ -121,7 +121,7 @@ export default async function Media() {
                 href="https://www.youtube.com/@engjellrraklli" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="bg-white text-black hover:bg-[var(--primary-mint)] px-4 md:px-6 py-2 md:py-3 text-xs font-bold uppercase tracking-widest transition-colors rounded-none flex items-center justify-center gap-2 w-full md:w-auto flex-shrink-0"
+                className="border border-white/40 text-white hover:border-[var(--primary-mint)] hover:text-[var(--primary-mint)] px-4 md:px-6 py-2 md:py-3 text-xs font-bold uppercase tracking-widest transition-colors rounded-none flex items-center justify-center gap-2 w-full md:w-auto flex-shrink-0"
               >
                 <ExternalLink className="w-4 h-4 flex-shrink-0" />
                 Visit Channel
@@ -153,7 +153,7 @@ export default async function Media() {
                   </div>
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 lg:p-8 bg-gradient-to-t from-black to-transparent">
-                  <span className="bg-[var(--primary-mint)] text-black text-[8px] md:text-[9px] font-bold px-2 py-1 uppercase tracking-widest mb-2 md:mb-3 inline-block">Latest Video</span>
+                  <span className="bg-[var(--primary-mint)] text-black text-[8px] md:text-[10px] font-bold px-2 py-1 uppercase tracking-widest mb-2 md:mb-3 inline-block">Latest Video</span>
                   <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white font-bebas tracking-wide break-words line-clamp-2 md:line-clamp-none">{featuredVideo.title}</h2>
                 </div>
               </a>
@@ -166,7 +166,7 @@ export default async function Media() {
       </main>
 
        {/* Right Panel - Next 3 Videos */}
-       <aside className="classic-panel md:col-span-3 flex flex-col p-4 md:p-6 gap-4 md:gap-6 bg-[var(--rich-black)] sticky-sidebar order-1 md:order-2 md:min-h-[80vh]">
+       <aside className="classic-panel md:col-span-3 flex flex-col p-4 md:p-6 gap-4 md:gap-6 bg-[var(--rich-black)] sticky-sidebar md:min-h-[80vh]">
          <div className="flex flex-col gap-4 md:gap-6 sticky-sidebar-content min-w-0">
         {/* Description */}
         <div className="relative p-4 md:p-6 border-l-4 border-[var(--primary-mint)] bg-[var(--rich-black)] min-w-0 overflow-hidden">

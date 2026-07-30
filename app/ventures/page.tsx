@@ -53,14 +53,14 @@ export default function Ventures() {
           }}
         />
       ))}
-      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh] order-2 md:order-1">
+      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-gray-400">
             <span className="text-[var(--primary-mint)] font-bold">/</span>
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">Ventures</span>
           </div>
-          <div className="font-montserrat text-[10px] text-gray-500 font-bold tracking-[0.15em] hidden md:block">
+          <div className="font-montserrat text-[10px] text-gray-400 font-bold tracking-[0.15em] hidden md:block">
             YOU DON'T FAIL IF YOU NEVER GIVE UP.
           </div>
         </div>
@@ -99,11 +99,11 @@ export default function Ventures() {
                   
                   <div className="grid grid-cols-2 gap-4 border-t border-[var(--border-color)]/30 pt-4">
                     <div>
-                      <p className="text-[9px] text-gray-500 uppercase font-bold tracking-widest">Role</p>
+                      <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Role</p>
                       <p className="text-xs text-white">Founder</p>
                     </div>
                     <div className="flex items-center gap-1 group-hover:text-[var(--primary-mint)] transition-colors">
-                      <p className="text-[9px] uppercase font-bold tracking-widest">Visit Division5</p>
+                      <p className="text-[10px] uppercase font-bold tracking-widest">Visit Division5</p>
                       <ArrowUpRight className="w-3 h-3" />
                     </div>
                   </div>
@@ -132,11 +132,11 @@ export default function Ventures() {
                   
                   <div className="grid grid-cols-2 gap-4 border-t border-[var(--border-color)]/30 pt-4">
                     <div>
-                      <p className="text-[9px] text-gray-500 uppercase font-bold tracking-widest">Role</p>
+                      <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Role</p>
                       <p className="text-xs text-white">Founder</p>
                     </div>
                     <div className="flex items-center gap-1 group-hover:text-[var(--primary-mint)] transition-colors">
-                      <p className="text-[9px] uppercase font-bold tracking-widest">Visit DivisionAI</p>
+                      <p className="text-[10px] uppercase font-bold tracking-widest">Visit DivisionAI</p>
                       <ArrowUpRight className="w-3 h-3" />
                     </div>
                   </div>
@@ -165,11 +165,11 @@ export default function Ventures() {
                   
                   <div className="grid grid-cols-2 gap-4 border-t border-[var(--border-color)]/30 pt-4">
                     <div>
-                      <p className="text-[9px] text-gray-500 uppercase font-bold tracking-widest">Role</p>
+                      <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Role</p>
                       <p className="text-xs text-white">Founder</p>
                     </div>
                     <div className="flex items-center gap-1 group-hover:text-[var(--primary-mint)] transition-colors">
-                      <p className="text-[9px] uppercase font-bold tracking-widest">Visit Division3D</p>
+                      <p className="text-[10px] uppercase font-bold tracking-widest">Visit Division3D</p>
                       <ArrowUpRight className="w-3 h-3" />
                     </div>
                   </div>

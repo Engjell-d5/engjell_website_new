@@ -97,6 +97,7 @@ export default function RootLayout({
         )}
       </head>
       <body className={`${montserrat.className} flex flex-col p-2 md:p-6 gap-0 max-w-[1600px] mx-auto`}>
+        <a href="#main-content" className="skip-link">Skip to content</a>
         <StructuredData type="Person" data={personData} />
         <StructuredData type="WebSite" data={websiteData} />
         <Header />

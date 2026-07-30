@@ -67,7 +67,7 @@ export default function SubscribeFormInline() {
           <button 
             type="submit"
             disabled={loading}
-            className="h-12 px-6 bg-white hover:bg-[var(--primary-mint)] text-black font-bold transition-all tracking-[0.15em] uppercase text-xs disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap border border-[var(--border-color)] border-l-0 flex items-center justify-center gap-2"
+            className="h-12 px-6 bg-[var(--primary-mint)] hover:bg-white text-black font-bold transition-all tracking-[0.15em] uppercase text-xs disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap border border-[var(--border-color)] border-l-0 flex items-center justify-center gap-2"
           >
             <Mail className="w-4 h-4" />
             {loading ? 'Subscribing...' : 'Join'}

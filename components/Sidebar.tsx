@@ -59,7 +59,7 @@ function SubscribeForm() {
           <button 
             type="submit"
             disabled={loading}
-            className="w-full bg-white hover:bg-[var(--primary-mint)] text-black font-bold py-4 transition-all tracking-[0.15em] uppercase text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full bg-[var(--primary-mint)] hover:bg-white text-black font-bold py-4 transition-all tracking-[0.15em] uppercase text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <Mail className="w-4 h-4" />
             {loading ? 'Subscribing...' : 'Join'}
@@ -192,12 +192,12 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
   const showOnMobile = pathname === '/' || pathname === '/about' || pathname === '/journal' || pathname === '/ventures' || pathname.startsWith('/journal/') || pathname === '/media' || pathname === '/contact';
   
   return (
-    <aside className={`classic-panel md:col-span-3 ${showOnMobile ? 'flex' : 'hidden md:flex'} flex-col p-6 gap-6 bg-[var(--bg-dark)] sticky-sidebar order-1 md:order-2 md:min-h-[80vh]`}>
+    <aside className={`classic-panel md:col-span-3 ${showOnMobile ? 'flex' : 'hidden md:flex'} flex-col p-6 gap-6 bg-[var(--bg-dark)] sticky-sidebar md:min-h-[80vh]`}>
       {/* HOME SIDEBAR */}
       {pathname === '/' && (
         <div className="flex flex-col gap-6 sticky-sidebar-content">
           {/* Quick Action - Book Me for Events */}
-          <Link href="/contact" className="w-full py-3 bg-white text-black hover:bg-[var(--primary-mint)] text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
+          <Link href="/contact" className="w-full py-3 bg-[var(--primary-mint)] text-black hover:bg-white text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
             <CalendarPlus className="w-4 h-4" />
             Book Me for Events
           </Link>
@@ -205,7 +205,7 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
           {/* Latest Video */}
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)] mb-3">
-              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Latest Video</span>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Latest Video</span>
               <Play className="w-4 h-4 text-gray-500" />
             </div>
             {loadingVideo ? (
@@ -238,7 +238,7 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
                 <p className="text-xs text-white font-bold leading-tight group-hover:text-[var(--primary-mint)] transition-colors line-clamp-2">
                   {latestVideo.title}
                 </p>
-                <p className="text-[9px] text-gray-500 mt-1">
+                <p className="text-[10px] text-gray-500 mt-1">
                   {formatDuration(latestVideo.duration)} • YouTube
                 </p>
               </a>
@@ -252,7 +252,7 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
           {/* Latest Blog */}
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)] mb-3">
-              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Latest Blog</span>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Latest Blog</span>
               <PenTool className="w-4 h-4 text-gray-500" />
             </div>
             {loadingBlog ? (
@@ -277,7 +277,7 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
                 <p className="text-xs text-white font-bold leading-tight group-hover:text-[var(--primary-mint)] transition-colors line-clamp-2">
                   {latestBlog.title}
                 </p>
-                <p className="text-[9px] text-gray-500 mt-1">
+                <p className="text-[10px] text-gray-500 mt-1">
                   {formatDate(latestBlog.publishedAt)} • {latestBlog.category}
                 </p>
               </Link>
@@ -295,30 +295,30 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
         <div className="flex flex-col gap-6 sticky-sidebar-content">
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)] mb-3">
-              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Timeline</span>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Timeline</span>
               <History className="w-4 h-4 text-gray-500" />
             </div>
             <div className="space-y-4">
               <div className="relative pl-4 border-l border-[var(--border-color)]">
                 <div className="absolute -left-1 top-1 w-2 h-2 bg-[var(--primary-mint)] rounded-full"></div>
-                <p className="text-[9px] text-gray-400 mb-1">2025</p>
+                <p className="text-[10px] text-gray-400 mb-1">2025</p>
                 <p className="text-xs text-white font-bold">Expanding Global Reach</p>
               </div>
               <div className="relative pl-4 border-l border-[var(--border-color)]">
                 <div className="absolute -left-1 top-1 w-2 h-2 bg-gray-400 rounded-full"></div>
-                <p className="text-[9px] text-gray-400 mb-1">2022</p>
+                <p className="text-[10px] text-gray-400 mb-1">2022</p>
                 <p className="text-xs text-white font-bold">Launched DivisionAI</p>
               </div>
               <div className="relative pl-4 border-l border-[var(--border-color)]">
                 <div className="absolute -left-1 top-1 w-2 h-2 bg-[var(--primary-mint)] rounded-full"></div>
-                <p className="text-[9px] text-gray-400 mb-1">2014</p>
+                <p className="text-[10px] text-gray-400 mb-1">2014</p>
                 <p className="text-xs text-white font-bold">First Venture Founded</p>
               </div>
             </div>
           </div>
           <div className="mt-auto">
             <div className="p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
-              <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Years Active</p>
+              <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Years Active</p>
               <p className="text-2xl font-bebas text-white">{yearsOfBuilding()}+</p>
             </div>
           </div>
@@ -359,16 +359,16 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
           </div>
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)] mb-3">
-              <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Quick Stats</span>
+              <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Quick Stats</span>
               <Briefcase className="w-4 h-4 text-gray-500" />
             </div>
             <div className="space-y-3">
               <div className="p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Total Experience</p>
+                <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Total Experience</p>
                 <p className="text-2xl font-bebas text-white">{yearsOfBuilding()}+ Years</p>
               </div>
               <div className="p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
-                <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Active Ventures</p>
+                <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Active Ventures</p>
                 <p className="text-2xl font-bebas text-white">3</p>
               </div>
             </div>
@@ -376,7 +376,7 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
 
           <div className="mt-auto">
             <div className="p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
-              <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-1">Location</p>
+              <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Location</p>
               <p className="text-sm font-bebas text-white">Tirana, Albania</p>
             </div>
           </div>

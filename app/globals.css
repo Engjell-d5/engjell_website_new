@@ -283,6 +283,11 @@ img[loading="lazy"] {
   padding: 2rem 0;
   background: transparent !important;
   font-family: var(--font-montserrat), sans-serif;
+  /* Cap the reading measure (~70ch) — paragraphs were stretching across the
+     full ~970px panel, roughly double a comfortable line length. */
+  max-width: 46rem;
+  margin-left: auto;
+  margin-right: auto;
   position: relative;
   z-index: 1;
   overflow: visible;
@@ -518,4 +523,43 @@ img[loading="lazy"] {
 .blog-content i {
   color: var(--text-secondary) !important;
   font-style: italic;
+}
+
+/* Respect the user's motion preference: disable entrance animations and
+   hover zoom/color transitions for users who ask for reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-slide-up {
+    animation: none;
+  }
+  .img-classic,
+  .group:hover .img-classic {
+    transition: none;
+    transform: none;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Skip-to-content link: off-screen until keyboard-focused */
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 200;
+  background: var(--primary-mint);
+  color: var(--rich-black);
+  font-weight: 700;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  padding: 10px 18px;
+}
+.skip-link:focus {
+  left: 8px;
+  top: 8px;
 }

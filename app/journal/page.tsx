@@ -6,6 +6,7 @@ import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
 import { createMetadata } from '@/lib/metadata';
 import { getBlogs } from '@/lib/data';
 import { toCategorySlug } from '@/lib/category-slug';
+import { readingTimeMinutes } from '@/lib/reading-time';
 
 // Rendered per request. ISR (revalidate) is wedged in the deployed
 // standalone/proxy environment: pages prerendered empty at build (no
@@ -86,14 +87,14 @@ export default async function Journal() {
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
       <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Journal', url: '/journal' }]} />
       <StructuredData type="CollectionPage" data={collectionData} />
-      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh] order-2 md:order-1">
+      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-gray-400">
             <span className="text-[var(--primary-mint)] font-bold">/</span>
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">Journal</span>
           </div>
-          <div className="font-montserrat text-[10px] text-gray-500 font-bold tracking-[0.15em] hidden md:block">
+          <div className="font-montserrat text-[10px] text-gray-400 font-bold tracking-[0.15em] hidden md:block">
             A KIND WORLD IS A BETTER WORLD.
           </div>
         </div>
@@ -116,7 +117,7 @@ export default async function Journal() {
               <>
               {categories.length > 1 && (
                 <nav aria-label="Browse by topic" className="mb-8">
-                  <h2 className="text-[10px] text-gray-500 uppercase font-bold tracking-widest mb-3">Browse by topic</h2>
+                  <h2 className="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-3">Browse by topic</h2>
                   <ul className="flex flex-wrap gap-2">
                     {categories.map(({ slug, name }) => (
                       <li key={slug}>
@@ -150,17 +151,20 @@ export default async function Journal() {
                       </div>
                       <div className="flex-1 py-1">
                         <div className="flex items-center gap-3 mb-3">
-                          <span className="text-[9px] font-bold text-gray-500 uppercase tracking-widest border border-[var(--border-color)] px-2 py-0.5">
+                          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest border border-[var(--border-color)] px-2 py-0.5">
                             {blog.category}
                           </span>
                           {blog.publishedAt && (
                             <time
                               dateTime={new Date(blog.publishedAt).toISOString()}
-                              className="text-[10px] text-gray-500 uppercase tracking-widest"
+                              className="text-[10px] text-gray-400 uppercase tracking-widest"
                             >
                               {formatDate(blog.publishedAt)}
                             </time>
                           )}
+                          <span className="text-[10px] text-gray-400 uppercase tracking-widest">
+                            {readingTimeMinutes(blog.content || '')} min read
+                          </span>
                         </div>
                         <h2 className="text-3xl text-white font-bebas mb-3 group-hover:text-[var(--primary-mint)] transition-colors">
                           {blog.title}
@@ -175,7 +179,7 @@ export default async function Journal() {
               </div>
               {readNext.length > 0 && (
                 <aside className="mt-16 pt-8 border-t border-[var(--border-color)]">
-                  <h2 className="text-[10px] text-gray-500 uppercase font-bold tracking-widest mb-4">Read next</h2>
+                  <h2 className="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-4">Read next</h2>
                   <ul className="grid gap-2 md:grid-cols-3">
                     {readNext.map((b) => (
                       <li key={b.id}>
@@ -183,7 +187,7 @@ export default async function Journal() {
                           href={`/journal/${b.slug}`}
                           className="block p-4 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-all"
                         >
-                          <span className="text-[9px] text-gray-500 uppercase tracking-widest block mb-2">{b.category}</span>
+                          <span className="text-[10px] text-gray-400 uppercase tracking-widest block mb-2">{b.category}</span>
                           <span className="text-sm text-white font-medium leading-snug block">{b.title}</span>
                         </Link>
                       </li>

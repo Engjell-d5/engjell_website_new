@@ -91,7 +91,7 @@ export default function VideoList({ videos }: VideoListProps) {
               <h4 className="text-xs sm:text-sm text-white font-bold leading-tight group-hover:text-[var(--primary-mint)] transition-colors line-clamp-2 break-words">
                 {video.title}
               </h4>
-              <p className="text-[8px] sm:text-[9px] text-gray-500 mt-1 break-words">
+              <p className="text-[8px] sm:text-[10px] text-gray-500 mt-1 break-words">
                 {formatDuration(video.duration)} • <time dateTime={new Date(video.publishedAt).toISOString()}>{formatDate(video.publishedAt)}</time>
               </p>
             </a>
