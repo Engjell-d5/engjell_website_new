@@ -2,9 +2,13 @@
 // defined in lib/category-normalize.ts ("AI"/"Artificial Intelligence" -> AI,
 // "business"/"Branding" -> Business, "startups" -> Entrepreneurship, etc.).
 //
-// Run where DATABASE_URL is available (e.g. on the server):
-//   docker compose -f docker-compose.prod.yml exec app npx tsx scripts/normalize-categories.ts
-// or locally: npx tsx scripts/normalize-categories.ts
+// Run locally against a DATABASE_URL: npx tsx scripts/normalize-categories.ts
+//
+// NOTE: this canNOT be run inside the deployed container. `output: 'standalone'`
+// ships neither `scripts/` nor `tsx` (a devDependency), so the previously
+// documented `docker compose exec app npx tsx scripts/...` fails with
+// "No such file or directory". On the server, apply the same mapping in SQL —
+// see the CASE expression in docs/normalize-categories.sql.
 import { prisma } from '../lib/prisma';
 import { normalizeCategory } from '../lib/category-normalize';
 
