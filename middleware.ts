@@ -140,9 +140,12 @@ export async function middleware(request: NextRequest) {
     response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
     response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
     
-    // Only set Strict-Transport-Security in production (HTTPS)
+    // Only set Strict-Transport-Security in production (HTTPS).
+    // No includeSubDomains here either — HSTS is scoped to the host, not the
+    // path, so a single visit to /admin would otherwise commit every
+    // subdomain to HTTPS-only for a year. See the public branch below.
     if (process.env.NODE_ENV === 'production') {
-      response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+      response.headers.set('Strict-Transport-Security', 'max-age=31536000');
     }
     
     // Set Content-Security-Policy for admin routes
@@ -171,8 +174,13 @@ export async function middleware(request: NextRequest) {
 
   // HSTS belongs on the public site too, not just /admin — without it the
   // first http:// hit to any page is still downgradeable.
+  //
+  // Deliberately WITHOUT includeSubDomains: that directive is effectively
+  // irreversible (browsers enforce it for max-age regardless of whether the
+  // header is later removed) and would take down any subdomain that is not
+  // already serving valid HTTPS. Only add it once every subdomain is verified.
   if (process.env.NODE_ENV === 'production') {
-    response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    response.headers.set('Strict-Transport-Security', 'max-age=31536000');
   }
 
   // Set Content-Security-Policy for non-admin routes (allows Google Analytics and Fonts)

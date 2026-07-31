@@ -26,6 +26,11 @@ misreported several items in both directions).
 - **Security headers:** HSTS now covers the public site (was admin-only); CSP
   gained `base-uri`, `form-action`, `object-src` and `frame-ancestors`.
   `Referrer-Policy` is set in one place (middleware) instead of two conflicting ones.
+  **`includeSubDomains` is deliberately omitted** on both branches: the directive
+  is effectively irreversible (browsers enforce it for the full `max-age` even
+  after the header is removed) and would break any subdomain not already on
+  valid HTTPS. Add it only once every subdomain is verified — and note HSTS is
+  host-scoped, so the `/admin` response commits the whole domain too.
 
 ## What is implemented and verified
 
