@@ -36,7 +36,7 @@ const contactPageData = {
 };
 
 export const metadata: Metadata = createMetadata({
-  title: 'Contact Engjell Rraklli — Speaking & Consulting',
+  title: 'Contact Engjell Rraklli: Speaking & Consulting',
   description: 'Contact Engjell Rraklli for speaking, technical consulting, and partnership opportunities. Tech and startup advice for founders in Albania and the Balkans.',
   path: '/contact',
 });

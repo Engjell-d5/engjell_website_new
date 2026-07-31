@@ -15,7 +15,7 @@ interface BlogCardBlog {
 }
 
 // Shared listing card for /journal and /journal/category/[slug]. Previously
-// each page had its own copy and they had already drifted — the category
+// each page had its own copy and they had already drifted, the category
 // listing was missing the reading-time stamp.
 export default function BlogCard({ blog, priority = false }: { blog: BlogCardBlog; priority?: boolean }) {
   const minutes = blog.content ? readingTimeMinutes(blog.content) : null;

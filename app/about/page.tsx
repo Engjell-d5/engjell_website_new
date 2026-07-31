@@ -48,8 +48,8 @@ const profilePageData = {
 };
 
 export const metadata: Metadata = createMetadata({
-  title: 'About Engjell Rraklli — Albanian Tech Entrepreneur',
-  description: 'Engjell Rraklli — Albanian tech entrepreneur and startup founder building world-class software in Tirana, and thousands of job opportunities for young Albanians over the past decade.',
+  title: 'About Engjell Rraklli, Albanian Tech Entrepreneur',
+  description: 'Engjell Rraklli is an Albanian tech entrepreneur and startup founder building world-class software in Tirana, and thousands of job opportunities for young Albanians over the past decade.',
   path: '/about',
 });
 
@@ -98,10 +98,10 @@ export default function About() {
                 <div className="md:col-span-7 flex flex-col justify-center">
               <div className="prose prose-invert max-w-none text-[var(--text-muted)] font-light text-sm leading-7">
                 <p className="mb-6 first-letter:text-4xl first-letter:font-bold first-letter:text-white first-letter:mr-1 first-letter:float-left">
-                  My work is grounded in the conviction that Tirana is fertile ground for world-class technology. Over a decade ago, I stepped away from traditional education to build my own path. As a creative at heart, I fell in love with the act of building—whether it was software development or companies. I failed more times than I succeeded, but those experiences shaped me into the tech entrepreneur and startup founder I am today.
+                  My work is grounded in the conviction that Tirana is fertile ground for world-class technology. Over a decade ago, I stepped away from traditional education to build my own path. As a creative at heart, I fell in love with the act of building, whether it was software development or companies. I failed more times than I succeeded, but those experiences shaped me into the tech entrepreneur and startup founder I am today.
                 </p>
                     <p className="mb-0">
-                  Now, as the founder of division5, I apply those learnings to deliver global-standard software services. But my true focus isn't just scaling a business; it is scaling human potential. I am building the infrastructure that allows young Albanian talents to apply their skills at a global level without leaving their homes—proving that the best way to predict our country's future is to empower the youth who will build it.
+                  Now, as the founder of division5, I apply those learnings to deliver global-standard software services. But my true focus isn't just scaling a business; it is scaling human potential. I am building the infrastructure that allows young Albanian talents to apply their skills at a global level without leaving their homes, proving that the best way to predict our country's future is to empower the youth who will build it.
                 </p>
                 {/* Same evidence as the homepage mission block, in the second
                     place the claim is made. */}
@@ -152,7 +152,7 @@ export default function About() {
               <div className="mt-10 p-8 border border-[var(--border-color)] bg-[var(--rich-black)] text-center">
                 <h2 className="text-3xl text-white font-bebas tracking-wide mb-3">LET'S BUILD SOMETHING</h2>
                 <p className="text-sm text-[var(--text-muted)] font-light max-w-md mx-auto mb-6">
-                  If any of this resonates — whether you want to work together or just hear more of the story — here's where to go next.
+                  If any of this resonates, whether you want to work together or just hear more of the story, here's where to go next.
                 </p>
                 <div className="flex flex-wrap items-center justify-center gap-3">
                   <Link href="/contact" className="px-6 py-3 bg-[var(--primary-mint)] text-[var(--rich-black)] hover:bg-white text-[10px] font-bold uppercase tracking-widest transition-colors">

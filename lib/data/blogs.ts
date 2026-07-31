@@ -59,7 +59,7 @@ export interface RelatedBlog {
 // Two things this deliberately does not do: it does not load every blog row
 // (the post page used to call getBlogs(), pulling the full `content` of every
 // article on every page view just to pick two), and it does not fall back to
-// "most recent" alone — same-category posts come first, which is both better
+// "most recent" alone, same-category posts come first, which is both better
 // for the reader and better topical signal for search.
 export async function getRelatedBlogs(
   slug: string,

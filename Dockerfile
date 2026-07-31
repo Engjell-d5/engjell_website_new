@@ -65,6 +65,11 @@ COPY --from=builder /app/prisma ./prisma
 # Copy Prisma Client from node_modules
 COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+# The Prisma CLI itself, needed by the entrypoint's `migrate deploy`. Without
+# it, `npx prisma` found nothing locally and downloaded the latest release
+# (7.x) at container start, which cannot read a schema written for 5.x. Every
+# migration silently failed and the entrypoint reported success anyway.
+COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
 
 # Copy entrypoint script
 COPY docker-entrypoint.sh /app/docker-entrypoint.sh

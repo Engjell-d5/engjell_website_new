@@ -29,7 +29,7 @@ export default function VideoList({ videos }: VideoListProps) {
   const nextVideos = videos.slice(0, videosToShow);
   const hasMoreVideos = videos.length > videosToShow;
 
-  // The full list is already in memory — reveal the next batch immediately.
+  // The full list is already in memory, reveal the next batch immediately.
   // This used to fake a 300ms spinner, which only delayed the content.
   const loadMoreVideos = () => setVideosToShow(prev => prev + 3);
 

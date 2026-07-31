@@ -6,7 +6,7 @@ export function yearsOfBuilding(): number {
   return new Date().getFullYear() - FOUNDING_YEAR;
 }
 
-// division5 — the venture that actually employs people — was founded in May
+// division5, the venture that actually employs people, was founded in May
 // 2015 ("In May 2015, I finally took the first step and founded division5",
 // /journal/challenges-running-a-service-based-business). The building story
 // starts a year earlier, so the impact claim is deliberately one year behind
@@ -22,7 +22,7 @@ export function yearsOfHiring(): number {
 export const POSTS_PER_PAGE = 10;
 
 // One post pinned to a "Start here" slot above the date-sorted feed. It is
-// removed from the feed itself, so it also shifts the pagination maths — which
+// removed from the feed itself, so it also shifts the pagination maths, which
 // is exactly why the sitemap has to read the same constant.
 // Set to null to turn the slot off.
 export const START_HERE_SLUG: string | null = 'how-to-scale-a-service-business-in-the-ai-era';

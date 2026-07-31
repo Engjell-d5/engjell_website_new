@@ -79,7 +79,7 @@ export default function Ventures() {
                   >
                     <Image
                       src={v.image}
-                      alt={`${v.name} — ${v.description.replace(/\.$/, '').toLowerCase()}`}
+                      alt={`${v.name}, ${v.description.replace(/\.$/, '').toLowerCase()}`}
                       fill
                       priority={idx === 0}
                       sizes="(min-width: 768px) 50vw, 100vw"
@@ -103,7 +103,7 @@ export default function Ventures() {
                           <p className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest">Role</p>
                           <p className="text-xs text-white">{v.role}</p>
                         </div>
-                        {/* Brand names keep their own casing — this label used
+                        {/* Brand names keep their own casing, this label used
                             to title-case them ("Visit Division5"). */}
                         <div className="flex items-center gap-1 text-[var(--text-meta)] group-hover:text-[var(--primary-mint)] transition-colors">
                           <p className="text-[10px] uppercase font-bold tracking-widest">Visit {v.name}</p>

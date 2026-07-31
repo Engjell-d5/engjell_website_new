@@ -4,7 +4,7 @@ import { toCategorySlug } from '@/lib/category-slug';
 import { journalPageCount } from '@/lib/site';
 
 // The Docker build runs without DATABASE_URL, so a build-time sitemap would
-// have no blog routes — and ISR revalidation is wedged in the deployed
+// have no blog routes, and ISR revalidation is wedged in the deployed
 // environment (see app/journal/page.tsx). Generate per request instead;
 // sitemap traffic is rare enough that the DB cost is negligible.
 export const dynamic = 'force-dynamic';
@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 
-  // Static routes — omit lastModified so the timestamp doesn't churn on every build.
+  // Static routes, omit lastModified so the timestamp doesn't churn on every build.
   // For /journal and /podcast we derive lastModified from real content below.
   const staticRoutes: MetadataRoute.Sitemap = [
     {
@@ -37,7 +37,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // Dynamic blog routes — derive lastModified from real content
+  // Dynamic blog routes, derive lastModified from real content
   // Skip database queries during build if DATABASE_URL is not available
   if (!process.env.DATABASE_URL) {
     console.warn('DATABASE_URL not set during build, skipping dynamic blog routes in sitemap');
@@ -68,7 +68,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }, undefined);
 
     // /journal is paginated (see app/journal/page.tsx). Each page canonicalises
-    // to itself, so every one belongs in the sitemap — otherwise older posts are
+    // to itself, so every one belongs in the sitemap, otherwise older posts are
     // only reachable by crawling forward. journalPageCount accounts for the
     // pinned "Start here" post being lifted out of the paginated feed.
     const journalPages = journalPageCount(publishedBlogs.map((b: any) => b.slug));
@@ -93,7 +93,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       },
     ];
 
-    // Category pages — derived from published blog categories, deduplicated by slug.
+    // Category pages, derived from published blog categories, deduplicated by slug.
     // Each category's lastModified is its most recent post's update time.
     const categoryMap = new Map<string, Date | undefined>();
     for (const b of publishedBlogs) {

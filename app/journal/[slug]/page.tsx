@@ -59,7 +59,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
     notFound();
   }
 
-  // Same-category posts first, and only the columns the cards render — this
+  // Same-category posts first, and only the columns the cards render, this
   // previously loaded every blog row (content included) to pick two.
   const relatedBlogs = await getRelatedBlogs(slug, blog.category, 2);
 
@@ -116,7 +116,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
               <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">Journal</span>
             </Link>
             <span className="text-[var(--text-meta)]">/</span>
-            {/* The post title, not blog.slug — this used to render the raw
+            {/* The post title, not blog.slug, this used to render the raw
                 hyphenated URL segment (e.g. THE-SILICON-VALLEY-ILLUSION). */}
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px] truncate max-w-[16rem] lg:max-w-md">
               {blog.title}

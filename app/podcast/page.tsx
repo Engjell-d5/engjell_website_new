@@ -8,11 +8,11 @@ import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
 import { createMetadata } from '@/lib/metadata';
 import { getVideos } from '@/lib/data';
 
-// Rendered per request — see app/journal/page.tsx for why ISR is not used.
+// Rendered per request, see app/journal/page.tsx for why ISR is not used.
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = createMetadata({
-  title: 'Podcast & Talks — The Conversation',
+  title: 'Podcast & Talks: The Conversation',
   description: 'Watch Engjell Rraklli\'s podcast episodes, talks, and video conversations on building tech businesses, leadership, and entrepreneurship in Albania.',
   path: '/podcast',
 });
@@ -78,7 +78,7 @@ export default async function Podcast() {
 
   const itemListData = schemaVideos.length > 0
     ? {
-        name: 'Engjell Rraklli — Video conversations and podcasts',
+        name: 'Engjell Rraklli: Video conversations and podcasts',
         itemListElement: schemaVideos.map((v, i) => ({
           '@type': 'ListItem',
           position: i + 1,

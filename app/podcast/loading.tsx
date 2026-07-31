@@ -1,5 +1,15 @@
-// Route-level loading state: pages render per request (force-dynamic), so
-// this skeleton gives immediate feedback between navigation and response.
+// Scoped to /podcast on purpose. This used to live at app/loading.tsx, where it
+// created a Suspense boundary above EVERY route. That boundary flushes the
+// response shell before the page component finishes, which locks the HTTP
+// status at 200 and means a later notFound() can no longer send a 404. The
+// journal routes were serving soft 404s as a result: the not-found page with a
+// 200 status, which Google flags and which wastes crawl budget.
+//
+// /podcast never calls notFound(), so it can keep the skeleton safely. Routes
+// that can 404 (journal posts, categories) now have no boundary above them and
+// return a real 404. Without a loading.tsx those pages simply hold the previous
+// view until ready, which is standard Next.js behaviour and arguably nicer than
+// a skeleton flash.
 export default function Loading() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch" aria-busy="true" aria-label="Loading page">

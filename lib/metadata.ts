@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 const siteName = 'Engjell Rraklli';
-const defaultTitle = 'Engjell Rraklli — Tech Entrepreneur in Tirana, Albania';
+const defaultTitle = 'Engjell Rraklli: Tech Entrepreneur in Tirana, Albania';
 const defaultDescription = 'Albanian tech entrepreneur building scalable technology in Tirana. Software development, startups, and tech innovation in Albania.';
 
 export function createMetadata({
@@ -25,7 +25,7 @@ export function createMetadata({
   noindex?: boolean;
 }): Metadata {
   // Append the brand suffix only when the title doesn't already carry the
-  // name — avoids "About Engjell Rraklli | ... | Engjell Rraklli". Keep page
+  // name, avoids "About Engjell Rraklli | ... | Engjell Rraklli". Keep page
   // titles short: Google truncates around 60 characters.
   const pageTitle = title
     ? title.includes(siteName)

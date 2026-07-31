@@ -8,7 +8,7 @@ import { createMetadata } from '@/lib/metadata';
 import { getBlogs } from '@/lib/data';
 import { toCategorySlug, titleFromCategorySlug } from '@/lib/category-slug';
 
-// Rendered per request — see app/journal/page.tsx for why ISR is not used.
+// Rendered per request, see app/journal/page.tsx for why ISR is not used.
 export const dynamic = 'force-dynamic';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
@@ -47,15 +47,15 @@ export async function generateMetadata(
   if (posts.length === 0) {
     // This branch 404s below, so it must not advertise itself as indexable.
     return createMetadata({
-      title: `${displayName} — Field Notes`,
-      description: `Articles in the ${displayName} category — tech entrepreneurship and software development insights by Engjell Rraklli.`,
+      title: `${displayName}: Field Notes`,
+      description: `Articles in the ${displayName} category. Tech entrepreneurship and software development insights by Engjell Rraklli.`,
       path: `/journal/category/${resolved.slug}`,
       noindex: true,
     });
   }
 
   return createMetadata({
-    title: `${displayName} — Articles by Engjell Rraklli`,
+    title: `${displayName}: Articles by Engjell Rraklli`,
     description: `${posts.length} article${posts.length === 1 ? '' : 's'} on ${displayName}. Field notes on tech, entrepreneurship, and building startups in Albania.`,
     path: `/journal/category/${resolved.slug}`,
   });
@@ -72,7 +72,7 @@ export default async function CategoryPage(
   }
 
   const collectionData = {
-    name: `${displayName} — Field Notes`,
+    name: `${displayName}: Field Notes`,
     description: `Articles in the ${displayName} category by Engjell Rraklli.`,
     url: `${siteUrl}/journal/category/${resolved.slug}`,
     inLanguage: 'en',

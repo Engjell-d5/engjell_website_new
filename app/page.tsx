@@ -8,19 +8,19 @@ import { yearsOfBuilding, yearsOfHiring } from '@/lib/site';
 import { VENTURE_COUNT } from '@/lib/ventures';
 import type { Metadata } from 'next';
 
-// Rendered per request — see app/journal/page.tsx for why ISR is not used.
+// Rendered per request, see app/journal/page.tsx for why ISR is not used.
 export const dynamic = 'force-dynamic';
 
-// No year count in the description on purpose — `metadata` is evaluated once
+// No year count in the description on purpose, `metadata` is evaluated once
 // at module load, so a hardcoded "11 years" would go stale between deploys.
 export const metadata: Metadata = createMetadata({
-  description: 'Albanian tech entrepreneur building world-class software in Tirana — and thousands of job opportunities for young Albanians. Software development, startups, and tech innovation in Albania.',
+  description: 'Albanian tech entrepreneur building world-class software in Tirana, and thousands of job opportunities for young Albanians. Software development, startups, and tech innovation in Albania.',
   path: '/',
 });
 
 // Fetch the freshest video and blog server-side so the homepage's newest
 // internal links are in the initial HTML (crawlable) instead of a client fetch.
-// Only the fields the sidebar renders are passed to the client component —
+// Only the fields the sidebar renders are passed to the client component , 
 // never the full blog (its `content` would bloat the page payload).
 async function loadLatestContent() {
   if (!process.env.DATABASE_URL) return { video: null, blog: null, videoCount: null, blogCount: null };
@@ -109,7 +109,7 @@ export default async function Home() {
               <div className="absolute bottom-0 left-0 p-8 md:p-16 z-10 w-full">
                 <div className="flex items-center gap-2 mb-4">
                   {/* Was "Founder's Note", which described nothing on this
-                      screen — the note lives in the bio block further down. */}
+                      screen. The note lives in the bio block further down. */}
                   <span className="bg-[var(--primary-mint)] text-[var(--rich-black)] text-[10px] font-bold px-3 py-1 uppercase tracking-widest inline-block">Tirana, Albania</span>
                 </div>
                 <h1 className="text-6xl md:text-8xl text-white font-bebas leading-[0.85] tracking-tight max-w-4xl">
@@ -172,7 +172,7 @@ export default async function Home() {
 
             {/* Metrics Strip.
                 The counts double as the homepage's only body links to
-                /ventures, /podcast and /journal — previously the page
+                /ventures, /podcast and /journal. Previously the page
                 advertised "3 Active" ventures and an article count while
                 linking to neither section outside the footer. */}
             <div className="grid grid-cols-2 md:grid-cols-4 border-t border-b border-[var(--border-color)] bg-[var(--rich-black)]">

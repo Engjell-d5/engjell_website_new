@@ -106,7 +106,7 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
 
 
   // Every route that renders this component now has a panel worth showing
-  // (the fallback branch covers the rest), so it is always visible — the old
+  // (the fallback branch covers the rest), so it is always visible, the old
   // allow-list also named '/podcast', which has its own aside and never
   // renders this component at all.
   
@@ -209,7 +209,7 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
           </div>
 
           {/* The homepage is the highest-traffic page and had no way to
-              subscribe — the form only existed on /journal and post pages. */}
+              subscribe. The form only existed on /journal and post pages. */}
           <SubscribeForm />
         </div>
       )}
@@ -222,7 +222,7 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
               <span className="text-[10px] font-bold text-[var(--text-meta)] uppercase tracking-widest">Timeline</span>
               <History className="w-4 h-4 text-[var(--text-meta)]" />
             </div>
-            {/* Newest entry first. Keep the top item current — a timeline whose
+            {/* Newest entry first. Keep the top item current, a timeline whose
                 latest milestone is in the past reads as an abandoned site. */}
             <div className="space-y-4">
               <div className="relative pl-4 border-l border-[var(--border-color)]">
@@ -352,7 +352,7 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
         </div>
       )}
 
-      {/* FALLBACK — any route without a dedicated panel (e.g. the 404 page)
+      {/* FALLBACK, any route without a dedicated panel (e.g. the 404 page)
           rendered an empty bordered box. Give it something useful instead. */}
       {!KNOWN_SIDEBAR_ROUTES.some((p) => (p === '/journal' ? pathname.startsWith('/journal') : pathname === p)) && (
         <div className="flex flex-col gap-6 sticky-sidebar-content">

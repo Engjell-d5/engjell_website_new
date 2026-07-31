@@ -3,12 +3,13 @@ import { rateLimit, getClientIdentifier } from './rate-limit';
 
 // Two distinct outcomes, deliberately kept apart:
 //
-//   'drop'        — we believe this is a bot. Callers answer 200 so the bot
-//                   learns nothing, and the submission is thrown away.
-//   'rate-limited'— a human is going too fast. Callers MUST answer 429 with a
-//                   real message. Answering 200 here (the previous behaviour)
-//                   silently destroyed genuine contact messages: the visitor
-//                   saw "Message sent" and nobody ever received it.
+//   'drop': we believe this is a bot. Callers answer 200 so the bot learns
+//   nothing, and the submission is thrown away.
+//
+//   'rate-limited': a human is going too fast. Callers MUST answer 429 with a
+//   real message. Answering 200 here (the previous behaviour) silently
+//   destroyed genuine contact messages: the visitor saw "Message sent" and
+//   nobody ever received it.
 export type SpamVerdict =
   | { action: 'allow' }
   | { action: 'drop'; reason: string }
@@ -50,7 +51,7 @@ export function checkSpam(
   formStartTime?: number,
   kind: FormKind = 'contact'
 ): SpamVerdict {
-  // 1. Honeypot field (must be empty) — strongest bot signal, check first so
+  // 1. Honeypot field (must be empty), strongest bot signal, check first so
   //    bots never consume a rate-limit slot that belongs to a real visitor.
   if (body.website || body.url || body.website_url) {
     return { action: 'drop', reason: 'Honeypot field filled' };
@@ -98,7 +99,7 @@ export function checkSpam(
     }
   }
 
-  // 6. Rate limit last — only submissions that look human get here, and this
+  // 6. Rate limit last, only submissions that look human get here, and this
   //    is reported to the caller as a retryable condition, not as spam.
   const options = LIMITS[kind];
   const result = rateLimit(`${kind}:${getClientIdentifier(request)}`, options);

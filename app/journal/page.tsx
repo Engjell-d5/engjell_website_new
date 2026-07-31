@@ -32,7 +32,7 @@ export async function generateMetadata(
   // Each paginated page canonicalises to itself (rel=prev/next is no longer
   // used by Google); only page 1 owns the bare /journal URL.
   return createMetadata({
-    title: page > 1 ? `Journal — Page ${page}` : 'Journal — Field Notes on Building Tech',
+    title: page > 1 ? `Journal, Page ${page}` : 'Journal: Field Notes on Building Tech',
     description:
       "Engjell Rraklli's field notes on building tech ventures, scaling startups, and software development in Albania. Articles on entrepreneurship and leadership.",
     path: page > 1 ? `/journal?page=${page}` : '/journal',
@@ -83,7 +83,7 @@ export default async function Journal({ searchParams }: { searchParams?: SearchP
   ).map(([slug, name]) => ({ slug, name }));
 
   const collectionData = {
-    name: 'Engjell Rraklli — Field Notes',
+    name: 'Engjell Rraklli: Field Notes',
     description: 'Articles on tech entrepreneurship, software development, and building startups in Albania.',
     url: page > 1 ? `${siteUrl}/journal?page=${page}` : `${siteUrl}/journal`,
     inLanguage: 'en',

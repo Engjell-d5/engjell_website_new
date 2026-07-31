@@ -3,6 +3,15 @@ name: Build and Deploy
 on:
   push:
     branches: [main]
+    # Content notes and docs do not affect anything the app serves, but a push
+    # containing only those still rebuilt the image and restarted the container,
+    # which costs a 30-60s 502 window each time. Skip them.
+    # Use workflow_dispatch to force a deploy regardless.
+    paths-ignore:
+      - 'content/**'
+      - 'docs/**'
+      - '**/*.md'
+      - '.gitignore'
   workflow_dispatch:
 
 concurrency:
