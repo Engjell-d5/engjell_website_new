@@ -4,7 +4,8 @@ import { Quote, MapPin, BookOpen, Play } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import { createMetadata } from '@/lib/metadata';
 import { getBlogs, getVideos } from '@/lib/data';
-import { yearsOfBuilding, yearsOfHiring } from '@/lib/site';
+import { yearsOfBuilding, yearsOfHiring, START_HERE_SLUG } from '@/lib/site';
+import { ArrowRight } from 'lucide-react';
 import { VENTURE_COUNT } from '@/lib/ventures';
 import type { Metadata } from 'next';
 
@@ -20,10 +21,12 @@ export const metadata: Metadata = createMetadata({
 
 // Fetch the freshest video and blog server-side so the homepage's newest
 // internal links are in the initial HTML (crawlable) instead of a client fetch.
-// Only the fields the sidebar renders are passed to the client component , 
+// Only the fields the sidebar renders are passed to the client component;
 // never the full blog (its `content` would bloat the page payload).
 async function loadLatestContent() {
-  if (!process.env.DATABASE_URL) return { video: null, blog: null, videoCount: null, blogCount: null };
+  if (!process.env.DATABASE_URL) {
+    return { video: null, blog: null, videoCount: null, blogCount: null, startHere: null };
+  }
   try {
     const [videos, blogs] = await Promise.all([
       getVideos(false).catch(() => []),
@@ -66,15 +69,25 @@ async function loadLatestContent() {
       : null;
     const videoCount = videos.length || null;
     const blogCount = blogs.filter((blog: any) => blog.published).length || null;
-    return { video, blog, videoCount, blogCount };
+
+    // The pinned reference piece, taken from the same query rather than a
+    // second one. Without this the homepage only surfaced it by accident, via
+    // the sidebar's "Latest Blog", so it would disappear the moment anything
+    // newer was published.
+    const p = START_HERE_SLUG
+      ? blogs.find((blog: any) => blog.slug === START_HERE_SLUG && blog.published)
+      : null;
+    const startHere = p ? { title: p.title, slug: p.slug, excerpt: p.excerpt } : null;
+
+    return { video, blog, videoCount, blogCount, startHere };
   } catch (err) {
     console.error('[home] loading latest content failed:', err);
-    return { video: null, blog: null, videoCount: null, blogCount: null };
+    return { video: null, blog: null, videoCount: null, blogCount: null, startHere: null };
   }
 }
 
 export default async function Home() {
-  const { video, blog, videoCount, blogCount } = await loadLatestContent();
+  const { video, blog, videoCount, blogCount, startHere } = await loadLatestContent();
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
       <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
@@ -169,6 +182,35 @@ export default async function Home() {
                 </div>
               </div>
             </div>
+
+            {/* Start here.
+                The homepage offers five competing calls to action and had no
+                primary one. This is it: a single obvious next step for a first
+                time visitor, and the only permanent home for the reference
+                piece. Reads the same START_HERE_SLUG as the journal slot, so
+                pinning a different post moves both, and unpinning removes both. */}
+            {startHere && (
+              <Link
+                href={`/journal/${startHere.slug}`}
+                className="group block mb-8 border border-[var(--primary-mint)]/40 bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-colors"
+              >
+                <div className="p-8 md:p-10">
+                  <span className="text-[10px] text-[var(--primary-mint)] uppercase font-bold tracking-widest block mb-3">
+                    Start here
+                  </span>
+                  <h2 className="text-3xl md:text-4xl text-white font-bebas tracking-wide mb-3 group-hover:text-[var(--primary-mint)] transition-colors">
+                    {startHere.title}
+                  </h2>
+                  <p className="text-sm text-[var(--text-muted)] leading-relaxed font-light max-w-3xl">
+                    {startHere.excerpt}
+                  </p>
+                  <span className="mt-5 inline-flex items-center gap-2 text-[10px] text-[var(--primary-mint)] uppercase font-bold tracking-widest">
+                    Read the playbook
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </div>
+              </Link>
+            )}
 
             {/* Metrics Strip.
                 The counts double as the homepage's only body links to
