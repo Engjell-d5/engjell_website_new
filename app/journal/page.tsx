@@ -7,6 +7,7 @@ import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
 import { createMetadata } from '@/lib/metadata';
 import { getBlogs } from '@/lib/data';
 import { toCategorySlug } from '@/lib/category-slug';
+import { POSTS_PER_PAGE, START_HERE_SLUG } from '@/lib/site';
 
 // Rendered per request. ISR (revalidate) is wedged in the deployed
 // standalone/proxy environment: pages prerendered empty at build (no
@@ -14,7 +15,8 @@ import { toCategorySlug } from '@/lib/category-slug';
 // Force-dynamic matches the previously-deployed, known-good behavior.
 export const dynamic = 'force-dynamic';
 
-const POSTS_PER_PAGE = 10;
+// POSTS_PER_PAGE and START_HERE_SLUG live in lib/site.ts because app/sitemap.ts
+// needs the same numbers to emit the right set of ?page= URLs.
 
 type SearchParams = { page?: string };
 
@@ -60,9 +62,14 @@ export default async function Journal({ searchParams }: { searchParams?: SearchP
       return dateB - dateA;
     });
 
-  const totalPages = Math.max(1, Math.ceil(blogs.length / POSTS_PER_PAGE));
+  // Pull the pinned post out of the date-sorted list so it can't appear twice.
+  // Undefined when it isn't published yet, which collapses the whole feature.
+  const startHere = blogs.find((b) => b.slug === START_HERE_SLUG);
+  const feed = startHere ? blogs.filter((b) => b.slug !== START_HERE_SLUG) : blogs;
+
+  const totalPages = Math.max(1, Math.ceil(feed.length / POSTS_PER_PAGE));
   const page = Math.min(parsePage(searchParams), totalPages);
-  const pageBlogs = blogs.slice((page - 1) * POSTS_PER_PAGE, page * POSTS_PER_PAGE);
+  const pageBlogs = feed.slice((page - 1) * POSTS_PER_PAGE, page * POSTS_PER_PAGE);
 
   // Distinct categories for the topic-pill nav, each linking to its own category page.
   // Built from every post, not just this page, so the nav is stable across pages.
@@ -147,9 +154,33 @@ export default async function Journal({ searchParams }: { searchParams?: SearchP
                     </ul>
                   </nav>
                 )}
+
+                {/* Pinned reference piece, page 1 only. */}
+                {startHere && page === 1 && (
+                  <section aria-labelledby="start-here" className="mb-10">
+                    <h2 id="start-here" className="text-[10px] text-[var(--primary-mint)] uppercase font-bold tracking-widest mb-3">
+                      Start here
+                    </h2>
+                    <Link
+                      href={`/journal/${startHere.slug}`}
+                      className="block p-6 md:p-8 border border-[var(--primary-mint)]/50 bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-colors group"
+                    >
+                      <h3 className="text-3xl md:text-4xl text-white font-bebas mb-3 group-hover:text-[var(--primary-mint)] transition-colors">
+                        {startHere.title}
+                      </h3>
+                      <p className="text-sm text-[var(--text-muted)] leading-relaxed font-light max-w-3xl">
+                        {startHere.excerpt}
+                      </p>
+                      <span className="mt-4 inline-flex items-center gap-2 text-[10px] text-[var(--primary-mint)] uppercase font-bold tracking-widest">
+                        Read the playbook
+                      </span>
+                    </Link>
+                  </section>
+                )}
+
                 <div className="grid gap-6">
                   {pageBlogs.map((blog, idx) => (
-                    <BlogCard key={blog.id} blog={blog} priority={page === 1 && idx === 0} />
+                    <BlogCard key={blog.id} blog={blog} priority={page === 1 && idx === 0 && !startHere} />
                   ))}
                 </div>
                 <Pagination basePath="/journal" page={page} totalPages={totalPages} />

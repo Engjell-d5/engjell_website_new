@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next';
 import { getBlogs } from '@/lib/data';
 import { toCategorySlug } from '@/lib/category-slug';
+import { journalPageCount } from '@/lib/site';
 
 // The Docker build runs without DATABASE_URL, so a build-time sitemap would
 // have no blog routes — and ISR revalidation is wedged in the deployed
@@ -66,11 +67,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       return latest;
     }, undefined);
 
-    // /journal is paginated at 10 posts per page (see app/journal/page.tsx).
-    // Each page canonicalises to itself, so every one belongs in the sitemap —
-    // otherwise older posts are only reachable by crawling forward.
-    const POSTS_PER_PAGE = 10;
-    const journalPages = Math.max(1, Math.ceil(publishedBlogs.length / POSTS_PER_PAGE));
+    // /journal is paginated (see app/journal/page.tsx). Each page canonicalises
+    // to itself, so every one belongs in the sitemap — otherwise older posts are
+    // only reachable by crawling forward. journalPageCount accounts for the
+    // pinned "Start here" post being lifted out of the paginated feed.
+    const journalPages = journalPageCount(publishedBlogs.map((b: any) => b.slug));
 
     const dynamicListingRoutes: MetadataRoute.Sitemap = [
       {

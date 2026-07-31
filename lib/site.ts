@@ -16,3 +16,21 @@ export const HIRING_SINCE_YEAR = 2015;
 export function yearsOfHiring(): number {
   return new Date().getFullYear() - HIRING_SINCE_YEAR;
 }
+
+// Journal listing config, shared by app/journal/page.tsx and app/sitemap.ts so
+// the two can never disagree about how many pages exist.
+export const POSTS_PER_PAGE = 10;
+
+// One post pinned to a "Start here" slot above the date-sorted feed. It is
+// removed from the feed itself, so it also shifts the pagination maths — which
+// is exactly why the sitemap has to read the same constant.
+// Set to null to turn the slot off.
+export const START_HERE_SLUG: string | null = 'how-to-scale-a-service-business-in-the-ai-era';
+
+/** Number of paginated /journal pages for a given set of published slugs. */
+export function journalPageCount(publishedSlugs: string[]): number {
+  const inFeed = START_HERE_SLUG
+    ? publishedSlugs.filter((s) => s !== START_HERE_SLUG).length
+    : publishedSlugs.length;
+  return Math.max(1, Math.ceil(inFeed / POSTS_PER_PAGE));
+}
