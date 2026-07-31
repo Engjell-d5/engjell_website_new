@@ -116,7 +116,7 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
       {pathname === '/' && (
         <div className="flex flex-col gap-6 sticky-sidebar-content">
           {/* Quick Action - Book Me for Events */}
-          <Link href="/contact" className="w-full py-3 bg-[var(--primary-mint)] text-black hover:bg-white text-xs font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
+          <Link href="/contact" className="btn btn-primary w-full">
             <CalendarPlus className="w-4 h-4" />
             Book Me for Events
           </Link>
@@ -124,7 +124,7 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
           {/* Latest Video */}
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)] mb-3">
-              <span className="text-[10px] font-bold text-[var(--text-meta)] uppercase tracking-widest">Latest Video</span>
+              <span className="section-label">Latest Video</span>
               <Play className="w-4 h-4 text-[var(--text-meta)]" />
             </div>
             {loadingVideo ? (
@@ -157,7 +157,7 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
                 <p className="text-xs text-white font-bold leading-tight group-hover:text-[var(--primary-mint)] transition-colors line-clamp-2">
                   {latestVideo.title}
                 </p>
-                <p className="text-[10px] text-[var(--text-meta)] mt-1">
+                <p className="meta mt-1">
                   {formatDuration(latestVideo.duration)} • YouTube
                 </p>
               </a>
@@ -171,7 +171,7 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
           {/* Latest Blog */}
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)] mb-3">
-              <span className="text-[10px] font-bold text-[var(--text-meta)] uppercase tracking-widest">Latest Blog</span>
+              <span className="section-label">Latest Blog</span>
               <PenTool className="w-4 h-4 text-[var(--text-meta)]" />
             </div>
             {loadingBlog ? (
@@ -197,7 +197,7 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
                 <p className="text-xs text-white font-bold leading-tight group-hover:text-[var(--primary-mint)] transition-colors line-clamp-2">
                   {latestBlog.title}
                 </p>
-                <p className="text-[10px] text-[var(--text-meta)] mt-1">
+                <p className="meta mt-1">
                   {formatDateShort(latestBlog.publishedAt)} • {latestBlog.category}
                 </p>
               </Link>
@@ -219,7 +219,7 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
         <div className="flex flex-col gap-6 sticky-sidebar-content">
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)] mb-3">
-              <span className="text-[10px] font-bold text-[var(--text-meta)] uppercase tracking-widest">Timeline</span>
+              <span className="section-label">Timeline</span>
               <History className="w-4 h-4 text-[var(--text-meta)]" />
             </div>
             {/* Newest entry first. Keep the top item current, a timeline whose
@@ -227,24 +227,24 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
             <div className="space-y-4">
               <div className="relative pl-4 border-l border-[var(--border-color)]">
                 <div className="absolute -left-1 top-1 w-2 h-2 bg-[var(--primary-mint)] rounded-full"></div>
-                <p className="text-[10px] text-[var(--text-meta)] mb-1">{new Date().getFullYear()}</p>
+                <p className="meta mb-1">{new Date().getFullYear()}</p>
                 <p className="text-xs text-white font-bold">Scaling division5 &amp; divisionAI</p>
               </div>
               <div className="relative pl-4 border-l border-[var(--border-color)]">
                 <div className="absolute -left-1 top-1 w-2 h-2 bg-[var(--text-meta)] rounded-full"></div>
-                <p className="text-[10px] text-[var(--text-meta)] mb-1">2022</p>
+                <p className="meta mb-1">2022</p>
                 <p className="text-xs text-white font-bold">Launched divisionAI</p>
               </div>
               <div className="relative pl-4 border-l border-[var(--border-color)]">
                 <div className="absolute -left-1 top-1 w-2 h-2 bg-[var(--primary-mint)] rounded-full"></div>
-                <p className="text-[10px] text-[var(--text-meta)] mb-1">{FOUNDING_YEAR}</p>
+                <p className="meta mb-1">{FOUNDING_YEAR}</p>
                 <p className="text-xs text-white font-bold">First Venture Founded</p>
               </div>
             </div>
           </div>
           <div className="mt-auto">
             <div className="p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
-              <p className="text-[10px] text-[var(--text-meta)] uppercase tracking-widest mb-1">Years Active</p>
+              <p className="meta mb-1">Years Active</p>
               <p className="text-2xl font-bebas text-white">{yearsOfBuilding()}+</p>
             </div>
           </div>
@@ -285,16 +285,16 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
           </div>
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)] mb-3">
-              <span className="text-[10px] font-bold text-[var(--text-meta)] uppercase tracking-widest">Quick Stats</span>
+              <span className="section-label">Quick Stats</span>
               <Briefcase className="w-4 h-4 text-[var(--text-meta)]" />
             </div>
             <div className="space-y-3">
               <div className="p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
-                <p className="text-[10px] text-[var(--text-meta)] uppercase tracking-widest mb-1">Total Experience</p>
+                <p className="meta mb-1">Total Experience</p>
                 <p className="text-2xl font-bebas text-white">{yearsOfBuilding()}+ Years</p>
               </div>
               <div className="p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
-                <p className="text-[10px] text-[var(--text-meta)] uppercase tracking-widest mb-1">Active Ventures</p>
+                <p className="meta mb-1">Active Ventures</p>
                 <p className="text-2xl font-bebas text-white">{VENTURE_COUNT}</p>
               </div>
             </div>
@@ -302,7 +302,7 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
 
           <div className="mt-auto">
             <div className="p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
-              <p className="text-[10px] text-[var(--text-meta)] uppercase tracking-widest mb-1">Location</p>
+              <p className="meta mb-1">Location</p>
               <p className="text-sm font-bebas text-white">Tirana, Albania</p>
             </div>
           </div>
@@ -321,21 +321,21 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
               <div className="flex items-start gap-3">
                 <Mail className="w-4 h-4 text-[var(--primary-mint)] mt-0.5" />
                 <div>
-                  <p className="text-[10px] text-[var(--text-meta)] uppercase tracking-wide">Email</p>
+                  <p className="meta">Email</p>
                   <a href="mailto:info@engjellrraklli.com" className="text-xs text-white hover:text-[var(--primary-mint)] transition-colors">info@engjellrraklli.com</a>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-[var(--text-meta)] mt-0.5" />
                 <div>
-                  <p className="text-[10px] text-[var(--text-meta)] uppercase tracking-wide">Location</p>
+                  <p className="meta">Location</p>
                   <p className="text-xs text-white">Tirana, Albania</p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <Clock className="w-4 h-4 text-[var(--primary-mint)] mt-0.5" />
                 <div>
-                  <p className="text-[10px] text-[var(--text-meta)] uppercase tracking-wide">Office Hours</p>
+                  <p className="meta">Office Hours</p>
                   <p className="text-xs text-white">Mon - Fri, 9AM - 5PM CET</p>
                 </div>
               </div>

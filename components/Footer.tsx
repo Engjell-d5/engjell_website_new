@@ -49,8 +49,8 @@ export default function Footer() {
             <a href="https://www.linkedin.com/in/engjell-rraklli-a8b20a68/" target="_blank" rel="noopener noreferrer" className="text-[var(--text-meta)] hover:text-[var(--primary-mint)] transition-colors"><Linkedin className="w-5 h-5" /></a>
             <a href="https://www.youtube.com/@engjellrraklli" target="_blank" rel="noopener noreferrer" className="text-[var(--text-meta)] hover:text-[var(--primary-mint)] transition-colors"><Youtube className="w-5 h-5" /></a>
           </div>
-          <p className="text-[10px] text-[var(--text-meta)] mt-6">&copy; {new Date().getFullYear()} Engjell Rraklli. All rights reserved.</p>
-          <p className="text-[10px] text-[var(--text-meta)] mt-2">
+          <p className="meta mt-6">&copy; {new Date().getFullYear()} Engjell Rraklli. All rights reserved.</p>
+          <p className="meta mt-2">
             Built by{' '}
             <a href="https://divisionai.co" target="_blank" rel="noopener noreferrer" className="text-[var(--primary-mint)] hover:underline">
               divisionAI

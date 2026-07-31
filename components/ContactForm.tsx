@@ -79,7 +79,7 @@ export default function ContactForm() {
             setSent(false);
             setFormData({ name: '', email: '', topic: '', message: '', website: '' });
           }}
-          className="text-[10px] text-[var(--text-meta)] hover:text-[var(--primary-mint)] uppercase tracking-widest transition-colors"
+          className="btn btn-tertiary"
         >
           Send another message
         </button>
@@ -95,7 +95,7 @@ export default function ContactForm() {
       
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="contact-name" className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-1 block">Name</label>
+          <label htmlFor="contact-name" className="form-label">Name</label>
           <input
             id="contact-name"
             type="text"
@@ -109,7 +109,7 @@ export default function ContactForm() {
           />
         </div>
         <div>
-          <label htmlFor="contact-email" className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-1 block">Email</label>
+          <label htmlFor="contact-email" className="form-label">Email</label>
           <input
             id="contact-email"
             type="email"
@@ -123,7 +123,7 @@ export default function ContactForm() {
           />
         </div>
         <div>
-          <label htmlFor="contact-topic" className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-1 block">What's this about?</label>
+          <label htmlFor="contact-topic" className="form-label">What's this about?</label>
           <select
             id="contact-topic"
             name="topic"
@@ -140,7 +140,7 @@ export default function ContactForm() {
           </select>
         </div>
         <div>
-          <label htmlFor="contact-message" className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-1 block">Message</label>
+          <label htmlFor="contact-message" className="form-label">Message</label>
           <textarea
             id="contact-message"
             rows={4}
@@ -174,7 +174,7 @@ export default function ContactForm() {
         <button 
           type="submit"
           disabled={loading}
-          className="w-full bg-[var(--primary-mint)] hover:bg-white text-black font-bold py-4 transition-all tracking-[0.15em] uppercase text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="btn btn-primary w-full"
         >
           <Send className="w-4 h-4" />
           {loading ? 'Sending...' : 'Send Message'}

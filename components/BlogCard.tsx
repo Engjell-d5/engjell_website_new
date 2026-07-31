@@ -39,22 +39,22 @@ export default function BlogCard({ blog, priority = false }: { blog: BlogCardBlo
           </div>
         )}
         <div className="flex-1 py-1">
-          <div className="flex items-center gap-3 mb-3">
-            <span className="text-[10px] font-bold text-[var(--text-meta)] uppercase tracking-widest border border-[var(--border-color)] px-2 py-0.5">
-              {blog.category}
-            </span>
+          {/* One meta run, separated rather than three competing chips. */}
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
+            <span className="meta text-[var(--primary-mint)]">{blog.category}</span>
             {blog.publishedAt && (
-              <time
-                dateTime={new Date(blog.publishedAt).toISOString()}
-                className="text-[10px] text-[var(--text-meta)] uppercase tracking-widest"
-              >
-                {formatDateShort(blog.publishedAt)}
-              </time>
+              <>
+                <span className="meta meta-sep" aria-hidden="true">/</span>
+                <time dateTime={new Date(blog.publishedAt).toISOString()} className="meta">
+                  {formatDateShort(blog.publishedAt)}
+                </time>
+              </>
             )}
             {minutes !== null && (
-              <span className="text-[10px] text-[var(--text-meta)] uppercase tracking-widest">
-                {minutes} min read
-              </span>
+              <>
+                <span className="meta meta-sep" aria-hidden="true">/</span>
+                <span className="meta">{minutes} min read</span>
+              </>
             )}
           </div>
           <h2 className="text-3xl text-white font-bebas mb-3 group-hover:text-[var(--primary-mint)] transition-colors">

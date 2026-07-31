@@ -92,6 +92,122 @@ h1, h2, h3, h4, .brand-font {
   font-family: var(--font-montserrat), sans-serif;
 }
 
+@layer components {
+
+/* ── Small-type system ──────────────────────────────────────────────────────
+   81 elements were set at 10px uppercase bold tracking-widest: labels, dates,
+   reading times, categories, captions, buttons, nav. When the emphasis
+   treatment is applied to everything, nothing is emphasised and 10px caps at
+   0.2em tracking is slow to read. Two roles now, deliberately distinct:
+
+   .section-label — a genuine heading for a block ("Latest video", "Timeline").
+                    Keeps the uppercase treatment, which works again precisely
+                    because it is now rare. 11px, not 10.
+   .meta          — everything factual and secondary: dates, durations, reading
+                    times, captions, counts. Sentence case, 12.5px, no tracking.
+   Nothing else should be uppercase.                                          */
+
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--text-meta);
+  font-family: var(--font-montserrat), sans-serif;
+}
+
+.meta {
+  font-size: 12.5px;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  color: var(--text-meta);
+  font-family: var(--font-montserrat), sans-serif;
+  text-transform: none;
+}
+
+/* Form labels. These were 10px uppercase tracked, which is the hardest
+   possible setting for the one piece of text that has to be read quickly and
+   correctly. Sentence case, slightly larger, still quiet. */
+.form-label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--text-muted);
+  font-family: var(--font-montserrat), sans-serif;
+  margin-bottom: 0.375rem;
+}
+
+/* Separator for inline meta runs: category / date / reading time */
+.meta-sep {
+  opacity: 0.45;
+  padding: 0 0.15em;
+}
+
+/* ── Action hierarchy ───────────────────────────────────────────────────────
+   There were three competing filled treatments (mint, white, and outlined)
+   all reading as primary, so any screen with two of them had no winner. The
+   white fill was the loudest, which meant a neutral beat the brand accent.
+   One fill only. Sentence case at 13px, because a button is a sentence, not
+   a label.                                                                   */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 0.75rem 1.375rem;
+  border: 1px solid transparent;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+  cursor: pointer;
+  text-align: center;
+  min-height: 44px; /* touch target */
+}
+
+.btn-primary {
+  background: var(--primary-mint);
+  color: var(--rich-black);
+}
+.btn-primary:hover { background: #4bd6a6; }
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+.btn-secondary:hover {
+  border-color: var(--primary-mint);
+  color: var(--primary-mint);
+}
+
+/* On photography, where a hairline border would disappear */
+.btn-secondary-on-image {
+  background: transparent;
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.45);
+}
+.btn-secondary-on-image:hover {
+  border-color: var(--primary-mint);
+  color: var(--primary-mint);
+}
+
+.btn-tertiary {
+  background: transparent;
+  color: var(--primary-mint);
+  border-color: transparent;
+  padding-left: 0;
+  padding-right: 0;
+}
+.btn-tertiary:hover { color: #4bd6a6; }
+
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+} /* end @layer components */
+
 /* Architectural Panel (Classic Style) */
 .classic-panel {
   background: var(--panel-bg);

@@ -65,7 +65,7 @@ export default function About() {
             <span className="text-[var(--primary-mint)] font-bold">/</span>
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">About</span>
           </div>
-          <div className="font-montserrat text-[10px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
+          <div className="font-montserrat text-[11px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
             THERE IS NO SHORTCUT TO HARD WORK.
           </div>
         </div>
@@ -96,7 +96,7 @@ export default function About() {
                 </div>
                 {/* Text Column */}
                 <div className="md:col-span-7 flex flex-col justify-center">
-              <div className="prose prose-invert max-w-none text-[var(--text-muted)] font-light text-sm leading-7">
+              <div className="prose prose-invert max-w-none text-[var(--text-muted)] text-base leading-[1.75]">
                 <p className="mb-6 first-letter:text-4xl first-letter:font-bold first-letter:text-white first-letter:mr-1 first-letter:float-left">
                   My work is grounded in the conviction that Tirana is fertile ground for world-class technology. Over a decade ago, I stepped away from traditional education to build my own path. As a creative at heart, I fell in love with the act of building, whether it was software development or companies. I failed more times than I succeeded, but those experiences shaped me into the tech entrepreneur and startup founder I am today.
                 </p>
@@ -155,10 +155,10 @@ export default function About() {
                   If any of this resonates, whether you want to work together or just hear more of the story, here's where to go next.
                 </p>
                 <div className="flex flex-wrap items-center justify-center gap-3">
-                  <Link href="/contact" className="px-6 py-3 bg-[var(--primary-mint)] text-[var(--rich-black)] hover:bg-white text-[10px] font-bold uppercase tracking-widest transition-colors">
+                  <Link href="/contact" className="btn btn-primary">
                     Work With Me
                   </Link>
-                  <Link href="/podcast" className="px-6 py-3 border border-white/40 text-white hover:border-[var(--primary-mint)] hover:text-[var(--primary-mint)] text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center gap-2">
+                  <Link href="/podcast" className="btn btn-secondary-on-image">
                     <Play className="w-4 h-4" />
                     Listen to the Podcast
                   </Link>

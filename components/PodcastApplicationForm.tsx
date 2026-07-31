@@ -85,7 +85,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="name" className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-1 block">
+          <label htmlFor="name" className="form-label">
             Name
           </label>
           <input
@@ -102,7 +102,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         </div>
 
         <div>
-          <label htmlFor="email" className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-1 block">
+          <label htmlFor="email" className="form-label">
             Email
           </label>
           <input
@@ -122,7 +122,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
           {/* Matches every other label in this form; it was the only one at a
               different size, and the only one with an asterisk even though all
               eight fields are required. */}
-          <label htmlFor="about" className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-1 block">
+          <label htmlFor="about" className="form-label">
             Tell me about yourself
           </label>
           <textarea
@@ -138,7 +138,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         </div>
 
         <div>
-          <label htmlFor="businesses" className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-1 block">
+          <label htmlFor="businesses" className="form-label">
             Your businesses
           </label>
           <textarea
@@ -154,7 +154,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         </div>
 
         <div>
-          <label htmlFor="industry" className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-1 block">
+          <label htmlFor="industry" className="form-label">
             Industry
           </label>
           <input
@@ -170,7 +170,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         </div>
 
         <div>
-          <label htmlFor="vision" className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-1 block">
+          <label htmlFor="vision" className="form-label">
             Your vision
           </label>
           <textarea
@@ -186,7 +186,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         </div>
 
         <div>
-          <label htmlFor="biggestChallenge" className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-1 block">
+          <label htmlFor="biggestChallenge" className="form-label">
             Your biggest challenge
           </label>
           <textarea
@@ -202,7 +202,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         </div>
 
         <div>
-          <label htmlFor="whyPodcast" className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-1 block">
+          <label htmlFor="whyPodcast" className="form-label">
             Why do you want to be on the podcast?
           </label>
           <textarea
@@ -220,7 +220,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-white hover:bg-[var(--primary-mint)] text-black font-bold py-4 transition-all tracking-[0.15em] uppercase text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          className="btn btn-primary w-full"
         >
           <Send className="w-4 h-4" />
           {loading ? 'Submitting...' : 'Submit Application'}

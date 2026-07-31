@@ -22,7 +22,7 @@ export default function Pagination({
   const pages = Array.from({ length: end - start + 1 }, (_, i) => start + i);
 
   const stepClass =
-    'flex items-center gap-1 px-3 py-2 border border-[var(--border-color)] text-[10px] font-bold uppercase tracking-widest transition-colors';
+    'flex items-center gap-1 px-3 py-2 border border-[var(--border-color)] meta font-semibold transition-colors';
 
   return (
     <nav aria-label="Journal pages" className="mt-12 pt-8 border-t border-[var(--border-color)] flex items-center justify-between gap-4">
@@ -44,14 +44,14 @@ export default function Pagination({
             {n === page ? (
               <span
                 aria-current="page"
-                className="block px-3 py-2 border border-[var(--primary-mint)] text-[var(--primary-mint)] text-[10px] font-bold uppercase tracking-widest"
+                className="block px-3 py-2 border border-[var(--primary-mint)] text-[var(--primary-mint)] meta font-semibold"
               >
                 {n}
               </span>
             ) : (
               <Link
                 href={href(n)}
-                className="block px-3 py-2 border border-[var(--border-color)] text-[var(--text-meta)] hover:text-[var(--primary-mint)] hover:border-[var(--primary-mint)] text-[10px] font-bold uppercase tracking-widest transition-colors"
+                className="block px-3 py-2 border border-[var(--border-color)] text-[var(--text-meta)] hover:text-[var(--primary-mint)] hover:border-[var(--primary-mint)] meta font-semibold transition-colors"
               >
                 {n}
               </Link>

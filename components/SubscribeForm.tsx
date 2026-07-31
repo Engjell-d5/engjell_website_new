@@ -69,7 +69,7 @@ export default function SubscribeForm({ variant = 'card' }: { variant?: Subscrib
   const statusLine = status && (
     <p
       role="status"
-      className={`text-[10px] mt-2 ${variant === 'inline' ? 'text-center' : ''} ${
+      className={`meta mt-2 ${variant === 'inline' ? 'text-center' : ''} ${
         status.ok ? 'text-[var(--primary-mint)]' : 'text-red-400'
       }`}
     >
@@ -103,7 +103,7 @@ export default function SubscribeForm({ variant = 'card' }: { variant?: Subscrib
           <button
             type="submit"
             disabled={loading}
-            className="h-12 px-6 bg-[var(--primary-mint)] hover:bg-white text-black font-bold transition-all tracking-[0.15em] uppercase text-xs disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap border border-[var(--border-color)] border-l-0 flex items-center justify-center gap-2"
+            className="btn btn-primary whitespace-nowrap"
           >
             <Mail className="w-4 h-4" />
             {loading ? 'Subscribing...' : 'Join'}
@@ -139,7 +139,7 @@ export default function SubscribeForm({ variant = 'card' }: { variant?: Subscrib
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-[var(--primary-mint)] hover:bg-white text-black font-bold py-4 transition-all tracking-[0.15em] uppercase text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="btn btn-primary w-full"
           >
             <Mail className="w-4 h-4" />
             {loading ? 'Subscribing...' : 'Join'}

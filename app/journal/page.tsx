@@ -110,7 +110,7 @@ export default async function Journal({ searchParams }: { searchParams?: SearchP
             <span className="text-[var(--primary-mint)] font-bold">/</span>
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">Journal</span>
           </div>
-          <div className="font-montserrat text-[10px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
+          <div className="font-montserrat text-[11px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
             A KIND WORLD IS A BETTER WORLD.
           </div>
         </div>
@@ -139,13 +139,13 @@ export default async function Journal({ searchParams }: { searchParams?: SearchP
               <>
                 {categories.length > 1 && (
                   <nav aria-label="Browse by topic" className="mb-8">
-                    <h2 className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-3">Browse by topic</h2>
+                    <h2 className="section-label mb-3">Browse by topic</h2>
                     <ul className="flex flex-wrap gap-2">
                       {categories.map(({ slug, name }) => (
                         <li key={slug}>
                           <Link
                             href={`/journal/category/${slug}`}
-                            className="text-[10px] text-[var(--text-muted)] hover:text-[var(--primary-mint)] uppercase tracking-widest border border-[var(--border-color)] px-3 py-1 transition-colors"
+                            className="meta hover:text-[var(--primary-mint)] border border-[var(--border-color)] px-3 py-1 transition-colors"
                           >
                             {name}
                           </Link>
@@ -158,7 +158,7 @@ export default async function Journal({ searchParams }: { searchParams?: SearchP
                 {/* Pinned reference piece, page 1 only. */}
                 {startHere && page === 1 && (
                   <section aria-labelledby="start-here" className="mb-10">
-                    <h2 id="start-here" className="text-[10px] text-[var(--primary-mint)] uppercase font-bold tracking-widest mb-3">
+                    <h2 id="start-here" className="section-label mb-3" style={{ color: "var(--primary-mint)" }}>
                       Start here
                     </h2>
                     <Link
@@ -171,7 +171,7 @@ export default async function Journal({ searchParams }: { searchParams?: SearchP
                       <p className="text-sm text-[var(--text-muted)] leading-relaxed font-light max-w-3xl">
                         {startHere.excerpt}
                       </p>
-                      <span className="mt-4 inline-flex items-center gap-2 text-[10px] text-[var(--primary-mint)] uppercase font-bold tracking-widest">
+                      <span className="mt-4 inline-flex items-center gap-2 meta font-semibold text-[var(--primary-mint)]">
                         Read the playbook
                       </span>
                     </Link>

@@ -122,7 +122,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
               {blog.title}
             </span>
           </div>
-          <div className="font-montserrat text-[10px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
+          <div className="font-montserrat text-[11px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
             A KIND WORLD IS A BETTER WORLD.
           </div>
         </div>
@@ -135,19 +135,19 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
               <div className="flex items-center gap-3 mb-4">
                 <Link
                   href={`/journal/category/${toCategorySlug(blog.category)}`}
-                  className="text-[10px] font-bold text-[var(--text-meta)] hover:text-[var(--primary-mint)] uppercase tracking-widest border border-[var(--border-color)] hover:border-[var(--primary-mint)] px-2 py-0.5 transition-colors"
+                  className="meta text-[var(--primary-mint)] hover:underline"
                 >
                   {blog.category}
                 </Link>
                 {blog.publishedAt && (
                   <time
                     dateTime={new Date(blog.publishedAt).toISOString()}
-                    className="text-[10px] text-[var(--text-meta)] uppercase tracking-widest"
+                    className="meta"
                   >
                   {formatDateLong(blog.publishedAt)}
                   </time>
                 )}
-                <span className="text-[10px] text-[var(--text-meta)] uppercase tracking-widest">{readingTime} min read</span>
+                <span className="meta">{readingTime} min read</span>
               </div>
               <h1 className="text-5xl md:text-6xl text-white font-bebas tracking-wide mb-4">
                 {blog.title}
@@ -192,7 +192,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             {relatedBlogs.length > 0 && (
               <div className="mt-16 pt-8 border-t border-[var(--border-color)]">
                 <div className="flex items-center justify-between mb-6">
-                  <span className="text-[10px] font-bold text-[var(--text-meta)] uppercase tracking-widest">Keep reading</span>
+                  <span className="section-label">Keep reading</span>
                   <PenTool className="w-4 h-4 text-[var(--text-meta)]" />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -214,7 +214,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                       <p className="text-sm text-white font-bold leading-tight group-hover:text-[var(--primary-mint)] transition-colors line-clamp-2 mb-1">
                         {relatedBlog.title}
                       </p>
-                      <p className="text-[10px] text-[var(--text-meta)]">
+                      <p className="meta">
                         {relatedBlog.publishedAt && (
                           <time dateTime={new Date(relatedBlog.publishedAt).toISOString()}>
                             {formatDateShort(relatedBlog.publishedAt)}

@@ -104,9 +104,9 @@ export default async function Podcast() {
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-4 md:px-6 lg:px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-2 md:gap-3 text-xs text-[var(--text-meta)] min-w-0">
             <span className="text-[var(--primary-mint)] font-bold flex-shrink-0">/</span>
-            <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[10px] md:text-[11px] truncate">Podcast</span>
+            <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px] truncate">Podcast</span>
           </div>
-          <div className="font-montserrat text-[10px] md:text-[10px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden lg:block whitespace-nowrap">
+          <div className="font-montserrat text-[11px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden lg:block whitespace-nowrap">
             SMALL STEPS EVERY DAY BEAT ONE BIG STEP A YEAR.
           </div>
         </div>
@@ -123,7 +123,7 @@ export default async function Podcast() {
                 href="https://www.youtube.com/@engjellrraklli" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="border border-white/40 text-white hover:border-[var(--primary-mint)] hover:text-[var(--primary-mint)] px-4 md:px-6 py-2 md:py-3 text-xs font-bold uppercase tracking-widest transition-colors rounded-none flex items-center justify-center gap-2 w-full md:w-auto flex-shrink-0"
+                className="btn btn-secondary-on-image w-full md:w-auto flex-shrink-0"
               >
                 <ExternalLink className="w-4 h-4 flex-shrink-0" />
                 Visit Channel
@@ -155,7 +155,7 @@ export default async function Podcast() {
                   </div>
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 lg:p-8 bg-gradient-to-t from-black to-transparent">
-                  <span className="bg-[var(--primary-mint)] text-black text-[8px] md:text-[10px] font-bold px-2 py-1 uppercase tracking-widest mb-2 md:mb-3 inline-block">Latest Video</span>
+                  <span className="bg-[var(--primary-mint)] text-black text-[11px] font-bold px-2 py-1 uppercase tracking-[0.16em] mb-2 md:mb-3 inline-block">Latest Video</span>
                   <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl text-white font-bebas tracking-wide break-words line-clamp-2 md:line-clamp-none">{featuredVideo.title}</h2>
                 </div>
               </a>

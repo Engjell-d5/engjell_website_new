@@ -22,11 +22,11 @@ export default function ShareRow({ url, title }: { url: string; title: string })
   const liHref = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`;
 
   const btn =
-    'flex items-center gap-2 px-3 py-2 border border-[var(--border-color)] text-[var(--text-meta)] hover:text-[var(--primary-mint)] hover:border-[var(--primary-mint)] text-[10px] font-bold uppercase tracking-widest transition-colors';
+    'flex items-center gap-2 px-3 py-2 border border-[var(--border-color)] text-[var(--text-meta)] hover:text-[var(--primary-mint)] hover:border-[var(--primary-mint)] meta font-semibold transition-colors';
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="text-[10px] font-bold text-[var(--text-meta)] uppercase tracking-widest mr-1">Share</span>
+      <span className="meta mr-1">Share</span>
       <a href={xHref} target="_blank" rel="noopener noreferrer" className={btn} aria-label="Share on X">
         <Twitter className="w-3.5 h-3.5" />
         X

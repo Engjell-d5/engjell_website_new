@@ -68,7 +68,7 @@ export default function VideoList({ videos }: VideoListProps) {
               </h4>
               {/* 10px floor: the mobile size here was 8px, below the point
                   where this face stays legible at arm's length. */}
-              <p className="text-[10px] text-[var(--text-meta)] mt-1 break-words">
+              <p className="meta mt-1 break-words">
                 {formatDuration(video.duration)} • <time dateTime={new Date(video.publishedAt).toISOString()}>{formatDateShort(video.publishedAt)}</time>
               </p>
             </a>
@@ -78,7 +78,7 @@ export default function VideoList({ videos }: VideoListProps) {
           <div className="mt-6 md:mt-8 flex justify-center">
             <button
               onClick={loadMoreVideos}
-              className="bg-white text-black hover:bg-[var(--primary-mint)] px-4 md:px-6 py-2 md:py-3 text-xs font-bold uppercase tracking-widest transition-colors rounded-none flex items-center justify-center gap-2 min-h-[44px]"
+              className="btn btn-tertiary"
             >
               <ChevronDown className="w-4 h-4 flex-shrink-0" />
               Load More

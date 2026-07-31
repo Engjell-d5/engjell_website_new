@@ -45,7 +45,7 @@ export default function Header() {
           <div className="text-3xl md:text-2xl lg:text-3xl tracking-widest text-white leading-none mt-1 font-bebas truncate">ENGJELL RRAKLLI</div>
           <div className="flex items-center gap-2 mt-1">
             <div className="h-[1px] w-6 md:w-8 bg-[var(--primary-mint)]"></div>
-            <span className="text-[11px] md:text-[10px] text-[var(--platinum)] font-bold tracking-[0.2em] font-montserrat uppercase opacity-80 whitespace-nowrap">Tech Entrepreneur</span>
+            <span className="text-[11px] text-[var(--platinum)] font-bold tracking-[0.18em] font-montserrat uppercase opacity-80 whitespace-nowrap">Tech Entrepreneur</span>
           </div>
         </div>
       </div>

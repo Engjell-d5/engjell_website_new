@@ -51,7 +51,7 @@ export default function Ventures() {
             <span className="text-[var(--primary-mint)] font-bold">/</span>
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">Ventures</span>
           </div>
-          <div className="font-montserrat text-[10px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
+          <div className="font-montserrat text-[11px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
             YOU DON'T FAIL IF YOU NEVER GIVE UP.
           </div>
         </div>
@@ -100,13 +100,13 @@ export default function Ventures() {
 
                       <div className="grid grid-cols-2 gap-4 border-t border-[var(--border-color)]/30 pt-4">
                         <div>
-                          <p className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest">Role</p>
+                          <p className="section-label">Role</p>
                           <p className="text-xs text-white">{v.role}</p>
                         </div>
                         {/* Brand names keep their own casing, this label used
                             to title-case them ("Visit Division5"). */}
                         <div className="flex items-center gap-1 text-[var(--text-meta)] group-hover:text-[var(--primary-mint)] transition-colors">
-                          <p className="text-[10px] uppercase font-bold tracking-widest">Visit {v.name}</p>
+                          <p className="meta font-semibold">Visit {v.name}</p>
                           <ArrowUpRight className="w-3 h-3" />
                         </div>
                       </div>

@@ -97,7 +97,7 @@ export default async function Home() {
             <span className="text-[var(--primary-mint)] font-bold">/</span>
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">Home</span>
           </div>
-          <div className="font-montserrat text-[10px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
+          <div className="font-montserrat text-[11px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
             IF IT WAS EASY, EVERYONE WOULD DO IT.
           </div>
         </div>
@@ -123,7 +123,7 @@ export default async function Home() {
                 <div className="flex items-center gap-2 mb-4">
                   {/* Was "Founder's Note", which described nothing on this
                       screen. The note lives in the bio block further down. */}
-                  <span className="bg-[var(--primary-mint)] text-[var(--rich-black)] text-[10px] font-bold px-3 py-1 uppercase tracking-widest inline-block">Tirana, Albania</span>
+                  <span className="bg-[var(--primary-mint)] text-[var(--rich-black)] text-[11px] font-bold px-3 py-1 uppercase tracking-[0.16em] inline-block">Tirana, Albania</span>
                 </div>
                 <h1 className="text-6xl md:text-8xl text-white font-bebas leading-[0.85] tracking-tight max-w-4xl">
                   BUILDING THE<br />
@@ -131,11 +131,11 @@ export default async function Home() {
                   IN ALBANIA.
                 </h1>
                 <div className="mt-6 flex flex-wrap items-center gap-3">
-                  <Link href="/podcast" className="px-6 py-3 bg-[var(--primary-mint)] text-[var(--rich-black)] hover:bg-white text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center gap-2">
+                  <Link href="/podcast" className="btn btn-primary">
                     <Play className="w-4 h-4 fill-current" />
                     Listen to the Podcast
                   </Link>
-                  <Link href="/contact" className="px-6 py-3 border border-white/40 text-white hover:border-[var(--primary-mint)] hover:text-[var(--primary-mint)] text-[10px] font-bold uppercase tracking-widest transition-colors">
+                  <Link href="/contact" className="btn btn-secondary-on-image">
                     Work With Me
                   </Link>
                 </div>
@@ -164,7 +164,7 @@ export default async function Home() {
                 <div>
                   <Quote className="w-8 h-8 text-[var(--primary-mint)] mb-4 opacity-50" />
                   <h2 className="text-white font-bebas text-3xl mb-4 tracking-wide">Why I Build in Tirana</h2>
-                  <p className="text-[var(--text-muted)] text-sm leading-relaxed font-light max-w-2xl">
+                  <p className="text-[var(--text-muted)] text-base md:text-[17px] leading-[1.72] max-w-2xl">
                     My mission is to empower young Albanian talent to build their future at home. By creating an ecosystem of world-class technology and software development in Tirana, I am providing the mentorship, structure, and opportunities the next generation needs to succeed without leaving the country.
                   </p>
                   {/* Evidence for the claim directly above it. The mission was
@@ -175,7 +175,7 @@ export default async function Home() {
                   </p>
                 </div>
                 <div className="mt-8 flex items-center gap-4">
-                  <Link href="/about" className="px-6 py-2 border border-white/40 text-white hover:border-[var(--primary-mint)] hover:text-[var(--primary-mint)] text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center justify-center gap-2">
+                  <Link href="/about" className="btn btn-secondary-on-image">
                     <BookOpen className="w-4 h-4" />
                     Read My Story
                   </Link>
@@ -195,7 +195,7 @@ export default async function Home() {
                 className="group block mb-8 border border-[var(--primary-mint)]/40 bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-colors"
               >
                 <div className="p-8 md:p-10">
-                  <span className="text-[10px] text-[var(--primary-mint)] uppercase font-bold tracking-widest block mb-3">
+                  <span className="section-label mb-3 block" style={{ color: "var(--primary-mint)" }}>
                     Start here
                   </span>
                   <h2 className="text-3xl md:text-4xl text-white font-bebas tracking-wide mb-3 group-hover:text-[var(--primary-mint)] transition-colors">
@@ -204,7 +204,7 @@ export default async function Home() {
                   <p className="text-sm text-[var(--text-muted)] leading-relaxed font-light max-w-3xl">
                     {startHere.excerpt}
                   </p>
-                  <span className="mt-5 inline-flex items-center gap-2 text-[10px] text-[var(--primary-mint)] uppercase font-bold tracking-widest">
+                  <span className="mt-5 inline-flex items-center gap-2 meta font-semibold text-[var(--primary-mint)]">
                     Read the playbook
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                   </span>
@@ -219,14 +219,14 @@ export default async function Home() {
                 linking to neither section outside the footer. */}
             <div className="grid grid-cols-2 md:grid-cols-4 border-t border-b border-[var(--border-color)] bg-[var(--rich-black)]">
               <div className="p-6 border-r border-[var(--border-color)] text-center">
-                <p className="text-[10px] text-[var(--text-meta)] uppercase tracking-widest mb-1">Experience</p>
+                <p className="meta mb-1">Experience</p>
                 <p className="text-3xl font-bebas text-white">{yearsOfBuilding()}+ Years</p>
               </div>
               <Link
                 href="/ventures"
                 className="p-6 border-r border-[var(--border-color)] text-center group hover:bg-[var(--content-bg)] transition-colors"
               >
-                <p className="text-[10px] text-[var(--text-meta)] uppercase tracking-widest mb-1">Ventures</p>
+                <p className="meta mb-1">Ventures</p>
                 <p className="text-3xl font-bebas text-white group-hover:text-[var(--primary-mint)] transition-colors">
                   {VENTURE_COUNT} Active
                 </p>
@@ -236,27 +236,27 @@ export default async function Home() {
                   href="/podcast"
                   className="p-6 border-r border-[var(--border-color)] text-center group hover:bg-[var(--content-bg)] transition-colors"
                 >
-                  <p className="text-[10px] text-[var(--text-meta)] uppercase tracking-widest mb-1">Podcast</p>
+                  <p className="meta mb-1">Podcast</p>
                   <p className="text-3xl font-bebas text-white group-hover:text-[var(--primary-mint)] transition-colors">
                     {videoCount} Episodes
                   </p>
                 </Link>
               ) : (
                 <div className="p-6 border-r border-[var(--border-color)] text-center">
-                  <p className="text-[10px] text-[var(--text-meta)] uppercase tracking-widest mb-1">Mission</p>
+                  <p className="meta mb-1">Mission</p>
                   <p className="text-3xl font-bebas text-white">Local Growth</p>
                 </div>
               )}
               {blogCount ? (
                 <Link href="/journal" className="p-6 text-center group hover:bg-[var(--content-bg)] transition-colors">
-                  <p className="text-[10px] text-[var(--text-meta)] uppercase tracking-widest mb-1">Journal</p>
+                  <p className="meta mb-1">Journal</p>
                   <p className="text-3xl font-bebas text-[var(--primary-mint)] group-hover:text-white transition-colors">
                     {blogCount} Articles
                   </p>
                 </Link>
               ) : (
                 <div className="p-6 text-center">
-                  <p className="text-[10px] text-[var(--text-meta)] uppercase tracking-widest mb-1">Status</p>
+                  <p className="meta mb-1">Status</p>
                   <p className="text-3xl font-bebas text-[var(--primary-mint)]">Building</p>
                 </div>
               )}

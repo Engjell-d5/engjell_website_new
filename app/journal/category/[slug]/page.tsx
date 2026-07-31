@@ -109,7 +109,7 @@ export default async function CategoryPage(
             <span className="text-[var(--text-meta)]">/</span>
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">{displayName}</span>
           </div>
-          <div className="font-montserrat text-[10px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
+          <div className="font-montserrat text-[11px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
             A KIND WORLD IS A BETTER WORLD.
           </div>
         </div>
@@ -127,7 +127,7 @@ export default async function CategoryPage(
               </div>
               <Link
                 href="/journal"
-                className="text-[10px] text-[var(--text-meta)] hover:text-[var(--primary-mint)] uppercase tracking-widest"
+                className="meta hover:text-[var(--primary-mint)]"
               >
                 ← All articles
               </Link>

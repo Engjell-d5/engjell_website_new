@@ -20,7 +20,7 @@ export default function NotFound() {
             <span className="text-[var(--primary-mint)] font-bold">/</span>
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">404</span>
           </div>
-          <div className="font-montserrat text-[10px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
+          <div className="font-montserrat text-[11px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
             NOT ALL WHO WANDER ARE LOST.
           </div>
         </div>
@@ -39,13 +39,13 @@ export default function NotFound() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link 
                 href="/" 
-                className="bg-white text-black hover:bg-[var(--primary-mint)] px-8 py-3 text-xs font-bold uppercase tracking-widest transition-colors inline-flex items-center justify-center gap-2"
+                className="btn btn-primary"
               >
                 Go Home
               </Link>
               <Link 
                 href="/journal" 
-                className="border border-[var(--border-color)] text-white hover:border-[var(--primary-mint)] hover:text-[var(--primary-mint)] px-8 py-3 text-xs font-bold uppercase tracking-widest transition-colors inline-flex items-center justify-center gap-2"
+                className="btn btn-secondary"
               >
                 Browse Journal
               </Link>

@@ -13,7 +13,7 @@ export default function Loading() {
         <div className="h-14 border-b border-[var(--border-color)] flex items-center px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3">
             <span className="text-[var(--primary-mint)] font-bold">/</span>
-            <span className="text-[10px] text-[var(--text-meta)] font-bold uppercase tracking-widest font-montserrat animate-pulse">Loading</span>
+            <span className="section-label animate-pulse">Loading</span>
           </div>
         </div>
         <div className="p-6 md:p-10 animate-pulse">
