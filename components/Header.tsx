@@ -72,6 +72,16 @@ export default function Header() {
         </Link>
       </nav>
 
+      {/* The header is the most persistent element on the site and was the only
+          surface left without a primary action. Slightly shorter than the
+          standard button so it sits comfortably in an 80px bar. */}
+      <Link
+        href="/contact"
+        className="btn btn-primary hidden md:inline-flex ml-4 min-h-0 py-2.5"
+      >
+        Work with me
+      </Link>
+
       {/* Mobile Menu Button */}
       <button 
         className="md:hidden text-white hover:text-[var(--primary-mint)] transition-colors z-50 flex-shrink-0 p-2 -mr-2"
@@ -95,44 +105,47 @@ export default function Header() {
           <Link 
             href="/" 
             onClick={closeMobileMenu}
-            className={`nav-btn text-lg py-3 ${isActive('/') ? 'active' : ''}`}
+            className={`nav-btn nav-btn-mobile text-lg py-3 ${isActive('/') ? 'active' : ''}`}
           >
             Home
           </Link>
           <Link 
             href="/about" 
             onClick={closeMobileMenu}
-            className={`nav-btn text-lg py-3 ${isActive('/about') ? 'active' : ''}`}
+            className={`nav-btn nav-btn-mobile text-lg py-3 ${isActive('/about') ? 'active' : ''}`}
           >
             About
           </Link>
           <Link 
             href="/podcast" 
             onClick={closeMobileMenu}
-            className={`nav-btn text-lg py-3 ${isActive('/podcast') ? 'active' : ''}`}
+            className={`nav-btn nav-btn-mobile text-lg py-3 ${isActive('/podcast') ? 'active' : ''}`}
           >
             Podcast
           </Link>
           <Link 
             href="/journal" 
             onClick={closeMobileMenu}
-            className={`nav-btn text-lg py-3 ${isActive('/journal') ? 'active' : ''}`}
+            className={`nav-btn nav-btn-mobile text-lg py-3 ${isActive('/journal') ? 'active' : ''}`}
           >
             Journal
           </Link>
           <Link 
             href="/ventures" 
             onClick={closeMobileMenu}
-            className={`nav-btn text-lg py-3 ${isActive('/ventures') ? 'active' : ''}`}
+            className={`nav-btn nav-btn-mobile text-lg py-3 ${isActive('/ventures') ? 'active' : ''}`}
           >
             Ventures
           </Link>
-          <Link 
-            href="/contact" 
+          <Link
+            href="/contact"
             onClick={closeMobileMenu}
-            className={`nav-btn text-lg py-3 ${isActive('/contact') ? 'active' : ''}`}
+            className={`nav-btn nav-btn-mobile text-lg py-3 ${isActive('/contact') ? 'active' : ''}`}
           >
             Contact
+          </Link>
+          <Link href="/contact" onClick={closeMobileMenu} className="btn btn-primary mt-3">
+            Work with me
           </Link>
         </nav>
       </div>

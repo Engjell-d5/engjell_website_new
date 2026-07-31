@@ -327,25 +327,56 @@ h1, h2, h3, h4, .brand-font {
   animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Navigation Button Styles - Classic */
+/* ── Navigation ─────────────────────────────────────────────────────────────
+   Was Bebas at 1.1rem. Bebas is a display face: condensed, caps only, drawn
+   for headlines. At navigation size it is slow to scan, and because it is the
+   same face as the h1 the menu competed with the page heading instead of
+   receding behind it. Body face, sentence case, smaller.
+
+   The active item also used to gain a 1px box, which made the current page a
+   boxed word among unboxed words. Mint plus a rule underneath now, consistent
+   with mint meaning emphasis everywhere else.                                */
 .nav-btn {
-  transition: all 0.2s ease;
   position: relative;
+  transition: color 0.2s ease;
   color: var(--text-nav-inactive);
-  font-family: var(--font-bebas), sans-serif;
-  font-size: 1.1rem;
-  letter-spacing: 0.1em;
-  padding: 4px 12px;
-  border: 1px solid transparent;
+  font-family: var(--font-montserrat), sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  padding: 6px 10px;
 }
 
 .nav-btn:hover {
-  color: var(--primary-mint);
+  color: var(--text-primary);
 }
 
 .nav-btn.active {
   color: var(--primary-mint);
-  border: 1px solid var(--primary-mint);
+}
+
+.nav-btn.active::after {
+  content: '';
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  bottom: -2px;
+  height: 2px;
+  background: var(--primary-mint);
+}
+
+/* The mobile menu wants a larger tap target. Set the size here rather than
+   relying on a Tailwind text-lg utility: .nav-btn lives outside
+   @layer components, so its font-size would win over the utility.
+   No underline on mobile either; the items are stacked and mint alone is
+   unambiguous. */
+.nav-btn-mobile {
+  font-size: 1.125rem;
+  padding-left: 0;
+  padding-right: 0;
+}
+.nav-btn-mobile.active::after {
+  content: none;
 }
 
 /* Image Grayscale to Color on Hover */

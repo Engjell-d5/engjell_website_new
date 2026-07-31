@@ -82,7 +82,9 @@ export default function SubscribeForm({ variant = 'card' }: { variant?: Subscrib
 
   if (variant === 'inline') {
     return (
-      <div className="blog-subscribe-snippet-inline my-8 flex flex-col items-center">
+      {/* items-start, not items-center: the parent decides alignment. Centring
+          here meant the form could not sit left-aligned in a footer column. */}
+      <div className="blog-subscribe-snippet-inline my-8 flex flex-col items-start">
         <form onSubmit={handleSubmit} className="flex items-center w-full max-w-md">
           <label htmlFor={inputId} className="sr-only">
             Email address
