@@ -223,6 +223,36 @@ h1, h2, h3, h4, .brand-font {
 
 .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
+/* ── Nested surfaces ───────────────────────────────────────────────────────
+   Direction B, tonal: inside a panel, a block is simply a lighter plane. No
+   border at all. This is where most of the ~125 lines lived, and where they
+   were doing the least work. Inside @layer components so a per-instance
+   utility (the mint edge on the one emphasis block) still overrides it. */
+.panel-inset {
+  background: var(--surface-2);
+  border: 1px solid transparent;
+  border-radius: 0;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.panel-inset-interactive:hover {
+  background: var(--surface-3);
+  border-color: var(--primary-mint);
+}
+
+/* Controls sit one step further forward, so a field reads as something you
+   type into rather than another flat box. */
+.field {
+  background: var(--surface-3);
+  border: 1px solid transparent;
+  border-radius: 0;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+.field:focus {
+  border-color: var(--primary-mint);
+  background: var(--surface-2);
+}
+
 } /* end @layer components */
 
 /* ── Architectural Panel ────────────────────────────────────────────────────
@@ -244,36 +274,8 @@ h1, h2, h3, h4, .brand-font {
   box-shadow: 0 22px 46px -28px rgba(0, 0, 0, 0.95);
 }
 
-/* ── Nested surfaces ───────────────────────────────────────────────────────
-   Direction B, tonal: inside a panel, a block is simply a lighter plane. No
-   border at all. This is where most of the ~125 lines lived, and where they
-   were doing the least work.                                                  */
-.panel-inset {
-  background: var(--surface-2);
-  border: 1px solid transparent;
-  border-radius: 0;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-
-/* Interactive nested blocks (cards, venture tiles) still need a hover state.
-   The mint edge appears only on hover, so it means something when it does. */
-.panel-inset-interactive:hover {
-  background: var(--surface-3);
-  border-color: var(--primary-mint);
-}
-
-/* Form controls sit one step further forward again, so the field reads as
-   something you can type into rather than another flat box. */
-.field {
-  background: var(--surface-3);
-  border: 1px solid transparent;
-  border-radius: 0;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
-}
-.field:focus {
-  border-color: var(--primary-mint);
-  background: var(--surface-2);
-}
+/* Nested surfaces (.panel-inset, .field) live inside @layer components above,
+   so a per-instance Tailwind utility can still override them. */
 
 /* Sticky positioning helpers */
 .sticky-header {
@@ -292,18 +294,26 @@ h1, h2, h3, h4, .brand-font {
 }
 
 @media (min-width: 768px) {
+  /* The rail used to stretch to the full height of the article and stick its
+     *contents* at the top. On a 2700-word post that meant a bordered frame
+     thousands of pixels tall holding a subscribe form and then nothing.
+
+     The fix is not simply align-self: start, which would wrap the panel but
+     kill the sticky travel, since a sticky element can only move inside its
+     containing block. Instead the grid item itself becomes sticky. A sticky
+     grid item travels within its grid area, and the grid area is still the
+     full row height, so the panel wraps its content AND follows the reader. */
   .sticky-sidebar {
-    position: relative; /* Container stretches to match grid item */
-    align-self: stretch; /* Ensure it stretches to match grid item */
-    height: auto; /* Allow stretching to match grid item height */
-    z-index: 1; /* Lower than header to stay below when scrolling */
-  }
-  
-  .sticky-sidebar-content {
     position: sticky;
-    top: 7rem; /* Offset for header */
-    width: 100%; /* Ensure full width */
-    z-index: 1; /* Lower than header (z-index: 100) to stay below when scrolling */
+    top: 7rem; /* clears the 5rem sticky header with room to breathe */
+    align-self: start;
+    height: auto;
+    z-index: 1; /* below the header (z-index: 100) */
+  }
+
+  .sticky-sidebar-content {
+    position: static; /* the sticking now happens one level up */
+    width: 100%;
   }
 }
 

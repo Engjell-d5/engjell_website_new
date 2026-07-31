@@ -111,7 +111,7 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
   // renders this component at all.
   
   return (
-    <aside className="classic-panel md:col-span-3 flex flex-col p-6 gap-6 bg-[var(--bg-dark)] sticky-sidebar md:min-h-[80vh]">
+    <aside className="classic-panel md:col-span-3 flex flex-col p-6 gap-6 bg-[var(--bg-dark)] sticky-sidebar">
       {/* HOME SIDEBAR */}
       {pathname === '/' && (
         <div className="flex flex-col gap-6 sticky-sidebar-content">

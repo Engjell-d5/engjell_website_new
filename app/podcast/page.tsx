@@ -168,7 +168,7 @@ export default async function Podcast() {
       </main>
 
        {/* Right Panel - Next 3 Videos */}
-       <aside className="classic-panel md:col-span-3 flex flex-col p-4 md:p-6 gap-4 md:gap-6 bg-[var(--rich-black)] sticky-sidebar md:min-h-[80vh]">
+       <aside className="classic-panel md:col-span-3 flex flex-col p-4 md:p-6 gap-4 md:gap-6 bg-[var(--rich-black)] sticky-sidebar">
          <div className="flex flex-col gap-4 md:gap-6 sticky-sidebar-content min-w-0">
         {/* Description */}
         <div className="relative p-4 md:p-6 border-l-4 border-[var(--primary-mint)] bg-[var(--rich-black)] min-w-0 overflow-hidden">

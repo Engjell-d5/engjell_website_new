@@ -143,7 +143,7 @@ export default async function Home() {
             </div>
 
             {/* Bio Grid (Split Layout) */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-0 mb-8 panel-inset overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-0 mb-12 overflow-hidden">
               {/* Portrait Image Column */}
               <div className="md:col-span-4 h-64 md:h-auto relative overflow-hidden group border-b md:border-b-0 md:border-r border-[var(--rule-faint)]">
                 <Image 
@@ -192,7 +192,7 @@ export default async function Home() {
             {startHere && (
               <Link
                 href={`/journal/${startHere.slug}`}
-                className="group block mb-8 border border-[var(--primary-mint)]/40 bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-colors"
+                className="group block mb-12 panel-inset border-[var(--primary-mint)]/45 hover:border-[var(--primary-mint)] transition-colors"
               >
                 <div className="p-8 md:p-10">
                   <span className="section-label mb-3 block" style={{ color: "var(--primary-mint)" }}>
@@ -217,7 +217,7 @@ export default async function Home() {
                 /ventures, /podcast and /journal. Previously the page
                 advertised "3 Active" ventures and an article count while
                 linking to neither section outside the footer. */}
-            <div className="grid grid-cols-2 md:grid-cols-4 border-t border-b border-[var(--rule-faint)] bg-[var(--rich-black)]">
+            <div className="grid grid-cols-2 md:grid-cols-4 border-t border-b border-[var(--rule-faint)]">
               <div className="p-6 border-r border-[var(--rule-faint)] text-center">
                 <p className="meta mb-1">Experience</p>
                 <p className="text-3xl font-bebas text-white">{yearsOfBuilding()}+ Years</p>
