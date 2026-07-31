@@ -4,7 +4,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { PenTool } from 'lucide-react';
 import type { Metadata } from 'next';
-import Sidebar from '@/components/Sidebar';
 import ShareRow from '@/components/ShareRow';
 import SubscribeForm from '@/components/SubscribeForm';
 import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
@@ -97,8 +96,14 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
     timeRequired: `PT${readingTime}M`,
   };
 
+  // The article is the one page that does not wear the 9/3 frame.
+  // A 2700-word essay flanked by a rail reads as a template with an article
+  // dropped into it, and the 46rem measure was being capped twice: once by
+  // .blog-content and again by the 9-column panel around it. Single centred
+  // column, one measure, nothing beside it. Every other route keeps the grid,
+  // which is what makes this page read as the exception.
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+    <div className="flex justify-center">
       <StructuredData type="BlogPosting" data={articleData} />
       <Breadcrumbs
         items={[
@@ -107,7 +112,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
           { name: blog.title, url: `/journal/${blog.slug}` },
         ]}
       />
-      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
+      <main id="main-content" className="classic-panel w-full max-w-[62rem] flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--rule-faint)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-[var(--text-meta)]">
@@ -128,8 +133,8 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         </div>
 
         {/* Content Area */}
-        <div className="p-10 md:p-16 lg:p-20">
-          <article className="animate-slide-up">
+        <div className="p-6 md:p-12 lg:p-16">
+          <article className="animate-slide-up mx-auto w-full max-w-[46rem]">
             {/* Header */}
             <div className="mb-8 border-b border-[var(--rule-faint)] pb-6">
               <div className="flex items-center gap-3 mb-4">
@@ -170,7 +175,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                   alt={`${blog.title} - Featured image`}
                   fill
                   priority
-                  sizes="100vw"
+                  sizes="(min-width: 1024px) 46rem, 100vw"
                   className="object-cover img-classic"
                 />
               </div>
@@ -187,6 +192,12 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
 
             {/* Content */}
             <BlogContentWithSubscribe content={blog.content || ''} />
+
+            {/* The rail used to carry this. At the end is where a reader who
+                finished the piece is actually ready for it. */}
+            <div className="mt-16 pt-8 border-t border-[var(--rule-faint)]">
+              <SubscribeForm />
+            </div>
 
             {/* Related Articles */}
             {relatedBlogs.length > 0 && (
@@ -229,7 +240,6 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
           </article>
         </div>
       </main>
-      <Sidebar />
     </div>
   );
 }
