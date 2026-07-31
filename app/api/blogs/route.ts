@@ -30,9 +30,12 @@ export async function POST(request: NextRequest) {
   try {
     const { title, slug, category, excerpt, hook, content, imageUrl, published, seo } = await request.json();
 
-    if (!title || !slug || !category || !excerpt || !hook || !content || !imageUrl) {
+    // `hook` is optional: the schema declares it nullable and the post page
+    // renders it conditionally, but this check used to reject any post without
+    // one, making a hookless article impossible to publish.
+    if (!title || !slug || !category || !excerpt || !content || !imageUrl) {
       return NextResponse.json(
-        { error: 'All required fields are missing' },
+        { error: 'Title, slug, category, excerpt, content and image are required' },
         { status: 400 }
       );
     }

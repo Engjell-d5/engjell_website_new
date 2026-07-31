@@ -18,11 +18,17 @@
   --panel-bg: var(--rich-black); /* Rich Black Panels */
   --border-color: #1a3a4a; /* Subtle architectural border */
   
-  /* Text Colors */
+  /* Text Colors
+     Contrast ratios below are measured against --rich-black (#001823), the
+     darkest surface any of these sit on. WCAG AA needs 4.5:1 for normal text;
+     most of this palette is used at 10-12px, so nothing here should dip below
+     that. The previous --text-nav-inactive (#64748b, 3.8:1) and the raw
+     text-gray-500/600 Tailwind classes it stood in for all failed. */
   --text-primary: var(--platinum);
   --text-secondary: #e5e7eb;
-  --text-muted: #cbd5e1;
-  --text-nav-inactive: #64748b;
+  --text-muted: #cbd5e1;          /* 12.3:1 — body copy on dark panels */
+  --text-meta: #8fa5ae;           /*  7.1:1 — dates, durations, labels, captions */
+  --text-nav-inactive: #7d94a0;   /*  5.7:1 — inactive nav links (was 3.8:1) */
   --text-silver: #C0C0C0; /* Silver color for labels */
   
   /* Link Colors */
@@ -543,6 +549,25 @@ img[loading="lazy"] {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Keyboard focus indicator.
+   Nothing in the app styled :focus-visible, so keyboard users relied on the
+   UA default ring — which is nearly invisible against these dark panels and
+   is suppressed entirely on the inputs that set `focus:outline-none`. */
+:focus-visible {
+  outline: 2px solid var(--primary-mint);
+  outline-offset: 2px;
+}
+
+/* Inputs and textareas opt out of the offset ring (it clips against adjacent
+   borders) and get a solid mint border plus a soft ring instead. */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--primary-mint);
+  outline-offset: 0;
+  border-color: var(--primary-mint);
 }
 
 /* Skip-to-content link: off-screen until keyboard-focused */

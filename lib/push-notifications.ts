@@ -58,8 +58,8 @@ export async function sendPushNotificationToUser(
         JSON.stringify({
           title: payload.title,
           body: payload.body,
-          icon: payload.icon || '/icon-192.png',
-          badge: payload.badge || '/icon-192.png',
+          icon: payload.icon || '/android-launchericon-192-192.png',
+          badge: payload.badge || '/android-launchericon-192-192.png',
           tag: payload.tag || 'admin-notification',
           requireInteraction: payload.requireInteraction || false,
           data: payload.data || {},

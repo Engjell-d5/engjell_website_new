@@ -70,7 +70,7 @@ export default function ContactForm() {
         <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[var(--primary-mint)]"></div>
         <CheckCircle2 className="w-10 h-10 text-[var(--primary-mint)]" />
         <h3 className="text-2xl text-white font-bebas tracking-wide">MESSAGE SENT</h3>
-        <p className="text-sm text-gray-300 font-light max-w-xs">
+        <p className="text-sm text-[var(--text-muted)] font-light max-w-xs">
           Thank you for reaching out. I read every message and usually reply within two business days.
         </p>
         <button
@@ -79,7 +79,7 @@ export default function ContactForm() {
             setSent(false);
             setFormData({ name: '', email: '', topic: '', message: '', website: '' });
           }}
-          className="text-[10px] text-gray-400 hover:text-[var(--primary-mint)] uppercase tracking-widest transition-colors"
+          className="text-[10px] text-[var(--text-meta)] hover:text-[var(--primary-mint)] uppercase tracking-widest transition-colors"
         >
           Send another message
         </button>
@@ -95,7 +95,7 @@ export default function ContactForm() {
       
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="contact-name" className="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-1 block">Name</label>
+          <label htmlFor="contact-name" className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-1 block">Name</label>
           <input
             id="contact-name"
             type="text"
@@ -109,7 +109,7 @@ export default function ContactForm() {
           />
         </div>
         <div>
-          <label htmlFor="contact-email" className="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-1 block">Email</label>
+          <label htmlFor="contact-email" className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-1 block">Email</label>
           <input
             id="contact-email"
             type="email"
@@ -123,7 +123,7 @@ export default function ContactForm() {
           />
         </div>
         <div>
-          <label htmlFor="contact-topic" className="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-1 block">What's this about?</label>
+          <label htmlFor="contact-topic" className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-1 block">What's this about?</label>
           <select
             id="contact-topic"
             name="topic"
@@ -140,7 +140,7 @@ export default function ContactForm() {
           </select>
         </div>
         <div>
-          <label htmlFor="contact-message" className="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-1 block">Message</label>
+          <label htmlFor="contact-message" className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-1 block">Message</label>
           <textarea
             id="contact-message"
             rows={4}
@@ -163,8 +163,11 @@ export default function ContactForm() {
           style={{ position: 'absolute', left: '-9999px' }}
           aria-hidden="true"
         />
+        {/* Only ever an error: the success path swaps the whole form for the
+            confirmation panel above, so this used to carry a dead
+            "successfully" branch that could never render. */}
         {message && (
-          <p className={`text-xs ${message.includes('successfully') ? 'text-[var(--primary-mint)]' : 'text-red-400'}`}>
+          <p role="alert" className="text-xs text-red-400">
             {message}
           </p>
         )}

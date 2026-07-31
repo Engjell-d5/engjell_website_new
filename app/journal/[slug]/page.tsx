@@ -1,5 +1,5 @@
 import React from 'react';
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { PenTool } from 'lucide-react';
@@ -7,11 +7,12 @@ import type { Metadata } from 'next';
 import Sidebar from '@/components/Sidebar';
 import ShareRow from '@/components/ShareRow';
 import SubscribeForm from '@/components/SubscribeForm';
-import SubscribeFormInline from '@/components/SubscribeFormInline';
 import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
 import { createMetadata } from '@/lib/metadata';
-import { getBlogBySlug, getBlogs } from '@/lib/data';
+import { getBlogBySlug, getRelatedBlogs } from '@/lib/data';
 import { toCategorySlug } from '@/lib/category-slug';
+import { readingTimeMinutes } from '@/lib/reading-time';
+import { formatDateLong, formatDateShort } from '@/lib/format';
 
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string }> | { slug: string } }
@@ -45,33 +46,6 @@ export async function generateMetadata(
   });
 }
 
-interface Blog {
-  id: string;
-  title: string;
-  slug: string;
-  category: string;
-  excerpt: string;
-  hook?: string | null;
-  content: string;
-  imageUrl: string;
-  published: boolean;
-  publishedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-  seo?: {
-    metaTitle?: string;
-    metaDescription?: string;
-    keywords?: string;
-    ogTitle?: string;
-    ogDescription?: string;
-    ogImage?: string;
-    twitterCard?: string;
-    twitterTitle?: string;
-    twitterDescription?: string;
-    twitterImage?: string;
-  };
-}
-
 export default async function BlogPost({ params }: { params: Promise<{ slug: string }> | { slug: string } }) {
   // Handle both sync and async params (Next.js 14 vs 15)
   const resolvedParams = await Promise.resolve(params);
@@ -85,45 +59,14 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
     notFound();
   }
 
-  // Fetch related blogs server-side
-  const allBlogs = await getBlogs();
-  const relatedBlogs = allBlogs
-    .filter((b: Blog) => b.published && b.slug !== slug)
-    .sort((a: Blog, b: Blog) => {
-      const dateA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
-      const dateB = b.publishedAt ? new Date(b.publishedAt).getTime() : 0;
-      return dateB - dateA;
-    })
-    .slice(0, 2);
-
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-    });
-  };
-
-  const formatDateShort = (dateString: string | null) => {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
-  };
+  // Same-category posts first, and only the columns the cards render — this
+  // previously loaded every blog row (content included) to pick two.
+  const relatedBlogs = await getRelatedBlogs(slug, blog.category, 2);
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
-  
-  // Calculate reading time (average 200 words per minute)
-  const calculateReadingTime = (content: string): number => {
-    const text = content.replace(/<[^>]*>/g, ''); // Remove HTML tags
-    const words = text.split(/\s+/).filter(word => word.length > 0).length;
-    return Math.ceil(words / 200);
-  };
 
-  const readingTime = blog.content ? calculateReadingTime(blog.content) : 5;
+  // Shared with the listing cards so the two never disagree about a post's length.
+  const readingTime = blog.content ? readingTimeMinutes(blog.content) : 1;
 
   // BlogPosting structured data; @id ties author/publisher to the site-wide
   // Person node declared in the root layout so Google merges them.
@@ -167,15 +110,19 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
       <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
-          <div className="flex items-center gap-3 text-xs text-gray-400">
+          <div className="flex items-center gap-3 text-xs text-[var(--text-meta)]">
             <Link href="/journal" className="hover:text-[var(--primary-mint)] transition-colors">
               <span className="text-[var(--primary-mint)] font-bold">/</span>
               <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">Journal</span>
             </Link>
-            <span className="text-gray-500">/</span>
-            <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">{blog.slug}</span>
+            <span className="text-[var(--text-meta)]">/</span>
+            {/* The post title, not blog.slug — this used to render the raw
+                hyphenated URL segment (e.g. THE-SILICON-VALLEY-ILLUSION). */}
+            <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px] truncate max-w-[16rem] lg:max-w-md">
+              {blog.title}
+            </span>
           </div>
-          <div className="font-montserrat text-[10px] text-gray-400 font-bold tracking-[0.15em] hidden md:block">
+          <div className="font-montserrat text-[10px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
             A KIND WORLD IS A BETTER WORLD.
           </div>
         </div>
@@ -188,25 +135,25 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
               <div className="flex items-center gap-3 mb-4">
                 <Link
                   href={`/journal/category/${toCategorySlug(blog.category)}`}
-                  className="text-[10px] font-bold text-gray-400 hover:text-[var(--primary-mint)] uppercase tracking-widest border border-[var(--border-color)] hover:border-[var(--primary-mint)] px-2 py-0.5 transition-colors"
+                  className="text-[10px] font-bold text-[var(--text-meta)] hover:text-[var(--primary-mint)] uppercase tracking-widest border border-[var(--border-color)] hover:border-[var(--primary-mint)] px-2 py-0.5 transition-colors"
                 >
                   {blog.category}
                 </Link>
                 {blog.publishedAt && (
                   <time
                     dateTime={new Date(blog.publishedAt).toISOString()}
-                    className="text-[10px] text-gray-400 uppercase tracking-widest"
+                    className="text-[10px] text-[var(--text-meta)] uppercase tracking-widest"
                   >
-                  {formatDate(blog.publishedAt)}
+                  {formatDateLong(blog.publishedAt)}
                   </time>
                 )}
-                <span className="text-[10px] text-gray-400 uppercase tracking-widest">{readingTime} min read</span>
+                <span className="text-[10px] text-[var(--text-meta)] uppercase tracking-widest">{readingTime} min read</span>
               </div>
               <h1 className="text-5xl md:text-6xl text-white font-bebas tracking-wide mb-4">
                 {blog.title}
               </h1>
               {blog.excerpt && (
-                <p className="text-lg text-gray-300 leading-relaxed font-light">
+                <p className="text-lg text-[var(--text-muted)] leading-relaxed font-light">
                   {blog.excerpt}
                 </p>
               )}
@@ -245,8 +192,8 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             {relatedBlogs.length > 0 && (
               <div className="mt-16 pt-8 border-t border-[var(--border-color)]">
                 <div className="flex items-center justify-between mb-6">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Keep reading</span>
-                  <PenTool className="w-4 h-4 text-gray-500" />
+                  <span className="text-[10px] font-bold text-[var(--text-meta)] uppercase tracking-widest">Keep reading</span>
+                  <PenTool className="w-4 h-4 text-[var(--text-meta)]" />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {relatedBlogs.map((relatedBlog) => (
@@ -267,7 +214,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                       <p className="text-sm text-white font-bold leading-tight group-hover:text-[var(--primary-mint)] transition-colors line-clamp-2 mb-1">
                         {relatedBlog.title}
                       </p>
-                      <p className="text-[10px] text-gray-500">
+                      <p className="text-[10px] text-[var(--text-meta)]">
                         {relatedBlog.publishedAt && (
                           <time dateTime={new Date(relatedBlog.publishedAt).toISOString()}>
                             {formatDateShort(relatedBlog.publishedAt)}
@@ -423,7 +370,7 @@ function BlogContentWithSubscribe({ content }: { content: string }) {
               style={{ background: 'transparent', color: 'inherit' }}
             />
           )}
-          {segment.type === 'inline' && <SubscribeFormInline />}
+          {segment.type === 'inline' && <SubscribeForm variant="inline" />}
           {segment.type === 'full' && <SubscribeForm />}
         </React.Fragment>
       ))}

@@ -7,15 +7,20 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { name, email, about, businesses, industry, vision, biggestChallenge, whyPodcast, website, formStartTime } = body;
 
-    // Spam protection check
-    const spamCheck = checkSpam(request, body, formStartTime);
-    if (spamCheck.isSpam) {
-      console.warn('Spam detected in podcast application:', spamCheck.reason);
-      // Return success to avoid revealing spam detection
-      return NextResponse.json({ 
+    const verdict = checkSpam(request, body, formStartTime, 'podcast');
+    if (verdict.action === 'drop') {
+      console.warn('Spam detected in podcast application:', verdict.reason);
+      // Answer success so bots learn nothing about the filter.
+      return NextResponse.json({
         success: true,
         message: 'Application submitted successfully!'
       });
+    }
+    if (verdict.action === 'rate-limited') {
+      return NextResponse.json(
+        { error: 'Too many applications from this connection. Please try again later.' },
+        { status: 429, headers: { 'Retry-After': String(verdict.retryAfterSeconds) } }
+      );
     }
 
     // Validate required fields

@@ -16,11 +16,11 @@ export default function NotFound() {
       <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
-          <div className="flex items-center gap-3 text-xs text-gray-400">
+          <div className="flex items-center gap-3 text-xs text-[var(--text-meta)]">
             <span className="text-[var(--primary-mint)] font-bold">/</span>
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">404</span>
           </div>
-          <div className="font-montserrat text-[10px] text-gray-400 font-bold tracking-[0.15em] hidden md:block">
+          <div className="font-montserrat text-[10px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
             NOT ALL WHO WANDER ARE LOST.
           </div>
         </div>
@@ -32,7 +32,7 @@ export default function NotFound() {
             <h2 className="text-3xl md:text-4xl text-white font-bebas mb-4 tracking-wide">
               PAGE NOT FOUND
             </h2>
-            <p className="text-gray-300 text-lg mb-8 leading-relaxed font-light">
+            <p className="text-[var(--text-muted)] text-lg mb-8 leading-relaxed font-light">
               The page you're looking for doesn't exist or has been moved. 
               Let's get you back on track.
             </p>

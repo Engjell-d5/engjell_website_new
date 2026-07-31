@@ -30,7 +30,7 @@ export default function PodcastApplicationButton() {
           <div className="classic-panel bg-[var(--rich-black)] w-full max-w-2xl my-8 relative">
             <button
               onClick={() => setShowApplicationModal(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors z-10"
+              className="absolute top-4 right-4 text-[var(--text-meta)] hover:text-white transition-colors z-10"
             >
               <X className="w-6 h-6" />
             </button>

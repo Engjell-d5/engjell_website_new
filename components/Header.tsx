@@ -58,7 +58,7 @@ export default function Header() {
         <Link href="/about" className={`nav-btn ${isActive('/about') ? 'active' : ''}`}>
           About
         </Link>
-        <Link href="/media" className={`nav-btn ${isActive('/media') ? 'active' : ''}`}>
+        <Link href="/podcast" className={`nav-btn ${isActive('/podcast') ? 'active' : ''}`}>
           Podcast
         </Link>
         <Link href="/journal" className={`nav-btn ${isActive('/journal') ? 'active' : ''}`}>
@@ -107,9 +107,9 @@ export default function Header() {
             About
           </Link>
           <Link 
-            href="/media" 
+            href="/podcast" 
             onClick={closeMobileMenu}
-            className={`nav-btn text-lg py-3 ${isActive('/media') ? 'active' : ''}`}
+            className={`nav-btn text-lg py-3 ${isActive('/podcast') ? 'active' : ''}`}
           >
             Podcast
           </Link>

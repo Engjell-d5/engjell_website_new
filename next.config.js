@@ -37,7 +37,21 @@ const nextConfig = {
   optimizeFonts: true,
   // Enable standalone output for Docker
   output: 'standalone',
-  // Headers for caching and security
+  // The podcast page used to live at /media. Keep the old URL alive with a
+  // permanent redirect so existing links and search results don't 404.
+  async redirects() {
+    return [
+      {
+        source: '/media',
+        destination: '/podcast',
+        permanent: true,
+      },
+    ];
+  },
+  // Headers for caching and security.
+  // Note: Referrer-Policy is intentionally NOT set here — middleware.ts sets
+  // it (strict-origin-when-cross-origin) for every route, and two different
+  // values across the two layers made the effective policy hard to reason about.
   async headers() {
     return [
       {
@@ -54,10 +68,6 @@ const nextConfig = {
           {
             key: 'X-Content-Type-Options',
             value: 'nosniff'
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'origin-when-cross-origin'
           },
         ],
       },

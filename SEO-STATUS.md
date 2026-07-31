@@ -1,7 +1,31 @@
 # SEO Status — engjellrraklli.com
 
-**Last updated:** July 30, 2026 (replaces the stale `SEO-AUDIT-REPORT.md`, which
+**Last updated:** July 31, 2026 (replaces the stale `SEO-AUDIT-REPORT.md`, which
 misreported several items in both directions).
+
+## Changed in the July 31 quality pass
+
+- **`/media` is now `/podcast`.** The nav, breadcrumb, `<h1>` and page title all
+  said "Podcast" while the URL said `/media`. A permanent redirect
+  (`next.config.js` → `redirects()`) keeps the old URL alive; the manifest
+  shortcut was renamed to match. **Resubmit the sitemap after deploying.**
+- **`/journal` is paginated** at 10 posts per page. Each page canonicalises to
+  itself and every page is listed in the sitemap.
+- **Related posts are category-aware** (`getRelatedBlogs` in `lib/data/blogs.ts`),
+  and no longer load every blog row to pick two.
+- **Ventures reduced to division5 + divisionAI.** `lib/ventures.ts` is the single
+  source for the cards, footer list, Organization schema, and the homepage
+  "N Active" counter — they cannot drift apart again.
+- **Rate limiting no longer masquerades as spam detection.** `checkSpam` returns
+  `allow` / `drop` / `rate-limited`; the routes answer 429 for the last case.
+  Previously a rate-limited visitor saw "Message sent" and the message was
+  discarded.
+- **Contrast:** `--text-meta` (7.1:1) and `--text-nav-inactive` (5.7:1) replace
+  the raw `text-gray-400/500/600` classes, which measured 3.8:1 and 2.4:1
+  against the panel background and failed WCAG AA. `:focus-visible` is styled.
+- **Security headers:** HSTS now covers the public site (was admin-only); CSP
+  gained `base-uri`, `form-action`, `object-src` and `frame-ancestors`.
+  `Referrer-Policy` is set in one place (middleware) instead of two conflicting ones.
 
 ## What is implemented and verified
 
@@ -15,7 +39,7 @@ misreported several items in both directions).
 - **Sitemap:** DB-driven, generated per request (`app/sitemap.ts`,
   `dynamic = 'force-dynamic'`) so it always reflects the database.
 - **Structured data:** Person + WebSite (root layout), ProfilePage (about),
-  Organization ×3 (ventures), BlogPosting with `inLanguage`/`articleSection`
+  Organization ×2 (ventures), BlogPosting with `inLanguage`/`articleSection`
   (posts), VideoObject + ItemList (media), CollectionPage (journal/category),
   BreadcrumbList (all pages). Person nodes share `@id: <siteUrl>/#person`.
 - **Rendering:** home, journal, media, category pages, blog posts, and the

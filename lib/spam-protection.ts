@@ -1,28 +1,30 @@
 import { NextRequest } from 'next/server';
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
-import { join } from 'path';
+import { rateLimit, getClientIdentifier } from './rate-limit';
 
-interface RateLimitEntry {
-  ip: string;
-  count: number;
-  resetTime: number;
-}
+// Two distinct outcomes, deliberately kept apart:
+//
+//   'drop'        — we believe this is a bot. Callers answer 200 so the bot
+//                   learns nothing, and the submission is thrown away.
+//   'rate-limited'— a human is going too fast. Callers MUST answer 429 with a
+//                   real message. Answering 200 here (the previous behaviour)
+//                   silently destroyed genuine contact messages: the visitor
+//                   saw "Message sent" and nobody ever received it.
+export type SpamVerdict =
+  | { action: 'allow' }
+  | { action: 'drop'; reason: string }
+  | { action: 'rate-limited'; reason: string; retryAfterSeconds: number };
 
-const DATA_DIR = join(process.cwd(), 'data');
-const RATE_LIMIT_FILE = join(DATA_DIR, 'rate-limits.json');
+// Per-form buckets. These used to share one 5-per-15-minutes counter, so
+// subscribing to the newsletter used up the contact form's budget.
+const LIMITS = {
+  contact: { windowMs: 15 * 60 * 1000, maxRequests: 5 },
+  subscribe: { windowMs: 15 * 60 * 1000, maxRequests: 10 },
+  podcast: { windowMs: 60 * 60 * 1000, maxRequests: 3 },
+} as const;
 
-// Ensure data directory exists
-if (!existsSync(DATA_DIR)) {
-  try {
-    mkdirSync(DATA_DIR, { recursive: true });
-  } catch (error) {
-    console.error('Error creating data directory:', error);
-  }
-}
+export type FormKind = keyof typeof LIMITS;
 
-const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes
-const MAX_REQUESTS_PER_WINDOW = 5; // Max 5 requests per 15 minutes per IP
-const MIN_FORM_TIME = 3000; // Minimum 3 seconds to fill form (in milliseconds)
+const MIN_FORM_TIME = 3000; // A human needs at least 3s to fill a form
 
 // Spam keywords to check for
 const SPAM_KEYWORDS = [
@@ -32,169 +34,81 @@ const SPAM_KEYWORDS = [
   'nigerian prince', 'inheritance', 'lottery winner'
 ];
 
-// Get client IP address
-function getClientIP(request: NextRequest): string {
-  const forwarded = request.headers.get('x-forwarded-for');
-  const realIP = request.headers.get('x-real-ip');
-  
-  if (forwarded) {
-    return forwarded.split(',')[0].trim();
-  }
-  if (realIP) {
-    return realIP.trim();
-  }
-  return 'unknown';
-}
-
-// Load rate limit data
-function loadRateLimits(): Record<string, RateLimitEntry> {
-  try {
-    if (existsSync(RATE_LIMIT_FILE)) {
-      const data = readFileSync(RATE_LIMIT_FILE, 'utf8');
-      return JSON.parse(data);
-    }
-  } catch (error) {
-    console.error('Error loading rate limits:', error);
-  }
-  return {};
-}
-
-// Save rate limit data
-function saveRateLimits(limits: Record<string, RateLimitEntry>): void {
-  try {
-    // Clean up expired entries
-    const now = Date.now();
-    const cleaned: Record<string, RateLimitEntry> = {};
-    for (const [ip, entry] of Object.entries(limits)) {
-      if (entry.resetTime > now) {
-        cleaned[ip] = entry;
-      }
-    }
-    writeFileSync(RATE_LIMIT_FILE, JSON.stringify(cleaned, null, 2));
-  } catch (error) {
-    console.error('Error saving rate limits:', error);
-  }
-}
-
-// Check rate limit
-function checkRateLimit(ip: string): { allowed: boolean; remaining: number } {
-  const limits = loadRateLimits();
-  const now = Date.now();
-  
-  if (!limits[ip] || limits[ip].resetTime < now) {
-    // New window
-    limits[ip] = {
-      ip,
-      count: 1,
-      resetTime: now + RATE_LIMIT_WINDOW,
-    };
-    saveRateLimits(limits);
-    return { allowed: true, remaining: MAX_REQUESTS_PER_WINDOW - 1 };
-  }
-  
-  if (limits[ip].count >= MAX_REQUESTS_PER_WINDOW) {
-    return { allowed: false, remaining: 0 };
-  }
-  
-  limits[ip].count++;
-  saveRateLimits(limits);
-  return { allowed: true, remaining: MAX_REQUESTS_PER_WINDOW - limits[ip].count };
-}
-
-// Check for spam keywords
 function containsSpamKeywords(text: string): boolean {
   const lowerText = text.toLowerCase();
   return SPAM_KEYWORDS.some(keyword => lowerText.includes(keyword));
 }
 
-// Count links in text
 function countLinks(text: string): number {
-  const linkRegex = /https?:\/\/[^\s]+/gi;
-  const matches = text.match(linkRegex);
+  const matches = text.match(/https?:\/\/[^\s]+/gi);
   return matches ? matches.length : 0;
-}
-
-// Validate form submission
-export interface SpamCheckResult {
-  isSpam: boolean;
-  reason?: string;
 }
 
 export function checkSpam(
   request: NextRequest,
   body: any,
-  formStartTime?: number
-): SpamCheckResult {
-  const ip = getClientIP(request);
-  
-  // 1. Check honeypot field (should be empty)
+  formStartTime?: number,
+  kind: FormKind = 'contact'
+): SpamVerdict {
+  // 1. Honeypot field (must be empty) — strongest bot signal, check first so
+  //    bots never consume a rate-limit slot that belongs to a real visitor.
   if (body.website || body.url || body.website_url) {
-    return { isSpam: true, reason: 'Honeypot field filled' };
+    return { action: 'drop', reason: 'Honeypot field filled' };
   }
-  
-  // 2. Check rate limit
-  const rateLimit = checkRateLimit(ip);
-  if (!rateLimit.allowed) {
-    return { isSpam: true, reason: 'Rate limit exceeded' };
-  }
-  
-  // 3. Check form submission time (if provided)
+
+  // 2. Form filled out impossibly fast
   if (formStartTime) {
-    const submitTime = Date.now();
-    const timeSpent = submitTime - formStartTime;
+    const timeSpent = Date.now() - formStartTime;
     if (timeSpent < MIN_FORM_TIME) {
-      return { isSpam: true, reason: 'Form submitted too quickly' };
+      return { action: 'drop', reason: 'Form submitted too quickly' };
     }
   }
-  
-  // 4. Check for spam keywords in message/content fields
+
+  // 3. Spam keywords / link stuffing in free-text fields
   const textFields = ['message', 'content', 'about', 'vision', 'biggestChallenge', 'whyPodcast'];
   for (const field of textFields) {
-    if (body[field] && typeof body[field] === 'string') {
-      if (containsSpamKeywords(body[field])) {
-        return { isSpam: true, reason: 'Spam keywords detected' };
+    const value = body[field];
+    if (typeof value === 'string' && value) {
+      if (containsSpamKeywords(value)) {
+        return { action: 'drop', reason: 'Spam keywords detected' };
       }
-      
-      // Check for excessive links (more than 2 links is suspicious)
-      const linkCount = countLinks(body[field]);
-      if (linkCount > 2) {
-        return { isSpam: true, reason: 'Too many links in message' };
+      if (countLinks(value) > 2) {
+        return { action: 'drop', reason: 'Too many links in message' };
       }
     }
   }
-  
-  // 5. Check email format and suspicious patterns
-  if (body.email) {
-    const email = body.email.toLowerCase();
-    
-    // Check for suspicious email patterns
-    const suspiciousPatterns = [
-      /^[a-z0-9]+@[a-z0-9]+\.[a-z]{2,3}$/i, // Too simple
-      /\d{6,}/, // Many consecutive digits
-    ];
-    
-    // Check for disposable email domains (basic check)
-    const disposableDomains = ['tempmail', 'guerrillamail', 'mailinator', '10minutemail'];
-    const emailDomain = email.split('@')[1];
-    if (emailDomain && disposableDomains.some(domain => emailDomain.includes(domain))) {
-      // Not blocking, just logging
-      console.warn('Potential disposable email:', email);
-    }
-  }
-  
-  // 6. Check name field for suspicious patterns
+
+  // 4. Obviously fake name
   if (body.name) {
-    const name = body.name.trim();
-    // Names that are too short or contain only numbers
+    const name = String(body.name).trim();
     if (name.length < 2 || /^\d+$/.test(name)) {
-      return { isSpam: true, reason: 'Invalid name format' };
+      return { action: 'drop', reason: 'Invalid name format' };
     }
-    
-    // Check for spam keywords in name
     if (containsSpamKeywords(name)) {
-      return { isSpam: true, reason: 'Spam keywords in name' };
+      return { action: 'drop', reason: 'Spam keywords in name' };
     }
   }
-  
-  return { isSpam: false };
+
+  // 5. Log (never block) disposable-address signups
+  if (typeof body.email === 'string') {
+    const emailDomain = body.email.toLowerCase().split('@')[1];
+    const disposableDomains = ['tempmail', 'guerrillamail', 'mailinator', '10minutemail'];
+    if (emailDomain && disposableDomains.some(domain => emailDomain.includes(domain))) {
+      console.warn('Potential disposable email:', body.email);
+    }
+  }
+
+  // 6. Rate limit last — only submissions that look human get here, and this
+  //    is reported to the caller as a retryable condition, not as spam.
+  const options = LIMITS[kind];
+  const result = rateLimit(`${kind}:${getClientIdentifier(request)}`, options);
+  if (!result.allowed) {
+    return {
+      action: 'rate-limited',
+      reason: 'Rate limit exceeded',
+      retryAfterSeconds: Math.max(1, Math.ceil((result.resetTime - Date.now()) / 1000)),
+    };
+  }
+
+  return { action: 'allow' };
 }

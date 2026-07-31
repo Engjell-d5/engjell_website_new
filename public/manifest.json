@@ -1,12 +1,12 @@
 {
   "name": "Engjell Rraklli",
   "short_name": "Engjell",
-  "description": "Engjell Rraklli — entrepreneur, tech leader, and founder. Articles, podcasts, and ventures.",
+  "description": "Engjell Rraklli — Albanian tech entrepreneur building scalable technology in Tirana. Journal, podcast, and ventures.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#0a0a0a",
-  "theme_color": "#000000",
+  "background_color": "#001823",
+  "theme_color": "#001823",
   "orientation": "portrait-primary",
   "icons": [
     {
@@ -33,10 +33,10 @@
       "icons": [{ "src": "/android-launchericon-192-192.png", "sizes": "192x192" }]
     },
     {
-      "name": "Media",
-      "short_name": "Media",
+      "name": "Podcast",
+      "short_name": "Podcast",
       "description": "Watch the latest videos and podcasts",
-      "url": "/media",
+      "url": "/podcast",
       "icons": [{ "src": "/android-launchericon-192-192.png", "sizes": "192x192" }]
     },
     {

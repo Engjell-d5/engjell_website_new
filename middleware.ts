@@ -154,6 +154,9 @@ export async function middleware(request: NextRequest) {
       "font-src 'self' data: https://fonts.gstatic.com", // Allow Google Fonts
       "connect-src 'self' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.google.com", // GA4 sends beacons to regional hosts (e.g. region1.google-analytics.com)
       "frame-ancestors 'none'",
+      "base-uri 'self'", // Block <base href> injection from rewriting relative URLs
+      "form-action 'self'", // Admin forms only ever post back to this origin
+      "object-src 'none'",
     ].join('; ');
     response.headers.set('Content-Security-Policy', csp);
 
@@ -165,7 +168,13 @@ export async function middleware(request: NextRequest) {
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('X-Frame-Options', 'SAMEORIGIN');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  
+
+  // HSTS belongs on the public site too, not just /admin — without it the
+  // first http:// hit to any page is still downgradeable.
+  if (process.env.NODE_ENV === 'production') {
+    response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  }
+
   // Set Content-Security-Policy for non-admin routes (allows Google Analytics and Fonts)
   const publicCsp = [
     "default-src 'self'",
@@ -174,9 +183,13 @@ export async function middleware(request: NextRequest) {
     "img-src 'self' data: https: https://www.googletagmanager.com https://www.google-analytics.com",
     "font-src 'self' data: https://fonts.gstatic.com", // Allow Google Fonts
     "connect-src 'self' https://www.googletagmanager.com https://*.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.google.com", // GA4 sends beacons to regional hosts (e.g. region1.google-analytics.com)
+    "base-uri 'self'", // Block <base href> injection from rewriting relative URLs
+    "form-action 'self'", // Contact/subscribe/podcast forms post to this origin only
+    "object-src 'none'",
+    "frame-ancestors 'self'", // Matches X-Frame-Options: SAMEORIGIN
   ].join('; ');
   response.headers.set('Content-Security-Policy', publicCsp);
-  
+
   return response;
 }
 

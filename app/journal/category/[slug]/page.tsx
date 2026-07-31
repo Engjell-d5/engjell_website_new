@@ -1,8 +1,8 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Sidebar from '@/components/Sidebar';
+import BlogCard from '@/components/BlogCard';
 import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
 import { createMetadata } from '@/lib/metadata';
 import { getBlogs } from '@/lib/data';
@@ -45,10 +45,12 @@ export async function generateMetadata(
   const { posts, displayName } = await getCategoryPosts(resolved.slug);
 
   if (posts.length === 0) {
+    // This branch 404s below, so it must not advertise itself as indexable.
     return createMetadata({
-      title: `${displayName} | Field Notes`,
+      title: `${displayName} — Field Notes`,
       description: `Articles in the ${displayName} category — tech entrepreneurship and software development insights by Engjell Rraklli.`,
       path: `/journal/category/${resolved.slug}`,
+      noindex: true,
     });
   }
 
@@ -58,15 +60,6 @@ export async function generateMetadata(
     path: `/journal/category/${resolved.slug}`,
   });
 }
-
-const formatDate = (dateString: string | null) => {
-  if (!dateString) return '';
-  return new Date(dateString).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-};
 
 export default async function CategoryPage(
   { params }: { params: Promise<{ slug: string }> | { slug: string } }
@@ -108,15 +101,15 @@ export default async function CategoryPage(
       <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
-          <div className="flex items-center gap-3 text-xs text-gray-400">
+          <div className="flex items-center gap-3 text-xs text-[var(--text-meta)]">
             <Link href="/journal" className="hover:text-[var(--primary-mint)] transition-colors">
               <span className="text-[var(--primary-mint)] font-bold">/</span>
               <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">Journal</span>
             </Link>
-            <span className="text-gray-500">/</span>
+            <span className="text-[var(--text-meta)]">/</span>
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">{displayName}</span>
           </div>
-          <div className="font-montserrat text-[10px] text-gray-400 font-bold tracking-[0.15em] hidden md:block">
+          <div className="font-montserrat text-[10px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
             A KIND WORLD IS A BETTER WORLD.
           </div>
         </div>
@@ -128,13 +121,13 @@ export default async function CategoryPage(
               <div>
                 <span className="page-label mb-3 block">Category</span>
                 <h1 className="text-5xl md:text-6xl text-white font-bebas uppercase">{displayName}</h1>
-                <p className="text-xs text-gray-500 mt-2 uppercase tracking-widest">
+                <p className="text-xs text-[var(--text-meta)] mt-2 uppercase tracking-widest">
                   {posts.length} article{posts.length === 1 ? '' : 's'}
                 </p>
               </div>
               <Link
                 href="/journal"
-                className="text-[10px] text-gray-400 hover:text-[var(--primary-mint)] uppercase tracking-widest"
+                className="text-[10px] text-[var(--text-meta)] hover:text-[var(--primary-mint)] uppercase tracking-widest"
               >
                 ← All articles
               </Link>
@@ -142,44 +135,7 @@ export default async function CategoryPage(
 
             <div className="grid gap-6">
               {posts.map((blog, idx) => (
-                <article key={blog.id}>
-                  <Link
-                    href={`/journal/${blog.slug}`}
-                    className="p-6 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-all cursor-pointer group flex flex-col md:flex-row gap-8"
-                  >
-                    <div className="w-full md:w-56 h-36 bg-black shrink-0 overflow-hidden border border-[var(--border-color)]/30 relative">
-                      <Image
-                        src={blog.imageUrl}
-                        alt={`${blog.title} - ${blog.category} article`}
-                        fill
-                        sizes="(min-width: 768px) 224px, 100vw"
-                        className="object-cover img-classic"
-                        priority={idx === 0}
-                      />
-                    </div>
-                    <div className="flex-1 py-1">
-                      <div className="flex items-center gap-3 mb-3">
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest border border-[var(--border-color)] px-2 py-0.5">
-                          {blog.category}
-                        </span>
-                        {blog.publishedAt && (
-                          <time
-                            dateTime={new Date(blog.publishedAt).toISOString()}
-                            className="text-[10px] text-gray-400 uppercase tracking-widest"
-                          >
-                            {formatDate(blog.publishedAt)}
-                          </time>
-                        )}
-                      </div>
-                      <h2 className="text-3xl text-white font-bebas mb-3 group-hover:text-[var(--primary-mint)] transition-colors">
-                        {blog.title}
-                      </h2>
-                      <p className="text-sm text-gray-400 leading-relaxed font-light">
-                        {blog.excerpt}
-                      </p>
-                    </div>
-                  </Link>
-                </article>
+                <BlogCard key={blog.id} blog={blog} priority={idx === 0} />
               ))}
             </div>
           </section>

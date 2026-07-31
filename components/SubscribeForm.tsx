@@ -1,19 +1,29 @@
 'use client';
 
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { Mail } from 'lucide-react';
 
-export default function SubscribeForm() {
+// Single subscribe implementation. There used to be three near-identical
+// copies (this file, SubscribeFormInline, and a private one inside Sidebar)
+// which had already drifted: the sidebar copy sent neither the honeypot nor
+// formStartTime, so it was the one unprotected entry point.
+export type SubscribeVariant = 'card' | 'inline';
+
+const PITCH =
+  'Field notes on building tech ventures in Albania — roughly weekly. No spam, unsubscribe anytime.';
+
+export default function SubscribeForm({ variant = 'card' }: { variant?: SubscribeVariant }) {
   const [email, setEmail] = useState('');
   const [website, setWebsite] = useState(''); // Honeypot field
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const [status, setStatus] = useState<{ ok: boolean; text: string } | null>(null);
   const [formStartTime] = useState(Date.now()); // Track when form was loaded
+  const inputId = useId();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setMessage('');
+    setStatus(null);
 
     try {
       const response = await fetch('/api/subscribe', {
@@ -25,48 +35,105 @@ export default function SubscribeForm() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage('Successfully subscribed!');
+        setStatus({ ok: true, text: "You're subscribed. Talk soon." });
         setEmail('');
         setWebsite('');
       } else {
-        setMessage(data.error || 'Failed to subscribe');
+        setStatus({ ok: false, text: data.error || 'Failed to subscribe' });
       }
     } catch (error) {
-      setMessage('An error occurred. Please try again.');
+      setStatus({ ok: false, text: 'An error occurred. Please try again.' });
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <div className="blog-subscribe-snippet my-8">
-      <div className="bg-[var(--rich-black)] border border-[var(--border-color)] p-6">
-        <h4 className="text-xl text-white font-bebas tracking-wide mb-3">SUBSCRIBE</h4>
-        <p className="text-xs text-gray-400 leading-relaxed mb-4 font-light">Get my weekly tech trends.</p>
-        <form onSubmit={handleSubmit} className="space-y-2">
+  const honeypot = (
+    <input
+      type="text"
+      name="website"
+      value={website}
+      onChange={(e) => setWebsite(e.target.value)}
+      tabIndex={-1}
+      autoComplete="off"
+      style={{ position: 'absolute', left: '-9999px' }}
+      aria-hidden="true"
+    />
+  );
+
+  // role="status" so assistive tech announces the outcome; it was previously
+  // conveyed by colour alone.
+  const statusLine = status && (
+    <p
+      role="status"
+      className={`text-[10px] mt-2 ${variant === 'inline' ? 'text-center' : ''} ${
+        status.ok ? 'text-[var(--primary-mint)]' : 'text-red-400'
+      }`}
+    >
+      {status.text}
+    </p>
+  );
+
+  const inputClass =
+    'w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white transition-all font-montserrat disabled:opacity-50';
+
+  if (variant === 'inline') {
+    return (
+      <div className="blog-subscribe-snippet-inline my-8 flex flex-col items-center">
+        <form onSubmit={handleSubmit} className="flex items-center w-full max-w-md">
+          <label htmlFor={inputId} className="sr-only">
+            Email address
+          </label>
           <input
+            id={inputId}
             type="email"
             name="email"
             autoComplete="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat disabled:opacity-50"
+            className={`${inputClass} border-r-0 h-12`}
             required
             disabled={loading}
           />
-          {/* Honeypot field */}
+          {honeypot}
+          <button
+            type="submit"
+            disabled={loading}
+            className="h-12 px-6 bg-[var(--primary-mint)] hover:bg-white text-black font-bold transition-all tracking-[0.15em] uppercase text-xs disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap border border-[var(--border-color)] border-l-0 flex items-center justify-center gap-2"
+          >
+            <Mail className="w-4 h-4" />
+            {loading ? 'Subscribing...' : 'Join'}
+          </button>
+        </form>
+        {statusLine}
+      </div>
+    );
+  }
+
+  return (
+    <div className="blog-subscribe-snippet">
+      <div className="bg-[var(--rich-black)] border border-[var(--border-color)] p-6">
+        <h4 className="text-xl text-white font-bebas tracking-wide mb-3">SUBSCRIBE</h4>
+        <p className="text-xs text-[var(--text-meta)] leading-relaxed mb-4 font-light">{PITCH}</p>
+        <form onSubmit={handleSubmit} className="space-y-2">
+          <label htmlFor={inputId} className="sr-only">
+            Email address
+          </label>
           <input
-            type="text"
-            name="website"
-            value={website}
-            onChange={(e) => setWebsite(e.target.value)}
-            tabIndex={-1}
-            autoComplete="off"
-            style={{ position: 'absolute', left: '-9999px' }}
-            aria-hidden="true"
+            id={inputId}
+            type="email"
+            name="email"
+            autoComplete="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className={inputClass}
+            required
+            disabled={loading}
           />
-          <button 
+          {honeypot}
+          <button
             type="submit"
             disabled={loading}
             className="w-full bg-[var(--primary-mint)] hover:bg-white text-black font-bold py-4 transition-all tracking-[0.15em] uppercase text-xs disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
@@ -74,14 +141,9 @@ export default function SubscribeForm() {
             <Mail className="w-4 h-4" />
             {loading ? 'Subscribing...' : 'Join'}
           </button>
-          {message && (
-            <p className={`text-[10px] mt-2 ${message.includes('Success') ? 'text-[var(--primary-mint)]' : 'text-red-400'}`}>
-              {message}
-            </p>
-          )}
+          {statusLine}
         </form>
       </div>
     </div>
   );
 }
-

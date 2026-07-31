@@ -4,14 +4,17 @@ import { Quote, MapPin, BookOpen, Play } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import { createMetadata } from '@/lib/metadata';
 import { getBlogs, getVideos } from '@/lib/data';
-import { yearsOfBuilding } from '@/lib/site';
+import { yearsOfBuilding, yearsOfHiring } from '@/lib/site';
+import { VENTURE_COUNT } from '@/lib/ventures';
 import type { Metadata } from 'next';
 
 // Rendered per request — see app/journal/page.tsx for why ISR is not used.
 export const dynamic = 'force-dynamic';
 
+// No year count in the description on purpose — `metadata` is evaluated once
+// at module load, so a hardcoded "11 years" would go stale between deploys.
 export const metadata: Metadata = createMetadata({
-  description: 'Engjell Rraklli - Albanian tech entrepreneur building scalable technology in Tirana. Software development, startups, and tech innovation in Albania.',
+  description: 'Albanian tech entrepreneur building world-class software in Tirana — and thousands of job opportunities for young Albanians. Software development, startups, and tech innovation in Albania.',
   path: '/',
 });
 
@@ -77,11 +80,11 @@ export default async function Home() {
       <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
-          <div className="flex items-center gap-3 text-xs text-gray-400">
+          <div className="flex items-center gap-3 text-xs text-[var(--text-meta)]">
             <span className="text-[var(--primary-mint)] font-bold">/</span>
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">Home</span>
           </div>
-          <div className="font-montserrat text-[10px] text-gray-400 font-bold tracking-[0.15em] hidden md:block">
+          <div className="font-montserrat text-[10px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
             IF IT WAS EASY, EVERYONE WOULD DO IT.
           </div>
         </div>
@@ -105,7 +108,9 @@ export default async function Home() {
               
               <div className="absolute bottom-0 left-0 p-8 md:p-16 z-10 w-full">
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="bg-[var(--primary-mint)] text-[var(--rich-black)] text-[10px] font-bold px-3 py-1 uppercase tracking-widest inline-block">Founder's Note</span>
+                  {/* Was "Founder's Note", which described nothing on this
+                      screen — the note lives in the bio block further down. */}
+                  <span className="bg-[var(--primary-mint)] text-[var(--rich-black)] text-[10px] font-bold px-3 py-1 uppercase tracking-widest inline-block">Tirana, Albania</span>
                 </div>
                 <h1 className="text-6xl md:text-8xl text-white font-bebas leading-[0.85] tracking-tight max-w-4xl">
                   BUILDING THE<br />
@@ -113,7 +118,7 @@ export default async function Home() {
                   IN ALBANIA.
                 </h1>
                 <div className="mt-6 flex flex-wrap items-center gap-3">
-                  <Link href="/media" className="px-6 py-3 bg-[var(--primary-mint)] text-[var(--rich-black)] hover:bg-white text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center gap-2">
+                  <Link href="/podcast" className="px-6 py-3 bg-[var(--primary-mint)] text-[var(--rich-black)] hover:bg-white text-[10px] font-bold uppercase tracking-widest transition-colors flex items-center gap-2">
                     <Play className="w-4 h-4 fill-current" />
                     Listen to the Podcast
                   </Link>
@@ -146,8 +151,14 @@ export default async function Home() {
                 <div>
                   <Quote className="w-8 h-8 text-[var(--primary-mint)] mb-4 opacity-50" />
                   <h2 className="text-white font-bebas text-3xl mb-4 tracking-wide">Why I Build in Tirana</h2>
-                  <p className="text-gray-300 text-sm leading-relaxed font-light max-w-2xl">
+                  <p className="text-[var(--text-muted)] text-sm leading-relaxed font-light max-w-2xl">
                     My mission is to empower young Albanian talent to build their future at home. By creating an ecosystem of world-class technology and software development in Tirana, I am providing the mentorship, structure, and opportunities the next generation needs to succeed without leaving the country.
+                  </p>
+                  {/* Evidence for the claim directly above it. The mission was
+                      asserted on four pages and demonstrated on none. */}
+                  <p className="mt-5 pl-4 border-l-2 border-[var(--primary-mint)] text-white text-sm font-medium leading-relaxed max-w-2xl">
+                    <span className="font-bebas text-2xl tracking-wide text-[var(--primary-mint)] mr-2">THOUSANDS</span>
+                    of job opportunities created for young Albanians over the past {yearsOfHiring()} years.
                   </p>
                 </div>
                 <div className="mt-8 flex items-center gap-4">
@@ -159,35 +170,51 @@ export default async function Home() {
               </div>
             </div>
 
-            {/* Metrics Strip */}
+            {/* Metrics Strip.
+                The counts double as the homepage's only body links to
+                /ventures, /podcast and /journal — previously the page
+                advertised "3 Active" ventures and an article count while
+                linking to neither section outside the footer. */}
             <div className="grid grid-cols-2 md:grid-cols-4 border-t border-b border-[var(--border-color)] bg-[var(--rich-black)]">
               <div className="p-6 border-r border-[var(--border-color)] text-center">
-                <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Experience</p>
+                <p className="text-[10px] text-[var(--text-meta)] uppercase tracking-widest mb-1">Experience</p>
                 <p className="text-3xl font-bebas text-white">{yearsOfBuilding()}+ Years</p>
               </div>
-              <div className="p-6 border-r border-[var(--border-color)] text-center">
-                <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Ventures</p>
-                <p className="text-3xl font-bebas text-white">3 Active</p>
-              </div>
+              <Link
+                href="/ventures"
+                className="p-6 border-r border-[var(--border-color)] text-center group hover:bg-[var(--content-bg)] transition-colors"
+              >
+                <p className="text-[10px] text-[var(--text-meta)] uppercase tracking-widest mb-1">Ventures</p>
+                <p className="text-3xl font-bebas text-white group-hover:text-[var(--primary-mint)] transition-colors">
+                  {VENTURE_COUNT} Active
+                </p>
+              </Link>
               {videoCount ? (
-                <div className="p-6 border-r border-[var(--border-color)] text-center">
-                  <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Podcast</p>
-                  <p className="text-3xl font-bebas text-white">{videoCount} Episodes</p>
-                </div>
+                <Link
+                  href="/podcast"
+                  className="p-6 border-r border-[var(--border-color)] text-center group hover:bg-[var(--content-bg)] transition-colors"
+                >
+                  <p className="text-[10px] text-[var(--text-meta)] uppercase tracking-widest mb-1">Podcast</p>
+                  <p className="text-3xl font-bebas text-white group-hover:text-[var(--primary-mint)] transition-colors">
+                    {videoCount} Episodes
+                  </p>
+                </Link>
               ) : (
                 <div className="p-6 border-r border-[var(--border-color)] text-center">
-                  <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Mission</p>
+                  <p className="text-[10px] text-[var(--text-meta)] uppercase tracking-widest mb-1">Mission</p>
                   <p className="text-3xl font-bebas text-white">Local Growth</p>
                 </div>
               )}
               {blogCount ? (
-                <div className="p-6 text-center">
-                  <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Journal</p>
-                  <p className="text-3xl font-bebas text-[var(--primary-mint)]">{blogCount} Articles</p>
-                </div>
+                <Link href="/journal" className="p-6 text-center group hover:bg-[var(--content-bg)] transition-colors">
+                  <p className="text-[10px] text-[var(--text-meta)] uppercase tracking-widest mb-1">Journal</p>
+                  <p className="text-3xl font-bebas text-[var(--primary-mint)] group-hover:text-white transition-colors">
+                    {blogCount} Articles
+                  </p>
+                </Link>
               ) : (
                 <div className="p-6 text-center">
-                  <p className="text-[10px] text-gray-400 uppercase tracking-widest mb-1">Status</p>
+                  <p className="text-[10px] text-[var(--text-meta)] uppercase tracking-widest mb-1">Status</p>
                   <p className="text-3xl font-bebas text-[var(--primary-mint)]">Building</p>
                 </div>
               )}

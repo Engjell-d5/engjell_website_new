@@ -45,6 +45,71 @@ export async function getBlogs(): Promise<Blog[]> {
   }));
 }
 
+export interface RelatedBlog {
+  id: string;
+  title: string;
+  slug: string;
+  category: string;
+  imageUrl: string;
+  publishedAt: string | null;
+}
+
+// Posts to show under "Keep reading" on an article page.
+//
+// Two things this deliberately does not do: it does not load every blog row
+// (the post page used to call getBlogs(), pulling the full `content` of every
+// article on every page view just to pick two), and it does not fall back to
+// "most recent" alone — same-category posts come first, which is both better
+// for the reader and better topical signal for search.
+export async function getRelatedBlogs(
+  slug: string,
+  category: string,
+  limit: number = 2
+): Promise<RelatedBlog[]> {
+  const select = {
+    id: true,
+    title: true,
+    slug: true,
+    category: true,
+    imageUrl: true,
+    publishedAt: true,
+  } as const;
+
+  const sameCategory = await prisma.blog.findMany({
+    where: { published: true, slug: { not: slug }, category },
+    // nulls last: Postgres sorts NULLs first on DESC, which would float a
+    // published-but-undated post to the top of "Keep reading".
+    orderBy: { publishedAt: { sort: 'desc', nulls: 'last' } },
+    take: limit,
+    select,
+  });
+
+  // Top up with the most recent posts from any category if this one is thin.
+  let results = sameCategory;
+  if (results.length < limit) {
+    const filler = await prisma.blog.findMany({
+      where: {
+        published: true,
+        slug: { not: slug },
+        id: { notIn: results.map((b) => b.id) },
+      },
+      orderBy: { publishedAt: { sort: 'desc', nulls: 'last' } },
+      take: limit - results.length,
+      select,
+    });
+    results = [...results, ...filler];
+  }
+
+  return results.map((blog) => ({
+    id: blog.id,
+    title: blog.title,
+    slug: blog.slug,
+    category: blog.category,
+    imageUrl: blog.imageUrl,
+    publishedAt: blog.publishedAt?.toISOString() || null,
+  }));
+}
+
 export async function getBlog(id: string): Promise<Blog | null> {
   const blog = await prisma.blog.findUnique({
     where: { id },

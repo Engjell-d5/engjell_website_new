@@ -1,27 +1,11 @@
 import Image from 'next/image';
-import { Briefcase, BrainCircuit, Cuboid, ArrowUpRight } from 'lucide-react';
+import { Briefcase, BrainCircuit, ArrowUpRight } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
 import { createMetadata } from '@/lib/metadata';
+import { VENTURES } from '@/lib/ventures';
 import type { Metadata } from 'next';
-
-const VENTURES = [
-  {
-    name: 'division5',
-    url: 'https://division5.co',
-    description: 'Software development services and staff augmentation.',
-  },
-  {
-    name: 'divisionAI',
-    url: 'https://divisionai.co',
-    description: 'Artificial intelligence solutions and AI-powered products.',
-  },
-  {
-    name: 'division3D',
-    url: 'https://division3d.co',
-    description: 'Immersive 3D experiences and design.',
-  },
-];
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 const FOUNDER = {
@@ -31,9 +15,15 @@ const FOUNDER = {
   url: siteUrl,
 } as const;
 
+const ICONS: Record<string, LucideIcon> = {
+  division5: Briefcase,
+  divisionAI: BrainCircuit,
+};
+
 export const metadata: Metadata = createMetadata({
-  title: 'division5, divisionAI & division3D',
-  description: 'Engjell Rraklli\'s tech ventures in Albania: division5 (software services), divisionAI (AI solutions), and division3D (3D design). Building scalable tech businesses from Tirana.',
+  title: 'division5 & divisionAI',
+  description:
+    "Engjell Rraklli's tech ventures in Albania: division5 (software development services) and divisionAI (AI solutions). Building scalable tech businesses from Tirana.",
   path: '/ventures',
 });
 
@@ -48,6 +38,7 @@ export default function Ventures() {
           data={{
             name: v.name,
             url: v.url,
+            // Same string the card renders, so schema and page never diverge.
             description: v.description,
             founder: FOUNDER,
           }}
@@ -56,11 +47,11 @@ export default function Ventures() {
       <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
-          <div className="flex items-center gap-3 text-xs text-gray-400">
+          <div className="flex items-center gap-3 text-xs text-[var(--text-meta)]">
             <span className="text-[var(--primary-mint)] font-bold">/</span>
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">Ventures</span>
           </div>
-          <div className="font-montserrat text-[10px] text-gray-400 font-bold tracking-[0.15em] hidden md:block">
+          <div className="font-montserrat text-[10px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
             YOU DON'T FAIL IF YOU NEVER GIVE UP.
           </div>
         </div>
@@ -76,105 +67,53 @@ export default function Ventures() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Venture 1: Division5 - Main/First */}
-              <a href="https://division5.co" target="_blank" rel="noopener noreferrer" className="group relative h-[300px] border border-[var(--border-color)] overflow-hidden hover:border-[var(--primary-mint)] transition-all md:col-span-2">
-                <Image
-                  src="/ventures-division5.jpg"
-                  alt="division5 — software development services and staff augmentation"
-                  fill
-                  priority
-                  sizes="(min-width: 768px) 50vw, 100vw"
-                  className="object-cover img-classic opacity-40"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[var(--rich-black)] via-[var(--rich-black)]/80 to-transparent z-10"></div>
-                
-                <div className="relative z-20 h-full flex flex-col justify-end p-8">
-                  <div className="flex justify-between items-end mb-4">
-                    <div className="w-12 h-12 border border-[var(--border-color)]/50 flex items-center justify-center bg-[var(--rich-black)]">
-                      <Briefcase className="w-6 h-6 text-white" />
-                    </div>
-                  </div>
-                  <h2 className="text-4xl text-white font-bebas mb-2">division5</h2>
-                  <p className="text-sm text-gray-400 mb-6 font-light border-l border-[var(--border-color)]/50 pl-3">Software development services and staff augmentation.</p>
-                  
-                  <div className="grid grid-cols-2 gap-4 border-t border-[var(--border-color)]/30 pt-4">
-                    <div>
-                      <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Role</p>
-                      <p className="text-xs text-white">Founder</p>
-                    </div>
-                    <div className="flex items-center gap-1 group-hover:text-[var(--primary-mint)] transition-colors">
-                      <p className="text-[10px] uppercase font-bold tracking-widest">Visit Division5</p>
-                      <ArrowUpRight className="w-3 h-3" />
-                    </div>
-                  </div>
-                </div>
-              </a>
+              {VENTURES.map((v, idx) => {
+                const Icon = ICONS[v.name] ?? Briefcase;
+                return (
+                  <a
+                    key={v.name}
+                    href={v.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group relative h-[300px] border border-[var(--border-color)] overflow-hidden hover:border-[var(--primary-mint)] transition-all"
+                  >
+                    <Image
+                      src={v.image}
+                      alt={`${v.name} — ${v.description.replace(/\.$/, '').toLowerCase()}`}
+                      fill
+                      priority={idx === 0}
+                      sizes="(min-width: 768px) 50vw, 100vw"
+                      className="object-cover img-classic opacity-40"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[var(--rich-black)] via-[var(--rich-black)]/80 to-transparent z-10"></div>
 
-              {/* Venture 2: DivisionAI */}
-              <a href="https://divisionai.co" target="_blank" rel="noopener noreferrer" className="group relative h-[300px] border border-[var(--border-color)] overflow-hidden hover:border-[var(--primary-mint)] transition-all">
-                <Image
-                  src="/ventures-divisionai.jpg"
-                  alt="divisionAI — artificial intelligence solutions"
-                  fill
-                  sizes="(min-width: 768px) 50vw, 100vw"
-                  className="object-cover img-classic opacity-40"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[var(--rich-black)] via-[var(--rich-black)]/80 to-transparent z-10"></div>
-                
-                <div className="relative z-20 h-full flex flex-col justify-end p-8">
-                  <div className="flex justify-between items-end mb-4">
-                    <div className="w-12 h-12 border border-[var(--border-color)]/50 flex items-center justify-center bg-[var(--rich-black)]">
-                      <BrainCircuit className="w-6 h-6 text-white" />
-                    </div>
-                  </div>
-                  <h2 className="text-4xl text-white font-bebas mb-2">divisionAI</h2>
-                  <p className="text-sm text-gray-400 mb-6 font-light border-l border-[var(--border-color)]/50 pl-3">Artificial Intelligence solutions.</p>
-                  
-                  <div className="grid grid-cols-2 gap-4 border-t border-[var(--border-color)]/30 pt-4">
-                    <div>
-                      <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Role</p>
-                      <p className="text-xs text-white">Founder</p>
-                    </div>
-                    <div className="flex items-center gap-1 group-hover:text-[var(--primary-mint)] transition-colors">
-                      <p className="text-[10px] uppercase font-bold tracking-widest">Visit DivisionAI</p>
-                      <ArrowUpRight className="w-3 h-3" />
-                    </div>
-                  </div>
-                </div>
-              </a>
+                    <div className="relative z-20 h-full flex flex-col justify-end p-8">
+                      <div className="flex justify-between items-end mb-4">
+                        <div className="w-12 h-12 border border-[var(--border-color)]/50 flex items-center justify-center bg-[var(--rich-black)]">
+                          <Icon className="w-6 h-6 text-white" />
+                        </div>
+                      </div>
+                      <h2 className="text-4xl text-white font-bebas mb-2">{v.name}</h2>
+                      <p className="text-sm text-[var(--text-meta)] mb-6 font-light border-l border-[var(--border-color)]/50 pl-3">
+                        {v.description}
+                      </p>
 
-              {/* Venture 3: Division3D */}
-              <a href="https://division3d.co" target="_blank" rel="noopener noreferrer" className="group relative h-[300px] border border-[var(--border-color)] overflow-hidden hover:border-[var(--primary-mint)] transition-all">
-                <Image
-                  src="/ventures-division3d.jpg"
-                  alt="division3D — immersive 3D experiences and design"
-                  fill
-                  sizes="(min-width: 768px) 50vw, 100vw"
-                  className="object-cover img-classic opacity-40"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[var(--rich-black)] via-[var(--rich-black)]/80 to-transparent z-10"></div>
-                
-                <div className="relative z-20 h-full flex flex-col justify-end p-8">
-                  <div className="flex justify-between items-end mb-4">
-                    <div className="w-12 h-12 border border-[var(--border-color)]/50 flex items-center justify-center bg-[var(--rich-black)]">
-                      <Cuboid className="w-6 h-6 text-white" />
+                      <div className="grid grid-cols-2 gap-4 border-t border-[var(--border-color)]/30 pt-4">
+                        <div>
+                          <p className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest">Role</p>
+                          <p className="text-xs text-white">{v.role}</p>
+                        </div>
+                        {/* Brand names keep their own casing — this label used
+                            to title-case them ("Visit Division5"). */}
+                        <div className="flex items-center gap-1 text-[var(--text-meta)] group-hover:text-[var(--primary-mint)] transition-colors">
+                          <p className="text-[10px] uppercase font-bold tracking-widest">Visit {v.name}</p>
+                          <ArrowUpRight className="w-3 h-3" />
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <h2 className="text-4xl text-white font-bebas mb-2">division3D</h2>
-                  <p className="text-sm text-gray-400 mb-6 font-light border-l border-[var(--border-color)]/50 pl-3">Immersive 3D experiences and design.</p>
-                  
-                  <div className="grid grid-cols-2 gap-4 border-t border-[var(--border-color)]/30 pt-4">
-                    <div>
-                      <p className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Role</p>
-                      <p className="text-xs text-white">Founder</p>
-                    </div>
-                    <div className="flex items-center gap-1 group-hover:text-[var(--primary-mint)] transition-colors">
-                      <p className="text-[10px] uppercase font-bold tracking-widest">Visit Division3D</p>
-                      <ArrowUpRight className="w-3 h-3" />
-                    </div>
-                  </div>
-                </div>
-              </a>
+                  </a>
+                );
+              })}
             </div>
           </section>
         </div>
@@ -183,4 +122,3 @@ export default function Ventures() {
     </div>
   );
 }
-

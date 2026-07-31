@@ -12,7 +12,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 
   // Static routes — omit lastModified so the timestamp doesn't churn on every build.
-  // For /journal and /media we derive lastModified from real content below.
+  // For /journal and /podcast we derive lastModified from real content below.
   const staticRoutes: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
@@ -43,7 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return [
       ...staticRoutes,
       { url: `${baseUrl}/journal`, changeFrequency: 'daily', priority: 0.9 },
-      { url: `${baseUrl}/media`, changeFrequency: 'weekly', priority: 0.8 },
+      { url: `${baseUrl}/podcast`, changeFrequency: 'weekly', priority: 0.8 },
     ];
   }
 
@@ -58,13 +58,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
 
-    // Most-recent blog timestamp drives lastModified for /journal and /media listings
+    // Most-recent blog timestamp drives lastModified for /journal and /podcast listings
     const latestBlogDate = publishedBlogs.reduce<Date | undefined>((latest, b: any) => {
       const candidate = b.updatedAt ? new Date(b.updatedAt) : b.publishedAt ? new Date(b.publishedAt) : null;
       if (!candidate) return latest;
       if (!latest || candidate > latest) return candidate;
       return latest;
     }, undefined);
+
+    // /journal is paginated at 10 posts per page (see app/journal/page.tsx).
+    // Each page canonicalises to itself, so every one belongs in the sitemap —
+    // otherwise older posts are only reachable by crawling forward.
+    const POSTS_PER_PAGE = 10;
+    const journalPages = Math.max(1, Math.ceil(publishedBlogs.length / POSTS_PER_PAGE));
 
     const dynamicListingRoutes: MetadataRoute.Sitemap = [
       {
@@ -73,8 +79,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: 'daily',
         priority: 0.9,
       },
+      ...Array.from({ length: journalPages - 1 }, (_, i) => ({
+        url: `${baseUrl}/journal?page=${i + 2}`,
+        lastModified: latestBlogDate,
+        changeFrequency: 'weekly' as const,
+        priority: 0.5,
+      })),
       {
-        url: `${baseUrl}/media`,
+        url: `${baseUrl}/podcast`,
         changeFrequency: 'weekly',
         priority: 0.8,
       },
@@ -106,7 +118,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return [
       ...staticRoutes,
       { url: `${baseUrl}/journal`, changeFrequency: 'daily', priority: 0.9 },
-      { url: `${baseUrl}/media`, changeFrequency: 'weekly', priority: 0.8 },
+      { url: `${baseUrl}/podcast`, changeFrequency: 'weekly', priority: 0.8 },
     ];
   }
 }

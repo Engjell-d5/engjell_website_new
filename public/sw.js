@@ -29,8 +29,8 @@ self.addEventListener('push', (event) => {
   let notificationData = {
     title: 'Admin Notification',
     body: 'You have a new notification',
-    icon: '/icon-192.png',
-    badge: '/icon-192.png',
+    icon: '/android-launchericon-192-192.png',
+    badge: '/android-launchericon-192-192.png',
     tag: 'admin-notification',
     requireInteraction: false,
     data: {},

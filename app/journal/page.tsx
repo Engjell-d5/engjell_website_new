@@ -1,12 +1,12 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import Sidebar from '@/components/Sidebar';
+import BlogCard from '@/components/BlogCard';
+import Pagination from '@/components/Pagination';
 import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
 import { createMetadata } from '@/lib/metadata';
 import { getBlogs } from '@/lib/data';
 import { toCategorySlug } from '@/lib/category-slug';
-import { readingTimeMinutes } from '@/lib/reading-time';
 
 // Rendered per request. ISR (revalidate) is wedged in the deployed
 // standalone/proxy environment: pages prerendered empty at build (no
@@ -14,26 +14,33 @@ import { readingTimeMinutes } from '@/lib/reading-time';
 // Force-dynamic matches the previously-deployed, known-good behavior.
 export const dynamic = 'force-dynamic';
 
-export const metadata: Metadata = createMetadata({
-  title: 'Journal — Field Notes on Building Tech',
-  description: 'Engjell Rraklli\'s field notes on building tech ventures, scaling startups, and software development in Albania. Articles on entrepreneurship and leadership.',
-  path: '/journal',
-});
+const POSTS_PER_PAGE = 10;
 
-const formatDate = (dateString: string | null) => {
-  if (!dateString) return '';
-  return new Date(dateString).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
+type SearchParams = { page?: string };
+
+function parsePage(searchParams?: SearchParams): number {
+  const raw = Number(searchParams?.page);
+  return Number.isFinite(raw) && raw > 1 ? Math.floor(raw) : 1;
+}
+
+export async function generateMetadata(
+  { searchParams }: { searchParams?: SearchParams }
+): Promise<Metadata> {
+  const page = parsePage(searchParams);
+  // Each paginated page canonicalises to itself (rel=prev/next is no longer
+  // used by Google); only page 1 owns the bare /journal URL.
+  return createMetadata({
+    title: page > 1 ? `Journal — Page ${page}` : 'Journal — Field Notes on Building Tech',
+    description:
+      "Engjell Rraklli's field notes on building tech ventures, scaling startups, and software development in Albania. Articles on entrepreneurship and leadership.",
+    path: page > 1 ? `/journal?page=${page}` : '/journal',
   });
-};
+}
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 
 async function loadBlogsSafe() {
-  // Build runs without DATABASE_URL; treat as empty in that case and rely on
-  // ISR to populate the page on the first real request.
+  // Build runs without DATABASE_URL; treat as empty in that case.
   if (!process.env.DATABASE_URL) return [];
   try {
     return await getBlogs();
@@ -43,7 +50,7 @@ async function loadBlogsSafe() {
   }
 }
 
-export default async function Journal() {
+export default async function Journal({ searchParams }: { searchParams?: SearchParams }) {
   const all = await loadBlogsSafe();
   const blogs = all
     .filter((b) => b.published)
@@ -53,7 +60,12 @@ export default async function Journal() {
       return dateB - dateA;
     });
 
+  const totalPages = Math.max(1, Math.ceil(blogs.length / POSTS_PER_PAGE));
+  const page = Math.min(parsePage(searchParams), totalPages);
+  const pageBlogs = blogs.slice((page - 1) * POSTS_PER_PAGE, page * POSTS_PER_PAGE);
+
   // Distinct categories for the topic-pill nav, each linking to its own category page.
+  // Built from every post, not just this page, so the nav is stable across pages.
   // Deduplicate by slug so two categories that slugify to the same value (rare) merge into one pill.
   const categories = Array.from(
     new Map(
@@ -63,20 +75,17 @@ export default async function Journal() {
     ).entries()
   ).map(([slug, name]) => ({ slug, name }));
 
-  // "Read next" picks: top 3 most recent posts not the very first card on the page
-  const readNext = blogs.slice(1, 4);
-
   const collectionData = {
     name: 'Engjell Rraklli — Field Notes',
     description: 'Articles on tech entrepreneurship, software development, and building startups in Albania.',
-    url: `${siteUrl}/journal`,
+    url: page > 1 ? `${siteUrl}/journal?page=${page}` : `${siteUrl}/journal`,
     inLanguage: 'en',
     isPartOf: { '@type': 'WebSite', url: siteUrl, name: 'Engjell Rraklli' },
     mainEntity: {
       '@type': 'ItemList',
-      itemListElement: blogs.slice(0, 20).map((b, i) => ({
+      itemListElement: pageBlogs.map((b, i) => ({
         '@type': 'ListItem',
-        position: i + 1,
+        position: (page - 1) * POSTS_PER_PAGE + i + 1,
         url: `${siteUrl}/journal/${b.slug}`,
         name: b.title,
       })),
@@ -90,11 +99,11 @@ export default async function Journal() {
       <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
-          <div className="flex items-center gap-3 text-xs text-gray-400">
+          <div className="flex items-center gap-3 text-xs text-[var(--text-meta)]">
             <span className="text-[var(--primary-mint)] font-bold">/</span>
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">Journal</span>
           </div>
-          <div className="font-montserrat text-[10px] text-gray-400 font-bold tracking-[0.15em] hidden md:block">
+          <div className="font-montserrat text-[10px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
             A KIND WORLD IS A BETTER WORLD.
           </div>
         </div>
@@ -106,95 +115,44 @@ export default async function Journal() {
               <div>
                 <span className="page-label mb-3 block">Journal</span>
                 <h1 className="text-5xl md:text-6xl text-white font-bebas">FIELD NOTES</h1>
+                {blogs.length > 0 && (
+                  <p className="text-xs text-[var(--text-meta)] mt-2 uppercase tracking-widest">
+                    {blogs.length} article{blogs.length === 1 ? '' : 's'}
+                    {totalPages > 1 ? ` · Page ${page} of ${totalPages}` : ''}
+                  </p>
+                )}
               </div>
             </div>
 
             {blogs.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-gray-400">No blog posts yet. Check back soon!</p>
+                <p className="text-[var(--text-muted)]">No blog posts yet. Check back soon!</p>
               </div>
             ) : (
               <>
-              {categories.length > 1 && (
-                <nav aria-label="Browse by topic" className="mb-8">
-                  <h2 className="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-3">Browse by topic</h2>
-                  <ul className="flex flex-wrap gap-2">
-                    {categories.map(({ slug, name }) => (
-                      <li key={slug}>
-                        <Link
-                          href={`/journal/category/${slug}`}
-                          className="text-[10px] text-gray-300 hover:text-[var(--primary-mint)] uppercase tracking-widest border border-[var(--border-color)] px-3 py-1 transition-colors"
-                        >
-                          {name}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </nav>
-              )}
-              <div className="grid gap-6">
-                {blogs.map((blog, idx) => (
-                  <article key={blog.id}>
-                    <Link
-                      href={`/journal/${blog.slug}`}
-                      className="p-6 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-all cursor-pointer group flex flex-col md:flex-row gap-8"
-                    >
-                      <div className="w-full md:w-56 h-36 bg-black shrink-0 overflow-hidden border border-[var(--border-color)]/30 relative">
-                        <Image
-                          src={blog.imageUrl}
-                          alt={`${blog.title} - ${blog.category} article`}
-                          fill
-                          sizes="(min-width: 768px) 224px, 100vw"
-                          className="object-cover img-classic"
-                          priority={idx === 0}
-                        />
-                      </div>
-                      <div className="flex-1 py-1">
-                        <div className="flex items-center gap-3 mb-3">
-                          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest border border-[var(--border-color)] px-2 py-0.5">
-                            {blog.category}
-                          </span>
-                          {blog.publishedAt && (
-                            <time
-                              dateTime={new Date(blog.publishedAt).toISOString()}
-                              className="text-[10px] text-gray-400 uppercase tracking-widest"
-                            >
-                              {formatDate(blog.publishedAt)}
-                            </time>
-                          )}
-                          <span className="text-[10px] text-gray-400 uppercase tracking-widest">
-                            {readingTimeMinutes(blog.content || '')} min read
-                          </span>
-                        </div>
-                        <h2 className="text-3xl text-white font-bebas mb-3 group-hover:text-[var(--primary-mint)] transition-colors">
-                          {blog.title}
-                        </h2>
-                        <p className="text-sm text-gray-400 leading-relaxed font-light">
-                          {blog.excerpt}
-                        </p>
-                      </div>
-                    </Link>
-                  </article>
-                ))}
-              </div>
-              {readNext.length > 0 && (
-                <aside className="mt-16 pt-8 border-t border-[var(--border-color)]">
-                  <h2 className="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-4">Read next</h2>
-                  <ul className="grid gap-2 md:grid-cols-3">
-                    {readNext.map((b) => (
-                      <li key={b.id}>
-                        <Link
-                          href={`/journal/${b.slug}`}
-                          className="block p-4 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-all"
-                        >
-                          <span className="text-[10px] text-gray-400 uppercase tracking-widest block mb-2">{b.category}</span>
-                          <span className="text-sm text-white font-medium leading-snug block">{b.title}</span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </aside>
-              )}
+                {categories.length > 1 && (
+                  <nav aria-label="Browse by topic" className="mb-8">
+                    <h2 className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-3">Browse by topic</h2>
+                    <ul className="flex flex-wrap gap-2">
+                      {categories.map(({ slug, name }) => (
+                        <li key={slug}>
+                          <Link
+                            href={`/journal/category/${slug}`}
+                            className="text-[10px] text-[var(--text-muted)] hover:text-[var(--primary-mint)] uppercase tracking-widest border border-[var(--border-color)] px-3 py-1 transition-colors"
+                          >
+                            {name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </nav>
+                )}
+                <div className="grid gap-6">
+                  {pageBlogs.map((blog, idx) => (
+                    <BlogCard key={blog.id} blog={blog} priority={page === 1 && idx === 0} />
+                  ))}
+                </div>
+                <Pagination basePath="/journal" page={page} totalPages={totalPages} />
               </>
             )}
           </section>

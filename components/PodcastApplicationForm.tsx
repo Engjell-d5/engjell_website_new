@@ -85,7 +85,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="name" className="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-1 block">
+          <label htmlFor="name" className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-1 block">
             Name
           </label>
           <input
@@ -102,7 +102,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         </div>
 
         <div>
-          <label htmlFor="email" className="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-1 block">
+          <label htmlFor="email" className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-1 block">
             Email
           </label>
           <input
@@ -119,8 +119,11 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         </div>
 
         <div>
-          <label htmlFor="about" className="block text-xs text-gray-400 mb-2 uppercase tracking-widest">
-            Tell me about yourself *
+          {/* Matches every other label in this form; it was the only one at a
+              different size, and the only one with an asterisk even though all
+              eight fields are required. */}
+          <label htmlFor="about" className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-1 block">
+            Tell me about yourself
           </label>
           <textarea
             id="about"
@@ -135,7 +138,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         </div>
 
         <div>
-          <label htmlFor="businesses" className="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-1 block">
+          <label htmlFor="businesses" className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-1 block">
             Your businesses
           </label>
           <textarea
@@ -151,7 +154,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         </div>
 
         <div>
-          <label htmlFor="industry" className="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-1 block">
+          <label htmlFor="industry" className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-1 block">
             Industry
           </label>
           <input
@@ -167,7 +170,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         </div>
 
         <div>
-          <label htmlFor="vision" className="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-1 block">
+          <label htmlFor="vision" className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-1 block">
             Your vision
           </label>
           <textarea
@@ -183,7 +186,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         </div>
 
         <div>
-          <label htmlFor="biggestChallenge" className="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-1 block">
+          <label htmlFor="biggestChallenge" className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-1 block">
             Your biggest challenge
           </label>
           <textarea
@@ -199,7 +202,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         </div>
 
         <div>
-          <label htmlFor="whyPodcast" className="text-[10px] text-gray-400 uppercase font-bold tracking-widest mb-1 block">
+          <label htmlFor="whyPodcast" className="text-[10px] text-[var(--text-meta)] uppercase font-bold tracking-widest mb-1 block">
             Why do you want to be on the podcast?
           </label>
           <textarea
@@ -235,7 +238,10 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
           aria-hidden="true"
         />
         {message && (
-          <p className={`text-sm mt-2 ${message.includes('success') ? 'text-[var(--primary-mint)]' : 'text-red-400'}`}>
+          <p
+            role="status"
+            className={`text-sm mt-2 ${message.includes('success') ? 'text-[var(--primary-mint)]' : 'text-red-400'}`}
+          >
             {message}
           </p>
         )}

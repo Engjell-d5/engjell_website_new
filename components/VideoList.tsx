@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { Play, ChevronDown } from 'lucide-react';
+import { formatDateShort, formatDuration } from '@/lib/format';
 
 interface YouTubeVideo {
   id: string;
@@ -22,41 +23,15 @@ interface VideoListProps {
   videos: YouTubeVideo[];
 }
 
-const formatDuration = (duration: string): string => {
-  const match = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
-  if (!match) return '0:00';
-  const hours = parseInt(match[1] || '0');
-  const minutes = parseInt(match[2] || '0');
-  const seconds = parseInt(match[3] || '0');
-  if (hours > 0) {
-    return `${hours}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-  }
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
-};
-
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric',
-  });
-};
-
 export default function VideoList({ videos }: VideoListProps) {
   const [videosToShow, setVideosToShow] = useState(3);
-  const [loadingMore, setLoadingMore] = useState(false);
 
   const nextVideos = videos.slice(0, videosToShow);
   const hasMoreVideos = videos.length > videosToShow;
-  
-  const loadMoreVideos = () => {
-    setLoadingMore(true);
-    // Simulate a brief loading state for better UX
-    setTimeout(() => {
-      setVideosToShow(prev => prev + 3);
-      setLoadingMore(false);
-    }, 300);
-  };
+
+  // The full list is already in memory — reveal the next batch immediately.
+  // This used to fake a 300ms spinner, which only delayed the content.
+  const loadMoreVideos = () => setVideosToShow(prev => prev + 3);
 
   if (videos.length === 0) {
     return null;
@@ -91,24 +66,15 @@ export default function VideoList({ videos }: VideoListProps) {
               <h4 className="text-xs sm:text-sm text-white font-bold leading-tight group-hover:text-[var(--primary-mint)] transition-colors line-clamp-2 break-words">
                 {video.title}
               </h4>
-              <p className="text-[8px] sm:text-[10px] text-gray-500 mt-1 break-words">
-                {formatDuration(video.duration)} • <time dateTime={new Date(video.publishedAt).toISOString()}>{formatDate(video.publishedAt)}</time>
+              {/* 10px floor: the mobile size here was 8px, below the point
+                  where this face stays legible at arm's length. */}
+              <p className="text-[10px] text-[var(--text-meta)] mt-1 break-words">
+                {formatDuration(video.duration)} • <time dateTime={new Date(video.publishedAt).toISOString()}>{formatDateShort(video.publishedAt)}</time>
               </p>
             </a>
           ))}
         </div>
-        {loadingMore && (
-          <div className="mt-6 md:mt-8 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="animate-pulse">
-                <div className="aspect-video bg-gray-800 border border-[var(--border-color)] mb-2 rounded-none"></div>
-                <div className="h-4 w-full bg-gray-800 rounded-none mb-1"></div>
-                <div className="h-3 w-24 bg-gray-800 rounded-none"></div>
-              </div>
-            ))}
-          </div>
-        )}
-        {hasMoreVideos && !loadingMore && (
+        {hasMoreVideos && (
           <div className="mt-6 md:mt-8 flex justify-center">
             <button
               onClick={loadMoreVideos}

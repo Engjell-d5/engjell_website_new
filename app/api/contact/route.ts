@@ -8,15 +8,21 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { name, email, message, website, formStartTime } = body;
 
-    // Spam protection check
-    const spamCheck = checkSpam(request, body, formStartTime);
-    if (spamCheck.isSpam) {
-      console.warn('Spam detected in contact form:', spamCheck.reason);
-      // Return success to avoid revealing spam detection
-      return NextResponse.json({ 
+    const verdict = checkSpam(request, body, formStartTime, 'contact');
+    if (verdict.action === 'drop') {
+      console.warn('Spam detected in contact form:', verdict.reason);
+      // Answer success so bots learn nothing about the filter.
+      return NextResponse.json({
         success: true,
         message: 'Message sent successfully!'
       });
+    }
+    if (verdict.action === 'rate-limited') {
+      // A real person submitting too fast must be told, not silently dropped.
+      return NextResponse.json(
+        { error: 'Too many messages from this connection. Please try again shortly, or email info@engjellrraklli.com directly.' },
+        { status: 429, headers: { 'Retry-After': String(verdict.retryAfterSeconds) } }
+      );
     }
 
     // Validate required fields
@@ -41,7 +47,7 @@ export async function POST(request: NextRequest) {
       message: message.trim(),
     });
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
       message: 'Message sent successfully!',
       contactMessage: {

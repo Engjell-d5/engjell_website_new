@@ -49,11 +49,11 @@ export default function Contact() {
       <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
-          <div className="flex items-center gap-3 text-xs text-gray-400">
+          <div className="flex items-center gap-3 text-xs text-[var(--text-meta)]">
             <span className="text-[var(--primary-mint)] font-bold">/</span>
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">Contact</span>
           </div>
-          <div className="font-montserrat text-[10px] text-gray-400 font-bold tracking-[0.15em] hidden md:block">
+          <div className="font-montserrat text-[10px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
             WISH FOR OTHERS WHAT YOU WISH FOR YOURSELF.
           </div>
         </div>
@@ -67,7 +67,7 @@ export default function Contact() {
                 <h1 className="text-5xl md:text-6xl text-white font-bebas mb-6">LET'S TALK</h1>
                 <p className="text-sm text-[var(--primary-mint)] font-bold uppercase tracking-widest mb-6">Speaker, Builder, Consultant</p>
                 
-                <div className="prose prose-invert max-w-none text-gray-300 font-light text-sm leading-7">
+                <div className="prose prose-invert max-w-none text-[var(--text-muted)] font-light text-sm leading-7">
                   <p className="mb-6">
                     Open for speaking engagements, technical consulting, and partnership opportunities. I'm passionate about the entrepreneurial potential of Albania and the Balkans.
                   </p>

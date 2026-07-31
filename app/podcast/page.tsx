@@ -14,7 +14,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = createMetadata({
   title: 'Podcast & Talks — The Conversation',
   description: 'Watch Engjell Rraklli\'s podcast episodes, talks, and video conversations on building tech businesses, leadership, and entrepreneurship in Albania.',
-  path: '/media',
+  path: '/podcast',
 });
 
 interface YouTubeVideo {
@@ -37,19 +37,21 @@ async function loadVideosSafe() {
   try {
     return await getVideos(false);
   } catch (err) {
-    console.error('[media] getVideos failed; falling back to empty list:', err);
+    console.error('[podcast] getVideos failed; falling back to empty list:', err);
     return [];
   }
 }
 
-export default async function Media() {
+export default async function Podcast() {
   // Fetch videos server-side
   const allVideos = await loadVideosSafe();
 
   // Get featured video (first video is featured, as returned by API sorted by featured first)
   const featuredVideo = allVideos.find(v => v.featured) || allVideos[0];
-  // Get other videos (excluding featured)
-  const otherVideos = allVideos.filter(v => !v.featured || v.id !== featuredVideo?.id);
+  // Everything except the hero. Compare by id only: when no video carries the
+  // `featured` flag the hero falls back to allVideos[0], and a `!v.featured`
+  // test would let that same video through and render it twice.
+  const otherVideos = allVideos.filter(v => v.id !== featuredVideo?.id);
 
   // Build VideoObject schema for the visible videos (featured + up to 9 others)
   const schemaVideos = [featuredVideo, ...otherVideos.slice(0, 9)].filter(Boolean) as YouTubeVideo[];
@@ -88,7 +90,7 @@ export default async function Media() {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-      <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Podcast', url: '/media' }]} />
+      <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Podcast', url: '/podcast' }]} />
       {itemListData && <StructuredData type="ItemList" data={itemListData} />}
       {videoObjectSchema.length > 0 && (
         <script
@@ -100,12 +102,12 @@ export default async function Media() {
       <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh] min-w-0">
         {/* Breadcrumbs / Top Bar */}
         <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-4 md:px-6 lg:px-8 shrink-0 bg-[var(--rich-black)]">
-          <div className="flex items-center gap-2 md:gap-3 text-xs text-gray-400 min-w-0">
+          <div className="flex items-center gap-2 md:gap-3 text-xs text-[var(--text-meta)] min-w-0">
             <span className="text-[var(--primary-mint)] font-bold flex-shrink-0">/</span>
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[10px] md:text-[11px] truncate">Podcast</span>
           </div>
-          <div className="font-montserrat text-[10px] md:text-[10px] text-gray-400 font-bold tracking-[0.15em] hidden lg:block whitespace-nowrap">
-            SMALL STEPS EVERYDAY BEATS 1 BIG STEP A YEAR.
+          <div className="font-montserrat text-[10px] md:text-[10px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden lg:block whitespace-nowrap">
+            SMALL STEPS EVERY DAY BEAT ONE BIG STEP A YEAR.
           </div>
         </div>
 
@@ -130,7 +132,7 @@ export default async function Media() {
 
             {allVideos.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-gray-400">No videos available. Check back soon!</p>
+                <p className="text-[var(--text-meta)]">No videos available. Check back soon!</p>
               </div>
             ) : featuredVideo ? (
               <a
@@ -174,7 +176,7 @@ export default async function Media() {
             <Quote className="w-8 h-8 md:w-12 md:h-12 text-[var(--primary-mint)]" />
           </div>
           <div className="relative z-10 min-w-0">
-            <p className="text-xs md:text-sm text-gray-300 leading-relaxed font-light italic pl-8 md:pl-10 pt-3 md:pt-4 break-words overflow-wrap-anywhere">
+            <p className="text-xs md:text-sm text-[var(--text-muted)] leading-relaxed font-light italic pl-8 md:pl-10 pt-3 md:pt-4 break-words overflow-wrap-anywhere">
               "I talk about how to run a business which is more human, which provides real value, and which scales without losing its soul. I am a big believer that businesses should love problems first and make a profit next."
             </p>
           </div>

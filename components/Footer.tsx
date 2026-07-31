@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Twitter, Linkedin, Youtube } from 'lucide-react';
+import { VENTURES } from '@/lib/ventures';
 
 export default function Footer() {
   return (
@@ -14,16 +15,16 @@ export default function Footer() {
             />
             <span className="text-xl text-white font-bebas tracking-widest">ENGJELL RRAKLLI</span>
           </div>
-          <p className="text-xs text-gray-500 max-w-sm leading-relaxed">
+          <p className="text-xs text-[var(--text-meta)] max-w-sm leading-relaxed">
             Building scalable tech and human potential in Tirana. Creative at heart, resilient by practice. Valuing discipline, persistence, kindness, and patience above all.
           </p>
         </div>
         <div>
           <h4 className="text-base text-white font-bold uppercase tracking-widest mb-4 font-bebas">Navigation</h4>
-          <ul className="space-y-2 text-xs text-gray-400">
+          <ul className="space-y-2 text-xs text-[var(--text-meta)]">
             <li><Link href="/" className="hover:text-[var(--primary-mint)] transition-colors">Home</Link></li>
             <li><Link href="/about" className="hover:text-[var(--primary-mint)] transition-colors">About</Link></li>
-            <li><Link href="/media" className="hover:text-[var(--primary-mint)] transition-colors">Podcast</Link></li>
+            <li><Link href="/podcast" className="hover:text-[var(--primary-mint)] transition-colors">Podcast</Link></li>
             <li><Link href="/journal" className="hover:text-[var(--primary-mint)] transition-colors">Journal</Link></li>
             <li><Link href="/ventures" className="hover:text-[var(--primary-mint)] transition-colors">Ventures</Link></li>
             <li><Link href="/contact" className="hover:text-[var(--primary-mint)] transition-colors">Contact</Link></li>
@@ -31,21 +32,25 @@ export default function Footer() {
         </div>
         <div>
           <h4 className="text-base text-white font-bold uppercase tracking-widest mb-4 font-bebas">My Ventures</h4>
-          <ul className="space-y-2 text-xs text-gray-400">
-            <li><a href="https://division5.co" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--primary-mint)] transition-colors">division5</a></li>
-            <li><a href="https://divisionai.co" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--primary-mint)] transition-colors">divisionAI</a></li>
-            <li><a href="https://division3d.co" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--primary-mint)] transition-colors">division3D</a></li>
+          <ul className="space-y-2 text-xs text-[var(--text-meta)]">
+            {VENTURES.map((v) => (
+              <li key={v.name}>
+                <a href={v.url} target="_blank" rel="noopener noreferrer" className="hover:text-[var(--primary-mint)] transition-colors">
+                  {v.name}
+                </a>
+              </li>
+            ))}
           </ul>
         </div>
         <div>
           <h4 className="text-base text-white font-bold uppercase tracking-widest mb-4 font-bebas">Connect</h4>
           <div className="flex gap-4">
-            <a href="https://x.com/RraklliEngjell" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[var(--primary-mint)] transition-colors"><Twitter className="w-5 h-5" /></a>
-            <a href="https://www.linkedin.com/in/engjell-rraklli-a8b20a68/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[var(--primary-mint)] transition-colors"><Linkedin className="w-5 h-5" /></a>
-            <a href="https://www.youtube.com/@engjellrraklli" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-[var(--primary-mint)] transition-colors"><Youtube className="w-5 h-5" /></a>
+            <a href="https://x.com/RraklliEngjell" target="_blank" rel="noopener noreferrer" className="text-[var(--text-meta)] hover:text-[var(--primary-mint)] transition-colors"><Twitter className="w-5 h-5" /></a>
+            <a href="https://www.linkedin.com/in/engjell-rraklli-a8b20a68/" target="_blank" rel="noopener noreferrer" className="text-[var(--text-meta)] hover:text-[var(--primary-mint)] transition-colors"><Linkedin className="w-5 h-5" /></a>
+            <a href="https://www.youtube.com/@engjellrraklli" target="_blank" rel="noopener noreferrer" className="text-[var(--text-meta)] hover:text-[var(--primary-mint)] transition-colors"><Youtube className="w-5 h-5" /></a>
           </div>
-          <p className="text-[10px] text-gray-600 mt-6">&copy; {new Date().getFullYear()} Engjell Rraklli. All rights reserved.</p>
-          <p className="text-[10px] text-gray-600 mt-2">
+          <p className="text-[10px] text-[var(--text-meta)] mt-6">&copy; {new Date().getFullYear()} Engjell Rraklli. All rights reserved.</p>
+          <p className="text-[10px] text-[var(--text-meta)] mt-2">
             Built by{' '}
             <a href="https://divisionai.co" target="_blank" rel="noopener noreferrer" className="text-[var(--primary-mint)] hover:underline">
               divisionAI

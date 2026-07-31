@@ -42,15 +42,20 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { email, website, formStartTime } = body;
 
-    // Spam protection check
-    const spamCheck = checkSpam(request, body, formStartTime);
-    if (spamCheck.isSpam) {
-      console.warn('Spam detected in subscribe form:', spamCheck.reason);
-      // Return success to avoid revealing spam detection
-      return NextResponse.json({ 
+    const verdict = checkSpam(request, body, formStartTime, 'subscribe');
+    if (verdict.action === 'drop') {
+      console.warn('Spam detected in subscribe form:', verdict.reason);
+      // Answer success so bots learn nothing about the filter.
+      return NextResponse.json({
         success: true,
         message: 'Successfully subscribed!'
       });
+    }
+    if (verdict.action === 'rate-limited') {
+      return NextResponse.json(
+        { error: 'Too many attempts from this connection. Please try again shortly.' },
+        { status: 429, headers: { 'Retry-After': String(verdict.retryAfterSeconds) } }
+      );
     }
 
     if (!email || !email.includes('@')) {
