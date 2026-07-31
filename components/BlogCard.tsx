@@ -24,7 +24,7 @@ export default function BlogCard({ blog, priority = false }: { blog: BlogCardBlo
     <article>
       <Link
         href={`/journal/${blog.slug}`}
-        className="p-6 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-all cursor-pointer group flex flex-col md:flex-row gap-8"
+        className="p-6 panel-inset panel-inset-interactive cursor-pointer group flex flex-col md:flex-row gap-8"
       >
         {blog.imageUrl && (
           <div className="w-full md:w-56 h-36 bg-black shrink-0 overflow-hidden border border-[var(--border-color)]/30 relative">

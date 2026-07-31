@@ -4,7 +4,7 @@ import { VENTURES } from '@/lib/ventures';
 
 export default function Footer() {
   return (
-    <footer className="mt-6 border-t border-l border-r border-b border-[var(--border-color)] bg-[var(--rich-black)] py-10 px-8">
+    <footer className="mt-6 border-t border-l border-r border-b border-[var(--rule-faint)] bg-[var(--rich-black)] py-10 px-8">
       <div className="grid grid-cols-1 md:grid-cols-5 gap-8 max-w-[1600px] mx-auto">
         <div className="md:col-span-2">
           <div className="flex items-center gap-3 mb-4">

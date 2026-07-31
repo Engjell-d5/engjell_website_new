@@ -92,7 +92,7 @@ export default async function Home() {
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
       <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
-        <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
+        <div className="h-14 border-b border-[var(--rule-faint)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-[var(--text-meta)]">
             <span className="text-[var(--primary-mint)] font-bold">/</span>
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">Home</span>
@@ -106,7 +106,7 @@ export default async function Home() {
         <div className="p-6 md:p-10">
           <section className="animate-slide-up">
             {/* Full Width Hero */}
-            <div className="relative w-[calc(100%+3rem)] md:w-[calc(100%+5rem)] h-[70vh] min-h-[440px] max-h-[600px] md:h-[600px] md:max-h-none border-b border-[var(--border-color)] overflow-hidden group mb-8 -ml-6 -mr-6 -mt-6 md:-ml-10 md:-mr-10 md:-mt-10 rounded-none">
+            <div className="relative w-[calc(100%+3rem)] md:w-[calc(100%+5rem)] h-[70vh] min-h-[440px] max-h-[600px] md:h-[600px] md:max-h-none border-b border-[var(--rule-faint)] overflow-hidden group mb-8 -ml-6 -mr-6 -mt-6 md:-ml-10 md:-mr-10 md:-mt-10 rounded-none">
               <Image 
                 src="/IMG_0425.JPG" 
                 alt="Engjell Rraklli - Tech Entrepreneur building the future in Albania" 
@@ -143,9 +143,9 @@ export default async function Home() {
             </div>
 
             {/* Bio Grid (Split Layout) */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-0 mb-8 border border-[var(--border-color)] bg-[var(--rich-black)] rounded-none overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-0 mb-8 panel-inset overflow-hidden">
               {/* Portrait Image Column */}
-              <div className="md:col-span-4 h-64 md:h-auto relative overflow-hidden group border-b md:border-b-0 md:border-r border-[var(--border-color)]">
+              <div className="md:col-span-4 h-64 md:h-auto relative overflow-hidden group border-b md:border-b-0 md:border-r border-[var(--rule-faint)]">
                 <Image 
                   src="/_DSC0142.JPG" 
                   alt="Engjell Rraklli portrait - Tech entrepreneur and founder" 
@@ -217,14 +217,14 @@ export default async function Home() {
                 /ventures, /podcast and /journal. Previously the page
                 advertised "3 Active" ventures and an article count while
                 linking to neither section outside the footer. */}
-            <div className="grid grid-cols-2 md:grid-cols-4 border-t border-b border-[var(--border-color)] bg-[var(--rich-black)]">
-              <div className="p-6 border-r border-[var(--border-color)] text-center">
+            <div className="grid grid-cols-2 md:grid-cols-4 border-t border-b border-[var(--rule-faint)] bg-[var(--rich-black)]">
+              <div className="p-6 border-r border-[var(--rule-faint)] text-center">
                 <p className="meta mb-1">Experience</p>
                 <p className="text-3xl font-bebas text-white">{yearsOfBuilding()}+ Years</p>
               </div>
               <Link
                 href="/ventures"
-                className="p-6 border-r border-[var(--border-color)] text-center group hover:bg-[var(--content-bg)] transition-colors"
+                className="p-6 border-r border-[var(--rule-faint)] text-center group hover:bg-[var(--content-bg)] transition-colors"
               >
                 <p className="meta mb-1">Ventures</p>
                 <p className="text-3xl font-bebas text-white group-hover:text-[var(--primary-mint)] transition-colors">
@@ -234,7 +234,7 @@ export default async function Home() {
               {videoCount ? (
                 <Link
                   href="/podcast"
-                  className="p-6 border-r border-[var(--border-color)] text-center group hover:bg-[var(--content-bg)] transition-colors"
+                  className="p-6 border-r border-[var(--rule-faint)] text-center group hover:bg-[var(--content-bg)] transition-colors"
                 >
                   <p className="meta mb-1">Podcast</p>
                   <p className="text-3xl font-bebas text-white group-hover:text-[var(--primary-mint)] transition-colors">
@@ -242,7 +242,7 @@ export default async function Home() {
                   </p>
                 </Link>
               ) : (
-                <div className="p-6 border-r border-[var(--border-color)] text-center">
+                <div className="p-6 border-r border-[var(--rule-faint)] text-center">
                   <p className="meta mb-1">Mission</p>
                   <p className="text-3xl font-bebas text-white">Local Growth</p>
                 </div>

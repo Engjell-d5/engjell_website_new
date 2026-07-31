@@ -60,7 +60,7 @@ export default function About() {
       <StructuredData type="ProfilePage" data={profilePageData} />
       <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
-        <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
+        <div className="h-14 border-b border-[var(--rule-faint)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-[var(--text-meta)]">
             <span className="text-[var(--primary-mint)] font-bold">/</span>
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">About</span>
@@ -117,28 +117,28 @@ export default function About() {
               <div className="mt-8">
                 <h2 className="text-2xl text-white font-bebas mb-6 tracking-wide">What I Value</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-6 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-colors group">
+                  <div className="p-6 panel-inset panel-inset-interactive group">
                     <div className="flex items-center gap-3 mb-2">
                       <Heart className="w-5 h-5 text-white" />
                       <h3 className="text-lg text-white font-bebas tracking-wide">Kindness</h3>
                     </div>
                     <p className="text-xs text-[var(--text-meta)]">Business is ultimately about people. Treating every stakeholder with genuine respect and empathy is non-negotiable.</p>
                   </div>
-                  <div className="p-6 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-colors group">
+                  <div className="p-6 panel-inset panel-inset-interactive group">
                     <div className="flex items-center gap-3 mb-2">
                       <Mountain className="w-5 h-5 text-white" />
                       <h3 className="text-lg text-white font-bebas tracking-wide">Persistence</h3>
                     </div>
                     <p className="text-xs text-[var(--text-meta)]">The path is never straight. Success belongs to those who show up every day, regardless of the obstacles.</p>
                   </div>
-                  <div className="p-6 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-colors group">
+                  <div className="p-6 panel-inset panel-inset-interactive group">
                     <div className="flex items-center gap-3 mb-2">
                       <ShieldCheck className="w-5 h-5 text-white" />
                       <h3 className="text-lg text-white font-bebas tracking-wide">Discipline</h3>
                     </div>
                     <p className="text-xs text-[var(--text-meta)]">Motivation gets you started; discipline keeps you going. It is the bridge between goals and accomplishment.</p>
                   </div>
-                  <div className="p-6 border border-[var(--border-color)] bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-colors group">
+                  <div className="p-6 panel-inset panel-inset-interactive group">
                     <div className="flex items-center gap-3 mb-2">
                       <Hourglass className="w-5 h-5 text-white" />
                       <h3 className="text-lg text-white font-bebas tracking-wide">Patience</h3>
@@ -149,7 +149,7 @@ export default function About() {
               </div>
 
               {/* End-of-story CTA */}
-              <div className="mt-10 p-8 border border-[var(--border-color)] bg-[var(--rich-black)] text-center">
+              <div className="mt-10 p-8 panel-inset text-center">
                 <h2 className="text-3xl text-white font-bebas tracking-wide mb-3">LET'S BUILD SOMETHING</h2>
                 <p className="text-sm text-[var(--text-muted)] font-light max-w-md mx-auto mb-6">
                   If any of this resonates, whether you want to work together or just hear more of the story, here's where to go next.

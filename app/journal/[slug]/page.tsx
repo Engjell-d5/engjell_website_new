@@ -109,7 +109,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
       />
       <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
-        <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
+        <div className="h-14 border-b border-[var(--rule-faint)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-[var(--text-meta)]">
             <Link href="/journal" className="hover:text-[var(--primary-mint)] transition-colors">
               <span className="text-[var(--primary-mint)] font-bold">/</span>
@@ -131,7 +131,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
         <div className="p-10 md:p-16 lg:p-20">
           <article className="animate-slide-up">
             {/* Header */}
-            <div className="mb-8 border-b border-[var(--border-color)] pb-6">
+            <div className="mb-8 border-b border-[var(--rule-faint)] pb-6">
               <div className="flex items-center gap-3 mb-4">
                 <Link
                   href={`/journal/category/${toCategorySlug(blog.category)}`}
@@ -190,7 +190,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
 
             {/* Related Articles */}
             {relatedBlogs.length > 0 && (
-              <div className="mt-16 pt-8 border-t border-[var(--border-color)]">
+              <div className="mt-16 pt-8 border-t border-[var(--rule-faint)]">
                 <div className="flex items-center justify-between mb-6">
                   <span className="section-label">Keep reading</span>
                   <PenTool className="w-4 h-4 text-[var(--text-meta)]" />

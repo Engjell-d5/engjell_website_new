@@ -90,7 +90,7 @@ export default function Header() {
 
     {/* Mobile Menu Dropdown */}
     {isMobileMenuOpen && (
-      <div className="md:hidden fixed inset-0 top-20 z-[110] bg-[var(--panel-bg)] border-t border-[var(--border-color)] overflow-y-auto">
+      <div className="md:hidden fixed inset-0 top-20 z-[110] bg-[var(--panel-bg)] border-t border-[var(--rule-faint)] overflow-y-auto">
         <nav className="flex flex-col p-6 gap-4">
           <Link 
             href="/" 

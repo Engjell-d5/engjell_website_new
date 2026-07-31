@@ -25,7 +25,7 @@ export default function Pagination({
     'flex items-center gap-1 px-3 py-2 border border-[var(--border-color)] meta font-semibold transition-colors';
 
   return (
-    <nav aria-label="Journal pages" className="mt-12 pt-8 border-t border-[var(--border-color)] flex items-center justify-between gap-4">
+    <nav aria-label="Journal pages" className="mt-12 pt-8 border-t border-[var(--rule-faint)] flex items-center justify-between gap-4">
       {page > 1 ? (
         <Link href={href(page - 1)} rel="prev" className={`${stepClass} text-[var(--text-meta)] hover:text-[var(--primary-mint)] hover:border-[var(--primary-mint)]`}>
           <ChevronLeft className="w-3.5 h-3.5" />

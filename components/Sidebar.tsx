@@ -123,7 +123,7 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
 
           {/* Latest Video */}
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)] mb-3">
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--rule-faint)] mb-3">
               <span className="section-label">Latest Video</span>
               <Play className="w-4 h-4 text-[var(--text-meta)]" />
             </div>
@@ -170,7 +170,7 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
 
           {/* Latest Blog */}
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)] mb-3">
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--rule-faint)] mb-3">
               <span className="section-label">Latest Blog</span>
               <PenTool className="w-4 h-4 text-[var(--text-meta)]" />
             </div>
@@ -218,24 +218,24 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
       {pathname === '/about' && (
         <div className="flex flex-col gap-6 sticky-sidebar-content">
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)] mb-3">
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--rule-faint)] mb-3">
               <span className="section-label">Timeline</span>
               <History className="w-4 h-4 text-[var(--text-meta)]" />
             </div>
             {/* Newest entry first. Keep the top item current, a timeline whose
                 latest milestone is in the past reads as an abandoned site. */}
             <div className="space-y-4">
-              <div className="relative pl-4 border-l border-[var(--border-color)]">
+              <div className="relative pl-4 border-l border-[var(--rule-faint)]">
                 <div className="absolute -left-1 top-1 w-2 h-2 bg-[var(--primary-mint)] rounded-full"></div>
                 <p className="meta mb-1">{new Date().getFullYear()}</p>
                 <p className="text-xs text-white font-bold">Scaling division5 &amp; divisionAI</p>
               </div>
-              <div className="relative pl-4 border-l border-[var(--border-color)]">
+              <div className="relative pl-4 border-l border-[var(--rule-faint)]">
                 <div className="absolute -left-1 top-1 w-2 h-2 bg-[var(--text-meta)] rounded-full"></div>
                 <p className="meta mb-1">2022</p>
                 <p className="text-xs text-white font-bold">Launched divisionAI</p>
               </div>
-              <div className="relative pl-4 border-l border-[var(--border-color)]">
+              <div className="relative pl-4 border-l border-[var(--rule-faint)]">
                 <div className="absolute -left-1 top-1 w-2 h-2 bg-[var(--primary-mint)] rounded-full"></div>
                 <p className="meta mb-1">{FOUNDING_YEAR}</p>
                 <p className="text-xs text-white font-bold">First Venture Founded</p>
@@ -243,7 +243,7 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
             </div>
           </div>
           <div className="mt-auto">
-            <div className="p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
+            <div className="p-4 panel-inset">
               <p className="meta mb-1">Years Active</p>
               <p className="text-2xl font-bebas text-white">{yearsOfBuilding()}+</p>
             </div>
@@ -284,16 +284,16 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
             </div>
           </div>
           <div>
-            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-color)] mb-3">
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--rule-faint)] mb-3">
               <span className="section-label">Quick Stats</span>
               <Briefcase className="w-4 h-4 text-[var(--text-meta)]" />
             </div>
             <div className="space-y-3">
-              <div className="p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
+              <div className="p-4 panel-inset">
                 <p className="meta mb-1">Total Experience</p>
                 <p className="text-2xl font-bebas text-white">{yearsOfBuilding()}+ Years</p>
               </div>
-              <div className="p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
+              <div className="p-4 panel-inset">
                 <p className="meta mb-1">Active Ventures</p>
                 <p className="text-2xl font-bebas text-white">{VENTURE_COUNT}</p>
               </div>
@@ -301,7 +301,7 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
           </div>
 
           <div className="mt-auto">
-            <div className="p-4 border border-[var(--border-color)] bg-[var(--rich-black)]">
+            <div className="p-4 panel-inset">
               <p className="meta mb-1">Location</p>
               <p className="text-sm font-bebas text-white">Tirana, Albania</p>
             </div>
@@ -312,7 +312,7 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
       {/* CONTACT SIDEBAR */}
       {pathname === '/contact' && (
         <div className="flex flex-col gap-6 sticky-sidebar-content">
-          <div className="border border-[var(--border-color)] bg-[var(--rich-black)] p-4">
+          <div className="panel-inset p-4">
             <div className="flex justify-between items-center mb-4">
               <span className="text-xs font-bold text-white uppercase tracking-widest">Contact Details</span>
               <Contact className="w-4 h-4 text-[var(--text-meta)]" />
@@ -340,7 +340,7 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
                 </div>
               </div>
             </div>
-            <div className="mt-6 pt-4 border-t border-[var(--border-color)] flex gap-2">
+            <div className="mt-6 pt-4 border-t border-[var(--rule-faint)] flex gap-2">
               <a href="https://www.linkedin.com/in/engjell-rraklli-a8b20a68/" target="_blank" rel="noopener noreferrer" className="flex-1 py-2 bg-[var(--border-color)] hover:bg-[var(--primary-mint)] hover:text-black rounded-none flex items-center justify-center text-[var(--text-meta)] transition-all">
                 <Linkedin className="w-4 h-4" />
               </a>

@@ -100,7 +100,7 @@ export default async function CategoryPage(
       <StructuredData type="CollectionPage" data={collectionData} />
       <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
-        <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
+        <div className="h-14 border-b border-[var(--rule-faint)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-[var(--text-meta)]">
             <Link href="/journal" className="hover:text-[var(--primary-mint)] transition-colors">
               <span className="text-[var(--primary-mint)] font-bold">/</span>
@@ -117,7 +117,7 @@ export default async function CategoryPage(
         {/* Content Area */}
         <div className="p-6 md:p-10">
           <section className="animate-slide-up">
-            <div className="flex items-end justify-between mb-8 border-b border-[var(--border-color)] pb-4">
+            <div className="flex items-end justify-between mb-8 border-b border-[var(--rule-faint)] pb-4">
               <div>
                 <span className="page-label mb-3 block">Category</span>
                 <h1 className="text-5xl md:text-6xl text-white font-bebas uppercase">{displayName}</h1>

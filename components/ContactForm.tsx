@@ -65,7 +65,7 @@ export default function ContactForm() {
 
   if (sent) {
     return (
-      <div className="p-10 border border-[var(--border-color)] bg-[var(--rich-black)] relative flex flex-col items-center text-center gap-4">
+      <div className="p-10 panel-inset relative flex flex-col items-center text-center gap-4">
         <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[var(--primary-mint)]"></div>
         <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[var(--primary-mint)]"></div>
         <CheckCircle2 className="w-10 h-10 text-[var(--primary-mint)]" />
@@ -88,7 +88,7 @@ export default function ContactForm() {
   }
 
   return (
-    <div className="p-10 border border-[var(--border-color)] bg-[var(--rich-black)] relative flex flex-col">
+    <div className="p-10 panel-inset relative flex flex-col">
       {/* Decorative corner accents */}
       <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[var(--primary-mint)]"></div>
       <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[var(--primary-mint)]"></div>
@@ -105,7 +105,7 @@ export default function ContactForm() {
             onChange={handleChange}
             required
             disabled={loading}
-            className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat disabled:opacity-50"
+            className="w-full field p-3 text-sm text-white font-montserrat disabled:opacity-50"
           />
         </div>
         <div>
@@ -119,7 +119,7 @@ export default function ContactForm() {
             onChange={handleChange}
             required
             disabled={loading}
-            className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat disabled:opacity-50"
+            className="w-full field p-3 text-sm text-white font-montserrat disabled:opacity-50"
           />
         </div>
         <div>
@@ -131,7 +131,7 @@ export default function ContactForm() {
             onChange={handleChange}
             required
             disabled={loading}
-            className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all font-montserrat disabled:opacity-50"
+            className="w-full field p-3 text-sm text-white font-montserrat disabled:opacity-50"
           >
             <option value="" disabled>Select a topic</option>
             {TOPICS.map((t) => (
@@ -149,7 +149,7 @@ export default function ContactForm() {
             onChange={handleChange}
             required
             disabled={loading}
-            className="w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white focus:outline-none focus:border-[var(--primary-mint)] transition-all resize-none font-montserrat disabled:opacity-50"
+            className="w-full field p-3 text-sm text-white resize-none font-montserrat disabled:opacity-50"
           ></textarea>
         </div>
         {/* Honeypot field - hidden from users but visible to bots */}

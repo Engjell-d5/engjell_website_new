@@ -10,7 +10,7 @@ export default function Loading() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch" aria-busy="true" aria-label="Loading page">
       <main className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
-        <div className="h-14 border-b border-[var(--border-color)] flex items-center px-8 shrink-0 bg-[var(--rich-black)]">
+        <div className="h-14 border-b border-[var(--rule-faint)] flex items-center px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3">
             <span className="text-[var(--primary-mint)] font-bold">/</span>
             <span className="section-label animate-pulse">Loading</span>

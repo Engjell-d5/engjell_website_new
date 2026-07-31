@@ -17,6 +17,23 @@
   --content-bg: #02141d; /* Content area background */
   --panel-bg: var(--rich-black); /* Rich Black Panels */
   --border-color: #1a3a4a; /* Subtle architectural border */
+
+  /* ── Surface scale ─────────────────────────────────────────────────────────
+     Depth used to be conveyed by exactly one thing: a flat 1px hairline in a
+     single colour, roughly 125 times. Every surface announced itself the same
+     way, so the lines read as containment rather than structure.
+
+     Now depth is carried by value, and lines are reserved for the outermost
+     edge. Three planes, each a step lighter than the one behind it.           */
+  --surface-0: var(--bg-dark);   /* the page itself, furthest back */
+  --surface-1: #001823;          /* a panel lifted off the page */
+  --surface-2: #07242f;          /* a block nested inside a panel */
+  --surface-3: #0c2f3c;          /* an input or control inside that block */
+
+  /* Rule scale. One weight for everything meant no hierarchy at all. */
+  --rule-faint: #102934;         /* divisions inside a panel */
+  --rule: var(--border-color);   /* a panel's own edge */
+  --rule-lit: rgba(255, 255, 255, 0.11); /* the top edge, where light lands */
   
   /* Text Colors
      Contrast ratios below are measured against --rich-black (#001823), the
@@ -208,12 +225,54 @@ h1, h2, h3, h4, .brand-font {
 
 } /* end @layer components */
 
-/* Architectural Panel (Classic Style) */
+/* ── Architectural Panel ────────────────────────────────────────────────────
+   Direction A, "lit edge": the panel keeps its ruler-drawn geometry and gains
+   light. A highlight where the top edge would catch it, a gradient down the
+   face, and a soft ambient shadow beneath, so it reads as a plane rather than
+   an outline. Corners stay at 0 on purpose. Bebas is a squared-off face and a
+   radius would fight it.                                                      */
 .classic-panel {
-  background: var(--panel-bg);
-  border: 1px solid var(--border-color);
-  border-radius: 0; /* Sharp corners for consistent design */
-  box-shadow: none; /* Removed shadow for seamless look */
+  /* The highlight is measured in px, not %, on purpose. A percentage stop
+     would stretch the gradient across the full height of a 6000px article
+     panel and read as a slow, unintentional darkening of the whole page.
+     Fixed distance means the light always falls just below the top edge,
+     whatever the panel's height. */
+  background: linear-gradient(180deg, #06232f 0px, var(--surface-1) 220px);
+  border: 1px solid #123342;
+  border-top-color: var(--rule-lit);
+  border-radius: 0;
+  box-shadow: 0 22px 46px -28px rgba(0, 0, 0, 0.95);
+}
+
+/* ── Nested surfaces ───────────────────────────────────────────────────────
+   Direction B, tonal: inside a panel, a block is simply a lighter plane. No
+   border at all. This is where most of the ~125 lines lived, and where they
+   were doing the least work.                                                  */
+.panel-inset {
+  background: var(--surface-2);
+  border: 1px solid transparent;
+  border-radius: 0;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+/* Interactive nested blocks (cards, venture tiles) still need a hover state.
+   The mint edge appears only on hover, so it means something when it does. */
+.panel-inset-interactive:hover {
+  background: var(--surface-3);
+  border-color: var(--primary-mint);
+}
+
+/* Form controls sit one step further forward again, so the field reads as
+   something you can type into rather than another flat box. */
+.field {
+  background: var(--surface-3);
+  border: 1px solid transparent;
+  border-radius: 0;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+.field:focus {
+  border-color: var(--primary-mint);
+  background: var(--surface-2);
 }
 
 /* Sticky positioning helpers */

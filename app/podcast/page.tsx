@@ -101,7 +101,7 @@ export default async function Podcast() {
       {/* Left Panel - Latest Video */}
       <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh] min-w-0">
         {/* Breadcrumbs / Top Bar */}
-        <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-4 md:px-6 lg:px-8 shrink-0 bg-[var(--rich-black)]">
+        <div className="h-14 border-b border-[var(--rule-faint)] flex items-center justify-between px-4 md:px-6 lg:px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-2 md:gap-3 text-xs text-[var(--text-meta)] min-w-0">
             <span className="text-[var(--primary-mint)] font-bold flex-shrink-0">/</span>
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px] truncate">Podcast</span>
@@ -114,7 +114,7 @@ export default async function Podcast() {
         {/* Content Area */}
         <div className="p-4 md:p-6 lg:p-10 min-w-0">
           <section className="animate-slide-up min-w-0">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 md:mb-8 border-b border-[var(--border-color)] pb-4">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 md:mb-8 border-b border-[var(--rule-faint)] pb-4">
               <div className="min-w-0">
                 <span className="page-label mb-2 md:mb-3 block">The Podcast</span>
                 <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-white font-bebas break-words">THE CONVERSATION</h1>

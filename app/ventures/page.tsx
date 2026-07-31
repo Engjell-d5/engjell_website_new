@@ -46,7 +46,7 @@ export default function Ventures() {
       ))}
       <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
         {/* Breadcrumbs / Top Bar */}
-        <div className="h-14 border-b border-[var(--border-color)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
+        <div className="h-14 border-b border-[var(--rule-faint)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
           <div className="flex items-center gap-3 text-xs text-[var(--text-meta)]">
             <span className="text-[var(--primary-mint)] font-bold">/</span>
             <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">Ventures</span>
@@ -59,7 +59,7 @@ export default function Ventures() {
         {/* Content Area */}
         <div className="p-6 md:p-10">
           <section className="animate-slide-up">
-            <div className="flex items-end justify-between mb-8 border-b border-[var(--border-color)] pb-4">
+            <div className="flex items-end justify-between mb-8 border-b border-[var(--rule-faint)] pb-4">
               <div>
                 <span className="page-label mb-3 block">Ventures</span>
                 <h1 className="text-5xl md:text-6xl text-white font-bebas">WHAT I BUILD</h1>
@@ -94,11 +94,11 @@ export default function Ventures() {
                         </div>
                       </div>
                       <h2 className="text-4xl text-white font-bebas mb-2">{v.name}</h2>
-                      <p className="text-sm text-[var(--text-meta)] mb-6 font-light border-l border-[var(--border-color)]/50 pl-3">
+                      <p className="text-sm text-[var(--text-meta)] mb-6 font-light border-l border-[var(--rule-faint)]/50 pl-3">
                         {v.description}
                       </p>
 
-                      <div className="grid grid-cols-2 gap-4 border-t border-[var(--border-color)]/30 pt-4">
+                      <div className="grid grid-cols-2 gap-4 border-t border-[var(--rule-faint)]/30 pt-4">
                         <div>
                           <p className="section-label">Role</p>
                           <p className="text-xs text-white">{v.role}</p>

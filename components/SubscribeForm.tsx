@@ -78,7 +78,7 @@ export default function SubscribeForm({ variant = 'card' }: { variant?: Subscrib
   );
 
   const inputClass =
-    'w-full bg-[var(--rich-black)] border border-[var(--border-color)] p-3 text-sm text-white transition-all font-montserrat disabled:opacity-50';
+    'w-full field p-3 text-sm text-white font-montserrat disabled:opacity-50';
 
   if (variant === 'inline') {
     return (
@@ -116,7 +116,7 @@ export default function SubscribeForm({ variant = 'card' }: { variant?: Subscrib
 
   return (
     <div className="blog-subscribe-snippet">
-      <div className="bg-[var(--rich-black)] border border-[var(--border-color)] p-6">
+      <div className="panel-inset p-6">
         <h4 className="text-xl text-white font-bebas tracking-wide mb-3">SUBSCRIBE</h4>
         <p className="text-xs text-[var(--text-meta)] leading-relaxed mb-4 font-light">{PITCH}</p>
         <form onSubmit={handleSubmit} className="space-y-2">
