@@ -6,11 +6,12 @@ export function yearsOfBuilding(): number {
   return new Date().getFullYear() - FOUNDING_YEAR;
 }
 
-// Hiring started the same year the first venture was founded, so the impact
-// claim ("N years of job opportunities") and the experience claim ("N+ years
-// of building") report the same number. Kept as its own constant so the two
-// can diverge later without hunting through copy.
-export const HIRING_SINCE_YEAR = FOUNDING_YEAR;
+// division5 — the venture that actually employs people — was founded in May
+// 2015 ("In May 2015, I finally took the first step and founded division5",
+// /journal/challenges-running-a-service-based-business). The building story
+// starts a year earlier, so the impact claim is deliberately one year behind
+// yearsOfBuilding(): 11 years of jobs, 12+ years of building.
+export const HIRING_SINCE_YEAR = 2015;
 
 export function yearsOfHiring(): number {
   return new Date().getFullYear() - HIRING_SINCE_YEAR;

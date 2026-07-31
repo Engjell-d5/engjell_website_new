@@ -9,8 +9,11 @@ import { Mail } from 'lucide-react';
 // formStartTime, so it was the one unprotected entry point.
 export type SubscribeVariant = 'card' | 'inline';
 
+// Deliberately no cadence promise. Actual publishing runs at roughly one post
+// a month with gaps; "weekly" was a promise the journal does not keep, and a
+// broken cadence promise costs more trust than a vague one.
 const PITCH =
-  'Field notes on building tech ventures in Albania — roughly weekly. No spam, unsubscribe anytime.';
+  'Field notes on building and scaling a service business — sent when there is something worth reading. No spam, unsubscribe anytime.';
 
 export default function SubscribeForm({ variant = 'card' }: { variant?: SubscribeVariant }) {
   const [email, setEmail] = useState('');
