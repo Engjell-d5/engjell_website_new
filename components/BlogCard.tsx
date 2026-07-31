@@ -30,7 +30,7 @@ export default function BlogCard({ blog, priority = false }: { blog: BlogCardBlo
           <div className="w-full md:w-56 h-36 bg-black shrink-0 overflow-hidden border border-[var(--border-color)]/30 relative">
             <Image
               src={blog.imageUrl}
-              alt={`${blog.title} — ${blog.category} article`}
+              alt={`${blog.title}, a ${blog.category} article`}
               fill
               sizes="(min-width: 768px) 224px, 100vw"
               className="object-cover img-classic"
