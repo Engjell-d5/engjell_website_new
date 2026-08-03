@@ -3,16 +3,14 @@ import { Mic, Users, Presentation, Radio, ArrowRight, MapPin } from 'lucide-reac
 import Sidebar from '@/components/Sidebar';
 import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
 import { createMetadata } from '@/lib/metadata';
-import { yearsOfBuilding } from '@/lib/site';
+import { yearsOfBuilding, KNOWS_ABOUT } from '@/lib/site';
 import { TALKS, SPEAKING_CREDITS, FORMATS, BIOS } from '@/lib/speaking';
 import type { Metadata } from 'next';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 
-// knowsAbout is deliberately specific here. The generic version elsewhere on
-// the site ("Technology", "Startups") matches nobody's query. These are the
-// subjects an organiser or an LLM should be able to connect to this person when
-// somebody asks who can speak about them.
+// knowsAbout comes from lib/site so this page, /about and the sitewide schema
+// in layout can never disagree about what he is an expert in.
 const speakingPageData = {
   name: 'Speaking and podcast appearances',
   url: `${siteUrl}/speaking`,
@@ -33,15 +31,7 @@ const speakingPageData = {
       'https://x.com/RraklliEngjell',
       'https://www.youtube.com/@engjellrraklli',
     ],
-    knowsAbout: [
-      'Scaling service businesses',
-      'AI agents in business operations',
-      'Agentic workflows',
-      'Bootstrapped software companies',
-      'Software development outsourcing',
-      'Albanian tech ecosystem',
-      'Founder-led growth',
-    ],
+    knowsAbout: [...KNOWS_ABOUT],
   },
 };
 

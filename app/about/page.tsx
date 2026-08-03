@@ -4,7 +4,7 @@ import { Heart, Mountain, ShieldCheck, Hourglass, Play } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
 import { createMetadata } from '@/lib/metadata';
-import { yearsOfBuilding, yearsOfHiring } from '@/lib/site';
+import { yearsOfBuilding, yearsOfHiring, KNOWS_ABOUT } from '@/lib/site';
 import { VENTURES } from '@/lib/ventures';
 import type { Metadata } from 'next';
 
@@ -32,19 +32,7 @@ const profilePageData = {
       'https://x.com/RraklliEngjell',
       'https://www.youtube.com/@engjellrraklli',
     ],
-    // Specific on purpose. "Technology" and "Startups" are true of several
-    // million people and so match nobody's query. These are the subjects a
-    // search engine or an LLM should be able to connect to this person when
-    // someone asks who can speak to them.
-    knowsAbout: [
-      'Scaling service businesses',
-      'AI agents in business operations',
-      'Agentic workflows',
-      'Bootstrapped software companies',
-      'Software development outsourcing',
-      'Albanian tech ecosystem',
-      'Founder-led growth',
-    ],
+    knowsAbout: [...KNOWS_ABOUT],
     worksFor: VENTURES.map((v) => ({
       '@type': 'Organization',
       name: v.name,

@@ -34,3 +34,27 @@ export function journalPageCount(publishedSlugs: string[]): number {
     : publishedSlugs.length;
   return Math.max(1, Math.ceil(inFeed / POSTS_PER_PAGE));
 }
+
+/**
+ * The subjects this person should be findable for, used in every Person schema
+ * on the site.
+ *
+ * Kept here because it previously lived inline in three files and drifted: two
+ * were updated and the sitewide one in app/layout.tsx was missed, so the
+ * generic list kept rendering on every page while the specific one appeared on
+ * two. One export, imported everywhere, makes that impossible.
+ *
+ * Specific on purpose. "Technology" and "Startups" are true of several million
+ * people and so match nobody's query. This is the field search engines and
+ * assistants use to decide who can speak to a subject, so it should name the
+ * things worth being asked about.
+ */
+export const KNOWS_ABOUT = [
+  'Scaling service businesses',
+  'AI agents in business operations',
+  'Agentic workflows',
+  'Bootstrapped software companies',
+  'Software development outsourcing',
+  'Albanian tech ecosystem',
+  'Founder-led growth',
+] as const;

@@ -6,6 +6,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { createMetadata } from "@/lib/metadata";
+import { KNOWS_ABOUT } from "@/lib/site";
 import StructuredData from "@/components/StructuredData";
 
 const montserrat = Montserrat({
@@ -56,7 +57,7 @@ export default function RootLayout({
       'https://x.com/RraklliEngjell',
       'https://www.youtube.com/@engjellrraklli',
     ],
-    knowsAbout: ['Technology', 'Entrepreneurship', 'Software Development', 'Startups'],
+    knowsAbout: [...KNOWS_ABOUT],
     address: {
       '@type': 'PostalAddress',
       addressLocality: 'Tirana',
