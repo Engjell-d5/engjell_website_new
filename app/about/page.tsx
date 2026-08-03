@@ -32,12 +32,18 @@ const profilePageData = {
       'https://x.com/RraklliEngjell',
       'https://www.youtube.com/@engjellrraklli',
     ],
+    // Specific on purpose. "Technology" and "Startups" are true of several
+    // million people and so match nobody's query. These are the subjects a
+    // search engine or an LLM should be able to connect to this person when
+    // someone asks who can speak to them.
     knowsAbout: [
-      'Technology',
-      'Entrepreneurship',
-      'Software Development',
-      'Startups',
-      'Artificial Intelligence',
+      'Scaling service businesses',
+      'AI agents in business operations',
+      'Agentic workflows',
+      'Bootstrapped software companies',
+      'Software development outsourcing',
+      'Albanian tech ecosystem',
+      'Founder-led growth',
     ],
     worksFor: VENTURES.map((v) => ({
       '@type': 'Organization',

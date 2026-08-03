@@ -67,6 +67,9 @@ export default function Header() {
         <Link href="/ventures" className={`nav-btn ${isActive('/ventures') ? 'active' : ''}`}>
           Ventures
         </Link>
+        <Link href="/speaking" className={`nav-btn ${isActive('/speaking') ? 'active' : ''}`}>
+          Speaking
+        </Link>
         <Link href="/contact" className={`nav-btn ${isActive('/contact') ? 'active' : ''}`}>
           Contact
         </Link>
@@ -131,11 +134,18 @@ export default function Header() {
             Journal
           </Link>
           <Link 
-            href="/ventures" 
+            href="/ventures"
             onClick={closeMobileMenu}
             className={`nav-btn nav-btn-mobile text-lg py-3 ${isActive('/ventures') ? 'active' : ''}`}
           >
             Ventures
+          </Link>
+          <Link
+            href="/speaking"
+            onClick={closeMobileMenu}
+            className={`nav-btn nav-btn-mobile text-lg py-3 ${isActive('/speaking') ? 'active' : ''}`}
+          >
+            Speaking
           </Link>
           <Link
             href="/contact"
