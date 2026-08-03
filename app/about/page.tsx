@@ -18,7 +18,7 @@ const profilePageData = {
     '@id': `${siteUrl}/#person`,
     name: 'Engjell Rraklli',
     jobTitle: 'Tech Entrepreneur',
-    description: 'Albanian tech entrepreneur and startup founder building scalable technology in Tirana.',
+    description: 'Albanian tech entrepreneur and startup founder building scalable technology in Albania.',
     url: siteUrl,
     image: `${siteUrl}/IMG_0466.JPG`,
     nationality: { '@type': 'Country', name: 'Albania' },
@@ -43,7 +43,7 @@ const profilePageData = {
 
 export const metadata: Metadata = createMetadata({
   title: 'About Engjell Rraklli, Albanian Tech Entrepreneur',
-  description: 'Engjell Rraklli is an Albanian tech entrepreneur and startup founder building world-class software in Tirana, and thousands of job opportunities for young Albanians over the past decade.',
+  description: 'Engjell Rraklli is an Albanian tech entrepreneur and startup founder building world-class software in Albania, and thousands of job opportunities for young Albanians over the past decade.',
   path: '/about',
 });
 
@@ -92,7 +92,7 @@ export default function About() {
                 <div className="md:col-span-7 flex flex-col justify-center">
               <div className="prose prose-invert max-w-none text-[var(--text-muted)] text-base leading-[1.75]">
                 <p className="mb-6 first-letter:text-4xl first-letter:font-bold first-letter:text-white first-letter:mr-1 first-letter:float-left">
-                  My work is grounded in the conviction that Tirana is fertile ground for world-class technology. Over a decade ago, I stepped away from traditional education to build my own path. As a creative at heart, I fell in love with the act of building, whether it was software development or companies. I failed more times than I succeeded, but those experiences shaped me into the tech entrepreneur and startup founder I am today.
+                  My work is grounded in the conviction that Albania is fertile ground for world-class technology. Over a decade ago, I stepped away from traditional education to build my own path. As a creative at heart, I fell in love with the act of building, whether it was software development or companies. I failed more times than I succeeded, but those experiences shaped me into the tech entrepreneur and startup founder I am today.
                 </p>
                     <p className="mb-0">
                   Now, as the founder of division5, I apply those learnings to deliver global-standard software services. But my true focus isn't just scaling a business; it is scaling human potential. I am building the infrastructure that allows young Albanian talents to apply their skills at a global level without leaving their homes, proving that the best way to predict our country's future is to empower the youth who will build it.

@@ -50,7 +50,7 @@ export default function RootLayout({
     '@id': `${siteUrl}/#person`,
     name: 'Engjell Rraklli',
     jobTitle: 'Tech Entrepreneur',
-    description: 'Building scalable tech and human potential in Tirana. Creative at heart, resilient by practice.',
+    description: 'Building scalable tech and human potential in Albania. Creative at heart, resilient by practice.',
     url: siteUrl,
     sameAs: [
       'https://www.linkedin.com/in/engjell-rraklli-a8b20a68/',
@@ -73,7 +73,7 @@ export default function RootLayout({
   const websiteData = {
     name: 'Engjell Rraklli',
     url: siteUrl,
-    description: 'Building scalable tech and human potential in Tirana',
+    description: 'Building scalable tech and human potential in Albania',
     publisher: {
       '@type': 'Person',
       '@id': `${siteUrl}/#person`,

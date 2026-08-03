@@ -30,7 +30,7 @@ export default function Footer() {
             <span className="text-xl text-white font-bebas tracking-widest">ENGJELL RRAKLLI</span>
           </div>
           <p className="meta max-w-sm leading-relaxed">
-            Building scalable tech and human potential in Tirana. Creative at heart, resilient by
+            Building scalable tech and human potential in Albania. Creative at heart, resilient by
             practice. Valuing discipline, persistence, kindness, and patience above all.
           </p>
 

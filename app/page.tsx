@@ -172,9 +172,9 @@ export default async function Home() {
                 </div>
                 <div>
                   <Quote className="w-8 h-8 text-[var(--primary-mint)] mb-4 opacity-50" />
-                  <h2 className="text-white font-bebas text-3xl mb-4 tracking-wide">Why I Build in Tirana</h2>
+                  <h2 className="text-white font-bebas text-3xl mb-4 tracking-wide">Why I Build in Albania</h2>
                   <p className="text-[var(--text-muted)] text-base md:text-[17px] leading-[1.72] max-w-2xl">
-                    My mission is to empower young Albanian talent to build their future at home. By creating an ecosystem of world-class technology and software development in Tirana, I am providing the mentorship, structure, and opportunities the next generation needs to succeed without leaving the country.
+                    Albania exports its best people. My work is a bet that it does not have to. Build companies here that meet a world standard, and a young engineer no longer has to choose between the career they want and the country they are from. That means real projects, real mentorship and the structure to grow into senior work without ever boarding a plane.
                   </p>
                   {/* Evidence for the claim directly above it. The mission was
                       asserted on four pages and demonstrated on none. */}
