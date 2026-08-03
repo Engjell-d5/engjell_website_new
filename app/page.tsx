@@ -15,7 +15,11 @@ export const dynamic = 'force-dynamic';
 // No year count in the description on purpose, `metadata` is evaluated once
 // at module load, so a hardcoded "11 years" would go stale between deploys.
 export const metadata: Metadata = createMetadata({
-  description: 'Albanian tech entrepreneur building world-class software in Tirana, and thousands of job opportunities for young Albanians. Software development, startups, and tech innovation in Albania.',
+  // Kept under 160 characters so search results show the whole sentence rather
+  // than cutting it mid-clause. The old one ran to 187 and ended in a keyword
+  // list ("software development, startups, and tech innovation in Albania")
+  // that read as filler to a person and counts for nothing with Google.
+  description: 'Tech entrepreneur in Tirana. I build software companies, write about scaling service businesses with AI, and back young Albanian talent.',
   path: '/',
 });
 
@@ -126,8 +130,13 @@ export default async function Home() {
                   <span className="bg-[var(--primary-mint)] text-[var(--rich-black)] text-[11px] font-bold px-3 py-1 uppercase tracking-[0.16em] inline-block">Tirana, Albania</span>
                 </div>
                 <h1 className="text-6xl md:text-8xl text-white font-bebas leading-[0.85] tracking-tight max-w-4xl">
-                  BUILDING THE<br />
-                  <span className="text-[var(--primary-mint)]">FUTURE</span><br />
+                  {/* The trailing spaces are load bearing. Without them JSX
+                      emits the text nodes flush against each other, so a
+                      crawler that strips the <br /> reads this heading as
+                      "BUILDING THEFUTUREIN ALBANIA." They sit immediately
+                      before a line break, so they change nothing visually. */}
+                  BUILDING THE{' '}<br />
+                  <span className="text-[var(--primary-mint)]">FUTURE</span>{' '}<br />
                   IN ALBANIA.
                 </h1>
                 <div className="mt-6 flex flex-wrap items-center gap-3">
