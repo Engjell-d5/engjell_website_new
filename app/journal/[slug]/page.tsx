@@ -6,6 +6,7 @@ import { PenTool } from 'lucide-react';
 import type { Metadata } from 'next';
 import ShareRow from '@/components/ShareRow';
 import SubscribeForm from '@/components/SubscribeForm';
+import PlaybookCta from '@/components/PlaybookCta';
 import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
 import { createMetadata } from '@/lib/metadata';
 import { getBlogBySlug, getRelatedBlogs } from '@/lib/data';
@@ -194,9 +195,15 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             <BlogContentWithSubscribe content={blog.content || ''} />
 
             {/* The rail used to carry this. At the end is where a reader who
-                finished the piece is actually ready for it. */}
+                finished the piece is actually ready for it.
+
+                This is the playbook offer rather than a bare subscribe box: it
+                posts to the same endpoint and lands the same subscriber, but it
+                gives a reason to hand over an address. A generic "join my
+                newsletter" asks the reader to value a promise; this asks them to
+                value a document they can see the shape of. */}
             <div className="mt-16 pt-8 border-t border-[var(--rule-faint)]">
-              <SubscribeForm />
+              <PlaybookCta />
             </div>
 
             {/* Related Articles */}

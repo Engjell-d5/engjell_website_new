@@ -10,7 +10,10 @@ interface StructuredDataProps {
     | 'ProfilePage'
     | 'ContactPage'
     | 'CollectionPage'
-    | 'ItemList';
+    | 'ItemList'
+    // Downloadable assets such as the playbook PDF. schema.org's precise type
+    // for "a document you can have", as distinct from a page about one.
+    | 'DigitalDocument';
   data: Record<string, any>;
 }
 
