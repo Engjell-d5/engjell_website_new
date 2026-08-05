@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { addSubscriber, markSubscriberSynced } from '@/lib/data';
 import { checkSpam } from '@/lib/spam-protection';
+import { syncSubscriberToCrm } from '@/lib/crm-sync';
 
 const SENDER_API_KEY = process.env.SENDER_API_KEY || '';
 const SENDER_LIST_ID = process.env.SENDER_LIST_ID || '';
@@ -78,6 +79,11 @@ export async function POST(request: NextRequest) {
       // Log error but don't fail the request
       console.error('Failed to sync to Sender.net:', error);
     }
+
+    // Mirror into the D5 CRM. No-ops until D5_SUBSCRIBER_SYNC_PATH is set, and
+    // swallows its own failures, so neither a missing endpoint nor a downstream
+    // outage can turn a successful signup into an error for the reader.
+    await syncSubscriberToCrm(email);
 
     return NextResponse.json({ 
       success: true,
