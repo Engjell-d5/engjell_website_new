@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { addSubscriber, markSubscriberSynced } from '@/lib/data';
 import { checkSpam } from '@/lib/spam-protection';
 import { syncSubscriberToCrm } from '@/lib/crm-sync';
+import { canonicalizeEmail, looksLikeBotAddress } from '@/lib/email-normalize';
 
 const SENDER_API_KEY = process.env.SENDER_API_KEY || '';
 const SENDER_LIST_ID = process.env.SENDER_LIST_ID || '';
@@ -66,14 +67,35 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Add subscriber to local database
-    const subscriber = await addSubscriber(email);
+    // A signup bot exploiting gmail's dot handling put 35 disposable aliases on
+    // this list, just under half of every subscriber ever collected. The
+    // honeypot and timing check never saw it, because it was neither fast nor
+    // touching hidden fields. Answer success so it learns nothing, exactly as
+    // the spam path above does.
+    if (looksLikeBotAddress(email)) {
+      console.warn('Bot-shaped address rejected at subscribe');
+      return NextResponse.json({
+        success: true,
+        message: 'Successfully subscribed!',
+      });
+    }
 
-    // Try to sync to Sender.net (non-blocking)
+    // Store the mailbox the address actually reaches, so the unique constraint
+    // stops one gmail account from occupying many rows. Dots are ignored by
+    // gmail, so delivery is unaffected.
+    const canonicalEmail = canonicalizeEmail(email);
+
+    // Add subscriber to local database
+    const subscriber = await addSubscriber(canonicalEmail);
+
+    // Everything downstream uses the canonical address too. markSubscriberSynced
+    // looks the row up by email, so passing the raw form here would silently
+    // fail to find the row that was just written, and Sender.net and the CRM
+    // would each hold a different spelling of the same mailbox.
     try {
-      const synced = await addToSenderNet(email);
+      const synced = await addToSenderNet(canonicalEmail);
       if (synced) {
-        await markSubscriberSynced(email);
+        await markSubscriberSynced(canonicalEmail);
       }
     } catch (error) {
       // Log error but don't fail the request
@@ -83,7 +105,7 @@ export async function POST(request: NextRequest) {
     // Mirror into the D5 CRM. No-ops until D5_SUBSCRIBER_SYNC_PATH is set, and
     // swallows its own failures, so neither a missing endpoint nor a downstream
     // outage can turn a successful signup into an error for the reader.
-    await syncSubscriberToCrm(email);
+    await syncSubscriberToCrm(canonicalEmail);
 
     return NextResponse.json({ 
       success: true,
