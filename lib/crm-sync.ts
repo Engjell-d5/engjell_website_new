@@ -28,7 +28,13 @@ const SYNC_PATH = process.env.D5_SUBSCRIBER_SYNC_PATH;
 export async function syncSubscriberToCrm(email: string): Promise<void> {
   if (!SYNC_PATH || !BASE_URL || !API_KEY) return;
 
-  const url = `${BASE_URL.replace(/\/+$/, '')}/${SYNC_PATH.replace(/^\/+/, '')}`;
+  // PUBLIC_API_BASE_URL is the bare origin (https://app.division5.co) with no
+  // version segment, which is why the task integration writes
+  // `${PUBLIC_API_BASE_URL}/api/v1/tasks/public`. Tolerate either form so a
+  // later change to the variable cannot silently produce /api/v1/api/v1.
+  const origin = BASE_URL.replace(/\/+$/, '');
+  const versioned = /\/api\/v\d+$/.test(origin) ? origin : `${origin}/api/v1`;
+  const url = `${versioned}/${SYNC_PATH.replace(/^\/+/, '')}`;
 
   try {
     const controller = new AbortController();
