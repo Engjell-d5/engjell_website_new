@@ -123,6 +123,33 @@ must not be able to decide whether a consent guard applies. The route decides.
 
 ---
 
+## Tenant
+
+Hard-set both the container Lead and every Contact to **Engjëll Rraklli**:
+
+```
+companyId: 'cc640cdd-4a92-412b-ba9a-4ad48ae6e9cf'
+```
+
+It is his personal list, so the tenant is a property of the route, not of the
+request. The 30 already-imported rows have been moved there; without this the
+endpoint would keep adding new ones to the division5 default and the container
+would end up split across two tenants.
+
+**Do not read `companyId` from the request body on this route.** It is public
+and guarded only by an API key that sits on a marketing site's server. If the
+body can name the owning tenant, anyone holding that key can write into any
+tenant, which turns a contact-capture endpoint into cross-tenant write access.
+Validating the UUID against the FK protects integrity, not authorisation: a
+valid-but-wrong tenant passes that check perfectly.
+
+The same applies to `public/lead-magnet`, which should hard-set divisionGroup
+(`3f6fbaf6-2411-4a5e-a9d0-c51278b60af8`) for the same reason. The CSV import is
+different: it is JWT-authenticated and a human picks the tenant per file, so
+accepting it there is right.
+
+---
+
 ## `processingRestricted` is the part that matters
 
 Set it to `true` on every contact this endpoint creates.
