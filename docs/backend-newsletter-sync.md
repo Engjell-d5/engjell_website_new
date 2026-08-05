@@ -1,6 +1,11 @@
 # Backend: keep the CRM in step with new newsletter subscribers
 
-**Repo:** `d5_management_system` · **Effort:** ~30 min · **Status:** not started
+**Repo:** `d5_management_system` · **Effort:** ~20 min · **Status:** not started
+
+> **Most of this already exists.** `submitLeadMagnet()` in
+> `contact-requests.service.ts` already does the find-or-create-contact half
+> correctly. Do not write this from scratch — extract that half and reuse it.
+> See "Reuse what is already there" below.
 
 The existing 72 subscribers from engjellrraklli.com have been imported as a
 one-off. 65 active ones are attached to a container Lead:
@@ -59,6 +64,62 @@ collects nothing else.
 | `leadId` | the container lead |
 | `processingRestricted` | **`true`** |
 | `notes` | `Imported from the engjellrraklli.com newsletter (subscribed <date>). Name inferred from the email address, not confirmed. Newsletter consent only, not sales outreach.` |
+
+---
+
+## Reuse what is already there
+
+`submitLeadMagnet()` and this endpoint want the same contact behaviour and
+different lead behaviour. Three differences, and each one is a reason the
+newsletter cannot simply post to `public/lead-magnet`:
+
+| | `submitLeadMagnet` today | newsletter needs |
+|---|---|---|
+| Lead | creates one per submission, titled after `company` | attach every subscriber to the single container lead |
+| `isProspect` | `false`, appears in the main leads list | `true`, stays in the prospecting pool |
+| `processingRestricted` | not set | `true` |
+
+Reusing it unchanged would put one Lead per subscriber into your main leads
+list, all sharing a title, none consent-guarded. That is worse than no sync.
+
+The tidy version is to pull the shared part out into one private helper and let
+the two public methods differ only where they should:
+
+```ts
+/** Find-or-create a contact by email and attach it to a lead. Shared by the
+ *  lead-magnet download and the newsletter sync, which differ only in which
+ *  lead they attach to and whether processing is restricted. */
+private async attachContactToLead(opts: {
+  email: string;
+  firstName: string;
+  lastName: string;
+  companyName?: string;
+  notes: string;
+  leadId: string;
+  restricted: boolean;
+}) {
+  const existing = await this.prisma.contact.findUnique({ where: { email: opts.email } });
+  if (existing) return existing;      // never re-point an existing relationship
+  return this.prisma.contact.create({
+    data: {
+      firstName: opts.firstName,
+      lastName: opts.lastName,
+      email: opts.email,
+      companyName: opts.companyName,
+      notes: opts.notes,
+      leadId: opts.leadId,
+      processingRestricted: opts.restricted,
+    },
+  });
+}
+```
+
+`submitLeadMagnet` then keeps its current lead logic and calls the helper with
+`restricted: false`. `submitNewsletter` finds-or-creates the container lead once
+and calls the helper with `restricted: true`.
+
+One thing not to do: take `restricted` from the request body. A public caller
+must not be able to decide whether a consent guard applies. The route decides.
 
 ---
 
