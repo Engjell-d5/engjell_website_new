@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Twitter, Linkedin, Youtube, Mail } from 'lucide-react';
 import { VENTURES } from '@/lib/ventures';
+import { valuesSentence } from '@/lib/values';
 import SubscribeForm from '@/components/SubscribeForm';
 
 const NAV = [
@@ -29,9 +30,13 @@ export default function Footer() {
             />
             <span className="text-xl text-white font-bebas tracking-widest">ENGJELL RRAKLLI</span>
           </div>
+          {/* The value list comes from lib/values.ts, the same source the About
+              page grid renders from. The order here is the long-standing footer
+              wording rather than the grid order, so it is passed explicitly. */}
           <p className="meta max-w-sm leading-relaxed">
             Building scalable tech and human potential in Albania. Creative at heart, resilient by
-            practice. Valuing discipline, persistence, kindness, and patience above all.
+            practice. Valuing {valuesSentence(['Discipline', 'Persistence', 'Kindness', 'Patience'])}{' '}
+            above all.
           </p>
 
           {/* Subscribe existed only in the sidebar and at the end of articles.

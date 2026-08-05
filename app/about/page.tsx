@@ -6,7 +6,12 @@ import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
 import { createMetadata } from '@/lib/metadata';
 import { yearsOfBuilding, yearsOfHiring, KNOWS_ABOUT } from '@/lib/site';
 import { VENTURES } from '@/lib/ventures';
+import { VALUES } from '@/lib/values';
 import type { Metadata } from 'next';
+
+// lib/values.ts stores the lucide export name rather than the component, so it
+// stays free of React imports and can be used from anywhere.
+const VALUE_ICONS = { Heart, Mountain, ShieldCheck, Hourglass } as const;
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 
@@ -110,35 +115,21 @@ export default function About() {
               {/* Core Values Grid */}
               <div className="mt-8">
                 <h2 className="text-2xl text-white font-bebas mb-6 tracking-wide">What I Value</h2>
+                {/* Rendered from lib/values.ts so this grid and the footer
+                    sentence cannot drift apart. */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-6 panel-inset panel-inset-interactive group">
-                    <div className="flex items-center gap-3 mb-2">
-                      <Heart className="w-5 h-5 text-white" />
-                      <h3 className="text-lg text-white font-bebas tracking-wide">Kindness</h3>
-                    </div>
-                    <p className="text-xs text-[var(--text-meta)]">Business is ultimately about people. Treating every stakeholder with genuine respect and empathy is non-negotiable.</p>
-                  </div>
-                  <div className="p-6 panel-inset panel-inset-interactive group">
-                    <div className="flex items-center gap-3 mb-2">
-                      <Mountain className="w-5 h-5 text-white" />
-                      <h3 className="text-lg text-white font-bebas tracking-wide">Persistence</h3>
-                    </div>
-                    <p className="text-xs text-[var(--text-meta)]">The path is never straight. Success belongs to those who show up every day, regardless of the obstacles.</p>
-                  </div>
-                  <div className="p-6 panel-inset panel-inset-interactive group">
-                    <div className="flex items-center gap-3 mb-2">
-                      <ShieldCheck className="w-5 h-5 text-white" />
-                      <h3 className="text-lg text-white font-bebas tracking-wide">Discipline</h3>
-                    </div>
-                    <p className="text-xs text-[var(--text-meta)]">Motivation gets you started; discipline keeps you going. It is the bridge between goals and accomplishment.</p>
-                  </div>
-                  <div className="p-6 panel-inset panel-inset-interactive group">
-                    <div className="flex items-center gap-3 mb-2">
-                      <Hourglass className="w-5 h-5 text-white" />
-                      <h3 className="text-lg text-white font-bebas tracking-wide">Patience</h3>
-                    </div>
-                    <p className="text-xs text-[var(--text-meta)]">Real value takes time to build. We play the long game, focusing on sustainable growth over quick wins.</p>
-                  </div>
+                  {VALUES.map((value) => {
+                    const Icon = VALUE_ICONS[value.icon];
+                    return (
+                      <div key={value.name} className="p-6 panel-inset panel-inset-interactive group">
+                        <div className="flex items-center gap-3 mb-2">
+                          <Icon className="w-5 h-5 text-white" />
+                          <h3 className="text-lg text-white font-bebas tracking-wide">{value.name}</h3>
+                        </div>
+                        <p className="text-xs text-[var(--text-meta)]">{value.description}</p>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 

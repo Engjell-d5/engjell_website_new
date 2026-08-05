@@ -58,16 +58,18 @@ export default function PlaybookPage() {
           </h1>
 
           <p className="mb-6 max-w-[62ch] text-lg leading-relaxed text-[var(--text-secondary)]">
-            I spent a decade building a service business and most of it being the thing everything
-            queued behind. This is the ten pages I would hand my younger self, written to be worked
-            through rather than read.
+            I founded division5 in Albania in 2015. Hiring here meant taking people with no track
+            record, because most people with a track record had already left. So we trained them,
+            and that forced me to write down everything a founder is normally allowed to keep in
+            their own head.
           </p>
 
           <p className="mb-10 max-w-[62ch] leading-relaxed text-[var(--text-muted)]">
-            Six diagnostics. Each one has a question you answer in writing, because a diagnostic you
-            do in your head is one you flatter yourself through. At the end you will have a named
-            constraint, a re-sorted list of what genuinely needs a person, and a first ninety days
-            that does not start with buying software.
+            This is what was left after a decade of that. Six diagnostics, each ending with
+            something you answer in writing, because a diagnostic you do in your head is one you
+            flatter yourself through. At the end you will have a named constraint, a re-sorted list
+            of what genuinely needs a person, and a first ninety days that does not start with
+            buying software.
           </p>
 
           <div className="mb-10 border-t border-[var(--rule-faint)] pt-8">

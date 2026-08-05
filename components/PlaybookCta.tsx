@@ -27,7 +27,7 @@ export const PLAYBOOK_PDF = '/downloads/scaling-a-service-business-with-ai.pdf';
 
 const TITLE = 'Scaling a service business with AI';
 const BLURB =
-  'The article ends at what to do about it. This is that part. Six diagnostics, ten pages, written to be worked through rather than read.';
+  'Six diagnostics from eleven years of building a software company in Albania, mostly by training people nobody else would hire. Ten pages, written to be worked through rather than read.';
 
 export default function PlaybookCta({ variant = 'inline' }: { variant?: 'inline' | 'page' }) {
   const [email, setEmail] = useState('');
