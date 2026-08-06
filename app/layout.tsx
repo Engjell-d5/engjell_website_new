@@ -49,7 +49,7 @@ export default function RootLayout({
   const personData = {
     '@id': `${siteUrl}/#person`,
     name: 'Engjell Rraklli',
-    jobTitle: 'Tech Entrepreneur',
+    jobTitle: 'Homegrown Albanian Tech Entrepreneur',
     description: 'Building scalable tech and human potential in Albania. Creative at heart, resilient by practice.',
     url: siteUrl,
     sameAs: [

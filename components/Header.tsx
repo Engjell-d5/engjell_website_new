@@ -45,7 +45,10 @@ export default function Header() {
           <div className="text-3xl md:text-2xl lg:text-3xl tracking-widest text-white leading-none mt-1 font-bebas truncate">ENGJELL RRAKLLI</div>
           <div className="flex items-center gap-2 mt-1">
             <div className="h-[1px] w-6 md:w-8 bg-[var(--primary-mint)]"></div>
-            <span className="text-[11px] text-[var(--platinum)] font-bold tracking-[0.18em] font-montserrat uppercase opacity-80 whitespace-nowrap">Tech Entrepreneur</span>
+            {/* Tracking and size step down on small screens, and nowrap is gone:
+                the descriptor grew from 17 characters to 36, which at 11px with
+                0.18em tracking is wider than a phone. */}
+            <span className="text-[9px] sm:text-[10px] md:text-[11px] text-[var(--platinum)] font-bold tracking-[0.1em] sm:tracking-[0.14em] md:tracking-[0.18em] font-montserrat uppercase opacity-80 leading-tight">Homegrown Albanian Tech Entrepreneur</span>
           </div>
         </div>
       </div>

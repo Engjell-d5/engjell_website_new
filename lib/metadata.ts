@@ -2,8 +2,8 @@ import { Metadata } from 'next';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 const siteName = 'Engjell Rraklli';
-const defaultTitle = 'Engjell Rraklli: Tech Entrepreneur in Tirana, Albania';
-const defaultDescription = 'Albanian tech entrepreneur building scalable technology in Albania. Software development, startups, and tech innovation in Albania.';
+const defaultTitle = 'Engjell Rraklli: Homegrown Albanian Tech Entrepreneur';
+const defaultDescription = 'Homegrown Albanian tech entrepreneur building scalable technology from Tirana, and creating opportunity for the young Albanians who will build the country's future.';
 
 export function createMetadata({
   title,

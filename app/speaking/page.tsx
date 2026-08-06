@@ -18,7 +18,7 @@ const speakingPageData = {
     '@type': 'Person',
     '@id': `${siteUrl}/#person`,
     name: 'Engjell Rraklli',
-    jobTitle: 'Tech Entrepreneur',
+    jobTitle: 'Homegrown Albanian Tech Entrepreneur',
     url: siteUrl,
     description: BIOS.medium,
     address: {
