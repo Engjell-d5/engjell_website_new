@@ -74,7 +74,7 @@ export default function Speaking() {
               </h1>
               <p className="text-lg text-[var(--text-secondary)] leading-relaxed mb-4">
                 Most AI talks in 2026 are predictions. Mine are post-mortems. I have spent{' '}
-                {yearsOfBuilding()} years building a software company in Albania, and the last two
+                {yearsOfBuilding()} years building a tech company in Albania, and the last two
                 putting agents into its operations, so I can tell an audience what the change cost
                 rather than what it promises.
               </p>
