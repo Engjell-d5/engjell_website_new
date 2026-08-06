@@ -1,5 +1,11 @@
 # LinkedIn series, eight posts
 
+> **Threads is the primary channel now.** See `threads-series.md` for the same
+> eight ideas rewritten as chains inside the 500 character limit. Keep this file:
+> the two are the same material, so cross-posting here costs a copy and paste,
+> and LinkedIn is where the buyers for a 7,500 engagement actually are even if
+> the reach is worse.
+
 Written to fix the actual constraint: the playbook, the pillar article and
 /speaking all exist and roughly nobody walks past them. One LinkedIn visit in 28
 days is the number this series is aimed at.
