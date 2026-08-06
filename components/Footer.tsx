@@ -4,11 +4,17 @@ import { VENTURES } from '@/lib/ventures';
 import { valuesSentence } from '@/lib/values';
 import SubscribeForm from '@/components/SubscribeForm';
 
+// The playbook and the sprint used to be reachable only from each other, which
+// made the site's one free asset and its only paid offer a two page island that
+// nothing linked into. The footer is the cheapest fix: present on every page,
+// and it does not push either at people who came to read.
 const NAV = [
   { href: '/', label: 'Home' },
   { href: '/about', label: 'About' },
   { href: '/podcast', label: 'Podcast' },
   { href: '/journal', label: 'Journal' },
+  { href: '/playbook', label: 'Playbook' },
+  { href: '/sprint', label: 'Sprint' },
   { href: '/ventures', label: 'Ventures' },
   { href: '/contact', label: 'Contact' },
 ];

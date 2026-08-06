@@ -93,6 +93,19 @@ export default function PlaybookCta({ variant = 'inline' }: { variant?: 'inline'
             <Download size={18} aria-hidden="true" />
             Download the PDF
           </a>
+
+          {/* The one moment worth mentioning the paid version: they have just
+              committed to reading it, and this is the only screen where that is
+              true. Deliberately quiet, and after the download rather than
+              instead of it. */}
+          <p className="mt-6 border-t border-[var(--rule-faint)] pt-4 text-sm leading-relaxed text-[var(--text-meta)]">
+            If you would rather work through it with your team than alone, I run the same
+            diagnostics remotely over two weeks.{' '}
+            <a href="/sprint" className="text-[var(--primary-mint)] hover:underline">
+              The Constraint Sprint
+            </a>
+            .
+          </p>
         </div>
       ) : (
         <form onSubmit={onSubmit} className="flex flex-col gap-3 sm:flex-row sm:items-start">
