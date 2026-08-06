@@ -22,7 +22,23 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com'
  * PRICE is a single constant because it is the number most likely to change and
  * it should never need hunting for in the copy.
  */
-const PRICE = '€7,500';
+const PRICE = '€3,500';
+
+/**
+ * Introductory, and said so on the page.
+ *
+ * The work justifies more. The evidence does not, yet: there are no case
+ * studies for this specific service, and a free ten page playbook sits one
+ * click away setting an anchor. A first buyer is paying partly to find out
+ * whether it works, and the price should reflect that rather than pretend
+ * otherwise.
+ *
+ * Naming it as introductory does two things a discount cannot. It creates a
+ * real reason to move now instead of manufactured scarcity, and it makes the
+ * later increase a stated plan rather than something a past client discovers
+ * and resents.
+ */
+const PRICE_NOTE = 'Introductory rate for the first three engagements.';
 
 const sprintData = {
   name: 'The Constraint Sprint',
@@ -185,14 +201,16 @@ export default function SprintPage() {
             <p className="mb-2 text-sm uppercase tracking-[0.18em] text-[var(--text-meta)]">
               Price
             </p>
-            <p className="mb-4 font-bebas text-5xl tracking-wide text-[var(--primary-mint)]">
+            <p className="mb-2 font-bebas text-5xl tracking-wide text-[var(--primary-mint)]">
               {PRICE}
             </p>
+            <p className="mb-4 text-sm text-[var(--text-meta)]">{PRICE_NOTE}</p>
             <p className="max-w-[58ch] leading-relaxed text-[var(--text-muted)]">
               Fixed, for all four sessions and the written analysis afterwards. Run over video, so
               your timezone matters more than your address and there is no travel to pay for. If
               you decide after the first session that this is not going to be useful, we stop and
-              you pay nothing.
+              you pay nothing. The rate goes up once there are results to point at, and I would
+              rather say that than pretend the number is permanent.
             </p>
           </section>
 
