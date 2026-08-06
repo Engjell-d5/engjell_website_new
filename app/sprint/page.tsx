@@ -37,8 +37,13 @@ const PRICE = '€3,500';
  * real reason to move now instead of manufactured scarcity, and it makes the
  * later increase a stated plan rather than something a past client discovers
  * and resents.
+ *
+ * The future price is stated rather than struck through. A crossed out number
+ * nobody has ever paid is the oldest trick on the internet, and this page earns
+ * its credibility by turning people away. Saying where the price is going gets
+ * the same anchor without spending that.
  */
-const PRICE_NOTE = 'Introductory rate for the first three engagements.';
+const PRICE_NOTE = 'Introductory rate for the first three engagements. It goes to €7,500 after that.';
 
 const sprintData = {
   name: 'The Constraint Sprint',
@@ -209,8 +214,8 @@ export default function SprintPage() {
               Fixed, for all four sessions and the written analysis afterwards. Run over video, so
               your timezone matters more than your address and there is no travel to pay for. If
               you decide after the first session that this is not going to be useful, we stop and
-              you pay nothing. The rate goes up once there are results to point at, and I would
-              rather say that than pretend the number is permanent.
+              you pay nothing. Three is what I can run properly alongside everything else, and
+              once there are results to point at the rate goes to its normal level.
             </p>
           </section>
 
