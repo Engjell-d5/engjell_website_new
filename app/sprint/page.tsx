@@ -9,11 +9,15 @@ import type { Metadata } from 'next';
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 
 /**
- * The paid version of the playbook.
+ * The paid version of the playbook. Delivered remotely.
  *
  * A free document ending in six diagnostics creates a specific kind of reader:
  * one who agrees, starts, and stalls on the honesty the exercise requires. This
  * page is for them, and it is deliberately the only paid thing on the site.
+ *
+ * Remote is not a downgrade of an in-person format. Four spaced sessions beat
+ * two consecutive days because the diagnostics need people to go and check real
+ * things between them, and it removes the geographic ceiling on who can buy.
  *
  * PRICE is a single constant because it is the number most likely to change and
  * it should never need hunting for in the copy.
@@ -28,42 +32,55 @@ const sprintData = {
     '@id': `${siteUrl}/#person`,
     name: 'Engjell Rraklli',
   },
-  areaServed: 'Europe',
+  areaServed: 'Worldwide',
   description:
-    'A two day working session with a founder and their leadership team to name the constraint the business is actually stuck on, and leave with a written ninety day plan.',
+    'Four remote working sessions across two weeks with a founder and their leadership team, to name the constraint the business is actually stuck on and leave with a written ninety day plan.',
 };
 
 export const metadata: Metadata = createMetadata({
   title: 'The Constraint Sprint',
   description:
-    'Two days with your leadership team to name the constraint your service business is actually stuck on, and a written ninety day plan to clear it. Run by Engjell Rraklli.',
+    'Four remote sessions with your leadership team to name the constraint your service business is actually stuck on, and a written ninety day plan to clear it. Run by Engjell Rraklli.',
   path: '/sprint',
 });
 
+/**
+ * Four sessions across two weeks rather than two consecutive days.
+ *
+ * Partly because nobody holds attention through two full days on video. Mostly
+ * because these diagnostics need people to go and look at real things, and the
+ * gap between sessions is where that happens. Asked in a room, "where did your
+ * last ten clients come from" gets answered from memory, which is exactly the
+ * flattering version the playbook warns about.
+ */
 const AGENDA = [
   {
-    when: 'Day one, morning',
+    when: 'Session one',
     what: 'Map the work as it actually happens',
     detail:
       'Not the process diagram. The real one, including the workarounds nobody puts in writing. Your team does the talking and I ask the awkward questions.',
+    homework: 'Each leader logs every decision that came to them, as it happens, for a week.',
   },
   {
-    when: 'Day one, afternoon',
+    when: 'Session two',
     what: 'Find what only you can do',
     detail:
-      'Every decision from the last month that could not have happened without the founder, sorted into context, authority and skill. This is usually the uncomfortable part.',
+      'We go through that log together and sort it into context, authority and skill. Having the real week in front of us rather than a remembered one is the whole point of the gap.',
+    homework: 'Pull the actual source of your last ten clients from the CRM, not from memory.',
   },
   {
-    when: 'Day two, morning',
+    when: 'Session three',
     what: 'Re-sort the work',
     detail:
       'What genuinely needs a person, what needs a person who is trained, and what software can now carry. Most teams have not revisited that third bucket since 2023.',
+    homework: 'Pick one candidate process and gather whatever data it currently depends on.',
   },
   {
-    when: 'Day two, afternoon',
+    when: 'Session four',
     what: 'Decide the first ninety days',
     detail:
       'One constraint, one process, one source of work that is not referral. Sequenced, with owners, and small enough to actually happen.',
+    homework: null,
   },
 ];
 
@@ -77,7 +94,7 @@ const DELIVERABLES = [
 const NOT_FOR = [
   'Anyone who wants a vendor evaluation. I will not tell you which tool to buy',
   'Companies under about ten people, where the founder is meant to be the bottleneck',
-  'Teams where the leadership will not sit in the room for two days',
+  'Teams whose leadership will not clear four two-hour blocks, or will attend with a laptop open on something else',
   'Anyone who needs the answer to be that nothing has to change',
 ];
 
@@ -100,9 +117,9 @@ export default function SprintPage() {
           </h1>
 
           <p className="mb-6 max-w-[62ch] text-lg leading-relaxed text-[var(--text-secondary)]">
-            Two days with you and the people who actually run your business, to name the thing it
-            is stuck on and decide what to do about it. You leave with a written analysis and a
-            ninety day plan.
+            Four sessions over two weeks with you and the people who actually run your business,
+            to name the thing it is stuck on and decide what to do about it. Run remotely, wherever
+            you are. You leave with a written analysis and a ninety day plan.
           </p>
 
           <p className="mb-10 max-w-[62ch] leading-relaxed text-[var(--text-muted)]">
@@ -117,9 +134,15 @@ export default function SprintPage() {
 
           {/* Agenda */}
           <section className="mb-12 border-t border-[var(--rule-faint)] pt-8">
-            <h2 className="mb-6 text-sm font-semibold uppercase tracking-[0.18em] text-[var(--text-meta)]">
-              What the two days look like
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-[var(--text-meta)]">
+              How the two weeks run
             </h2>
+            <p className="mb-6 max-w-[60ch] leading-relaxed text-[var(--text-muted)]">
+              Four sessions of about two hours, twice a week. The gaps are not padding. Asked in a
+              room, questions like where your last ten clients came from get answered from memory,
+              which is the flattering version. The work between sessions is where the real answers
+              come from.
+            </p>
             <ol className="flex flex-col gap-6">
               {AGENDA.map((slot) => (
                 <li key={slot.when} className="border-l-2 border-[var(--primary-mint)] pl-5">
@@ -128,6 +151,11 @@ export default function SprintPage() {
                   </p>
                   <p className="mb-1 font-semibold text-[var(--text-primary)]">{slot.what}</p>
                   <p className="text-sm leading-relaxed text-[var(--text-muted)]">{slot.detail}</p>
+                  {slot.homework && (
+                    <p className="mt-3 border-l-2 border-[var(--rule-faint)] pl-3 text-sm italic leading-relaxed text-[var(--text-meta)]">
+                      Before the next one: {slot.homework}
+                    </p>
+                  )}
                 </li>
               ))}
             </ol>
@@ -161,9 +189,10 @@ export default function SprintPage() {
               {PRICE}
             </p>
             <p className="max-w-[58ch] leading-relaxed text-[var(--text-muted)]">
-              Fixed, for the two days and the written analysis afterwards. Remote or in person,
-              and travel within Europe is included. If you decide during the first morning that
-              this is not going to be useful, we stop and you pay nothing.
+              Fixed, for all four sessions and the written analysis afterwards. Run over video, so
+              your timezone matters more than your address and there is no travel to pay for. If
+              you decide after the first session that this is not going to be useful, we stop and
+              you pay nothing.
             </p>
           </section>
 
