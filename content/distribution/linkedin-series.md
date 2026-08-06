@@ -191,7 +191,7 @@ number you have.*
 > So the judgement step is not a temporary safeguard until the tools improve.
 > It is the job now. It is worth paying more for than the drafting ever was.
 >
-> Which is an odd conclusion for a software company to reach. Hire fewer people,
+> Which is an odd conclusion for a tech company to reach. Hire fewer people,
 > pay them better, and give them tools that make their judgement go further.
 
 ---

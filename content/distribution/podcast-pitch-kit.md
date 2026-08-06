@@ -12,7 +12,7 @@ understand what a bad guest costs them.
 
 ## The angle to lead with
 
-Not "founder of a software company". Every host has forty of those in the inbox.
+Not "founder of a tech company". Every host has forty of those in the inbox.
 
 Lead with the thing only you can say:
 
