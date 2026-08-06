@@ -279,7 +279,7 @@ export default function Sidebar({ initialVideo, initialBlog }: SidebarProps = {}
             </div>
             <div className="relative z-10">
               <p className="text-sm text-[var(--text-muted)] leading-relaxed font-light italic pl-4 md:pl-0 lg:pl-10 pt-2 md:pt-4">
-                "I specialize in scaling next-generation digital agencies. Through division5 and divisionAI, I deliver software services and AI solutions."
+                "Through division5 I connect vetted AI-native engineers across the Balkans with companies in Europe and beyond. Through divisionAI I build the systems that run those companies."
               </p>
             </div>
           </div>

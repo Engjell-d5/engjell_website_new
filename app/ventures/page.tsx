@@ -23,7 +23,7 @@ const ICONS: Record<string, LucideIcon> = {
 export const metadata: Metadata = createMetadata({
   title: 'division5 & divisionAI',
   description:
-    "Engjell Rraklli's tech ventures in Albania: division5 (software development services) and divisionAI (AI solutions). Building scalable tech businesses from Tirana.",
+    "Engjell Rraklli's tech ventures: division5, a staffing marketplace for vetted AI-native Balkan engineers, and divisionAI (AI solutions). Building scalable tech businesses from Tirana.",
   path: '/ventures',
 });
 

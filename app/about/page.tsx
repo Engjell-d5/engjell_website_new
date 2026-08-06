@@ -100,7 +100,7 @@ export default function About() {
                   My work is grounded in the conviction that Albania is fertile ground for world-class technology. Over a decade ago, I stepped away from traditional education to build my own path. As a creative at heart, I fell in love with the act of building, whether it was software development or companies. I failed more times than I succeeded, but those experiences shaped me into the tech entrepreneur and startup founder I am today.
                 </p>
                     <p className="mb-0">
-                  Now, as the founder of division5, I apply those learnings to deliver global-standard software services. But my true focus isn't just scaling a business; it is scaling human potential. I am building the infrastructure that allows young Albanian talents to apply their skills at a global level without leaving their homes, proving that the best way to predict our country's future is to empower the youth who will build it.
+                  Now, as the founder of division5, that work has become a staffing marketplace connecting vetted AI-native engineers across the Balkans with companies in Europe and beyond. But my true focus isn't just scaling a business; it is scaling human potential. I am building the infrastructure that allows young Balkan talents to apply their skills at a global level without leaving their homes, proving that the best way to predict our region's future is to empower the youth who will build it.
                 </p>
                 {/* Same evidence as the homepage mission block, in the second
                     place the claim is made. */}
