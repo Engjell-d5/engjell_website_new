@@ -15,7 +15,8 @@ export const VENTURES: Venture[] = [
   {
     name: 'division5',
     url: 'https://division5.co',
-    description: 'Software development services and staff augmentation.',
+    description:
+      'A staffing marketplace connecting vetted AI-native engineers across the Balkans with companies in Europe and beyond.',
     image: '/ventures-division5.jpg',
     role: 'Founder',
   },
