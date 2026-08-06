@@ -107,6 +107,18 @@ export default function PlaybookPage() {
             any of this is worth your hour.
             <ArrowRight size={16} className="ml-1 inline" aria-hidden="true" />
           </p>
+
+          {/* The paid path, mentioned once and after the free thing has been
+              given away. Someone who has read this far is the only person the
+              sprint is for. */}
+          <p className="mt-6 leading-relaxed text-[var(--text-muted)]">
+            If you would rather not do the diagnostics alone, I run them with leadership teams over
+            two days as{' '}
+            <Link href="/sprint" className="text-[var(--primary-mint)] hover:underline">
+              the Constraint Sprint
+            </Link>
+            . That is the paid version, and the playbook is genuinely enough for plenty of people.
+          </p>
         </main>
 
         <div className="mt-16 lg:mt-0 lg:flex-1">

@@ -3,13 +3,18 @@
 import { useState } from 'react';
 import { Send, CheckCircle2 } from 'lucide-react';
 
-const TOPICS = ['Speaking', 'Consulting', 'Partnership', 'Other'] as const;
+const TOPICS = ['Constraint sprint', 'Speaking', 'Consulting', 'Partnership', 'Other'] as const;
 
-export default function ContactForm() {
+// The sprint page preselects its own topic so those enquiries arrive tagged
+// rather than as generic consulting, which is the difference between a lead
+// you can price and one you have to interrogate first.
+type Topic = (typeof TOPICS)[number];
+
+export default function ContactForm({ defaultTopic }: { defaultTopic?: Topic } = {}) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    topic: '',
+    topic: defaultTopic ?? '',
     message: '',
     website: '', // Honeypot field
   });
