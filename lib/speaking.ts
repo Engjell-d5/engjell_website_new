@@ -82,6 +82,19 @@ export const SPEAKING_CREDITS: SpeakingCredit[] = [
   },
 ];
 
+/**
+ * Recorded long-form interviews he has hosted, from the youTubeVideo table.
+ *
+ * This is the strongest evidence on the page and it was previously a passing
+ * mention. A programme committee's real question is whether someone can hold an
+ * audience and think without a script, and one panel credit does not answer it.
+ * Fourteen recorded conversations do, and they can be watched.
+ *
+ * Update the number when the count changes. An inflated one is worse than none,
+ * because it is checkable in a single click.
+ */
+export const HOSTED_EPISODES = 14;
+
 export const FORMATS = [
   {
     name: 'Conference talk',
@@ -106,6 +119,13 @@ export const FORMATS = [
  * their own programme, site and show notes. Making somebody ask for a shorter
  * version is a small piece of friction that costs bookings.
  */
+export const DECLINES = [
+  'Predictions. If I have not run it, I have nothing useful to say about it',
+  'Tool roundups and vendor comparisons. I am not a good judge and I have a conflict',
+  'Panels where everyone agrees. There is no reason for an audience to watch that',
+  'Anything requiring me to pretend a project went smoothly',
+];
+
 export const BIOS = {
   short:
     'Engjell Rraklli is a homegrown Albanian tech entrepreneur based in Tirana. He founded division5, a staffing marketplace placing vetted AI-native Balkan engineers with companies across Europe, and builds AI-powered business systems at divisionAI.',

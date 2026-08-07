@@ -4,7 +4,7 @@ import Sidebar from '@/components/Sidebar';
 import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
 import { createMetadata } from '@/lib/metadata';
 import { yearsOfBuilding, KNOWS_ABOUT } from '@/lib/site';
-import { TALKS, SPEAKING_CREDITS, FORMATS, BIOS } from '@/lib/speaking';
+import { TALKS, SPEAKING_CREDITS, FORMATS, BIOS, HOSTED_EPISODES, DECLINES } from '@/lib/speaking';
 import type { Metadata } from 'next';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
@@ -176,6 +176,24 @@ export default function Speaking() {
                 <Users className="w-5 h-5 text-[var(--primary-mint)]" />
                 <h2 className="text-2xl font-bebas text-white tracking-wide">STAGES</h2>
               </div>
+
+              {/* Placed here, not in the podcast section, because this is where a
+                  booker asks whether the person can hold an audience. A stage list of
+                  one does not answer that. Recorded conversations do, and unlike a
+                  credit they can be checked before deciding. */}
+              <div className="mb-8 border-l-2 border-[var(--primary-mint)] pl-6">
+                <p className="text-white font-bold mb-1">
+                  {HOSTED_EPISODES} recorded long-form interviews
+                </p>
+                <p className="text-sm text-[var(--text-muted)] leading-relaxed">
+                  Hosting{' '}
+                  <Link href="/podcast" className="text-[var(--primary-mint)] hover:underline">
+                    Scaling the Unscalable
+                  </Link>
+                  . If you want to know how I handle an unscripted hour before booking me,
+                  that is the honest way to find out.
+                </p>
+              </div>
               <div className="space-y-3">
                 {SPEAKING_CREDITS.map((c) => (
                   <div
@@ -208,6 +226,21 @@ export default function Speaking() {
                   </div>
                 ))}
               </div>
+            </section>
+
+            {/* What he turns down. Same lesson as the sprint page: refusing work is
+                the most credible thing an offer page does, and it saves both sides a
+                call. */}
+            <section className="mb-16">
+              <h2 className="text-2xl font-bebas text-white tracking-wide mb-6">WHAT I TURN DOWN</h2>
+              <ul className="space-y-2.5">
+                {DECLINES.map((d) => (
+                  <li key={d} className="text-sm text-[var(--text-muted)] leading-relaxed pl-5 relative">
+                    <span className="absolute left-0 text-[var(--secondary-orange)]">&times;</span>
+                    {d}
+                  </li>
+                ))}
+              </ul>
             </section>
 
             {/* Booking */}
