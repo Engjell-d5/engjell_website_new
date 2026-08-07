@@ -58,10 +58,9 @@ export default function PlaybookPage() {
           </h1>
 
           <p className="mb-6 max-w-[62ch] text-lg leading-relaxed text-[var(--text-secondary)]">
-            I founded division5 in Albania in 2015. Hiring here meant taking people with no track
-            record, because most people with a track record had already left. So we trained them,
-            and that forced me to write down everything a founder is normally allowed to keep in
-            their own head.
+            In May 2015 I founded division5 in Albania. I was 23, with no connections, no money,
+            no references and no experience. A decade of growing it taught me that whatever was
+            blocking the company was almost always something that existed only in my head.
           </p>
 
           <p className="mb-10 max-w-[62ch] leading-relaxed text-[var(--text-muted)]">

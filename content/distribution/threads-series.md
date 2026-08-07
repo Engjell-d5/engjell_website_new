@@ -52,29 +52,32 @@ bait, which is the opposite of what makes your writing land.
 
 ---
 
-## 2. Everyone with a track record had already left
+## 2. I started with nothing either
 
-*Chain of 3. No link. Your strongest post, and most people do not know this.*
+*Chain of 3. No link. Rebuilt from what he actually wrote, not a brain drain story.*
 
 **Post 1**
-> When I started hiring in Albania in 2015, the good developers were gone.
+> May 2015. I founded division5 at 23.
 >
-> Not busy. Gone. Berlin, London, Toronto.
+> No connections. No money. No references. No experience.
+>
+> The plan lasted until the money ran out, which did not take long.
 
 **Post 2**
-> So I had two options. Compete for the few who stayed, or hire people with no
-> track record at all and bring them up myself.
+> The only way to keep the company alive was to sell services. So that is what
+> we sold.
 >
-> I did the second one, mostly because I could not afford the first.
+> Then demand outran what we could deliver and we had to hire. Which means
+> recruiting, training, retaining, and tightening process constantly just to hold
+> quality steady while you grow.
 
 **Post 3**
-> It turned out better, for a reason I did not see coming.
+> By fifteen people I had still never written down a set of values.
 >
-> When most of your team is learning, nothing can live in your head. Every
-> judgement has to become something teachable, or the company stops at the edge
-> of your own attention.
+> That is the pattern I kept hitting for a decade. Whatever was blocking the
+> company was almost always something that existed only in my head.
 >
-> Most founders hit that at fifty people. I hit it at ten.
+> Not a strategy problem. A writing it down problem.
 
 ---
 

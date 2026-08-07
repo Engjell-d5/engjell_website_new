@@ -16,13 +16,13 @@ Not "founder of a tech company". Every host has forty of those in the inbox.
 
 Lead with the thing only you can say:
 
-> I built a company in a country where everyone with a track record had already
-> emigrated, so I had to hire people with no experience and bring them up myself.
-> That forced me to write down what most founders keep in their head, a decade
-> before I would have chosen to. Now we run a marketplace placing vetted
-> AI-native engineers from across the Balkans into companies in Europe, and the
-> same lesson decides who succeeds with AI and who buys a tool that changes
-> nothing.
+> I started a company in Albania at 23 with no money, no network and no
+> experience, in a country losing its best engineers to emigration. Eleven years
+> later we run a marketplace placing vetted AI-native engineers from across the
+> Balkans into companies in Europe. What I learned building it is that the
+> constraint is almost never the thing you are working on, it is the thing you
+> have not written down, and that is exactly what decides who succeeds with AI
+> and who buys a tool that changes nothing.
 
 Three things a booker hears in that: a place their audience has not heard from,
 a contrarian mechanism, and a live commercial vantage point on AI hiring.
@@ -43,10 +43,10 @@ The sequencing argument. Map, unify, build, then automate. Start at step four an
 you get a pilot that demos beautifully and changes nothing. Concrete: five people
 in recruitment became two.
 
-**3. Hiring in a market everyone left**
-Building an engineering org in the Balkans. What you learn when most of your team
-is doing their first professional job, and why that turned out to be an advantage
-rather than a handicap.
+**3. Building an engineering company in a country losing its engineers**
+What it takes to build a technology business in the Balkans without capital, and
+why creating careers people do not have to emigrate for turned out to be a
+commercial advantage rather than a cause.
 
 **4. What AI actually changed about hiring engineers**
 The cost of a first draft went to zero, judgement did not. Why that means smaller
@@ -66,9 +66,9 @@ Short, no attachments, one link. Bookers scan on a phone.
 > sentence about what you actually thought, including where you disagreed.}
 >
 > I run division5, a marketplace placing vetted AI-native engineers from across
-> the Balkans into companies in Europe. I started it in Albania in 2015, when
-> essentially everyone with a track record had already emigrated, so I hired
-> people with no experience and brought them up myself.
+> the Balkans into companies in Europe. I started it in Albania in 2015, at 23,
+> with no money and no network, in a country steadily losing its best engineers
+> to emigration.
 >
 > That constraint taught me something I now see everywhere: the founder is
 > almost always the bottleneck, and it is almost never about time management.

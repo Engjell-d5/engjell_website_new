@@ -53,29 +53,27 @@ etiquette, it is distribution: replies are the strongest signal the feed has.
 
 ---
 
-## 2. Everyone with a track record had already left
+## 2. I started with nothing either
 
-*No link. This is the Albania post. It is your strongest differentiator and most
-people who follow you do not know it.*
+*No link. Rebuilt from what he actually wrote.*
 
-> When I started hiring in Albania in 2015, the good developers were gone.
-> Not busy. Gone. Berlin, London, Toronto.
+> May 2015. I founded division5 at 23, with no connections, no money, no
+> references and no experience.
 >
-> So I had a choice. Compete for the handful who stayed, or hire people with no
-> track record at all and bring them up myself.
+> My plan lasted until the money ran out, which did not take long. The only way
+> to keep the company alive was to sell services, so that is what we sold.
 >
-> I did the second one, mostly because I could not afford the first.
+> Then demand outran what we could deliver and we had to hire. Scaling a service
+> business means recruiting, training, retaining, and constantly tightening
+> process just to hold quality steady while you grow.
 >
-> It turned out to be the better decision, for a reason I did not see coming.
-> When most of your team is learning, nothing can live in your head. Every
-> judgement you make has to become something you can teach, or the company stops
-> at the edge of your own attention.
+> By around fifteen people I had still never written down a set of values.
 >
-> Founders usually hit that wall somewhere past fifty people. I hit it at ten.
-> Then again at fifteen.
+> That was the pattern for a decade. Every time the company was stuck, the thing
+> blocking it existed only in my head. Not a strategy problem, a writing it down
+> problem.
 >
-> I was forced to write down what most founders are allowed to leave implicit,
-> a decade before I would have chosen to.
+> It took me far too long to see that was the actual job.
 
 ---
 
