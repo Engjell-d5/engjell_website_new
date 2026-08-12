@@ -7,7 +7,13 @@ interface StructuredDataProps {
     | 'WebSite'
     | 'BreadcrumbList'
     | 'VideoObject'
+    // A profile OF someone. Google treats mainEntity as required on this type,
+    // so only use it for /about and /speaking, never for a page that sells
+    // something.
     | 'ProfilePage'
+    // Something offered for money or for free, with a provider. The Constraint
+    // Sprint, not a page about a person.
+    | 'Service'
     | 'ContactPage'
     | 'CollectionPage'
     | 'ItemList'

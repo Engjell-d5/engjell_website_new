@@ -24,6 +24,14 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com'
  */
 const PRICE = '€7,500';
 
+/**
+ * Typed as a Service, not a ProfilePage.
+ *
+ * It was a ProfilePage, which Search Console flagged as "Missing field
+ * mainEntity" — correctly, because ProfilePage describes a profile OF someone
+ * and requires the person as its mainEntity. This page sells a thing. A service
+ * with a provider is what it actually is, and it needs no mainEntity.
+ */
 const sprintData = {
   name: 'The Constraint Sprint',
   url: `${siteUrl}/sprint`,
@@ -101,7 +109,7 @@ const NOT_FOR = [
 export default function SprintPage() {
   return (
     <>
-      <StructuredData type="ProfilePage" data={sprintData} />
+      <StructuredData type="Service" data={sprintData} />
       <Breadcrumbs
         items={[
           { name: 'Home', url: siteUrl },
