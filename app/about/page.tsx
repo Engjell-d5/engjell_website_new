@@ -139,9 +139,15 @@ export default function About() {
                 <p className="text-sm text-[var(--text-muted)] font-light max-w-md mx-auto mb-6">
                   If any of this resonates, whether you want to work together or just hear more of the story, here's where to go next.
                 </p>
+                {/* The sprint is the only paid offer on the site and it was
+                    reachable from the playbook alone, which meant nobody who
+                    read the story ever saw it. */}
                 <div className="flex flex-wrap items-center justify-center gap-3">
                   <Link href="/contact" className="btn btn-primary">
                     Work With Me
+                  </Link>
+                  <Link href="/sprint" className="btn btn-secondary-on-image">
+                    The Constraint Sprint
                   </Link>
                   <Link href="/podcast" className="btn btn-secondary-on-image">
                     <Play className="w-4 h-4" />

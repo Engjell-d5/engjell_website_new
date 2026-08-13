@@ -107,7 +107,7 @@ export default function Speaking() {
                     <ul className="space-y-1.5">
                       {talk.takeaways.map((t) => (
                         <li key={t} className="text-sm text-[var(--text-secondary)] flex gap-2.5">
-                          <span className="text-[var(--primary-mint)] shrink-0">—</span>
+                          <span className="text-[var(--primary-mint)] shrink-0" aria-hidden="true">·</span>
                           <span>{t}</span>
                         </li>
                       ))}

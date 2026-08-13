@@ -23,9 +23,10 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com'
  * be worse than their absence. Add a Terms section when the numbers are real.
  *
  * SEO/GEO: every H2 is phrased as the question a founder would actually type,
- * which is also how a model retrieves. The FAQ schema below mirrors those H2s
- * verbatim so an assistant answering "who invests in Albanian B2B startups" has
- * a clean, attributable block to lift.
+ * which is also how a model retrieves. There was a Questions section carrying
+ * FAQPage schema, but five of its six answers restated the section directly
+ * above them; the markup was driving the copy. It comes back when there are
+ * terms to publish, because those are the questions it would not duplicate.
  */
 
 const investData = {
@@ -56,45 +57,6 @@ const investData = {
     'Angel investment in B2B productized digital services and high-ticket B2B products built in Albania or Kosovo and already selling to paying customers in Europe or the US. Invested by Engjell Rraklli directly or through his ventures, division5 and divisionAI, and coming with customer introductions, distribution, and help streamlining and automating delivery.',
 };
 
-/**
- * Mirrors the H2s on the page. Kept as one array so the visible copy and the
- * structured data cannot drift apart.
- */
-const FAQ = [
-  {
-    q: 'What does Engjell Rraklli invest in?',
-    a: 'Two things. B2B productized digital services, meaning a service sold like a product with fixed scope, fixed price and repeatable delivery. And high-ticket B2B products, meaning something sold to other businesses at a price that justifies a real sales conversation rather than a checkout button.',
-  },
-  {
-    q: 'Where do you invest?',
-    a: 'Built in Albania or Kosovo, sold abroad. The company and its team operate here; the customers are in Europe or the US and are already paying. A business whose customers are only local is a different kind of company to the one I can help.',
-  },
-  {
-    q: 'What do you look for?',
-    a: 'Revenue that already exists, however small, because it proves somebody is willing to pay. Delivery that repeats rather than being reinvented per client. A founder who can say plainly what the business is stuck on. And paying customers already in Europe or the US, not a plan to sell there — the business should be built in Albania or Kosovo and sold abroad.',
-  },
-  {
-    q: 'Who is actually investing?',
-    a: 'Engjell Rraklli directly, or one of his ventures, division5 and divisionAI. Which of the three depends on what the business needs, and it is settled per deal rather than decided in advance.',
-  },
-  {
-    q: 'What do you bring besides money?',
-    a: 'Four things. Access to the customers division5 and divisionAI already work with, and the network around them. Help with distribution, which is getting in front of buyers repeatably rather than closing every deal personally. Help streamlining delivery so the same work is not reinvented for every client. And then automating what is left, with software underneath the operation. In that order, because automating a process nobody has straightened out first only makes the mess run faster.',
-  },
-  {
-    q: 'Who should not apply?',
-    a: 'Consumer apps. Agencies billing purely by the hour with no productized offer. Companies selling only to local customers in Albania or Kosovo. Anything with no paying customers yet. And founders looking for a passive cheque with no involvement.',
-  },
-];
-
-const faqSchema = {
-  mainEntity: FAQ.map((item) => ({
-    '@type': 'Question',
-    name: item.q,
-    acceptedAnswer: { '@type': 'Answer', text: item.a },
-  })),
-};
-
 export const metadata: Metadata = createMetadata({
   title: 'Angel Investing in Albania and Kosovo',
   description:
@@ -122,7 +84,7 @@ const BRINGS = [
   },
   {
     title: 'Automating what is left',
-    body: 'Once delivery is consistent it can be automated, and that is what divisionAI does — software underneath the operation, with AI inside it rather than bolted on the side. In that order, because automating a process nobody has straightened out first just makes the mess run faster.',
+    body: 'Once delivery is consistent it can be automated, and that is what divisionAI does: software underneath the operation, with AI inside it rather than bolted on the side. In that order, because automating a process nobody has straightened out first just makes the mess run faster.',
   },
 ];
 
@@ -130,13 +92,13 @@ const LOOKING_FOR = [
   'Revenue that already exists, however small. It proves somebody is willing to pay, which is the only evidence that counts',
   'Delivery that repeats. The same thing sold twice beats a bespoke project sold once, every time',
   'A founder who can name what the business is stuck on without rehearsing it first',
-  'Customers already abroad, in Europe or the US. Not a plan to sell there — paying customers there now. The first foreign customer is a completely different problem to the tenth, and I want you past the first',
+  'Customers already abroad, in Europe or the US. Not a plan to sell there. Paying customers there now. The first foreign customer is a completely different problem to the tenth, and I want you past the first',
 ];
 
 const NOT_FOR = [
   'Consumer apps. I would be guessing, and you deserve better than my guess',
   'Agencies billing purely by the hour with nothing productized. That is a job, not a business you can sell',
-  'Companies selling only to Albanian or Kosovar customers. Good businesses, wrong investor — the ceiling is the local economy and I cannot lift it for you',
+  'Companies selling only to Albanian or Kosovar customers. Good businesses, wrong investor. The ceiling is the local economy and I cannot lift it for you',
   'Ideas with no paying customers yet. Come back when someone abroad has paid, or when someone has said no for a reason you understand',
   'Anyone who wants a passive cheque. If money alone were enough, you would not need me specifically',
 ];
@@ -145,7 +107,6 @@ export default function InvestPage() {
   return (
     <>
       <StructuredData type="Service" data={investData} />
-      <StructuredData type="FAQPage" data={faqSchema} />
       <Breadcrumbs
         items={[
           { name: 'Home', url: siteUrl },
@@ -213,7 +174,7 @@ export default function InvestPage() {
               Built here, sold abroad
             </h2>
             <p className="mb-4 max-w-[60ch] leading-relaxed text-[var(--text-muted)]">
-              The company and the team operate in Albania or Kosovo. The customers do not — they are
+              The company and the team operate in Albania or Kosovo. The customers do not. They are
               in <strong className="text-[var(--text-primary)]">Europe or the US</strong>, and they
               are already paying. Not a plan to expand there, not a pilot, revenue.
             </p>
@@ -292,21 +253,17 @@ export default function InvestPage() {
                 </li>
               ))}
             </ul>
-          </section>
-
-          {/* Questions. Rendered from the same array the FAQ schema is built
-              from: Google requires the marked-up Q&A to be visible on the page,
-              and assistants quote whichever they find. One source, no drift. */}
-          <section className="mb-12 border-t border-[var(--rule-faint)] pt-8">
-            <h2 className="mb-6 text-2xl font-bold text-[var(--text-primary)]">Questions</h2>
-            <dl className="flex flex-col gap-6">
-              {FAQ.map((item) => (
-                <div key={item.q}>
-                  <dt className="mb-2 font-semibold text-[var(--text-primary)]">{item.q}</dt>
-                  <dd className="max-w-[60ch] leading-relaxed text-[var(--text-muted)]">{item.a}</dd>
-                </div>
-              ))}
-            </dl>
+            {/* The filter above rules out most readers by design. Sending them
+                away with nothing wastes the visit, and the sprint is the same
+                work without the investment. */}
+            <p className="mt-8 max-w-[60ch] leading-relaxed text-[var(--text-muted)]">
+              If one of those is you, the work itself is still worth doing.{' '}
+              <Link href="/sprint" className="text-[var(--primary-mint)] hover:underline">
+                The Constraint Sprint
+              </Link>{' '}
+              is the same four sessions I would run with a company I had invested in, without the
+              investment, and it is open to anyone anywhere.
+            </p>
           </section>
 
           {/* Apply */}
