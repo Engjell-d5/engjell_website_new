@@ -54,13 +54,13 @@ const investData = {
     { '@type': 'Country', name: 'Kosovo' },
   ],
   description:
-    'Angel investment in B2B productized digital services and high-ticket B2B products built in Albania or Kosovo and already selling to paying customers in Europe or the US. Invested by Engjell Rraklli directly or through his ventures, division5 and divisionAI, and coming with customer introductions, distribution, and help streamlining and automating delivery.',
+    'Angel investment in B2B productized digital services, high-ticket B2B products and services delivered as software, built in Albania or Kosovo and already selling to paying customers in Europe or the US. Invested by Engjell Rraklli directly or through his ventures, division5 and divisionAI, and coming with customer introductions, distribution, and help streamlining and automating delivery.',
 };
 
 export const metadata: Metadata = createMetadata({
   title: 'Angel Investing in Albania and Kosovo',
   description:
-    'Engjell Rraklli invests in B2B productized digital services and high-ticket B2B products built in Albania or Kosovo and already selling in Europe or the US. Customers, distribution and automation come with the cheque.',
+    'Engjell Rraklli invests in B2B productized digital services, high-ticket B2B products and services delivered as software, built in Albania or Kosovo and already selling in Europe or the US. Customers, distribution and automation come with the cheque.',
   path: '/invest',
 });
 
@@ -122,7 +122,8 @@ export default function InvestPage() {
           </h1>
 
           <p className="mb-6 max-w-[62ch] text-lg leading-relaxed text-[var(--text-secondary)]">
-            I back B2B productized digital services and high-ticket B2B products built in{' '}
+            I back B2B productized digital services, high-ticket B2B products, and services
+            turned into software, built in{' '}
             <strong className="text-[var(--text-primary)]">Albania and Kosovo</strong>.
           </p>
 
@@ -152,6 +153,19 @@ export default function InvestPage() {
                   every time. The test is simple: if your second client costs you materially less to
                   serve than your first, you are productized. If every project starts from a blank
                   page, you are not, and that is the first thing worth fixing.
+                </p>
+              </div>
+              <div className="border-l-2 border-[var(--primary-mint)] pl-5">
+                <p className="mb-2 font-semibold text-[var(--text-primary)]">
+                  Services as software
+                </p>
+                <p className="max-w-[60ch] leading-relaxed text-[var(--text-muted)]">
+                  Work that used to be sold by the hour, now delivered mostly by software with AI
+                  doing the labour and people kept on the judgement. The customer buys the outcome
+                  rather than a team, and your cost of serving the next one is close to nothing.
+                  This is the end of the same road as the first category: bespoke work becomes
+                  repeatable, and repeatable work becomes software. If you are partway along it,
+                  that is a good place to find me.
                 </p>
               </div>
               <div className="border-l-2 border-[var(--primary-mint)] pl-5">

@@ -35,8 +35,9 @@ const CUSTOMERS = [
 
 const MODELS = [
   'Productized digital service',
+  'Services as software, AI delivered',
   'High-ticket B2B product',
-  'Neither exactly, explained below',
+  'None of these exactly, explained below',
 ] as const;
 
 const REVENUE = [
