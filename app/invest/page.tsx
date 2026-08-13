@@ -53,7 +53,7 @@ const investData = {
     { '@type': 'Country', name: 'Kosovo' },
   ],
   description:
-    'Angel investment in B2B productized digital services and high-ticket B2B products operating in Albania and Kosovo. Invested by Engjell Rraklli directly or through his ventures, division5 and divisionAI.',
+    'Angel investment in B2B productized digital services and high-ticket B2B products built in Albania or Kosovo and already selling to paying customers in Europe or the US. Invested by Engjell Rraklli directly or through his ventures, division5 and divisionAI, and coming with customer introductions, distribution, and help streamlining and automating delivery.',
 };
 
 /**
@@ -67,11 +67,11 @@ const FAQ = [
   },
   {
     q: 'Where do you invest?',
-    a: 'Albania and Kosovo. Companies operating there, wherever the customers happen to be. Serving clients in Western Europe from Tirana or Pristina is the normal case, not an exception.',
+    a: 'Built in Albania or Kosovo, sold abroad. The company and its team operate here; the customers are in Europe or the US and are already paying. A business whose customers are only local is a different kind of company to the one I can help.',
   },
   {
     q: 'What do you look for?',
-    a: 'Revenue that already exists, however small, because it proves somebody is willing to pay. Delivery that repeats rather than being reinvented per client. A founder who can say plainly what the business is stuck on. And a market outside the region, so growth is not capped by the size of the local economy.',
+    a: 'Revenue that already exists, however small, because it proves somebody is willing to pay. Delivery that repeats rather than being reinvented per client. A founder who can say plainly what the business is stuck on. And paying customers already in Europe or the US, not a plan to sell there — the business should be built in Albania or Kosovo and sold abroad.',
   },
   {
     q: 'Who is actually investing?',
@@ -79,11 +79,11 @@ const FAQ = [
   },
   {
     q: 'What do you bring besides money?',
-    a: 'The specific experience of building a service business in Albania since 2015 and turning it into something that runs on process rather than on the founder remembering things. That means productizing delivery, hiring and training engineers locally, and putting software underneath operations that were previously held together by people.',
+    a: 'Four things. Access to the customers division5 and divisionAI already work with, and the network around them. Help with distribution, which is getting in front of buyers repeatably rather than closing every deal personally. Help streamlining delivery so the same work is not reinvented for every client. And then automating what is left, with software underneath the operation. In that order, because automating a process nobody has straightened out first only makes the mess run faster.',
   },
   {
     q: 'Who should not apply?',
-    a: 'Consumer apps, agencies billing purely by the hour with no productized offer, pre-revenue ideas with no customer conversations yet, and founders looking for a passive cheque with no involvement.',
+    a: 'Consumer apps. Agencies billing purely by the hour with no productized offer. Companies selling only to local customers in Albania or Kosovo. Anything with no paying customers yet. And founders looking for a passive cheque with no involvement.',
   },
 ];
 
@@ -98,21 +98,46 @@ const faqSchema = {
 export const metadata: Metadata = createMetadata({
   title: 'Angel Investing in Albania and Kosovo',
   description:
-    'Engjell Rraklli invests in B2B productized digital services and high-ticket B2B products operating in Albania and Kosovo. What I back, what I look for, and how to apply.',
+    'Engjell Rraklli invests in B2B productized digital services and high-ticket B2B products built in Albania or Kosovo and already selling in Europe or the US. Customers, distribution and automation come with the cheque.',
   path: '/invest',
 });
+
+/**
+ * The non-cash half of the offer. Listed separately from the prose because for
+ * most founders reading this it is the more valuable half, and burying it in a
+ * paragraph reads like modesty rather than substance.
+ */
+const BRINGS = [
+  {
+    title: 'Customers and the network around them',
+    body: 'Introductions to the companies we already work with through division5 and divisionAI, and to the people around them. Warm, and to someone who can actually decide, which is the only kind of introduction worth making.',
+  },
+  {
+    title: 'Distribution',
+    body: 'The hard part of a productized service is almost never building it. It is getting in front of buyers repeatably, without the founder personally closing every deal. That is the problem I have spent the longest on and the one most companies here are actually stuck on.',
+  },
+  {
+    title: 'Streamlining how you deliver',
+    body: 'Turning work that is reinvented per client into something that runs the same way every time. It is what makes a service business worth owning rather than worth working at, and it is a prerequisite for everything below it.',
+  },
+  {
+    title: 'Automating what is left',
+    body: 'Once delivery is consistent it can be automated, and that is what divisionAI does — software underneath the operation, with AI inside it rather than bolted on the side. In that order, because automating a process nobody has straightened out first just makes the mess run faster.',
+  },
+];
 
 const LOOKING_FOR = [
   'Revenue that already exists, however small. It proves somebody is willing to pay, which is the only evidence that counts',
   'Delivery that repeats. The same thing sold twice beats a bespoke project sold once, every time',
   'A founder who can name what the business is stuck on without rehearsing it first',
-  'Customers outside the region, so growth is not capped by the size of the local economy',
+  'Customers already abroad, in Europe or the US. Not a plan to sell there — paying customers there now. The first foreign customer is a completely different problem to the tenth, and I want you past the first',
 ];
 
 const NOT_FOR = [
   'Consumer apps. I would be guessing, and you deserve better than my guess',
   'Agencies billing purely by the hour with nothing productized. That is a job, not a business you can sell',
-  'Ideas with no customer conversations yet. Come back when someone has said no for a reason you understand',
+  'Companies selling only to Albanian or Kosovar customers. Good businesses, wrong investor — the ceiling is the local economy and I cannot lift it for you',
+  'Ideas with no paying customers yet. Come back when someone abroad has paid, or when someone has said no for a reason you understand',
   'Anyone who wants a passive cheque. If money alone were enough, you would not need me specifically',
 ];
 
@@ -185,12 +210,19 @@ export default function InvestPage() {
           {/* Where */}
           <section className="mb-12 border-t border-[var(--rule-faint)] pt-8">
             <h2 className="mb-4 text-2xl font-bold text-[var(--text-primary)]">
-              Where: Albania and Kosovo
+              Built here, sold abroad
             </h2>
             <p className="mb-4 max-w-[60ch] leading-relaxed text-[var(--text-muted)]">
-              Companies operating here, wherever their customers happen to be. Serving clients in
-              Western Europe from Tirana or Pristina is the normal case rather than the exception,
-              and I would rather back a founder who already understands that than explain it.
+              The company and the team operate in Albania or Kosovo. The customers do not — they are
+              in <strong className="text-[var(--text-primary)]">Europe or the US</strong>, and they
+              are already paying. Not a plan to expand there, not a pilot, revenue.
+            </p>
+            <p className="mb-4 max-w-[60ch] leading-relaxed text-[var(--text-muted)]">
+              This is the hardest filter on the page and the one I will not move on. A company
+              selling only locally is capped by an economy of a few million people, and the work of
+              landing the first customer in Berlin or Chicago is not something I can do on your
+              behalf. Once you have proven you can, doing it repeatably is exactly what I am useful
+              for.
             </p>
             <p className="max-w-[60ch] leading-relaxed text-[var(--text-muted)]">
               Albania exports its best people. Everything I have built here is a bet that it does
@@ -216,19 +248,27 @@ export default function InvestPage() {
             <h2 className="mb-4 text-2xl font-bold text-[var(--text-primary)]">
               What I bring besides money
             </h2>
-            <p className="mb-4 max-w-[60ch] leading-relaxed text-[var(--text-muted)]">
+            <p className="mb-8 max-w-[60ch] leading-relaxed text-[var(--text-muted)]">
               I founded{' '}
               <Link href="/ventures" className="text-[var(--primary-mint)] hover:underline">
                 division5
               </Link>{' '}
               in 2015 and spent the decade since turning a service business into something that runs
-              on process rather than on me remembering things. Productizing delivery, hiring and
-              training engineers locally, and eventually putting software underneath operations that
-              used to be held together by people.
+              on process rather than on me remembering things. That decade is the asset, and it
+              comes with the cheque.
             </p>
+            <div className="mb-8 flex flex-col gap-8">
+              {BRINGS.map((item) => (
+                <div key={item.title} className="border-l-2 border-[var(--primary-mint)] pl-5">
+                  <p className="mb-2 font-semibold text-[var(--text-primary)]">{item.title}</p>
+                  <p className="max-w-[60ch] leading-relaxed text-[var(--text-muted)]">
+                    {item.body}
+                  </p>
+                </div>
+              ))}
+            </div>
             <p className="max-w-[60ch] leading-relaxed text-[var(--text-muted)]">
-              That is the help worth having from me. If you want to see how I think before you
-              apply, the{' '}
+              If you want to see how I think before you apply, the{' '}
               <Link href="/playbook" className="text-[var(--primary-mint)] hover:underline">
                 playbook
               </Link>{' '}

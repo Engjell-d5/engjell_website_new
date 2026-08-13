@@ -20,6 +20,19 @@ import { Send, CheckCircle2 } from 'lucide-react';
 
 const GEOGRAPHIES = ['Albania', 'Kosovo', 'Both', 'Elsewhere'] as const;
 
+/**
+ * The hardest filter on the page, so it is asked here rather than discovered on
+ * a call. "Only local customers so far" is a legitimate answer that saves both
+ * sides a conversation.
+ */
+const CUSTOMERS = [
+  'Europe',
+  'United States',
+  'Both Europe and the US',
+  'Only local customers so far',
+  'No paying customers yet',
+] as const;
+
 const MODELS = [
   'Productized digital service',
   'High-ticket B2B product',
@@ -40,6 +53,7 @@ const EMPTY = {
   company: '',
   link: '',
   geography: '',
+  customers: '',
   model: '',
   revenue: '',
   business: '',
@@ -71,6 +85,7 @@ export default function InvestForm() {
       `Company: ${form.company}`,
       `Link: ${form.link || 'not given'}`,
       `Operates in: ${form.geography}`,
+      `Paying customers in: ${form.customers}`,
       `Model: ${form.model}`,
       `Revenue: ${form.revenue}`,
       '',
@@ -169,6 +184,17 @@ export default function InvestForm() {
             onChange={handleChange} required disabled={loading} className={field}>
             <option value="" disabled>Select</option>
             {GEOGRAPHIES.map((g) => <option key={g} value={g}>{g}</option>)}
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="invest-customers" className="form-label">
+            Where are your paying customers today?
+          </label>
+          <select id="invest-customers" name="customers" value={form.customers}
+            onChange={handleChange} required disabled={loading} className={field}>
+            <option value="" disabled>Select</option>
+            {CUSTOMERS.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
 
