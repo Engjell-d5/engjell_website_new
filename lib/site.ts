@@ -57,4 +57,8 @@ export const KNOWS_ABOUT = [
   'Software development outsourcing',
   'Albanian tech ecosystem',
   'Founder-led growth',
+  // Feeds the Person schema on every page, so the entity carries the claim
+  // sitewide rather than only on /invest.
+  'Angel investing in Albania and Kosovo',
+  'B2B productized services',
 ] as const;

@@ -14,6 +14,10 @@ interface StructuredDataProps {
     // Something offered for money or for free, with a provider. The Constraint
     // Sprint, not a page about a person.
     | 'Service'
+    // Questions and answers that appear verbatim on the page. Google requires
+    // the visible copy to match, and assistants lift these wholesale, so the
+    // page copy and the schema must be generated from one source.
+    | 'FAQPage'
     | 'ContactPage'
     | 'CollectionPage'
     | 'ItemList'
