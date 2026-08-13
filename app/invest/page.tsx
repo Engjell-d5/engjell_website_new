@@ -12,10 +12,11 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com'
 /**
  * Angel investing, Albania and Kosovo.
  *
- * The name is not a gimmick: engjëll is the Albanian word for angel. It is
- * stated once, at the top, and then the page gets on with it — the site's voice
- * is dry, and a pun that keeps winking stops being charming by the third
- * mention.
+ * The name is not a gimmick: engjëll is the Albanian word for angel. The
+ * headline states it and nothing after it comments on it. An earlier draft
+ * followed up with a line about it being the one joke the name allows, which
+ * explained the joke and killed it. If the reader gets it they get it, and if
+ * they do not, the page still says what it invests in.
  *
  * No terms on the page. Cheque size, stake and structure are not published
  * because they have not been decided in public, and inventing them here would
@@ -135,8 +136,7 @@ export default function InvestPage() {
           </h1>
 
           <p className="mb-6 max-w-[62ch] text-lg leading-relaxed text-[var(--text-secondary)]">
-            It is the one joke my name allows, and I have waited a long time to earn it. I back
-            B2B productized digital services and high-ticket B2B products built in{' '}
+            I back B2B productized digital services and high-ticket B2B products built in{' '}
             <strong className="text-[var(--text-primary)]">Albania and Kosovo</strong>.
           </p>
 
