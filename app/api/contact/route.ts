@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { addContactMessage, getContactMessages, markContactMessageAsRead, deleteContactMessage, ContactMessage } from '@/lib/data';
 import { getAuthUser } from '@/lib/auth';
 import { checkSpam } from '@/lib/spam-protection';
+import { canonicalizeEmail, looksLikeBotAddress } from '@/lib/email-normalize';
 
 export async function POST(request: NextRequest) {
   try {
@@ -40,10 +41,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // checkSpam covers the honeypot, submission timing and per-IP rate limits.
+    // The dot-trick bot walks through all three: it fills the form slowly, never
+    // touches hidden fields, and stays under the rate ceiling. The shape of the
+    // address is the only signal left, and it is the one that catches it.
+    if (looksLikeBotAddress(email)) {
+      console.warn('Bot-shaped address rejected on contact form:', email);
+      // Answer success, for the same reason checkSpam does above.
+      return NextResponse.json({
+        success: true,
+        message: 'Message sent successfully!'
+      });
+    }
+
     // Add message to database
     const contactMessage = await addContactMessage({
       name: name.trim(),
-      email: email.toLowerCase().trim(),
+      email: canonicalizeEmail(email),
       message: message.trim(),
     });
 
