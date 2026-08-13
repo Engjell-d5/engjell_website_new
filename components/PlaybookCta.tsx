@@ -25,9 +25,9 @@ import { ArrowRight, Download } from 'lucide-react';
 
 export const PLAYBOOK_PDF = '/downloads/scaling-a-service-business-with-ai.pdf';
 
-const TITLE = 'Scaling a service business with AI';
+const TITLE = 'Productize and Scale';
 const BLURB =
-  'Six diagnostics from eleven years of building a tech company in Albania, starting at 23 with no money and no idea what I was doing. Ten pages, written to be worked through rather than read.';
+  'Eight steps for turning a service business into something that runs without you, from eleven years of building one in Albania. Written to be worked through rather than read: every step ends in something you have to compile.';
 
 export default function PlaybookCta({ variant = 'inline' }: { variant?: 'inline' | 'page' }) {
   const [email, setEmail] = useState('');

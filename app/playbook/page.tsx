@@ -14,7 +14,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com'
 // everyone else.
 // StructuredData supplies @context and @type, so neither belongs here.
 const playbookData = {
-  name: 'Scaling a Service Business with AI',
+  name: 'Productize and Scale',
   author: {
     '@type': 'Person',
     '@id': `${siteUrl}/#person`,
@@ -25,23 +25,28 @@ const playbookData = {
   encodingFormat: 'application/pdf',
   isAccessibleForFree: true,
   description:
-    'A ten page working playbook with six diagnostics for founders of service businesses who are still the bottleneck their business queues behind.',
+    'An eleven page working playbook for founders of service businesses. Eight steps to turn work that is reinvented for every client into something repeatable that runs without you, each ending in something you have to compile.',
 };
 
 export const metadata: Metadata = createMetadata({
-  title: 'The Scaling Playbook',
+  title: 'Productize and Scale',
   description:
-    'A free ten page playbook for service business founders. Six diagnostics to find the constraint you are, re-sort what actually needs a person, and put AI in the right order.',
+    'A free working playbook for service business founders. Eight steps to productize what you sell, find where the work really comes from, and put AI in the right order rather than first.',
   path: '/playbook',
 });
 
+// Mirrors the eight steps in the PDF. If the document changes, this changes with
+// it: a lead magnet page that promises different contents to the asset is worse
+// than no page at all.
 const CONTENTS = [
-  ['The bottleneck has your name on it', 'What stops when you stop, and which of the three reasons it is.'],
-  ['Re-sort every recurring task', 'Three buckets. The third one grew and almost nobody updated their list.'],
-  ['What actually changed, and what did not', 'The cost of a first draft went to zero. Judgement did not.'],
-  ['The order is the whole thing', 'Four steps. Starting at step four is the expensive mistake.'],
-  ['When word of mouth runs out', 'Referral is not a channel. It is a ceiling with good manners.'],
-  ['Culture carries all of it', 'If software does the junior work, the path that made your seniors is gone.'],
+  ['What you actually sell', 'The offer you have already sold twice is the one the market voted for.'],
+  ['Who pays, and from where', 'Your last ten customers, by country and by how they really found you.'],
+  ['How the work really happens', 'Not the process diagram. The one with the workarounds in it.'],
+  ['Where the work comes from', 'Referral is not a channel. It is a ceiling with good manners.'],
+  ['What only you can do', 'What stops when you stop, and which of the three reasons it is.'],
+  ['One clean version of your numbers', 'Four rows. Any row with two answers breaks the next step.'],
+  ['Only now, automate', 'Starting here is the expensive mistake. It makes the mess run faster.'],
+  ['The next ninety days', 'One constraint, one process, one channel. Owners and dates against each.'],
 ];
 
 export default function PlaybookPage() {
@@ -54,7 +59,7 @@ export default function PlaybookPage() {
         <main className="w-full lg:max-w-[46rem]">
           <p className="section-label mb-4">Free playbook</p>
           <h1 className="mb-6 text-4xl font-bold leading-tight text-[var(--text-primary)] md:text-5xl">
-            Scaling a service business with AI
+            Productize and scale
           </h1>
 
           <p className="mb-6 max-w-[62ch] text-lg leading-relaxed text-[var(--text-secondary)]">
@@ -64,11 +69,11 @@ export default function PlaybookPage() {
           </p>
 
           <p className="mb-10 max-w-[62ch] leading-relaxed text-[var(--text-muted)]">
-            This is what was left after a decade of that. Six diagnostics, each ending with
-            something you answer in writing, because a diagnostic you do in your head is one you
-            flatter yourself through. At the end you will have a named constraint, a re-sorted list
-            of what genuinely needs a person, and a first ninety days that does not start with
-            buying software.
+            This is what was left after a decade of that. Eight steps, each ending in something
+            you have to compile, because a question you answer in your head is one you flatter
+            yourself through. You finish with your own document: what you actually sell, where the
+            work really comes from, what only you can do, and a first ninety days that does not
+            start with buying software.
           </p>
 
           <div className="mb-10 border-t border-[var(--rule-faint)] pt-8">

@@ -11,7 +11,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com'
 /**
  * The paid version of the playbook. Delivered remotely.
  *
- * A free document ending in six diagnostics creates a specific kind of reader:
+ * A free document ending in eight steps creates a specific kind of reader:
  * one who agrees, starts, and stalls on the honesty the exercise requires. This
  * page is for them, and it is deliberately the only paid thing on the site.
  *
