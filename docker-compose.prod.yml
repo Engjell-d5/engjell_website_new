@@ -80,6 +80,10 @@ services:
       PUBLIC_API_BOARD_ID: ${PUBLIC_API_BOARD_ID:-}
       # Analytics (also baked at build time)
       NEXT_PUBLIC_GA_ID: ${NEXT_PUBLIC_GA_ID:-}
+      # d5 management system: source of truth for blog content (lib/data/blogs.ts)
+      D5_API_URL: ${D5_API_URL:-https://app.division5.co/api/v1}
+      D5_API_KEY: ${D5_API_KEY:-}
+      D5_COMPANY_ID: ${D5_COMPANY_ID:-}
     ports:
       - "${APP_PORT:-7776}:3000"
     volumes:
