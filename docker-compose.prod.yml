@@ -84,8 +84,17 @@ services:
       D5_API_URL: ${D5_API_URL:-https://app.division5.co/api/v1}
       D5_API_KEY: ${D5_API_KEY:-}
       D5_COMPANY_ID: ${D5_COMPANY_ID:-}
+      # CRM sync for newsletter subscribers. Empty means the site skips
+      # the call entirely, so this is safe to leave unset.
+      D5_SUBSCRIBER_SYNC_PATH: ${D5_SUBSCRIBER_SYNC_PATH:-}
     ports:
       - "${APP_PORT:-7776}:3000"
+    # The host's /etc/hosts maps app.division5.co to 127.0.0.1, and container
+    # DNS forwards to the host resolver, so without this the name resolves to
+    # the container itself and every call to the D5 API fails to connect.
+    # host-gateway is resolved by Docker, so no subnet is hardcoded.
+    extra_hosts:
+      - "app.division5.co:host-gateway"
     volumes:
       # Persist uploads directory
       - ./public/uploads:/app/public/uploads
