@@ -107,6 +107,11 @@ export default function InvestForm() {
           message: body,
           website: form.website,
           formStartTime,
+          // Marks this as an investment pitch so the D5 app files it under
+          // its own source, with the real company attached, instead of it
+          // reading as a generic contact message.
+          kind: 'invest',
+          company: form.company,
         }),
       });
 

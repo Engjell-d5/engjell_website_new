@@ -3,11 +3,12 @@ import { addContactMessage, getContactMessages, markContactMessageAsRead, delete
 import { getAuthUser } from '@/lib/auth';
 import { checkSpam } from '@/lib/spam-protection';
 import { canonicalizeEmail, looksLikeBotAddress } from '@/lib/email-normalize';
+import { forwardContactToD5, splitName } from '@/lib/d5-forward';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, message, website, formStartTime } = body;
+    const { name, email, message, website, formStartTime, kind, company } = body;
 
     const verdict = checkSpam(request, body, formStartTime, 'contact');
     if (verdict.action === 'drop') {
@@ -59,6 +60,19 @@ export async function POST(request: NextRequest) {
       name: name.trim(),
       email: canonicalizeEmail(email),
       message: message.trim(),
+    });
+
+    // Surface it in the D5 app, where the team actually works. Fire and
+    // forget: the local row above is the durable copy, and this runs only
+    // for submissions that passed every spam check in this route. The
+    // invest form marks itself with kind so the app can tell a pitch from
+    // a hello.
+    void forwardContactToD5({
+      ...splitName(name),
+      email: canonicalizeEmail(email),
+      ...(typeof company === 'string' && company.trim() ? { company: company.trim() } : {}),
+      message: message.trim(),
+      source: kind === 'invest' ? 'engjellrraklli.com invest' : 'engjellrraklli.com contact',
     });
 
     return NextResponse.json({
