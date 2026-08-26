@@ -16,6 +16,15 @@ const nextConfig = {
         pathname: '/api/uploads/**',
       },
       {
+        // d5 owns the blog content now, so images uploaded with a post are
+        // served from its storage rather than this site's /api/uploads.
+        // next/image throws on an unlisted host, so this has to be here
+        // before any post references a d5-hosted image.
+        protocol: 'https',
+        hostname: 'app.division5.co',
+        pathname: '/api/v1/storage/files/**',
+      },
+      {
         protocol: 'http',
         hostname: 'localhost',
         pathname: '/api/uploads/**',
