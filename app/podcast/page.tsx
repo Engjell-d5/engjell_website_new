@@ -35,7 +35,7 @@ async function loadVideosSafe() {
   // Build runs without DATABASE_URL; treat as empty and rely on ISR.
   if (!process.env.DATABASE_URL) return [];
   try {
-    return await getVideos(false);
+    return await getVideos();
   } catch (err) {
     console.error('[podcast] getVideos failed; falling back to empty list:', err);
     return [];

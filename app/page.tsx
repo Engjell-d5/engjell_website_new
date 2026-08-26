@@ -33,7 +33,7 @@ async function loadLatestContent() {
   }
   try {
     const [videos, blogs] = await Promise.all([
-      getVideos(false).catch(() => []),
+      getVideos().catch(() => []),
       getBlogs().catch(() => []),
     ]);
     const v = videos.find((vid: any) => vid.featured) || videos[0] || null;
