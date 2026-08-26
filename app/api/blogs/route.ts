@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAuthUser } from '@/lib/auth';
-import { getBlogs, saveBlogs, Blog } from '@/lib/data';
-import { normalizeCategory } from '@/lib/category-normalize';
+import { getBlogs } from '@/lib/data';
 
 export async function GET(request: NextRequest) {
   const authUser = getAuthUser(request);
@@ -16,66 +15,3 @@ export async function GET(request: NextRequest) {
   // If authenticated, return all blogs
   return NextResponse.json({ blogs });
 }
-
-export async function POST(request: NextRequest) {
-  const user = getAuthUser(request);
-  
-  if (!user) {
-    return NextResponse.json(
-      { error: 'Unauthorized' },
-      { status: 401 }
-    );
-  }
-
-  try {
-    const { title, slug, category, excerpt, hook, content, imageUrl, published, seo } = await request.json();
-
-    // `hook` is optional: the schema declares it nullable and the post page
-    // renders it conditionally, but this check used to reject any post without
-    // one, making a hookless article impossible to publish.
-    if (!title || !slug || !category || !excerpt || !content || !imageUrl) {
-      return NextResponse.json(
-        { error: 'Title, slug, category, excerpt, content and image are required' },
-        { status: 400 }
-      );
-    }
-
-    const blogs = await getBlogs();
-    
-    // Ensure unique slug
-    let finalSlug = slug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    let counter = 1;
-    while (blogs.find(b => b.slug === finalSlug)) {
-      finalSlug = `${slug.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}-${counter}`;
-      counter++;
-    }
-
-    const newBlog: Blog = {
-      id: Date.now().toString(),
-      title,
-      slug: finalSlug,
-      category: normalizeCategory(category),
-      excerpt,
-      hook: hook || null,
-      content,
-      imageUrl,
-      published: published || false,
-      publishedAt: published ? new Date().toISOString() : null,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      authorId: user.id,
-      seo: seo || undefined,
-    };
-
-    blogs.push(newBlog);
-    await saveBlogs(blogs);
-
-    return NextResponse.json({ blog: newBlog }, { status: 201 });
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
-  }
-}
-

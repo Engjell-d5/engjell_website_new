@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og';
+import { getBlogBySlug } from '@/lib/data';
 
 // Branded share card for journal posts (og:image / twitter:image).
 // Lives outside /api/ so robots.txt does not block social crawlers.
@@ -24,29 +25,20 @@ export async function GET(
   let title = 'Field Notes on Building Tech';
   let category = 'Journal';
 
-  // Try the app's own listener first: in production the container often
-  // cannot reach its public hostname (hairpin through the reverse proxy),
-  // so the public origin is only the fallback. Generic card if both fail.
-  const origin = new URL(request.url).origin;
-  for (const base of ['http://127.0.0.1:3000', origin]) {
-    try {
-      const res = await fetch(`${base}/api/blogs/slug/${params.slug}`, {
-        cache: 'no-store',
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data?.blog?.published) {
-          title = data.blog.title || title;
-          category = data.blog.category || category;
-        }
-        break;
-      }
-      if (res.status === 404) break; // Post genuinely missing; keep generic card
-    } catch {
-      // Try the next base.
+  // Straight to the data layer. This used to self-fetch /api/blogs/slug,
+  // with a 127.0.0.1-then-public-origin dance because a container often
+  // cannot hairpin to its own hostname. Calling the function removes the
+  // hop, the fallback and the route it needed; a d5 outage degrades to
+  // the generic card exactly as a failed fetch did.
+  try {
+    const blog = await getBlogBySlug(params.slug);
+    if (blog?.published) {
+      title = blog.title || title;
+      category = blog.category || category;
     }
+  } catch {
+    // Generic card.
   }
-
   if (title.length > 120) title = `${title.slice(0, 117)}…`;
   const titleSize = title.length <= 40 ? 96 : title.length <= 80 ? 76 : 60;
 

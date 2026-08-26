@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { addPodcastApplication } from '@/lib/data';
 import { checkSpam } from '@/lib/spam-protection';
+import { forwardContactToD5, splitName } from '@/lib/d5-forward';
 
 export async function POST(request: NextRequest) {
   try {
@@ -48,6 +49,26 @@ export async function POST(request: NextRequest) {
       vision,
       biggestChallenge,
       whyPodcast,
+    });
+
+    // Mirror into d5, where the recruitment-adjacent inbox lives. The
+    // application fields become a structured message so the d5 queue
+    // reads like the form did. Best-effort by design: a d5 outage must
+    // not fail the applicant, and the local row above is the fallback.
+    await forwardContactToD5({
+      ...splitName(name),
+      email: email.toLowerCase(),
+      message: [
+        `About: ${about}`,
+        `Businesses: ${businesses}`,
+        `Industry: ${industry}`,
+        `Vision: ${vision}`,
+        `Biggest challenge: ${biggestChallenge}`,
+        `Why the podcast: ${whyPodcast}`,
+      ].join('
+
+'),
+      source: 'engjellrraklli.com podcast application',
     });
 
     return NextResponse.json({ 

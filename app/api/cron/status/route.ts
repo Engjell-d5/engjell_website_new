@@ -3,36 +3,43 @@ import { getCronStatusWithNextRun, initializeAllCronJobs } from '@/lib/cron';
 
 export const dynamic = 'force-dynamic';
 
+/**
+ * Two crons remain on this site: social publishing and the email job.
+ * The YouTube fetch and the subscriber sync moved to d5, which owns the
+ * channel cache and the newsletter audience.
+ */
 export async function GET() {
   let status = await getCronStatusWithNextRun();
-  
+
   // If cron jobs aren't running, try to initialize them
-  if (!status.socialMedia.running || !status.youtube.running || !status.subscriberSync.running) {
+  if (!status.socialMedia.running) {
     try {
       await initializeAllCronJobs();
-      // Get updated status after initialization
       status = await getCronStatusWithNextRun();
     } catch (error) {
       console.error('Error initializing cron jobs:', error);
     }
   }
-  
+
   return NextResponse.json({
     cronJobs: status,
     schedule: {
-      youtube: 'Runs daily at 2 AM (configurable)',
       socialMedia: 'Runs every 5 minutes to check for scheduled posts (*/5 * * * *)',
-      subscriberSync: 'Runs daily at 3 AM to sync subscribers with Sender.net (0 3 * * *)',
+      email: 'Runs on the schedule configured for the email job',
     },
     endpoints: {
       init: '/api/cron/init - Initialize all cron jobs',
       publish: '/api/social/publish - Manually trigger post publishing',
-      sync: '/api/subscribers/sync - Manually trigger subscriber sync',
       status: '/api/cron/status - Check cron job status',
     },
-    note: status.socialMedia.running 
+    movedToD5: {
+      youtube: 'd5 syncs every tenant channel nightly and on demand',
+      subscriberSync: 'd5 owns the newsletter audience and pushes to the ESP itself',
+    },
+    note: status.socialMedia.running
       ? 'Social media cron job is running and will check for scheduled posts every 5 minutes'
       : 'Social media cron job is not running. Call /api/cron/init to start it.',
-    warning: 'Note: In serverless environments, cron jobs are per-instance. They need to be initialized on each server instance.',
+    warning:
+      'Note: In serverless environments, cron jobs are per-instance. They need to be initialized on each server instance.',
   });
 }

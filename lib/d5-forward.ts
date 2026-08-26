@@ -25,7 +25,7 @@ export interface D5ContactPayload {
   email: string;
   company?: string;
   message: string;
-  source: 'engjellrraklli.com contact' | 'engjellrraklli.com invest';
+  source: 'engjellrraklli.com contact' | 'engjellrraklli.com invest' | 'engjellrraklli.com podcast application';
 }
 
 export async function forwardContactToD5(payload: D5ContactPayload): Promise<void> {

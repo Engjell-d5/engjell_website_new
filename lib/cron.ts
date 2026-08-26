@@ -2,16 +2,13 @@ import 'server-only';
 import cron from 'node-cron';
 import { getConfig } from './data';
 import { publishScheduledPosts } from './social';
-import { syncSubscribersWithSender } from './sender-sync';
 import { sendPushNotificationToAllAdmins } from './push-notifications';
 
 let cronJob: cron.ScheduledTask | null = null;
 let socialCronJob: cron.ScheduledTask | null = null;
-let subscriberSyncCronJob: cron.ScheduledTask | null = null;
 let emailCronJob: cron.ScheduledTask | null = null;
 let initialized = false;
 let socialInitialized = false;
-let subscriberSyncInitialized = false;
 let emailCronInitialized = false;
 
 // The YouTube fetch cron is gone: d5 owns the channel sync now
@@ -113,61 +110,9 @@ export async function restartSocialMediaCron() {
   return await startSocialMediaCron();
 }
 
-export async function startSubscriberSyncCron() {
-  // Prevent multiple initializations
-  if (subscriberSyncInitialized && subscriberSyncCronJob) {
-    return subscriberSyncCronJob;
-  }
+// The subscriber-sync cron is gone with the rest of the site's Sender
+// machinery: d5 owns the audience and pushes to the ESP itself.
 
-  // Run daily at 3 AM (after YouTube fetch at 2 AM)
-  const schedule = '0 3 * * *';
-
-  // Stop existing job if any
-  if (subscriberSyncCronJob) {
-    subscriberSyncCronJob.stop();
-    subscriberSyncCronJob = null;
-  }
-
-  console.log(`[CRON-INIT] Starting subscriber sync cron job with schedule: ${schedule}`);
-
-  subscriberSyncCronJob = cron.schedule(schedule, async () => {
-    const runTime = new Date().toISOString();
-    console.log(`[CRON] ============================================`);
-    console.log(`[CRON] Running subscriber sync cron job at ${runTime}`);
-    console.log(`[CRON] ============================================`);
-    try {
-      const result = await syncSubscribersWithSender();
-      console.log(`[CRON] Subscriber sync complete:`);
-      console.log(`[CRON]   - Pushed: ${result.pushed.synced} synced, ${result.pushed.failed} failed`);
-      console.log(`[CRON]   - Pulled: ${result.pulled.updated} updated, ${result.pulled.created} created, ${result.pulled.errors} errors`);
-      if (result.errors.length > 0) {
-        console.log(`[CRON]   - Errors: ${result.errors.slice(0, 5).join(', ')}${result.errors.length > 5 ? '...' : ''}`);
-      }
-    } catch (error) {
-      console.error('[CRON] Error in subscriber sync cron job:', error);
-      if (error instanceof Error) {
-        console.error('[CRON] Error details:', error.message, error.stack);
-      }
-    }
-    console.log(`[CRON] ============================================`);
-  });
-
-  subscriberSyncInitialized = true;
-  return subscriberSyncCronJob;
-}
-
-export function stopSubscriberSyncCron() {
-  if (subscriberSyncCronJob) {
-    subscriberSyncCronJob.stop();
-    subscriberSyncCronJob = null;
-    console.log('Subscriber sync cron job stopped');
-  }
-}
-
-export async function restartSubscriberSyncCron() {
-  stopSubscriberSyncCron();
-  return await startSubscriberSyncCron();
-}
 
 export async function startEmailCron() {
   // Prevent multiple initializations
@@ -536,12 +481,7 @@ export async function initializeAllCronJobs() {
     console.error(`[CRON-INIT] Failed to initialize social media cron:`, error);
   }
   
-  try {
-    await startSubscriberSyncCron();
-    console.log(`[CRON-INIT] Subscriber sync cron initialized`);
-  } catch (error) {
-    console.error(`[CRON-INIT] Failed to initialize subscriber sync cron:`, error);
-  }
+  // Subscriber-sync cron removed: d5 owns the audience and the ESP push.
   
   try {
     await startEmailCron();
@@ -555,17 +495,9 @@ export async function initializeAllCronJobs() {
 
 export function getCronStatus() {
   return {
-    youtube: {
-      initialized,
-      running: initialized && cronJob !== null,
-    },
     socialMedia: {
       initialized: socialInitialized,
       running: socialInitialized && socialCronJob !== null,
-    },
-    subscriberSync: {
-      initialized: subscriberSyncInitialized,
-      running: subscriberSyncInitialized && subscriberSyncCronJob !== null,
     },
     email: {
       initialized: emailCronInitialized,
@@ -653,35 +585,21 @@ export function getNextRunTime(schedule: string): Date | null {
 export async function getCronStatusWithNextRun() {
   const status = getCronStatus();
   const config = await getConfig();
-  const youtubeSchedule = config.cronSchedule || '0 2 * * *';
   const socialMediaSchedule = config.socialMediaCronSchedule || '*/5 * * * *';
-  const subscriberSyncSchedule = '0 3 * * *';
 
   // Get email cron config
   const { prisma } = await import('./prisma');
   const emailCronConfig = await prisma.emailCronJob.findFirst();
   const emailSchedule = emailCronConfig?.schedule || '0 */6 * * *';
 
-  const youtubeNextRun = status.youtube.running ? getNextRunTime(youtubeSchedule) : null;
   const socialNextRun = status.socialMedia.running ? getNextRunTime(socialMediaSchedule) : null;
-  const subscriberSyncNextRun = status.subscriberSync.running ? getNextRunTime(subscriberSyncSchedule) : null;
   const emailNextRun = status.email.running && emailCronConfig?.isEnabled ? getNextRunTime(emailSchedule) : null;
 
   return {
-    youtube: {
-      ...status.youtube,
-      nextRun: youtubeNextRun ? youtubeNextRun.toISOString() : null,
-      schedule: youtubeSchedule,
-    },
     socialMedia: {
       ...status.socialMedia,
       nextRun: socialNextRun ? socialNextRun.toISOString() : null,
       schedule: socialMediaSchedule,
-    },
-    subscriberSync: {
-      ...status.subscriberSync,
-      nextRun: subscriberSyncNextRun ? subscriberSyncNextRun.toISOString() : null,
-      schedule: subscriberSyncSchedule,
     },
     email: {
       ...status.email,

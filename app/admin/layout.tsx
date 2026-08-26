@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { Users, FileText, LogOut, Home, Mic, Mail, MessageSquare, Share2, LayoutDashboard, Sparkles, Menu, X } from 'lucide-react';
+import { Users, LogOut, Home, Mail, Share2, LayoutDashboard, Sparkles, Menu, X } from 'lucide-react';
 import PushNotificationManager from '@/components/PushNotificationManager';
 
 export default function AdminLayout({
@@ -167,18 +167,7 @@ export default function AdminLayout({
                 <span className="text-sm font-bold uppercase tracking-widest">Users</span>
               </Link>
             )}
-            <Link
-              href="/admin/podcast"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-none transition-colors ${
-                pathname === '/admin/podcast' || pathname === '/admin/youtube' || pathname === '/admin/podcast-applications'
-                  ? 'bg-[var(--primary-mint)] text-black'
-                  : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
-              }`}
-            >
-              <Mic className="w-4 h-4 flex-shrink-0" />
-              <span className="text-sm font-bold uppercase tracking-widest">Podcast</span>
-            </Link>
+
             <Link
               href="/admin/email"
               onClick={() => setMobileMenuOpen(false)}
@@ -191,30 +180,8 @@ export default function AdminLayout({
               <Mail className="w-4 h-4 flex-shrink-0" />
               <span className="text-sm font-bold uppercase tracking-widest">Email</span>
             </Link>
-            <Link
-              href="/admin/newsletter"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-none transition-colors ${
-                pathname === '/admin/newsletter' || pathname === '/admin/subscribers' || pathname === '/admin/groups' || pathname === '/admin/campaigns'
-                  ? 'bg-[var(--primary-mint)] text-black'
-                  : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
-              }`}
-            >
-              <Mail className="w-4 h-4 flex-shrink-0" />
-              <span className="text-sm font-bold uppercase tracking-widest">Newsletter</span>
-            </Link>
-            <Link
-              href="/admin/contact"
-              onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-3 px-4 py-3 rounded-none transition-colors ${
-                pathname === '/admin/contact'
-                  ? 'bg-[var(--primary-mint)] text-black'
-                  : 'text-gray-400 hover:text-white hover:bg-[var(--rich-black)]'
-              }`}
-            >
-              <MessageSquare className="w-4 h-4 flex-shrink-0" />
-              <span className="text-sm font-bold uppercase tracking-widest">Contact Messages</span>
-            </Link>
+
+
             <Link
               href="/admin/social"
               onClick={() => setMobileMenuOpen(false)}
