@@ -10,7 +10,7 @@ import { canonicalizeEmail, looksLikeBotAddress } from '@/lib/email-normalize';
  * pushes to the Sender.net group itself. The site no longer holds Sender
  * credentials for subscribing; one writer owns the list.
  */
-const D5_API_URL = (process.env.D5_API_URL || 'https://app.division5.co/api/v1').replace(//+$/, '');
+const D5_API_URL = (process.env.D5_API_URL || 'https://app.division5.co/api/v1').replace(/\/+$/, '');
 const D5_API_KEY = process.env.D5_API_KEY || '';
 const D5_COMPANY_ID = process.env.D5_COMPANY_ID || 'cc640cdd-4a92-412b-ba9a-4ad48ae6e9cf';
 
