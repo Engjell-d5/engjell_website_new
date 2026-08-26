@@ -86,11 +86,23 @@ function toSiteVideo(v: D5Video, channelTitle: string): YouTubeVideo {
  * d5, so there is nothing to filter here; the includeRemoved parameter of
  * the old implementation is gone with the write paths.
  */
+/**
+ * Episodes only. The channel uploads clips as well as episodes, and the
+ * clips are 1-4 minutes: long enough to escape d5's Shorts filter, far
+ * short of the 20-plus-minute episodes. Four minutes sits in the gap, so
+ * this floor reproduces exactly the episode list the site showed before
+ * the cutover. A video d5 serves without a parsed duration is kept: better
+ * an extra row than a silently vanished episode.
+ */
+const MIN_EPISODE_SECONDS = 240;
+
 export async function getVideos(): Promise<YouTubeVideo[]> {
   const res = await fetchD5Videos();
   if (!res || !res.channel) return [];
   const channelTitle = res.channel.title ?? '';
-  return res.data.map((v) => toSiteVideo(v, channelTitle));
+  return res.data
+    .filter((v) => v.durationSeconds == null || v.durationSeconds >= MIN_EPISODE_SECONDS)
+    .map((v) => toSiteVideo(v, channelTitle));
 }
 
 export async function getFeaturedVideo(): Promise<YouTubeVideo | null> {
