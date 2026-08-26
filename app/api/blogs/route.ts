@@ -1,17 +1,15 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getAuthUser } from '@/lib/auth';
+import { NextResponse } from 'next/server';
 import { getBlogs } from '@/lib/data';
 
-export async function GET(request: NextRequest) {
-  const authUser = getAuthUser(request);
+/**
+ * Published posts, for the public sidebar's "Latest Blog".
+ *
+ * The content itself comes from d5; this stays only because the sidebar
+ * is a client component and needs an endpoint to call. It used to vary
+ * its response for authenticated admins, which is moot now that the site
+ * has no admin and nothing can authenticate.
+ */
+export async function GET() {
   const blogs = await getBlogs();
-  
-  // If not authenticated, only return published blogs
-  if (!authUser) {
-    const publishedBlogs = blogs.filter(b => b.published);
-    return NextResponse.json({ blogs: publishedBlogs });
-  }
-
-  // If authenticated, return all blogs
-  return NextResponse.json({ blogs });
+  return NextResponse.json({ blogs: blogs.filter((b) => b.published) });
 }

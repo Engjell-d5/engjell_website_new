@@ -1,11 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getVideos } from '@/lib/data';
 
 /**
- * Read-only since the d5 cutover: the list this serves comes from d5's
- * cached feed. Curation (feature, hide) and refresh happen in d5 under
- * Settings -> Companies -> YouTube, so the write verbs answer 410 with
- * that pointer instead of silently editing a table nothing reads.
+ * Episodes for the public sidebar's "Latest Video".
+ *
+ * The data comes from d5, which owns the channel connection, the sync and
+ * the curation. This endpoint exists only because the sidebar is a client
+ * component and needs something to call; the write verbs went with the
+ * admin panel.
  */
 export async function GET() {
   try {
@@ -14,18 +16,4 @@ export async function GET() {
   } catch {
     return NextResponse.json({ error: 'Failed to fetch videos' }, { status: 500 });
   }
-}
-
-const gone = () =>
-  NextResponse.json(
-    { error: 'Video curation moved to d5 (app.division5.co): Settings -> Companies -> YouTube.' },
-    { status: 410 },
-  );
-
-export async function PATCH(_request: NextRequest) {
-  return gone();
-}
-
-export async function DELETE(_request: NextRequest) {
-  return gone();
 }

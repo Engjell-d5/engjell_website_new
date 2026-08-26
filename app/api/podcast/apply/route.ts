@@ -65,9 +65,7 @@ export async function POST(request: NextRequest) {
         `Vision: ${vision}`,
         `Biggest challenge: ${biggestChallenge}`,
         `Why the podcast: ${whyPodcast}`,
-      ].join('
-
-'),
+      ].join('\n\n'),
       source: 'engjellrraklli.com podcast application',
     });
 
