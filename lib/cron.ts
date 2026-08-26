@@ -1,6 +1,5 @@
 import 'server-only';
 import cron from 'node-cron';
-import { fetchYouTubeVideos } from './youtube';
 import { getConfig } from './data';
 import { publishScheduledPosts } from './social';
 import { syncSubscribersWithSender } from './sender-sync';
@@ -15,48 +14,9 @@ let socialInitialized = false;
 let subscriberSyncInitialized = false;
 let emailCronInitialized = false;
 
-export async function startYouTubeCron() {
-  // Prevent multiple initializations
-  if (initialized && cronJob) {
-    return cronJob;
-  }
+// The YouTube fetch cron is gone: d5 owns the channel sync now
+// (nightly, per tenant), and this site reads d5's cache.
 
-  const config = await getConfig();
-  const schedule = config.cronSchedule || '0 2 * * *'; // Default: 2 AM daily
-
-  // Stop existing job if any
-  if (cronJob) {
-    cronJob.stop();
-  }
-
-  console.log(`Starting YouTube video fetch cron job with schedule: ${schedule}`);
-
-  cronJob = cron.schedule(schedule, async () => {
-    console.log('Running YouTube video fetch cron job...');
-    try {
-      await fetchYouTubeVideos();
-      console.log('YouTube videos fetched successfully');
-    } catch (error) {
-      console.error('Error in YouTube video fetch cron job:', error);
-    }
-  });
-
-  initialized = true;
-  return cronJob;
-}
-
-export function stopYouTubeCron() {
-  if (cronJob) {
-    cronJob.stop();
-    cronJob = null;
-    console.log('YouTube video fetch cron job stopped');
-  }
-}
-
-export async function restartYouTubeCron() {
-  stopYouTubeCron();
-  return await startYouTubeCron();
-}
 
 export async function startSocialMediaCron() {
   console.log(`[CRON-INIT] startSocialMediaCron called - initialized: ${socialInitialized}, hasJob: ${!!socialCronJob}`);
@@ -567,12 +527,7 @@ export async function initializeAllCronJobs() {
   console.log(`[CRON-INIT] ============================================`);
   console.log(`[CRON-INIT] Initializing all cron jobs at ${new Date().toISOString()}`);
   console.log(`[CRON-INIT] ============================================`);
-  try {
-    await startYouTubeCron();
-    console.log(`[CRON-INIT] YouTube cron initialized`);
-  } catch (error) {
-    console.error(`[CRON-INIT] Failed to initialize YouTube cron:`, error);
-  }
+  // YouTube cron removed: d5 owns the channel sync.
   
   try {
     await startSocialMediaCron();

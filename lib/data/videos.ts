@@ -1,120 +1,99 @@
-import { prisma } from '../prisma';
 import type { YouTubeVideo } from './types';
 
-export async function getVideos(includeRemoved: boolean = false): Promise<YouTubeVideo[]> {
-  const where = includeRemoved ? {} : { removed: false };
-  const videos = await prisma.youTubeVideo.findMany({
-    where,
-    orderBy: [
-      { featured: 'desc' }, // Featured videos first
-      { publishedAt: 'desc' }, // Then by published date
-    ],
-  });
-  type VideoType = Awaited<ReturnType<typeof prisma.youTubeVideo.findMany>>[0];
-  return videos.map((video: VideoType) => ({
-    id: video.id,
-    videoId: video.videoId,
-    title: video.title,
-    description: video.description,
-    thumbnailUrl: video.thumbnailUrl,
-    publishedAt: video.publishedAt.toISOString(),
-    duration: video.duration,
-    viewCount: video.viewCount,
-    channelTitle: video.channelTitle,
-    fetchedAt: video.fetchedAt.toISOString(),
-    featured: video.featured,
-    removed: video.removed,
-  }));
+/**
+ * Podcast episodes, read from d5.
+ *
+ * This site no longer talks to YouTube at all. d5 owns the channel
+ * connection, the nightly sync and the curation flags (featured, removed),
+ * exactly as it owns the blog content this site already renders. One
+ * fetcher, one quota, one place to curate; the site is a reader.
+ *
+ * The site's own youtube_videos table, its fetch cron and its API key are
+ * retired with this change. Write paths (feature, hide, refresh) live in
+ * d5 under Settings -> Companies -> YouTube.
+ */
+const D5_API_URL = (process.env.D5_API_URL || 'https://app.division5.co/api/v1').replace(/\/+$/, '');
+const D5_API_KEY = process.env.D5_API_KEY || '';
+// The engjell-rraklli company in d5. Scopes the call so another tenant's
+// videos can never appear here.
+const D5_COMPANY_ID = process.env.D5_COMPANY_ID || 'cc640cdd-4a92-412b-ba9a-4ad48ae6e9cf';
+
+/** How stale the rendered page may get before Next revalidates against d5. */
+const REVALIDATE_SECONDS = 300;
+
+interface D5Video {
+  videoId: string;
+  title: string;
+  description: string | null;
+  thumbnailUrl: string | null;
+  publishedAt: string;
+  duration: string | null;
+  durationSeconds: number | null;
+  viewCount: number | null;
+  featured: boolean;
+  url: string;
 }
 
-export async function getFeaturedVideo(): Promise<YouTubeVideo | null> {
-  const video = await prisma.youTubeVideo.findFirst({
-    where: { 
-      featured: true,
-      removed: false,
-    },
-    orderBy: { publishedAt: 'desc' },
-  });
-  
-  if (!video) return null;
-  
+interface D5VideosResponse {
+  channel: { channelId: string; title: string | null; thumbnailUrl: string | null; url: string } | null;
+  data: D5Video[];
+}
+
+async function fetchD5Videos(): Promise<D5VideosResponse | null> {
+  if (!D5_API_KEY) {
+    console.error('[videos] D5_API_KEY is not set; podcast content cannot load');
+    return null;
+  }
+  try {
+    const res = await fetch(
+      `${D5_API_URL}/content/youtube/videos/public?companyId=${D5_COMPANY_ID}&pageSize=100`,
+      {
+        headers: { 'X-API-Key': D5_API_KEY },
+        next: { revalidate: REVALIDATE_SECONDS },
+      },
+    );
+    if (!res.ok) {
+      console.error(`[videos] d5 answered ${res.status}`);
+      return null;
+    }
+    return (await res.json()) as D5VideosResponse;
+  } catch (error) {
+    console.error('[videos] failed to reach d5:', error);
+    return null;
+  }
+}
+
+function toSiteVideo(v: D5Video, channelTitle: string): YouTubeVideo {
   return {
-    id: video.id,
-    videoId: video.videoId,
-    title: video.title,
-    description: video.description,
-    thumbnailUrl: video.thumbnailUrl,
-    publishedAt: video.publishedAt.toISOString(),
-    duration: video.duration,
-    viewCount: video.viewCount,
-    channelTitle: video.channelTitle,
-    fetchedAt: video.fetchedAt.toISOString(),
-    featured: video.featured,
-    removed: video.removed,
+    id: v.videoId,
+    videoId: v.videoId,
+    title: v.title,
+    description: v.description ?? '',
+    thumbnailUrl: v.thumbnailUrl ?? '',
+    publishedAt: v.publishedAt,
+    duration: v.duration ?? '',
+    viewCount: String(v.viewCount ?? 0),
+    channelTitle,
+    fetchedAt: new Date().toISOString(),
+    featured: v.featured,
+    removed: false,
   };
 }
 
-export async function setVideoFeatured(videoId: string, featured: boolean): Promise<void> {
-  // If setting as featured, unfeature all other videos first
-  if (featured) {
-    await prisma.youTubeVideo.updateMany({
-      where: { featured: true },
-      data: { featured: false },
-    });
-  }
-  
-  await prisma.youTubeVideo.update({
-    where: { videoId },
-    data: { featured },
-  });
+/**
+ * Long-form videos, featured first then newest — the same ordering the
+ * local table used, applied server-side by d5. Removed videos never leave
+ * d5, so there is nothing to filter here; the includeRemoved parameter of
+ * the old implementation is gone with the write paths.
+ */
+export async function getVideos(): Promise<YouTubeVideo[]> {
+  const res = await fetchD5Videos();
+  if (!res || !res.channel) return [];
+  const channelTitle = res.channel.title ?? '';
+  return res.data.map((v) => toSiteVideo(v, channelTitle));
 }
 
-export async function removeVideo(videoId: string): Promise<void> {
-  await prisma.youTubeVideo.update({
-    where: { videoId },
-    data: { removed: true },
-  });
+export async function getFeaturedVideo(): Promise<YouTubeVideo | null> {
+  const videos = await getVideos();
+  return videos.find((v) => v.featured) ?? null;
 }
-
-export async function restoreVideo(videoId: string): Promise<void> {
-  await prisma.youTubeVideo.update({
-    where: { videoId },
-    data: { removed: false },
-  });
-}
-
-export async function saveVideos(videos: YouTubeVideo[]): Promise<void> {
-  for (const video of videos) {
-    await prisma.youTubeVideo.upsert({
-      where: { videoId: video.videoId },
-      update: {
-        title: video.title,
-        description: video.description,
-        thumbnailUrl: video.thumbnailUrl,
-        publishedAt: new Date(video.publishedAt),
-        duration: video.duration,
-        viewCount: video.viewCount,
-        channelTitle: video.channelTitle,
-        fetchedAt: new Date(video.fetchedAt),
-        // Preserve featured and removed status if they exist, otherwise keep existing values
-        ...(video.featured !== undefined && { featured: video.featured }),
-        ...(video.removed !== undefined && { removed: video.removed }),
-      },
-      create: {
-        id: video.id,
-        videoId: video.videoId,
-        title: video.title,
-        description: video.description,
-        thumbnailUrl: video.thumbnailUrl,
-        publishedAt: new Date(video.publishedAt),
-        duration: video.duration,
-        viewCount: video.viewCount,
-        channelTitle: video.channelTitle,
-        fetchedAt: new Date(video.fetchedAt),
-        featured: video.featured || false,
-        removed: video.removed || false,
-      },
-    });
-  }
-}
-

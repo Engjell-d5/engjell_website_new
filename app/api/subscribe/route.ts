@@ -4,37 +4,43 @@ import { checkSpam } from '@/lib/spam-protection';
 import { syncSubscriberToCrm } from '@/lib/crm-sync';
 import { canonicalizeEmail, looksLikeBotAddress } from '@/lib/email-normalize';
 
-const SENDER_API_KEY = process.env.SENDER_API_KEY || '';
-const SENDER_LIST_ID = process.env.SENDER_LIST_ID || '';
+/**
+ * Since the d5 cutover the audience lives in d5: this forward records the
+ * subscriber there with consent evidence (timestamp, source, IP), and d5
+ * pushes to the Sender.net group itself. The site no longer holds Sender
+ * credentials for subscribing; one writer owns the list.
+ */
+const D5_API_URL = (process.env.D5_API_URL || 'https://app.division5.co/api/v1').replace(//+$/, '');
+const D5_API_KEY = process.env.D5_API_KEY || '';
+const D5_COMPANY_ID = process.env.D5_COMPANY_ID || 'cc640cdd-4a92-412b-ba9a-4ad48ae6e9cf';
 
-async function addToSenderNet(email: string): Promise<boolean> {
-  if (!SENDER_API_KEY || !SENDER_LIST_ID) {
-    console.warn('Sender.net API key or List ID not configured');
+async function addToD5Newsletter(email: string, ip: string | undefined): Promise<boolean> {
+  if (!D5_API_KEY) {
+    console.warn('D5_API_KEY not configured; subscriber stays local only');
     return false;
   }
-
   try {
-    const response = await fetch('https://api.sender.net/v2/subscribers', {
+    const response = await fetch(`${D5_API_URL}/content/newsletter/subscribe`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${SENDER_API_KEY}`,
+        'X-API-Key': D5_API_KEY,
+        ...(ip ? { 'X-Forwarded-For': ip } : {}),
       },
       body: JSON.stringify({
-        email: email,
-        list_ids: [SENDER_LIST_ID],
+        companyId: D5_COMPANY_ID,
+        email,
+        source: 'engjellrraklli.com newsletter form',
       }),
+      signal: AbortSignal.timeout(5000),
     });
-
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error('Sender.net API error:', errorData);
+      console.error('d5 newsletter subscribe answered', response.status);
       return false;
     }
-
     return true;
   } catch (error: any) {
-    console.error('Error adding subscriber to Sender.net:', error.message || error);
+    console.error('Error forwarding subscriber to d5:', error?.message || error);
     return false;
   }
 }
@@ -93,13 +99,14 @@ export async function POST(request: NextRequest) {
     // fail to find the row that was just written, and Sender.net and the CRM
     // would each hold a different spelling of the same mailbox.
     try {
-      const synced = await addToSenderNet(canonicalEmail);
+      const clientIp = (request.headers.get('x-forwarded-for') || '').split(',')[0].trim() || undefined;
+      const synced = await addToD5Newsletter(canonicalEmail, clientIp);
       if (synced) {
         await markSubscriberSynced(canonicalEmail);
       }
     } catch (error) {
       // Log error but don't fail the request
-      console.error('Failed to sync to Sender.net:', error);
+      console.error('Failed to forward subscriber to d5:', error);
     }
 
     // Mirror into the D5 CRM. No-ops until D5_SUBSCRIBER_SYNC_PATH is set, and

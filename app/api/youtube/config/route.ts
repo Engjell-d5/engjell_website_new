@@ -1,55 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAuthUser } from '@/lib/auth';
-import { getConfig, saveConfig, Config } from '@/lib/data';
 
-export async function GET(request: NextRequest) {
-  const user = getAuthUser(request);
-  
-  if (!user || user.role !== 'admin') {
-    return NextResponse.json(
-      { error: 'Unauthorized' },
-      { status: 401 }
-    );
-  }
+/**
+ * Retired by the d5 cutover: the YouTube API key and fetch schedule this
+ * managed no longer exist on this site. d5 holds the key and runs the
+ * nightly sync for every tenant channel.
+ */
+const gone = () =>
+  NextResponse.json(
+    { error: 'YouTube configuration moved to d5 (app.division5.co): Settings -> Companies -> YouTube.' },
+    { status: 410 },
+  );
 
-  try {
-    const config = await getConfig();
-    // Don't expose API key in response
-    const { youtubeApiKey, ...safeConfig } = config;
-    return NextResponse.json({ config: safeConfig });
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to fetch config' },
-      { status: 500 }
-    );
-  }
+export async function GET(_request: NextRequest) {
+  return gone();
 }
 
-export async function PUT(request: NextRequest) {
-  const user = getAuthUser(request);
-  
-  if (!user || user.role !== 'admin') {
-    return NextResponse.json(
-      { error: 'Unauthorized' },
-      { status: 401 }
-    );
-  }
-
-  try {
-    const { cronSchedule } = await request.json();
-    const config = await getConfig();
-    
-    if (cronSchedule) {
-      config.cronSchedule = cronSchedule;
-      await saveConfig(config);
-    }
-
-    return NextResponse.json({ success: true, config });
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'Failed to update config' },
-      { status: 500 }
-    );
-  }
+export async function PUT(_request: NextRequest) {
+  return gone();
 }
-
