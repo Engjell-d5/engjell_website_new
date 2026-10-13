@@ -99,7 +99,7 @@ export default function About() {
             did about it.
           </p>
         }
-        image={{ src: '/photos/kosict-call.jpg', alt: 'Engjell Rraklli on a phone call outside the KosICT conference in Prishtina' }}
+        image={{ src: '/photos/studio-portrait.jpg', alt: 'Engjell Rraklli in the podcast studio' }}
       />
 
       <section className="sec-light" aria-label="My story">

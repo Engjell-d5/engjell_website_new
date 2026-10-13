@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { Check, X } from 'lucide-react';
 import InvestForm from '@/components/InvestForm';
@@ -158,7 +159,7 @@ export default function InvestPage() {
             Apply
           </a>
         }
-        image={{ src: '/photos/adc-listening.jpg', alt: 'Engjell Rraklli in conversation at ADC 2023', landscape: true }}
+        image={{ src: '/photos/kosict-smile.jpg', alt: 'Engjell Rraklli in conversation at KosICT in Prishtina', landscape: true }}
       />
 
       <section className="sec-light" aria-labelledby="what">
@@ -185,6 +186,16 @@ export default function InvestPage() {
             <h2 id="where" className="mt-3.5 text-balance text-[clamp(44px,4.6vw,70px)] leading-[0.96]">
               Built here, <span className="text-[var(--primary-mint)]">sold abroad</span>
             </h2>
+            <div className="relative mt-10 aspect-[3/2] w-full overflow-hidden bg-[var(--deep)]">
+              <Image
+                src="/photos/adc-audience.jpg"
+                alt="Developers in the audience at ADC 2023"
+                fill
+                quality={85}
+                sizes="(min-width: 1024px) 580px, 100vw"
+                className="object-cover"
+              />
+            </div>
           </div>
           <div className="min-w-0 flex-[1_1_480px] space-y-4 text-[17px] leading-relaxed text-[var(--text)]">
             <p>
@@ -225,18 +236,32 @@ export default function InvestPage() {
 
       <section className="sec-light" aria-labelledby="brings">
         <div className="wrap pad-y">
-          <SectionLabel>What I bring besides money</SectionLabel>
-          <h2 id="brings" className="h-section mt-3.5">
-            The decade comes with the cheque
-          </h2>
-          <p className="mt-5 max-w-[46em] text-[17px] leading-relaxed text-[var(--text)]">
-            I founded{' '}
-            <Link href="/ventures" className="text-link">
-              division5
-            </Link>{' '}
-            in 2015 and spent the decade since turning a service business into something that runs on
-            process rather than on me remembering things. That decade is the asset.
-          </p>
+          <div className="flex flex-wrap items-end gap-x-16 gap-y-10">
+            <div className="min-w-0 flex-[1_1_480px]">
+              <SectionLabel>What I bring besides money</SectionLabel>
+              <h2 id="brings" className="h-section mt-3.5">
+                The decade comes with the cheque
+              </h2>
+              <p className="mt-5 max-w-[46em] text-[17px] leading-relaxed text-[var(--text)]">
+                I founded{' '}
+                <Link href="/ventures" className="text-link">
+                  division5
+                </Link>{' '}
+                in 2015 and spent the decade since turning a service business into something that runs on
+                process rather than on me remembering things. That decade is the asset.
+              </p>
+            </div>
+            <div className="relative aspect-[4/3] w-full min-w-0 max-w-[480px] flex-[1_1_320px] overflow-hidden bg-[var(--deep)]">
+              <Image
+                src="/photos/studio-profile.jpg"
+                alt="Engjell Rraklli recording an episode of Scaling the Unscalable"
+                fill
+                quality={85}
+                sizes="(min-width: 1024px) 480px, 100vw"
+                className="object-cover"
+              />
+            </div>
+          </div>
           <div className="mt-10 grid gap-x-12 md:grid-cols-2">
             {BRINGS.map((item, i) => (
               <div key={item.title} className="flex gap-6 border-t border-[var(--line)] py-7">

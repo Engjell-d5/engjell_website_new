@@ -162,7 +162,7 @@ export default function SprintPage() {
           <div className="relative aspect-[4/3] w-full min-w-0 max-w-[560px] flex-[1_1_360px] overflow-hidden bg-[var(--deep)]">
             <Image
               src="/photos/studio-desk.jpg"
-              alt="Engjell Rraklli at his desk in the division5 studio"
+              alt="Engjell Rraklli at the desk in the podcast studio"
               fill
               quality={85}
               sizes="(min-width: 1024px) 560px, 100vw"

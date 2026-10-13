@@ -41,7 +41,7 @@ const OFFERS = [
   },
   {
     href: '/invest',
-    image: '/photos/adc-listening.jpg',
+    image: '/photos/kosict-smile.jpg',
     for: 'For founders in Albania and Kosovo',
     title: 'Angel investing',
     body: 'I back B2B productized services, services turned into software and high-ticket B2B products, built here and already selling in Europe or the US. Customers, distribution and automation come with the cheque.',
