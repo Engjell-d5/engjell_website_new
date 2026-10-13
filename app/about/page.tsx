@@ -99,7 +99,7 @@ export default function About() {
             did about it.
           </p>
         }
-        image={{ src: '/photos/studio-portrait.jpg', alt: 'Engjell Rraklli in the podcast studio' }}
+        image={{ src: '/photos/studio-smile.jpg', alt: 'Engjell Rraklli smiling in the podcast studio' }}
       />
 
       <section className="sec-light" aria-label="My story">

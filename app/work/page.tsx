@@ -23,7 +23,7 @@ export const metadata: Metadata = createMetadata({
 const OFFERS = [
   {
     href: '/sprint',
-    image: '/photos/studio-desk.jpg',
+    image: '/photos/studio-laugh.jpg',
     for: 'For service business founders',
     title: 'The Constraint Sprint',
     body: 'Four remote sessions over two weeks with you and the people who actually run your business, to name the thing it is stuck on and decide what to do about it. You leave with a written analysis and a ninety day plan.',
