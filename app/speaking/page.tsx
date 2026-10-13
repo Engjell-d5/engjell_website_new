@@ -82,7 +82,7 @@ export default function Speaking() {
             </a>
           </>
         }
-        image={{ src: '/photos/stage-kosict-slide.jpg', alt: 'Engjell Rraklli on stage beside his speaker slide', position: '40% 45%', landscape: true }}
+        image={{ src: '/photos/stage-kosict-slide.jpg', alt: 'Engjell Rraklli on stage beside his speaker slide', landscape: true }}
       />
 
       <section className="sec-light" aria-labelledby="talks">

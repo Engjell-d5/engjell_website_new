@@ -23,8 +23,7 @@ export const metadata: Metadata = createMetadata({
 const OFFERS = [
   {
     href: '/sprint',
-    image: '/photos/expo-table.jpg',
-    position: '55% 50%',
+    image: '/photos/studio-desk.jpg',
     for: 'For service business founders',
     title: 'The Constraint Sprint',
     body: 'Four remote sessions over two weeks with you and the people who actually run your business, to name the thing it is stuck on and decide what to do about it. You leave with a written analysis and a ninety day plan.',
@@ -34,7 +33,6 @@ const OFFERS = [
   {
     href: '/speaking',
     image: '/photos/stage-adc-wide.jpg',
-    position: '82% 50%',
     for: 'For organisers and podcast hosts',
     title: 'Speaking',
     body: 'Talks about what actually happened when we put AI agents into a real business: what they took over, what we refused to let them touch, and what it cost. Post-mortems, not predictions.',
@@ -43,8 +41,7 @@ const OFFERS = [
   },
   {
     href: '/invest',
-    image: '/photos/jury-ebdc.jpg',
-    position: '50% 40%',
+    image: '/photos/adc-listening.jpg',
     for: 'For founders in Albania and Kosovo',
     title: 'Angel investing',
     body: 'I back B2B productized services, services turned into software and high-ticket B2B products, built here and already selling in Europe or the US. Customers, distribution and automation come with the cheque.',
@@ -83,7 +80,7 @@ export default function WorkPage() {
         <section key={o.href} className={i % 2 === 0 ? 'sec-deep' : 'sec-light'} aria-labelledby={`offer-${i}`}>
           <div className={`wrap flex flex-wrap items-center gap-x-16 gap-y-10 py-[clamp(56px,6vw,96px)] ${i % 2 === 1 ? 'flex-row-reverse' : ''}`}>
             <div className="relative aspect-[4/3] w-full min-w-0 flex-[1_1_420px] overflow-hidden bg-[var(--deep)]">
-              <Image src={o.image} alt="" fill sizes="(min-width: 1024px) 45vw, 100vw" className="object-cover" style={{ objectPosition: o.position }} />
+              <Image src={o.image} alt="" fill quality={85} sizes="(min-width: 1024px) 45vw, 100vw" className="object-cover" />
             </div>
             <div className="min-w-0 flex-[1_1_440px]">
               <SectionLabel>{o.for}</SectionLabel>

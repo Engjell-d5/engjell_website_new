@@ -62,6 +62,7 @@ export default function JournalList({
                     src={b.imageUrl}
                     alt=""
                     fill
+                    quality={85}
                     sizes="180px"
                     priority={priorityFirst && i === 0}
                     className="object-cover transition-transform duration-500 group-hover:scale-[1.04]"

@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { Check, X } from 'lucide-react';
 import ContactForm from '@/components/ContactForm';
@@ -157,8 +158,18 @@ export default function SprintPage() {
       />
 
       <section className="sec-deep">
-        <div className="wrap py-[clamp(48px,5vw,72px)]">
-          <p className="max-w-[52em] text-[17px] leading-relaxed text-[var(--text)]">
+        <div className="wrap flex flex-wrap items-center gap-x-16 gap-y-10 py-[clamp(48px,5vw,72px)]">
+          <div className="relative aspect-[4/3] w-full min-w-0 max-w-[560px] flex-[1_1_360px] overflow-hidden bg-[var(--deep)]">
+            <Image
+              src="/photos/studio-desk.jpg"
+              alt="Engjell Rraklli at his desk in the division5 studio"
+              fill
+              quality={85}
+              sizes="(min-width: 1024px) 560px, 100vw"
+              className="object-cover"
+            />
+          </div>
+          <p className="min-w-0 max-w-[40em] flex-[1_1_440px] text-[17px] leading-relaxed text-[var(--text)]">
             The{' '}
             <Link href="/playbook" className="text-link">
               playbook

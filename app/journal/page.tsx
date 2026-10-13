@@ -147,6 +147,7 @@ export default async function Journal({ searchParams }: { searchParams?: SearchP
                     src={startHere.imageUrl}
                     alt=""
                     fill
+                    quality={85}
                     priority
                     sizes="(min-width: 1024px) 45vw, 100vw"
                     className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"

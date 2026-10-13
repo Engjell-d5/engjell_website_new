@@ -5,7 +5,8 @@ import SectionLabel from '@/components/site/SectionLabel';
 export interface Tile {
   href: string;
   image: string;
-  /** object-position for the crop, so the subject survives the 4:5 frame. */
+  /** object-position. Photos in public/photos are already cut to 4:5, so this
+   *  only matters for one that is not. */
   position?: string;
   label: string;
   keepCase?: boolean;
@@ -28,6 +29,7 @@ export default function PhotoTiles({ tiles, label = 'What I do' }: { tiles: Tile
             src={t.image}
             alt=""
             fill
+            quality={85}
             sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
             className="object-cover"
             style={{ objectPosition: t.position ?? '50% 35%' }}

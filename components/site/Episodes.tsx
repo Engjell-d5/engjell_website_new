@@ -22,6 +22,7 @@ export function FeaturedEpisode({ ep, priority = false }: { ep: Episode; priorit
           src={ep.thumbnailUrl}
           alt={`${t.title}, episode thumbnail`}
           fill
+          quality={85}
           priority={priority}
           sizes="(min-width: 1024px) 60vw, 100vw"
           className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
@@ -55,7 +56,7 @@ export function EpisodeRow({ ep }: { ep: Episode }) {
       className="group flex items-start gap-4 border-t border-[var(--line)] py-5 first:border-t-0 first:pt-0"
     >
       <div className="relative aspect-video w-[144px] shrink-0 overflow-hidden border border-[var(--line)] bg-[var(--deep)]">
-        <Image src={ep.thumbnailUrl} alt="" fill sizes="144px" className="object-cover" />
+        <Image src={ep.thumbnailUrl} alt="" fill quality={85} sizes="144px" className="object-cover" />
       </div>
       <div className="min-w-0">
         <h4 className="font-montserrat text-[15px] font-semibold leading-snug tracking-normal !text-white transition-colors group-hover:!text-[var(--primary-mint)]">
@@ -79,6 +80,7 @@ export function EpisodeCard({ ep }: { ep: Episode }) {
           src={ep.thumbnailUrl}
           alt=""
           fill
+          quality={85}
           sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
           className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
         />

@@ -158,6 +158,7 @@ export default function InvestPage() {
             Apply
           </a>
         }
+        image={{ src: '/photos/adc-listening.jpg', alt: 'Engjell Rraklli in conversation at ADC 2023', landscape: true }}
       />
 
       <section className="sec-light" aria-labelledby="what">

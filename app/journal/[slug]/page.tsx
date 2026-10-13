@@ -131,7 +131,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
             <div className="mt-8 flex flex-wrap items-center justify-between gap-x-6 gap-y-4 border-t border-[var(--line)] pt-6">
               <div className="flex items-center gap-3.5">
                 <span className="relative block h-12 w-12 shrink-0 overflow-hidden rounded-full bg-[var(--deep)]">
-                  <Image src="/IMG_0466.JPG" alt="" fill sizes="48px" className="origin-[50%_33%] scale-[2.4] object-cover" style={{ objectPosition: "50% 24%" }} />
+                  <Image src="/IMG_0466.JPG" alt="" fill quality={85} sizes="48px" className="origin-[50%_33%] scale-[2.4] object-cover" style={{ objectPosition: "50% 24%" }} />
                 </span>
                 <div>
                   <p className="text-[15px] font-semibold text-[var(--ink)]">Engjell Rraklli</p>
@@ -159,6 +159,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                 src={blog.imageUrl}
                 alt={`${blog.title}, featured image`}
                 fill
+                quality={85}
                 priority
                 sizes="(min-width: 1024px) 64rem, 100vw"
                 className="object-cover"
@@ -213,6 +214,7 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                         src={relatedBlog.imageUrl}
                         alt=""
                         fill
+                        quality={85}
                         sizes="(min-width: 768px) 50vw, 100vw"
                         className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                       />
@@ -257,9 +259,19 @@ function BlogContentWithSubscribe({ content }: { content: string }) {
     return html.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&').replace(/&quot;/g, '"').replace(/&#39;/g, "'");
   };
 
-  // Add lazy loading and async decoding to blog content images for faster page load
+  // Body images are uploaded as full-size PNGs, often 8 to 10 MB each, so
+  // send the ones next/image is allowed to fetch through its optimizer at the
+  // width of the 44rem column. Anything else keeps its original src.
   const optimizeContentImages = (html: string) => {
-    return html.replace(/<img(\s)/gi, '<img loading="lazy" decoding="async"$1');
+    const optimizable = /^(\/api\/uploads\/|https:\/\/engjellrraklli\.com\/api\/uploads\/|https:\/\/app\.division5\.co\/api\/v1\/storage\/files\/)[^"']+\.(png|jpe?g|webp)$/i;
+    const at = (src: string, w: number) => `/_next/image?url=${encodeURIComponent(src)}&amp;w=${w}&amp;q=85`;
+    return html
+      .replace(/<img\b([^>]*?)\ssrc=(["'])([^"']+)\2/gi, (tag, before: string, q: string, src: string) => {
+        if (!optimizable.test(src)) return tag;
+        const srcset = [828, 1200, 1920].map((w) => `${at(src, w)} ${w}w`).join(', ');
+        return `<img${before} src=${q}${at(src, 1200)}${q} srcset="${srcset}" sizes="(min-width: 768px) 44rem, 100vw"`;
+      })
+      .replace(/<img(\s)/gi, '<img loading="lazy" decoding="async"$1');
   };
 
   let decodedContent = content;

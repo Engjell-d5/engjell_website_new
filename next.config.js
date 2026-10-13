@@ -30,7 +30,9 @@ const nextConfig = {
         pathname: '/api/uploads/**',
       },
     ],
-    formats: ['image/avif', 'image/webp'],
+    // WebP only. At Next's default quality AVIF came out at about 26 KB for a
+    // 1080px photo, which smeared detail and read as low resolution.
+    formats: ['image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
     minimumCacheTTL: 3600,

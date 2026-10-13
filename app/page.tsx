@@ -90,8 +90,7 @@ export default async function Home() {
   const tiles: Tile[] = [
     {
       href: '/ventures',
-      image: '/photos/expo-mentoring.jpg',
-      position: '52% 50%',
+      image: '/photos/kosict-conversation.jpg',
       label: 'division5 · divisionAI',
       keepCase: true,
       title: 'Builds',
@@ -100,7 +99,6 @@ export default async function Home() {
     {
       href: '/podcast',
       image: '/photos/studio-ringlight.jpg',
-      position: '54% 40%',
       label: 'Scaling the Unscalable',
       title: 'Talks',
       body: 'Long conversations with founders about what really happens inside a company.',
@@ -108,7 +106,6 @@ export default async function Home() {
     {
       href: '/speaking',
       image: '/photos/stage-adc-crowd.jpg',
-      position: '88% 50%',
       label: 'Speaking',
       title: 'Speaks',
       body: 'Post-mortems, not predictions. What putting AI agents into a real business cost.',
@@ -150,6 +147,7 @@ export default async function Home() {
                     src="/IMG_0466.JPG"
                     alt="Engjell Rraklli in the Scaling the Unscalable studio in Tirana"
                     fill
+                    quality={85}
                     priority
                     sizes="(min-width: 1024px) 430px, 100vw"
                     className="object-cover"

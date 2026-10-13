@@ -52,6 +52,7 @@ export default function PageHero({
                         src={image.src}
                         alt={image.alt}
                         fill
+                        quality={85}
                         priority={image.priority ?? true}
                         sizes="(min-width: 1024px) 560px, 100vw"
                         className="object-cover"

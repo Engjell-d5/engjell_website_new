@@ -99,7 +99,7 @@ export default function About() {
             did about it.
           </p>
         }
-        image={{ src: '/photos/jury-ebdc-portrait.jpg', alt: 'Engjell Rraklli with two organisers at the Albanian Skills awards in Tirana', position: '50% 35%' }}
+        image={{ src: '/photos/kosict-call.jpg', alt: 'Engjell Rraklli on a phone call outside the KosICT conference in Prishtina' }}
       />
 
       <section className="sec-light" aria-label="My story">
@@ -121,12 +121,12 @@ export default function About() {
       {/* A photograph at full width, between the reading and the rest. */}
       <div className="relative aspect-[16/9] w-full overflow-hidden bg-[var(--deep)] md:aspect-[21/8]">
         <Image
-          src="/photos/expo-panel.jpg"
-          alt="Engjell Rraklli on a panel at the Skills, Careers and Employment Festival in Tirana"
+          src="/photos/stage-adc-room.jpg"
+          alt="Engjell Rraklli speaking to a full room at ADC 2023"
           fill
+          quality={85}
           sizes="100vw"
           className="object-cover"
-          style={{ objectPosition: '50% 48%' }}
         />
       </div>
 
