@@ -1,135 +1,109 @@
 import Link from 'next/link';
-import { Twitter, Linkedin, Youtube, Mail } from 'lucide-react';
-import { VENTURES } from '@/lib/ventures';
-import { valuesSentence } from '@/lib/values';
 import SubscribeForm from '@/components/SubscribeForm';
 
-// The playbook and the sprint used to be reachable only from each other, which
-// made the site's one free asset and its only paid offer a two page island that
-// nothing linked into. The footer is the cheapest fix: present on every page,
-// and it does not push either at people who came to read.
-const NAV = [
-  { href: '/', label: 'Home' },
-  { href: '/about', label: 'About' },
-  { href: '/podcast', label: 'Podcast' },
-  { href: '/journal', label: 'Journal' },
-  { href: '/playbook', label: 'Playbook' },
-  { href: '/sprint', label: 'Sprint' },
-  { href: '/ventures', label: 'Ventures' },
-  { href: '/contact', label: 'Contact' },
+// The full map of the site lives here, so the header can stay at four links.
+// Grouped by what a visitor came to do rather than by page type.
+const COLUMNS: { title: string; links: { href: string; label: string; external?: boolean }[] }[] = [
+  {
+    title: 'Read',
+    links: [
+      { href: '/journal', label: 'Journal' },
+      { href: '/podcast', label: 'Podcast' },
+      { href: '/playbook', label: 'Free playbook' },
+    ],
+  },
+  {
+    title: 'Work with me',
+    links: [
+      { href: '/sprint', label: 'Constraint Sprint' },
+      { href: '/speaking', label: 'Speaking' },
+      { href: '/invest', label: 'Angel investing' },
+      { href: '/contact', label: 'Contact' },
+    ],
+  },
+  {
+    title: 'About',
+    links: [
+      { href: '/about', label: 'My story' },
+      { href: '/ventures', label: 'Ventures' },
+      { href: 'https://division5.co', label: 'division5 ↗', external: true },
+      { href: 'https://divisionai.co', label: 'divisionAI ↗', external: true },
+    ],
+  },
+  {
+    title: 'Elsewhere',
+    links: [
+      { href: 'https://www.linkedin.com/in/engjell-rraklli-a8b20a68/', label: 'LinkedIn ↗', external: true },
+      { href: 'https://x.com/RraklliEngjell', label: 'X ↗', external: true },
+      { href: 'https://www.youtube.com/@engjellrraklli', label: 'YouTube ↗', external: true },
+      { href: 'mailto:info@engjellrraklli.com', label: 'Email', external: true },
+    ],
+  },
 ];
 
 export default function Footer() {
   return (
-    // --surface-0, not --rich-black. The footer is page furniture, so it should
-    // sit behind the panels rather than level with them. At panel tone it read
-    // as one more panel stacked at the bottom of every page.
-    <footer className="mt-6 border border-[var(--rule-faint)] bg-[var(--surface-0)] py-12 px-8">
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-10 max-w-[1600px] mx-auto">
-        {/* Brand + the signup that was missing from every page */}
-        <div className="md:col-span-5">
-          <div className="flex items-center gap-3 mb-4">
-            <img
-              src="/Engjell_Rraklli_White_Logo_Mark.svg"
-              alt="Engjell Rraklli logo"
-              className="w-12 h-12 object-contain"
-            />
-            <span className="text-xl text-white font-bebas tracking-widest">ENGJELL RRAKLLI</span>
+    <footer className="sec-deep border-t border-[var(--line)]">
+      <div className="wrap pb-9 pt-16">
+        <div className="flex flex-wrap justify-between gap-12">
+          <div className="max-w-[400px] flex-[1_1_320px]">
+            <Link href="/" className="inline-flex items-center gap-3">
+              <img src="/Engjell_Rraklli_White_Logo_Mark.svg" alt="" className="h-11 w-11" />
+              <span className="font-bebas text-[25px] leading-none tracking-[0.08em] text-[var(--ink)]">
+                Engjell Rraklli
+              </span>
+            </Link>
+            <p className="mt-4 text-sm leading-relaxed text-[var(--text)]">
+              Founder of division5 and divisionAI. Writing from Tirana about building service
+              businesses that scale.
+            </p>
+            <div className="mt-8">
+              <p className="label">
+                <span className="slash">/</span>Field notes by email
+              </p>
+              <p className="meta mt-1">The occasional essay, sent when there is something worth reading.</p>
+              <SubscribeForm variant="inline" />
+            </div>
           </div>
-          {/* The value list comes from lib/values.ts, the same source the About
-              page grid renders from. The order here is the long-standing footer
-              wording rather than the grid order, so it is passed explicitly. */}
-          <p className="meta max-w-sm leading-relaxed">
-            Building scalable tech and human potential in Albania. Creative at heart, resilient by
-            practice. Valuing {valuesSentence(['Discipline', 'Persistence', 'Kindness', 'Patience'])}{' '}
-            above all.
-          </p>
 
-          {/* Subscribe existed only in the sidebar and at the end of articles.
-              The footer is the one block on every page, so it belongs here. */}
-          <div className="mt-8">
-            <p className="section-label mb-1">Field notes</p>
-            <p className="meta mb-2">Sent when there is something worth reading.</p>
-            <SubscribeForm variant="inline" />
+          <div className="grid flex-[2_1_560px] grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-4">
+            {COLUMNS.map((col) => (
+              <nav key={col.title} aria-label={col.title}>
+                <p className="label mb-4">{col.title}</p>
+                <ul className="flex flex-col gap-2.5">
+                  {col.links.map((l) => (
+                    <li key={l.href}>
+                      {l.external ? (
+                        <a
+                          href={l.href}
+                          {...(l.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                          className="text-sm text-[var(--ink)] transition-colors hover:text-[var(--primary-mint)]"
+                        >
+                          {l.label}
+                        </a>
+                      ) : (
+                        <Link
+                          href={l.href}
+                          className="text-sm text-[var(--ink)] transition-colors hover:text-[var(--primary-mint)]"
+                        >
+                          {l.label}
+                        </Link>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            ))}
           </div>
         </div>
 
-        <nav className="md:col-span-2" aria-label="Footer">
-          <h2 className="section-label mb-4">Navigation</h2>
-          <ul className="space-y-2.5">
-            {NAV.map((item) => (
-              <li key={item.href}>
-                <Link href={item.href} className="meta hover:text-[var(--primary-mint)] transition-colors">
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-
-        <div className="md:col-span-2">
-          <h2 className="section-label mb-4">Ventures</h2>
-          <ul className="space-y-2.5">
-            {VENTURES.map((v) => (
-              <li key={v.name}>
-                <a
-                  href={v.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="meta hover:text-[var(--primary-mint)] transition-colors"
-                >
-                  {v.name}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="md:col-span-3">
-          <h2 className="section-label mb-4">Connect</h2>
-
-          {/* The address was only on the contact page's sidebar. The footer is
-              where people actually look for it. */}
-          <a
-            href="mailto:info@engjellrraklli.com"
-            className="meta inline-flex items-center gap-2 hover:text-[var(--primary-mint)] transition-colors"
-          >
-            <Mail className="w-4 h-4 shrink-0" />
-            info@engjellrraklli.com
-          </a>
-
-          <div className="flex gap-4 mt-4">
-            <a
-              href="https://x.com/RraklliEngjell"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Engjell Rraklli on X"
-              className="text-[var(--text-meta)] hover:text-[var(--primary-mint)] transition-colors"
-            >
-              <Twitter className="w-5 h-5" />
+        <div className="mt-14 flex flex-wrap justify-between gap-x-8 gap-y-3 border-t border-[var(--line)] pt-6 text-[12.5px] text-[var(--muted)]">
+          <span>&copy; {new Date().getFullYear()} Engjell Rraklli</span>
+          <span>
+            <a href="mailto:info@engjellrraklli.com" className="hover:text-[var(--primary-mint)]">
+              info@engjellrraklli.com
             </a>
-            <a
-              href="https://www.linkedin.com/in/engjell-rraklli-a8b20a68/"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Engjell Rraklli on LinkedIn"
-              className="text-[var(--text-meta)] hover:text-[var(--primary-mint)] transition-colors"
-            >
-              <Linkedin className="w-5 h-5" />
-            </a>
-            <a
-              href="https://www.youtube.com/@engjellrraklli"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Engjell Rraklli on YouTube"
-              className="text-[var(--text-meta)] hover:text-[var(--primary-mint)] transition-colors"
-            >
-              <Youtube className="w-5 h-5" />
-            </a>
-          </div>
-
-          <p className="meta mt-8">&copy; {new Date().getFullYear()} Engjell Rraklli</p>
-          <p className="meta mt-1">
+            <span className="meta-sep" aria-hidden="true"> · </span>
             Built by{' '}
             <a
               href="https://divisionai.co"
@@ -139,7 +113,7 @@ export default function Footer() {
             >
               divisionAI
             </a>
-          </p>
+          </span>
         </div>
       </div>
     </footer>

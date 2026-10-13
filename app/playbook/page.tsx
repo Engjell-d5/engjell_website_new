@@ -1,10 +1,10 @@
 import Link from 'next/link';
-import { ArrowRight, CheckCircle2 } from 'lucide-react';
-import Sidebar from '@/components/Sidebar';
-import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
-import PlaybookCta from '@/components/PlaybookCta';
-import { createMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
+import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
+import PlaybookCta, { PlaybookCover } from '@/components/PlaybookCta';
+import PageHero from '@/components/site/PageHero';
+import SectionLabel from '@/components/site/SectionLabel';
+import { createMetadata } from '@/lib/metadata';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 
@@ -51,84 +51,91 @@ const CONTENTS = [
 
 export default function PlaybookPage() {
   return (
-    <>
+    <main id="main-content">
       <StructuredData type="DigitalDocument" data={playbookData} />
       <Breadcrumbs items={[{ name: 'Home', url: siteUrl }, { name: 'Playbook', url: `${siteUrl}/playbook` }]} />
 
-      <div className="mx-auto w-full max-w-[80rem] px-4 py-12 md:py-16 lg:flex lg:gap-12">
-        <main className="w-full lg:max-w-[46rem]">
-          <p className="section-label mb-4">Free playbook</p>
-          <h1 className="mb-6 text-4xl font-bold leading-tight text-[var(--text-primary)] md:text-5xl">
-            Productize and scale
-          </h1>
-
-          <p className="mb-6 max-w-[62ch] text-lg leading-relaxed text-[var(--text-secondary)]">
-            In May 2015 I founded division5 in Albania. I was 23, with no connections, no money,
-            no references and no experience. A decade of growing it taught me that whatever was
-            blocking the company was almost always something that existed only in my head.
-          </p>
-
-          <p className="mb-10 max-w-[62ch] leading-relaxed text-[var(--text-muted)]">
-            This is what was left after a decade of that. Eight steps, each ending in something
-            you have to compile, because a question you answer in your head is one you flatter
-            yourself through. You finish with your own document: what you actually sell, where the
-            work really comes from, what only you can do, and a first ninety days that does not
-            start with buying software.
-          </p>
-
-          <div className="mb-10 border-t border-[var(--rule-faint)] pt-8">
-            <h2 className="mb-6 text-sm font-semibold uppercase tracking-[0.18em] text-[var(--text-meta)]">
-              What is inside
-            </h2>
-            <ul className="flex flex-col gap-5">
-              {CONTENTS.map(([title, note]) => (
-                <li key={title} className="flex gap-3">
-                  <CheckCircle2
-                    size={18}
-                    className="mt-1 shrink-0 text-[var(--primary-mint)]"
-                    aria-hidden="true"
-                  />
-                  <div>
-                    <p className="font-semibold text-[var(--text-primary)]">{title}</p>
-                    <p className="text-sm leading-relaxed text-[var(--text-muted)]">{note}</p>
-                  </div>
-                </li>
-              ))}
-            </ul>
+      <PageHero
+        label="Free playbook · 11 pages"
+        title={
+          <>
+            Productize <span className="text-[var(--primary-mint)]">and Scale</span>
+          </>
+        }
+        lede={
+          <>
+            <p>
+              In May 2015 I founded division5 in Albania. I was 23, with no connections, no money, no
+              references and no experience. A decade of growing it taught me that whatever was blocking the
+              company was almost always something that existed only in my head.
+            </p>
+            <div className="mt-8">
+              <PlaybookCta variant="form" />
+            </div>
+          </>
+        }
+        aside={
+          <div className="flex justify-center py-4">
+            <PlaybookCover />
           </div>
+        }
+      />
 
-          <PlaybookCta variant="page" />
-
-          <p className="mt-10 leading-relaxed text-[var(--text-muted)]">
-            The playbook came out of{' '}
-            <Link
-              href="/journal/how-to-scale-a-service-business-in-the-ai-era"
-              className="text-[var(--primary-mint)] hover:underline"
-            >
-              this article
-            </Link>
-            , which is the story rather than the work. Read that first if you want to know whether
-            any of this is worth your hour.
-            <ArrowRight size={16} className="ml-1 inline" aria-hidden="true" />
-          </p>
-
-          {/* The paid path, mentioned once and after the free thing has been
-              given away. Someone who has read this far is the only person the
-              sprint is for. */}
-          <p className="mt-6 leading-relaxed text-[var(--text-muted)]">
-            If you would rather not do the diagnostics alone, I run them with leadership teams
-            remotely over two weeks as{' '}
-            <Link href="/sprint" className="text-[var(--primary-mint)] hover:underline">
-              the Constraint Sprint
-            </Link>
-            . That is the paid version, and the playbook is genuinely enough for plenty of people.
-          </p>
-        </main>
-
-        <div className="mt-16 lg:mt-0 lg:flex-1">
-          <Sidebar />
+      <section className="sec-light" aria-labelledby="inside">
+        <div className="wrap pad-y">
+          <div className="flex flex-wrap items-end justify-between gap-x-12 gap-y-6">
+            <div>
+              <SectionLabel>What is inside</SectionLabel>
+              <h2 id="inside" className="h-section mt-3.5">
+                Eight steps, each ending in something you write down
+              </h2>
+            </div>
+            <p className="max-w-[30em] text-[15px] leading-relaxed text-[var(--text)]">
+              A question you answer in your head is one you flatter yourself through. You finish with your
+              own document, not a set of ideas.
+            </p>
+          </div>
+          <ol className="mt-12 grid gap-x-12 sm:grid-cols-2">
+            {CONTENTS.map(([title, note], i) => (
+              <li key={title} className="flex gap-6 border-t border-[var(--line)] py-7">
+                <span className="font-bebas text-[44px] leading-none text-[var(--accent-text)]" aria-hidden="true">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <div>
+                  <h3 className="text-[30px] leading-[1.02] tracking-[0.03em]">{title}</h3>
+                  <p className="mt-2 text-[15px] leading-relaxed text-[var(--text)]">{note}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
-      </div>
-    </>
+      </section>
+
+      <section className="sec-deep">
+        <div className="wrap flex flex-wrap gap-x-20 gap-y-8 py-[clamp(56px,6vw,96px)]">
+          <div className="min-w-0 flex-[1_1_480px]">
+            <SectionLabel>Where it came from</SectionLabel>
+            <p className="mt-4 text-[17px] leading-relaxed text-[var(--text)]">
+              The playbook came out of{' '}
+              <Link href="/journal/how-to-scale-a-service-business-in-the-ai-era" className="text-link">
+                this essay
+              </Link>
+              , which is the story rather than the work. Read that first if you want to know whether any of
+              this is worth your hour.
+            </p>
+          </div>
+          <div className="min-w-0 flex-[1_1_480px]">
+            <SectionLabel>Rather not do it alone?</SectionLabel>
+            <p className="mt-4 text-[17px] leading-relaxed text-[var(--text)]">
+              I run the same diagnostics with leadership teams, remotely over two weeks, as{' '}
+              <Link href="/sprint" className="text-link">
+                the Constraint Sprint
+              </Link>
+              . That is the paid version, and the playbook is genuinely enough for plenty of people.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }

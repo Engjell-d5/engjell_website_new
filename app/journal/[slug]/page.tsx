@@ -2,12 +2,12 @@ import React from 'react';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { PenTool } from 'lucide-react';
 import type { Metadata } from 'next';
 import ShareRow from '@/components/ShareRow';
 import SubscribeForm from '@/components/SubscribeForm';
 import PlaybookCta from '@/components/PlaybookCta';
 import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
+import SectionLabel from '@/components/site/SectionLabel';
 import { createMetadata } from '@/lib/metadata';
 import { getBlogBySlug, getRelatedBlogs } from '@/lib/data';
 import { toCategorySlug } from '@/lib/category-slug';
@@ -97,14 +97,8 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
     timeRequired: `PT${readingTime}M`,
   };
 
-  // The article is the one page that does not wear the 9/3 frame.
-  // A 2700-word essay flanked by a rail reads as a template with an article
-  // dropped into it, and the 46rem measure was being capped twice: once by
-  // .blog-content and again by the 9-column panel around it. Single centred
-  // column, one measure, nothing beside it. Every other route keeps the grid,
-  // which is what makes this page read as the exception.
   return (
-    <div className="flex justify-center">
+    <main id="main-content">
       <StructuredData type="BlogPosting" data={articleData} />
       <Breadcrumbs
         items={[
@@ -113,141 +107,134 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
           { name: blog.title, url: `/journal/${blog.slug}` },
         ]}
       />
-      <main id="main-content" className="classic-panel w-full max-w-[62rem] flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
-        {/* Breadcrumbs / Top Bar */}
-        <div className="h-14 border-b border-[var(--rule-faint)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
-          <div className="flex items-center gap-3 text-xs text-[var(--text-meta)]">
-            <Link href="/journal" className="hover:text-[var(--primary-mint)] transition-colors">
-              <span className="text-[var(--primary-mint)] font-bold">/</span>
-              <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">Journal</span>
-            </Link>
-            <span className="text-[var(--text-meta)]">/</span>
-            {/* The post title, not blog.slug, this used to render the raw
-                hyphenated URL segment (e.g. THE-SILICON-VALLEY-ILLUSION). */}
-            <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px] truncate max-w-[16rem] lg:max-w-md">
-              {blog.title}
-            </span>
-          </div>
-          <div className="font-montserrat text-[11px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
-            A KIND WORLD IS A BETTER WORLD.
+
+      {/* Header on the dark ground, the reading below on light. */}
+      <section className="sec-dark">
+        <div className="wrap pb-[clamp(40px,4vw,64px)] pt-[clamp(40px,6vw,88px)]">
+          <div className="mx-auto max-w-[56rem]">
+            <p className="label">
+              <span className="slash" aria-hidden="true">/</span>
+              <Link href="/journal" className="hover:text-[var(--primary-mint)]">
+                Journal
+              </Link>
+              {blog.category && (
+                <>
+                  <span aria-hidden="true"> · </span>
+                  <Link href={`/journal/category/${toCategorySlug(blog.category)}`} className="hover:text-[var(--primary-mint)]">
+                    {blog.category}
+                  </Link>
+                </>
+              )}
+            </p>
+            <h1 className="mt-5 text-balance text-[clamp(46px,5.4vw,84px)] leading-[0.94]">{blog.title}</h1>
+            {blog.excerpt && <p className="lede mt-6 max-w-[40em] !text-[18px]">{blog.excerpt}</p>}
+            <div className="mt-8 flex flex-wrap items-center justify-between gap-x-6 gap-y-4 border-t border-[var(--line)] pt-6">
+              <div className="flex items-center gap-3.5">
+                <span className="relative block h-12 w-12 shrink-0 overflow-hidden rounded-full bg-[var(--deep)]">
+                  <Image src="/IMG_0466.JPG" alt="" fill sizes="48px" className="origin-[50%_33%] scale-[2.4] object-cover" style={{ objectPosition: "50% 24%" }} />
+                </span>
+                <div>
+                  <p className="text-[15px] font-semibold text-[var(--ink)]">Engjell Rraklli</p>
+                  <p className="meta">
+                    {blog.publishedAt && (
+                      <time dateTime={new Date(blog.publishedAt).toISOString()}>{formatDateLong(blog.publishedAt)}</time>
+                    )}
+                    <span className="meta-sep" aria-hidden="true"> · </span>
+                    {readingTime} min read
+                  </p>
+                </div>
+              </div>
+              <ShareRow url={`${siteUrl}/journal/${blog.slug}`} title={blog.title} />
+            </div>
           </div>
         </div>
+      </section>
 
-        {/* Content Area */}
-        <div className="p-6 md:p-12 lg:p-16">
-          <article className="animate-slide-up mx-auto w-full max-w-[46rem]">
-            {/* Header */}
-            <div className="mb-8 border-b border-[var(--rule-faint)] pb-6">
-              <div className="flex items-center gap-3 mb-4">
-                <Link
-                  href={`/journal/category/${toCategorySlug(blog.category)}`}
-                  className="meta text-[var(--primary-mint)] hover:underline"
-                >
-                  {blog.category}
-                </Link>
-                {blog.publishedAt && (
-                  <time
-                    dateTime={new Date(blog.publishedAt).toISOString()}
-                    className="meta"
-                  >
-                  {formatDateLong(blog.publishedAt)}
-                  </time>
-                )}
-                <span className="meta">{readingTime} min read</span>
-              </div>
-              <h1 className="text-5xl md:text-6xl text-white font-bebas tracking-wide mb-4">
-                {blog.title}
-              </h1>
-              {blog.excerpt && (
-                <p className="text-lg text-[var(--text-muted)] leading-relaxed font-light">
-                  {blog.excerpt}
-                </p>
-              )}
-              <div className="mt-5">
-                <ShareRow url={`${siteUrl}/journal/${blog.slug}`} title={blog.title} />
-              </div>
+      {/* The featured image straddles the two surfaces. */}
+      {blog.imageUrl && (
+        <div className="bg-[linear-gradient(to_bottom,var(--rich-black)_50%,var(--platinum)_50%)]">
+          <div className="wrap">
+            <div className="relative mx-auto aspect-video max-w-[64rem] overflow-hidden bg-[var(--deep)]">
+              <Image
+                src={blog.imageUrl}
+                alt={`${blog.title}, featured image`}
+                fill
+                priority
+                sizes="(min-width: 1024px) 64rem, 100vw"
+                className="object-cover"
+              />
             </div>
+          </div>
+        </div>
+      )}
 
-            {/* Featured Image */}
-            {blog.imageUrl && (
-              <div className="relative w-full aspect-video mb-8 border border-[var(--border-color)] overflow-hidden">
-                <Image
-                  src={blog.imageUrl}
-                  alt={`${blog.title} - Featured image`}
-                  fill
-                  priority
-                  sizes="(min-width: 1024px) 46rem, 100vw"
-                  className="object-cover img-classic"
-                />
-              </div>
-            )}
-
-            {/* Hook Sentence */}
+      <section className="sec-light">
+        <div className="wrap pb-[clamp(56px,6vw,96px)] pt-[clamp(48px,5vw,80px)]">
+          <article className="mx-auto max-w-[44rem]">
             {blog.hook && (
-              <div className="mb-8">
-                <p className="text-xl md:text-2xl text-white font-bold leading-relaxed italic border-l-4 border-[var(--primary-mint)] pl-6">
-                  {blog.hook}
-                </p>
-              </div>
+              <p className="mb-10 text-balance font-bebas text-[clamp(32px,3vw,44px)] leading-[1.02] tracking-[0.02em] text-[var(--ink)]">
+                {blog.hook}
+              </p>
             )}
 
-            {/* Content */}
             <BlogContentWithSubscribe content={blog.content || ''} />
 
-            {/* The rail used to carry this. At the end is where a reader who
-                finished the piece is actually ready for it.
+            {/* At the end is where a reader who finished the piece is actually
+                ready for it. The playbook rather than a bare subscribe box: it
+                lands the same subscriber, but gives a reason to hand over an
+                address. */}
+            <PlaybookCta />
 
-                This is the playbook offer rather than a bare subscribe box: it
-                posts to the same endpoint and lands the same subscriber, but it
-                gives a reason to hand over an address. A generic "join my
-                newsletter" asks the reader to value a promise; this asks them to
-                value a document they can see the shape of. */}
-            <div className="mt-16 pt-8 border-t border-[var(--rule-faint)]">
-              <PlaybookCta />
+            <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[var(--line)] pt-6">
+              <p className="meta">Found it useful? Send it to someone running a service business.</p>
+              <ShareRow url={`${siteUrl}/journal/${blog.slug}`} title={blog.title} />
             </div>
-
-            {/* Related Articles */}
-            {relatedBlogs.length > 0 && (
-              <div className="mt-16 pt-8 border-t border-[var(--rule-faint)]">
-                <div className="flex items-center justify-between mb-6">
-                  <span className="section-label">Keep reading</span>
-                  <PenTool className="w-4 h-4 text-[var(--text-meta)]" />
-                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {relatedBlogs.map((relatedBlog) => (
-                    <Link
-                      key={relatedBlog.id}
-                      href={`/journal/${relatedBlog.slug}`}
-                      className="group block"
-                    >
-                      <div className="aspect-[2/1] bg-black border border-[var(--border-color)] mb-3 overflow-hidden relative group-hover:border-[var(--primary-mint)] transition-colors">
-                        <Image 
-                          src={relatedBlog.imageUrl} 
-                          alt={relatedBlog.title} 
-                          fill
-                          sizes="(min-width: 768px) 50vw, 100vw"
-                          className="object-cover opacity-60 group-hover:opacity-90 transition-opacity"
-                        />
-                      </div>
-                      <p className="text-sm text-white font-bold leading-tight group-hover:text-[var(--primary-mint)] transition-colors line-clamp-2 mb-1">
-                        {relatedBlog.title}
-                      </p>
-                      <p className="meta">
-                        {relatedBlog.publishedAt && (
-                          <time dateTime={new Date(relatedBlog.publishedAt).toISOString()}>
-                            {formatDateShort(relatedBlog.publishedAt)}
-                          </time>
-                        )} • {relatedBlog.category}
-                      </p>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
           </article>
         </div>
-      </main>
-    </div>
+      </section>
+
+      {relatedBlogs.length > 0 && (
+        <section className="sec-dark" aria-labelledby="keep-reading">
+          <div className="wrap pad-y">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <SectionLabel as="h2" id="keep-reading">
+                Keep reading
+              </SectionLabel>
+              <Link href="/journal" className="link-rule">
+                All essays
+              </Link>
+            </div>
+            <div className="mt-8 grid gap-8 md:grid-cols-2">
+              {relatedBlogs.map((relatedBlog) => (
+                <Link key={relatedBlog.id} href={`/journal/${relatedBlog.slug}`} className="group block">
+                  <div className="relative mb-5 aspect-[2/1] overflow-hidden bg-[var(--deep)]">
+                    {relatedBlog.imageUrl && (
+                      <Image
+                        src={relatedBlog.imageUrl}
+                        alt=""
+                        fill
+                        sizes="(min-width: 768px) 50vw, 100vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+                      />
+                    )}
+                  </div>
+                  <p className="meta">
+                    {relatedBlog.publishedAt && (
+                      <time dateTime={new Date(relatedBlog.publishedAt).toISOString()}>{formatDateShort(relatedBlog.publishedAt)}</time>
+                    )}
+                    <span className="meta-sep" aria-hidden="true"> · </span>
+                    {relatedBlog.category}
+                  </p>
+                  <h3 className="mt-1.5 text-[clamp(30px,2.6vw,38px)] leading-[1.02] tracking-[0.03em] transition-colors group-hover:text-[var(--primary-mint)]">
+                    {relatedBlog.title}
+                  </h3>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+    </main>
   );
 }
 

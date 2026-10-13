@@ -1,13 +1,20 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Quote, MapPin, BookOpen, Play } from 'lucide-react';
-import Sidebar from '@/components/Sidebar';
+import { ArrowRight } from 'lucide-react';
+import type { Metadata } from 'next';
 import { createMetadata } from '@/lib/metadata';
 import { getBlogs, getVideos } from '@/lib/data';
-import { yearsOfBuilding, yearsOfHiring, START_HERE_SLUG } from '@/lib/site';
-import { ArrowRight } from 'lucide-react';
-import { VENTURE_COUNT } from '@/lib/ventures';
-import type { Metadata } from 'next';
+import { START_HERE_SLUG } from '@/lib/site';
+import { HOSTED_EPISODES } from '@/lib/speaking';
+import { VENTURES } from '@/lib/ventures';
+import { readingTimeMinutes } from '@/lib/reading-time';
+import { formatDateShort } from '@/lib/format';
+import SectionLabel from '@/components/site/SectionLabel';
+import PhotoTiles from '@/components/site/PhotoTiles';
+import MintBanner from '@/components/site/MintBanner';
+import JournalList from '@/components/site/JournalList';
+import { FeaturedEpisode, EpisodeRow } from '@/components/site/Episodes';
+import PlaybookCta from '@/components/PlaybookCta';
 
 // Rendered per request, see app/journal/page.tsx for why ISR is not used.
 export const dynamic = 'force-dynamic';
@@ -15,266 +22,320 @@ export const dynamic = 'force-dynamic';
 // No year count in the description on purpose, `metadata` is evaluated once
 // at module load, so a hardcoded "11 years" would go stale between deploys.
 export const metadata: Metadata = createMetadata({
-  // Kept under 160 characters so search results show the whole sentence rather
-  // than cutting it mid-clause. The old one ran to 187 and ended in a keyword
-  // list ("software development, startups, and tech innovation in Albania")
-  // that read as filler to a person and counts for nothing with Google.
-  description: 'Tech entrepreneur in Tirana. I build software companies, write about scaling service businesses with AI, and back young Albanian talent.',
+  // Kept under 160 characters so search results show the whole sentence.
+  description:
+    'Tech entrepreneur in Tirana. I build service businesses that scale, write about what it takes, and back founders building in Albania and Kosovo.',
   path: '/',
 });
 
-// Fetch the freshest video and blog server-side so the homepage's newest
-// internal links are in the initial HTML (crawlable) instead of a client fetch.
-// Only the fields the sidebar renders are passed to the client component;
-// never the full blog (its `content` would bloat the page payload).
-async function loadLatestContent() {
-  if (!process.env.DATABASE_URL) {
-    return { video: null, blog: null, videoCount: null, blogCount: null, startHere: null };
-  }
-  try {
-    const [videos, blogs] = await Promise.all([
-      getVideos().catch(() => []),
-      getBlogs().catch(() => []),
-    ]);
-    const v = videos.find((vid: any) => vid.featured) || videos[0] || null;
-    const video = v
-      ? {
-          id: v.id,
-          videoId: v.videoId,
-          title: v.title,
-          description: '',
-          thumbnailUrl: v.thumbnailUrl,
-          publishedAt: v.publishedAt,
-          duration: v.duration,
-          viewCount: v.viewCount,
-          channelTitle: v.channelTitle,
-          featured: v.featured,
-        }
-      : null;
-    const b =
-      blogs
-        .filter((blog: any) => blog.published)
-        .sort((a: any, z: any) => {
-          const dateA = a.publishedAt ? new Date(a.publishedAt).getTime() : 0;
-          const dateB = z.publishedAt ? new Date(z.publishedAt).getTime() : 0;
-          return dateB - dateA;
-        })[0] || null;
-    const blog = b
-      ? {
-          id: b.id,
-          title: b.title,
-          slug: b.slug,
-          category: b.category,
-          excerpt: '',
-          imageUrl: b.imageUrl,
-          published: b.published,
-          publishedAt: b.publishedAt,
-        }
-      : null;
-    const videoCount = videos.length || null;
-    const blogCount = blogs.filter((blog: any) => blog.published).length || null;
+// Every number here traces to lib/speaking.ts or the essay. An inflated one is
+// checkable in a click and costs more than it earns.
+const RECEIPTS = [
+  { n: '2015', note: 'Founded division5 at 23. No money, no network, no references.' },
+  { n: '5 → 2', note: 'People it takes to run our recruitment, now that agents do the assembly work.' },
+  { n: '350+', note: 'Tools our agents can use. Every one that writes still waits for a human.' },
+  { n: String(HOSTED_EPISODES), note: 'Long-form conversations recorded with founders for the podcast.' },
+];
 
-    // The pinned reference piece, taken from the same query rather than a
-    // second one. Without this the homepage only surfaced it by accident, via
-    // the sidebar's "Latest Blog", so it would disappear the moment anything
-    // newer was published.
-    const p = START_HERE_SLUG
-      ? blogs.find((blog: any) => blog.slug === START_HERE_SLUG && blog.published)
-      : null;
-    const startHere = p ? { title: p.title, slug: p.slug, excerpt: p.excerpt } : null;
+const TILES = [
+  {
+    href: '/about',
+    image: '/IMG_0425.JPG',
+    position: '62% 40%',
+    label: 'division5 · divisionAI',
+    keepCase: true,
+    title: 'Builds',
+    body: 'Service businesses that scale, and the AI systems that run them.',
+  },
+  {
+    href: '/podcast',
+    image: '/IMG_0456.JPG',
+    position: '50% 30%',
+    label: 'Scaling the Unscalable',
+    title: 'Talks',
+    body: 'Long conversations with founders about what really happens inside a company.',
+  },
+  {
+    href: '/speaking',
+    image: '/_DSC0142.JPG',
+    position: '74% 35%',
+    label: 'Speaking',
+    title: 'Speaks',
+    body: 'Post-mortems, not predictions. What putting AI agents into a real business cost.',
+  },
+];
 
-    return { video, blog, videoCount, blogCount, startHere };
-  } catch (err) {
-    console.error('[home] loading latest content failed:', err);
-    return { video: null, blog: null, videoCount: null, blogCount: null, startHere: null };
-  }
+const OFFERS = [
+  {
+    href: '/sprint',
+    for: 'For service business founders',
+    title: 'The Constraint Sprint',
+    body: 'Four remote sessions over two weeks with you and your leadership team. You leave with a written analysis of what the business is stuck on and a ninety day plan to clear it.',
+    fact: '€7,500 fixed. If the first session is not useful, we stop and you pay nothing.',
+    go: 'How the sprint works',
+  },
+  {
+    href: '/speaking',
+    for: 'For organisers and podcast hosts',
+    title: 'Speaking',
+    body: 'Talks about what actually happened when we put AI agents into a real business, including the parts that went badly. Post-mortems, not predictions.',
+    fact: 'Conference talks, panels, half-day workshops and podcast guest spots.',
+    go: 'Topics and bios',
+  },
+  {
+    href: '/invest',
+    for: 'For founders in Albania and Kosovo',
+    title: 'Angel investing',
+    body: 'I back B2B productized services and services turned into software, built here and already selling in Europe or the US. Customers and distribution come with the cheque.',
+    fact: 'No fund and no committee. I read every application myself.',
+    go: 'What I invest in',
+  },
+];
+
+async function loadContent() {
+  if (!process.env.DATABASE_URL) return { blogs: [], videos: [] };
+  const [blogs, videos] = await Promise.all([getBlogs().catch(() => []), getVideos().catch(() => [])]);
+  return { blogs, videos };
 }
 
 export default async function Home() {
-  const { video, blog, videoCount, blogCount, startHere } = await loadLatestContent();
+  const { blogs, videos } = await loadContent();
+
+  const published = blogs
+    .filter((b) => b.published)
+    .sort((a, z) => (z.publishedAt ?? '').localeCompare(a.publishedAt ?? ''));
+  // The pinned reference piece gets the "Start here" slot; the list shows
+  // what came after it, so the two never repeat each other.
+  const startHere = START_HERE_SLUG ? published.find((b) => b.slug === START_HERE_SLUG) : undefined;
+  const latest = published.filter((b) => b.slug !== START_HERE_SLUG).slice(0, 4);
+
+  const featured = videos.find((v) => v.featured) || videos[0];
+  const moreEpisodes = videos.filter((v) => v.id !== featured?.id).slice(0, 3);
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
-      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
-        {/* Breadcrumbs / Top Bar */}
-        <div className="h-14 border-b border-[var(--rule-faint)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
-          <div className="flex items-center gap-3 text-xs text-[var(--text-meta)]">
-            <span className="text-[var(--primary-mint)] font-bold">/</span>
-            <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">Home</span>
-          </div>
-          <div className="font-montserrat text-[11px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
-            IF IT WAS EASY, EVERYONE WOULD DO IT.
+    <main id="main-content">
+      {/* Hero */}
+      <section className="sec-dark">
+        <div className="wrap pb-[clamp(56px,6vw,96px)] pt-[clamp(40px,6vw,96px)]">
+          <div className="flex flex-wrap-reverse items-center gap-[clamp(36px,5.5vw,88px)]">
+            <div className="min-w-0 flex-[1_1_560px] animate-slide-up">
+              <span className="chip">Tirana, Albania</span>
+              <h1 className="mt-6 text-balance text-[clamp(46px,5.3vw,80px)] leading-[0.94] tracking-[0.012em]">
+                Most service businesses are only as big as their founder.{' '}
+                <span className="text-[var(--primary-mint)]">Mine was too.</span>
+              </h1>
+              <p className="lede mt-7 max-w-[33em]">
+                I founded division5 in Albania in 2015, at 23, with no money and no network. The next
+                decade taught me which constraints were real and which ones I had invented. This site is
+                that decade, written down.
+              </p>
+              <div className="mt-9 flex flex-wrap gap-3">
+                <Link href="/playbook" className="btn btn-primary">
+                  Get the free playbook
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </Link>
+                <Link href={startHere ? `/journal/${startHere.slug}` : '/journal'} className="btn btn-secondary">
+                  Read the essay
+                </Link>
+              </div>
+            </div>
+            <figure className="m-0 w-full max-w-[430px] flex-[1_1_300px]">
+              <div className="brackets">
+                <div className="relative aspect-[4/5] overflow-hidden bg-[var(--deep)]">
+                  <Image
+                    src="/IMG_0466.JPG"
+                    alt="Engjell Rraklli in the Scaling the Unscalable studio in Tirana"
+                    fill
+                    priority
+                    sizes="(min-width: 1024px) 430px, 100vw"
+                    className="object-cover"
+                    style={{ objectPosition: '50% 28%' }}
+                  />
+                </div>
+              </div>
+              <figcaption className="meta mt-4">On set for Scaling the Unscalable, Tirana</figcaption>
+            </figure>
           </div>
         </div>
+      </section>
 
-        {/* Content Area */}
-        <div className="p-6 md:p-10">
-          <section className="animate-slide-up">
-            {/* Full Width Hero */}
-            <div className="relative w-[calc(100%+3rem)] md:w-[calc(100%+5rem)] h-[70vh] min-h-[440px] max-h-[600px] md:h-[600px] md:max-h-none border-b border-[var(--rule-faint)] overflow-hidden group mb-8 -ml-6 -mr-6 -mt-6 md:-ml-10 md:-mr-10 md:-mt-10 rounded-none">
-              <Image 
-                src="/IMG_0425.JPG" 
-                alt="Engjell Rraklli - Tech Entrepreneur building the future in Albania" 
-                fill
-                priority
-                sizes="100vw"
-                className="object-cover img-classic"
-                style={{ objectPosition: 'center 20%' }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[var(--rich-black)] via-transparent to-transparent opacity-90"></div>
-              <div className="absolute inset-0 bg-gradient-to-r from-[var(--rich-black)]/80 via-transparent to-transparent"></div>
-              
-              <div className="absolute bottom-0 left-0 p-8 md:p-16 z-10 w-full">
-                <div className="flex items-center gap-2 mb-4">
-                  {/* Was "Founder's Note", which described nothing on this
-                      screen. The note lives in the bio block further down. */}
-                  <span className="bg-[var(--primary-mint)] text-[var(--rich-black)] text-[11px] font-bold px-3 py-1 uppercase tracking-[0.16em] inline-block">Tirana, Albania</span>
-                </div>
-                <h1 className="text-6xl md:text-8xl text-white font-bebas leading-[0.85] tracking-tight max-w-4xl">
-                  {/* The trailing spaces are load bearing. Without them JSX
-                      emits the text nodes flush against each other, so a
-                      crawler that strips the <br /> reads this heading as
-                      "BUILDING THEFUTUREIN ALBANIA." They sit immediately
-                      before a line break, so they change nothing visually. */}
-                  BUILDING THE{' '}<br />
-                  <span className="text-[var(--primary-mint)]">FUTURE</span>{' '}<br />
-                  IN ALBANIA.
-                </h1>
-                <div className="mt-6 flex flex-wrap items-center gap-3">
-                  <Link href="/podcast" className="btn btn-primary">
-                    <Play className="w-4 h-4 fill-current" />
-                    Listen to the Podcast
-                  </Link>
-                  <Link href="/contact" className="btn btn-secondary-on-image">
-                    Work With Me
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* Bio Grid (Split Layout) */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-0 mb-12 overflow-hidden">
-              {/* Portrait Image Column */}
-              <div className="md:col-span-4 h-64 md:h-auto relative overflow-hidden group border-b md:border-b-0 md:border-r border-[var(--rule-faint)]">
-                <Image 
-                  src="/_DSC0142.JPG" 
-                  alt="Engjell Rraklli portrait - Tech entrepreneur and founder" 
-                  fill
-                  priority
-                  sizes="(min-width: 768px) 33vw, 100vw"
-                  className="object-cover img-classic group-hover:scale-105 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[var(--rich-black)]/80 md:hidden"></div>
-              </div>
-              {/* Bio Text Column */}
-              <div className="md:col-span-8 p-8 md:p-10 flex flex-col justify-center relative">
-                <div className="absolute top-0 right-0 p-6 opacity-5">
-                  <MapPin className="w-32 h-32 text-white" />
-                </div>
-                <div>
-                  <Quote className="w-8 h-8 text-[var(--primary-mint)] mb-4 opacity-50" />
-                  <h2 className="text-white font-bebas text-3xl mb-4 tracking-wide">Why I Build in Albania</h2>
-                  <p className="text-[var(--text-muted)] text-base md:text-[17px] leading-[1.72] max-w-2xl">
-                    Albania exports its best people. My work is a bet that it does not have to. Build companies here that meet a world standard, and a young engineer no longer has to choose between the career they want and the country they are from. That means real projects, real mentorship and the structure to grow into senior work without ever boarding a plane.
-                  </p>
-                  {/* Evidence for the claim directly above it. The mission was
-                      asserted on four pages and demonstrated on none. */}
-                  <p className="mt-5 pl-4 border-l-2 border-[var(--primary-mint)] text-white text-sm font-medium leading-relaxed max-w-2xl">
-                    <span className="font-bebas text-2xl tracking-wide text-[var(--primary-mint)] mr-2">THOUSANDS</span>
-                    of job opportunities created for young Albanians over the past {yearsOfHiring()} years.
-                  </p>
-                </div>
-                <div className="mt-8 flex items-center gap-4">
-                  <Link href="/about" className="btn btn-secondary-on-image">
-                    <BookOpen className="w-4 h-4" />
-                    Read My Story
-                  </Link>
-                </div>
-              </div>
-            </div>
-
-            {/* Start here.
-                The homepage offers five competing calls to action and had no
-                primary one. This is it: a single obvious next step for a first
-                time visitor, and the only permanent home for the reference
-                piece. Reads the same START_HERE_SLUG as the journal slot, so
-                pinning a different post moves both, and unpinning removes both. */}
-            {startHere && (
-              <Link
-                href={`/journal/${startHere.slug}`}
-                className="group block mb-12 panel-inset border-[var(--primary-mint)]/45 hover:border-[var(--primary-mint)] transition-colors"
-              >
-                <div className="p-8 md:p-10">
-                  <span className="section-label mb-3 block" style={{ color: "var(--primary-mint)" }}>
-                    Start here
-                  </span>
-                  <h2 className="text-3xl md:text-4xl text-white font-bebas tracking-wide mb-3 group-hover:text-[var(--primary-mint)] transition-colors">
-                    {startHere.title}
-                  </h2>
-                  <p className="text-sm text-[var(--text-muted)] leading-relaxed font-light max-w-3xl">
-                    {startHere.excerpt}
-                  </p>
-                  <span className="mt-5 inline-flex items-center gap-2 meta font-semibold text-[var(--primary-mint)]">
-                    Read the playbook
-                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                </div>
-              </Link>
-            )}
-
-            {/* Metrics Strip.
-                The counts double as the homepage's only body links to
-                /ventures, /podcast and /journal. Previously the page
-                advertised "3 Active" ventures and an article count while
-                linking to neither section outside the footer. */}
-            <div className="grid grid-cols-2 md:grid-cols-4 border-t border-b border-[var(--rule-faint)]">
-              <div className="p-6 border-r border-[var(--rule-faint)] text-center">
-                <p className="meta mb-1">Experience</p>
-                <p className="text-3xl font-bebas text-white">{yearsOfBuilding()}+ Years</p>
-              </div>
-              <Link
-                href="/ventures"
-                className="p-6 border-r border-[var(--rule-faint)] text-center group hover:bg-[var(--content-bg)] transition-colors"
-              >
-                <p className="meta mb-1">Ventures</p>
-                <p className="text-3xl font-bebas text-white group-hover:text-[var(--primary-mint)] transition-colors">
-                  {VENTURE_COUNT} Active
+      {/* Receipts */}
+      <section className="sec-deep" aria-labelledby="receipts">
+        <div className="wrap py-11">
+          <SectionLabel as="h2" id="receipts">
+            Receipts, not predictions
+          </SectionLabel>
+          <div className="mt-6 grid grid-cols-2 gap-x-10 gap-y-8 lg:grid-cols-4">
+            {RECEIPTS.map((r) => (
+              <div key={r.note}>
+                <p className="font-bebas text-[clamp(52px,4.8vw,72px)] leading-none tracking-[0.02em] text-white">
+                  {r.n.includes('→') ? (
+                    <>
+                      {r.n.split('→')[0]}
+                      <span className="align-[0.18em] font-montserrat text-[0.6em] font-semibold text-[var(--primary-mint)]">
+                        →
+                      </span>
+                      {r.n.split('→')[1]}
+                    </>
+                  ) : (
+                    r.n
+                  )}
                 </p>
+                <p className="mt-2.5 max-w-[20em] text-sm leading-relaxed text-[var(--text)]">{r.note}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <PhotoTiles tiles={TILES} />
+
+      {/* Reading happens on the light surface */}
+      <section className="sec-light">
+        <div className="wrap pad-y">
+          {startHere && (
+            <div className="flex flex-wrap items-end gap-x-[72px] gap-y-8">
+              <div className="min-w-0 flex-[1_1_560px]">
+                <SectionLabel className="!text-[var(--accent-text)]">Start here</SectionLabel>
+                <p className="mt-4 text-balance font-bebas text-[clamp(44px,4.8vw,72px)] leading-[0.96] tracking-[0.015em] text-[var(--ink)]">
+                  “Services don’t scale.” That rule was never about services. It was about founders.
+                </p>
+              </div>
+              <div className="min-w-0 flex-[1_1_320px] pb-1.5">
+                <p className="text-base leading-relaxed text-[var(--text)]">
+                  The essay behind everything else on this site. A decade of running division5, which
+                  constraints were real, which ones I invented, and what changed when AI removed the last
+                  one that was true.
+                </p>
+                <p className="meta mt-4">
+                  {startHere.publishedAt && formatDateShort(startHere.publishedAt)}
+                  {startHere.content ? ` · ${readingTimeMinutes(startHere.content)} min read` : ''}
+                </p>
+                <Link href={`/journal/${startHere.slug}`} className="link-rule mt-3.5">
+                  Read the essay
+                </Link>
+              </div>
+            </div>
+          )}
+
+          <div id="writing" className={startHere ? 'mt-[clamp(72px,8vw,112px)]' : ''}>
+            <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+              <div>
+                <SectionLabel>Journal</SectionLabel>
+                <h2 className="h-section mt-3.5">Notes from inside a service business</h2>
+              </div>
+              <Link href="/journal" className="link-rule">
+                All {published.length || ''} essays
               </Link>
-              {videoCount ? (
-                <Link
-                  href="/podcast"
-                  className="p-6 border-r border-[var(--rule-faint)] text-center group hover:bg-[var(--content-bg)] transition-colors"
-                >
-                  <p className="meta mb-1">Podcast</p>
-                  <p className="text-3xl font-bebas text-white group-hover:text-[var(--primary-mint)] transition-colors">
-                    {videoCount} Episodes
-                  </p>
-                </Link>
+            </div>
+            <div className="mt-9">
+              {latest.length > 0 ? (
+                <JournalList items={latest} showImages={false} />
               ) : (
-                <div className="p-6 border-r border-[var(--rule-faint)] text-center">
-                  <p className="meta mb-1">Mission</p>
-                  <p className="text-3xl font-bebas text-white">Local Growth</p>
-                </div>
-              )}
-              {blogCount ? (
-                <Link href="/journal" className="p-6 text-center group hover:bg-[var(--content-bg)] transition-colors">
-                  <p className="meta mb-1">Journal</p>
-                  <p className="text-3xl font-bebas text-[var(--primary-mint)] group-hover:text-white transition-colors">
-                    {blogCount} Articles
-                  </p>
-                </Link>
-              ) : (
-                <div className="p-6 text-center">
-                  <p className="meta mb-1">Status</p>
-                  <p className="text-3xl font-bebas text-[var(--primary-mint)]">Building</p>
-                </div>
+                <p className="border-t border-[var(--line)] pt-6 text-[var(--text)]">New essays are on the way.</p>
               )}
             </div>
-          </section>
+          </div>
         </div>
-      </main>
-      <Sidebar initialVideo={video} initialBlog={blog} />
-    </div>
+      </section>
+
+      {/* The podcast, opened by the one loud moment on the page */}
+      <MintBanner text="Scaling the Unscalable" id="podcast-title">
+        <div className="flex flex-wrap items-center justify-between gap-x-8 gap-y-3">
+          <p className="m-0 max-w-[46em] text-base leading-relaxed text-[var(--text)]">
+            The podcast. Long conversations with founders about the parts of building a company that
+            never make the pitch deck: burnout, co-founders, bootstrapping, and the loneliness nobody
+            mentions.
+          </p>
+          <div className="flex flex-wrap gap-x-6 gap-y-2">
+            <Link href="/podcast" className="link-rule">
+              All episodes
+            </Link>
+            <Link href="/podcast#guest" className="link-rule">
+              Be a guest
+            </Link>
+          </div>
+        </div>
+      </MintBanner>
+      {featured && (
+        <section className="sec-deep" aria-label="Latest episodes">
+          <div className="wrap flex flex-wrap gap-10 pb-[clamp(64px,7vw,104px)] pt-2">
+            <div className="min-w-0 flex-[1_1_560px]">
+              <FeaturedEpisode ep={featured} />
+            </div>
+            {moreEpisodes.length > 0 && (
+              <div className="flex min-w-0 flex-[1_1_340px] flex-col">
+                {moreEpisodes.map((ep) => (
+                  <EpisodeRow key={ep.id} ep={ep} />
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* Work with me */}
+      <section id="work" className="sec-dark" aria-labelledby="work-title">
+        <div className="wrap pad-y">
+          <SectionLabel>Work with me</SectionLabel>
+          <h2 id="work-title" className="h-section mt-3.5">
+            Three ways to work together
+          </h2>
+          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+            {OFFERS.map((o) => (
+              <Link key={o.href} href={o.href} className="card">
+                <p className="label">{o.for}</p>
+                <h3 className="text-[36px] leading-none tracking-[0.03em]">{o.title}</h3>
+                <p className="text-[15px] leading-relaxed text-[var(--text)]">{o.body}</p>
+                <p className="border-t border-[var(--line-soft)] pt-4 text-sm font-semibold text-[var(--ink)]">{o.fact}</p>
+                <span className="mt-auto text-sm font-bold text-[var(--accent-text)]">{o.go} →</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Why Albania */}
+      <section id="albania" className="sec-deep" aria-labelledby="albania-title">
+        <div className="wrap pad-y">
+          <SectionLabel>Why I build in Albania</SectionLabel>
+          <div className="mt-4 flex flex-wrap gap-x-20 gap-y-10">
+            <div className="min-w-0 flex-[1_1_560px]">
+              <h2 id="albania-title" className="text-balance text-[clamp(44px,4.6vw,70px)] leading-[0.96]">
+                Albania exports its best people. Everything I build is a bet that it{' '}
+                <span className="text-[var(--primary-mint)]">does not have to.</span>
+              </h2>
+              <p className="mt-6 max-w-[36em] text-base leading-relaxed text-[var(--text)]">
+                A young engineer here should not have to choose between the career they want and the
+                country they are from. Real projects, senior people to learn from, and clients across
+                Europe, without boarding a plane. That is what the companies are for.
+              </p>
+              <Link href="/about" className="link-rule mt-6">
+                Read my story
+              </Link>
+            </div>
+            <ul className="min-w-0 flex-[1_1_380px] self-end border-b border-[var(--line)]">
+              {VENTURES.map((v) => (
+                <li key={v.name}>
+                  <a href={v.url} target="_blank" rel="noopener noreferrer" className="group block border-t border-[var(--line)] py-6">
+                    <span className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                      <span className="text-xl font-bold text-[var(--ink)] transition-colors group-hover:text-[var(--primary-mint)]">
+                        {v.name}
+                      </span>
+                      <span className="meta">
+                        {v.role} since {v.since} ↗
+                      </span>
+                    </span>
+                    <span className="mt-2 block text-[15px] leading-relaxed text-[var(--text)]">{v.description}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <PlaybookCta variant="section" />
+    </main>
   );
 }
-

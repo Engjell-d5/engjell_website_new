@@ -70,12 +70,10 @@ export default function ContactForm({ defaultTopic }: { defaultTopic?: Topic } =
 
   if (sent) {
     return (
-      <div className="p-10 panel-inset relative flex flex-col items-center text-center gap-4">
-        <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[var(--primary-mint)]"></div>
-        <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[var(--primary-mint)]"></div>
-        <CheckCircle2 className="w-10 h-10 text-[var(--primary-mint)]" />
-        <h3 className="text-2xl text-white font-bebas tracking-wide">MESSAGE SENT</h3>
-        <p className="text-sm text-[var(--text-muted)] font-light max-w-xs">
+      <div className="panel-inset flex flex-col items-center gap-4 p-8 text-center md:p-10">
+        <CheckCircle2 className="h-10 w-10 text-[var(--accent-text)]" aria-hidden="true" />
+        <h3 className="text-[36px] leading-none tracking-[0.03em]">Message sent</h3>
+        <p className="max-w-xs text-sm text-[var(--text)]">
           Thank you for reaching out. I read every message and usually reply within two business days.
         </p>
         <button
@@ -93,10 +91,7 @@ export default function ContactForm({ defaultTopic }: { defaultTopic?: Topic } =
   }
 
   return (
-    <div className="p-10 panel-inset relative flex flex-col">
-      {/* Decorative corner accents */}
-      <div className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[var(--primary-mint)]"></div>
-      <div className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[var(--primary-mint)]"></div>
+    <div className="panel-inset flex flex-col p-7 md:p-10">
       
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div>
@@ -110,7 +105,7 @@ export default function ContactForm({ defaultTopic }: { defaultTopic?: Topic } =
             onChange={handleChange}
             required
             disabled={loading}
-            className="w-full field p-3 text-sm text-white font-montserrat disabled:opacity-50"
+            className="w-full field p-3 text-sm font-montserrat disabled:opacity-50"
           />
         </div>
         <div>
@@ -124,7 +119,7 @@ export default function ContactForm({ defaultTopic }: { defaultTopic?: Topic } =
             onChange={handleChange}
             required
             disabled={loading}
-            className="w-full field p-3 text-sm text-white font-montserrat disabled:opacity-50"
+            className="w-full field p-3 text-sm font-montserrat disabled:opacity-50"
           />
         </div>
         <div>
@@ -136,7 +131,7 @@ export default function ContactForm({ defaultTopic }: { defaultTopic?: Topic } =
             onChange={handleChange}
             required
             disabled={loading}
-            className="w-full field p-3 text-sm text-white font-montserrat disabled:opacity-50"
+            className="w-full field p-3 text-sm font-montserrat disabled:opacity-50"
           >
             <option value="" disabled>Select a topic</option>
             {TOPICS.map((t) => (
@@ -154,7 +149,7 @@ export default function ContactForm({ defaultTopic }: { defaultTopic?: Topic } =
             onChange={handleChange}
             required
             disabled={loading}
-            className="w-full field p-3 text-sm text-white resize-none font-montserrat disabled:opacity-50"
+            className="w-full field p-3 text-sm resize-none font-montserrat disabled:opacity-50"
           ></textarea>
         </div>
         {/* Honeypot field - hidden from users but visible to bots */}
@@ -172,7 +167,7 @@ export default function ContactForm({ defaultTopic }: { defaultTopic?: Topic } =
             confirmation panel above, so this used to carry a dead
             "successfully" branch that could never render. */}
         {message && (
-          <p role="alert" className="text-xs text-red-400">
+          <p role="alert" className="text-sm text-[var(--secondary-orange)]">
             {message}
           </p>
         )}
@@ -181,8 +176,8 @@ export default function ContactForm({ defaultTopic }: { defaultTopic?: Topic } =
           disabled={loading}
           className="btn btn-primary w-full"
         >
-          <Send className="w-4 h-4" />
-          {loading ? 'Sending...' : 'Send Message'}
+          <Send className="h-4 w-4" aria-hidden="true" />
+          {loading ? 'Sending…' : 'Send message'}
         </button>
       </form>
     </div>

@@ -2,791 +2,446 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Fonts are now loaded via next/font in layout.tsx for optimized loading */
+/* Fonts are loaded via next/font in layout.tsx (Montserrat, Bebas Neue). */
 
+/* ── Brand ────────────────────────────────────────────────────────────────
+   The brand book's colours, unchanged: rich black, mint, platinum, with
+   orange and purple as rare secondaries. Bebas Neue for display, Montserrat
+   for everything you read.
+
+   The page is dark, but not one long dark sheet. Sections change surface as
+   you scroll: rich black, a deeper grained black, light platinum for long
+   reading, and a mint banner when something needs to land. Each surface sets
+   the same semantic tokens, so a component placed inside .sec-light flips
+   its text and rules without knowing where it is. */
 :root {
-  /* Brand Palette */
   --primary-mint: #23C18C;
+  --mint-hover: #4BD6A6;
   --secondary-orange: #E29A4B;
   --secondary-purple: #9450FF;
-  --rich-black: #001823; /* Brand Book Black */
+  --rich-black: #001823;
+  --deep: #000C11;
   --platinum: #E5E5E5;
-  
-  /* UI Variables */
-  --bg-dark: #000c11; /* Darker accent of Rich Black for depth */
-  --content-bg: #02141d; /* Content area background */
-  --panel-bg: var(--rich-black); /* Rich Black Panels */
-  --border-color: #1a3a4a; /* Subtle architectural border */
 
-  /* ── Surface scale ─────────────────────────────────────────────────────────
-     Depth used to be conveyed by exactly one thing: a flat 1px hairline in a
-     single colour, roughly 125 times. Every surface announced itself the same
-     way, so the lines read as containment rather than structure.
-
-     Now depth is carried by value, and lines are reserved for the outermost
-     edge. Three planes, each a step lighter than the one behind it.           */
-  --surface-0: var(--bg-dark);   /* the page itself, furthest back */
-  --surface-1: #001823;          /* a panel lifted off the page */
-  --surface-2: #07242f;          /* a block nested inside a panel */
-  --surface-3: #0c2f3c;          /* an input or control inside that block */
-
-  /* Rule scale. One weight for everything meant no hierarchy at all. */
-  --rule-faint: #102934;         /* divisions inside a panel */
-  --rule: var(--border-color);   /* a panel's own edge */
-  --rule-lit: rgba(255, 255, 255, 0.11); /* the top edge, where light lands */
-  
-  /* Text Colors
-     Contrast ratios below are measured against --rich-black (#001823), the
-     darkest surface any of these sit on. WCAG AA needs 4.5:1 for normal text;
-     most of this palette is used at 10-12px, so nothing here should dip below
-     that. The previous --text-nav-inactive (#64748b, 3.8:1) and the raw
-     text-gray-500/600 Tailwind classes it stood in for all failed. */
-  --text-primary: var(--platinum);
-  --text-secondary: #e5e7eb;
-  --text-muted: #cbd5e1;          /* 12.3:1 — body copy on dark panels */
-  --text-meta: #8fa5ae;           /*  7.1:1 — dates, durations, labels, captions */
-  --text-nav-inactive: #7d94a0;   /*  5.7:1 — inactive nav links (was 3.8:1) */
-  --text-silver: #C0C0C0; /* Silver color for labels */
-  
-  /* Link Colors */
-  --link-color: #3b82f6;
-  --link-hover: #1a9d6b; /* Darker shade of primary-mint */
-  
-  /* Neutral Colors */
-  --neutral-border: #ccc;
-  
-  /* Font Variables - Set by next/font, but ensuring they're available */
-  /* These are set on <html> element via layout.tsx, but adding fallbacks here */
+  --noise: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  --grain: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.09'/%3E%3C/svg%3E");
 }
 
-/* Ensure all borders use the correct color by default */
-* {
-  border-color: var(--border-color);
+/* Semantic tokens, dark surfaces (the default). Contrast against #001823:
+   ink 14.8:1, text 11:1, muted 7.1:1, mint as text 7.9:1. */
+:root, .sec-dark, .sec-deep {
+  --ink: #E5E5E5;
+  --text: #C3CFD4;
+  --muted: #8FA5AE;
+  --line: rgba(229, 229, 229, 0.13);
+  --line-soft: rgba(229, 229, 229, 0.08);
+  --accent-text: #23C18C;
+  --field-bg: #000C11;
+  --field-line: rgba(229, 229, 229, 0.22);
 }
+
+/* Light platinum surfaces. Bright mint fails as text here (2.1:1), so text
+   accents use the deeper #067150 (5.4:1); fills stay brand mint. */
+.sec-light {
+  --ink: #001823;
+  --text: #22363E;
+  --muted: #47595F;
+  --line: #C3C9C8;
+  --line-soft: #D2D7D6;
+  --accent-text: #067150;
+  --field-bg: #F3F4F2;
+  --field-line: #A9B3B2;
+}
+
+/* Aliases for the older component classes and inline var() references.
+   Declared on every surface so they resolve against that surface's tokens. */
+:root, .sec-dark, .sec-deep, .sec-light {
+  --text-primary: var(--ink);
+  --text-secondary: var(--text);
+  --text-muted: var(--text);
+  --text-meta: var(--muted);
+  --border-color: var(--line);
+  --rule-faint: var(--line-soft);
+  --bg-dark: var(--deep);
+  --panel-bg: var(--rich-black);
+  --content-bg: var(--rich-black);
+}
+
+* { border-color: var(--line); }
+
+html { scroll-behavior: smooth; }
 
 body {
-  background-color: var(--bg-dark);
-  color: var(--platinum);
-  font-family: var(--font-montserrat), sans-serif;
-  /* Scroll naturally */
-  overflow-y: auto;
-  overflow-x: hidden; /* Fix: Prevent horizontal scroll */
+  background-color: var(--rich-black);
+  background-image: var(--noise);
+  color: var(--text);
+  font-family: var(--font-montserrat), 'Montserrat', sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
   min-height: 100vh;
-  width: 100%; /* Fix: Use 100% instead of 100vw to account for scrollbar width */
-  /* Subtle noise texture for "classic" feel */
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Text selection with mint accent */
-::selection {
-  background-color: var(--primary-mint);
-  color: var(--rich-black);
+::selection { background-color: var(--primary-mint); color: var(--rich-black); }
+
+/* In the base layer so any utility on the element (a colour, a tracking)
+   wins over these defaults. */
+@layer base {
+  h1, h2, h3, h4 {
+    font-family: var(--font-bebas), 'Bebas Neue', Impact, sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+  }
+  .font-bebas, .display {
+    font-family: var(--font-bebas), 'Bebas Neue', Impact, sans-serif;
+    font-weight: 400;
+  }
 }
 
-::-moz-selection {
-  background-color: var(--primary-mint);
-  color: var(--rich-black);
+/* ── Surfaces ─────────────────────────────────────────────────────────── */
+.sec-dark { background-color: var(--rich-black); color: var(--text); }
+.sec-deep { background-color: var(--deep); background-image: var(--grain); color: var(--text); }
+.sec-light { background-color: var(--platinum); background-image: none; color: var(--text); }
+.sec-mint { background-color: var(--primary-mint); color: var(--rich-black); }
+.sec-mint h1, .sec-mint h2, .sec-mint h3 { color: var(--rich-black); }
+
+/* The one width every section aligns to. */
+.wrap {
+  width: 100%;
+  max-width: 1368px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: clamp(20px, 5vw, 64px);
+  padding-right: clamp(20px, 5vw, 64px);
 }
 
-/* Headings Font */
-h1, h2, h3, h4, .brand-font {
-  font-family: var(--font-bebas), sans-serif !important;
-  letter-spacing: 0.08em; /* Increased spacing for editorial look */
-}
-
-/* Ensure font-bebas Tailwind class works */
-.font-bebas {
-  font-family: var(--font-bebas), 'Bebas Neue', sans-serif !important;
-}
-
-/* Consistent page label style - silver color, uppercase, tracking */
-.page-label {
-  font-size: 11px;
-  color: var(--text-silver);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  font-family: var(--font-montserrat), sans-serif;
-}
+.pad-y { padding-top: clamp(64px, 8vw, 120px); padding-bottom: clamp(64px, 8vw, 120px); }
 
 @layer components {
 
-/* ── Small-type system ──────────────────────────────────────────────────────
-   81 elements were set at 10px uppercase bold tracking-widest: labels, dates,
-   reading times, categories, captions, buttons, nav. When the emphasis
-   treatment is applied to everything, nothing is emphasised and 10px caps at
-   0.2em tracking is slow to read. Two roles now, deliberately distinct:
-
-   .section-label — a genuine heading for a block ("Latest video", "Timeline").
-                    Keeps the uppercase treatment, which works again precisely
-                    because it is now rare. 11px, not 10.
-   .meta          — everything factual and secondary: dates, durations, reading
-                    times, captions, counts. Sentence case, 12.5px, no tracking.
-   Nothing else should be uppercase.                                          */
-
-.section-label {
+/* ── Type ─────────────────────────────────────────────────────────────── */
+/* Section label: "/ JOURNAL". The slash is the brand's breadcrumb mark. */
+.label {
+  font-family: var(--font-montserrat), 'Montserrat', sans-serif;
   font-size: 11px;
   font-weight: 700;
-  text-transform: uppercase;
   letter-spacing: 0.16em;
-  color: var(--text-meta);
-  font-family: var(--font-montserrat), sans-serif;
+  text-transform: uppercase;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.label .slash { color: var(--primary-mint); margin-right: 0.35em; }
+.sec-light .label .slash { color: var(--accent-text); }
+
+/* Kept for older markup: same role as .label. */
+.section-label, .page-label {
+  font-family: var(--font-montserrat), 'Montserrat', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 .meta {
+  font-family: var(--font-montserrat), 'Montserrat', sans-serif;
   font-size: 12.5px;
   font-weight: 400;
   letter-spacing: 0.01em;
-  color: var(--text-meta);
-  font-family: var(--font-montserrat), sans-serif;
+  color: var(--muted);
   text-transform: none;
 }
+.meta-sep { opacity: 0.45; padding: 0 0.15em; }
 
-/* Form labels. These were 10px uppercase tracked, which is the hardest
-   possible setting for the one piece of text that has to be read quickly and
-   correctly. Sentence case, slightly larger, still quiet. */
-.form-label {
-  display: block;
-  font-size: 12.5px;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  color: var(--text-muted);
-  font-family: var(--font-montserrat), sans-serif;
-  margin-bottom: 0.375rem;
+.h-section {
+  font-family: var(--font-bebas), 'Bebas Neue', Impact, sans-serif;
+  font-size: clamp(40px, 3.8vw, 58px);
+  line-height: 1;
+  letter-spacing: 0.03em;
+  color: var(--ink);
 }
 
-/* Separator for inline meta runs: category / date / reading time */
-.meta-sep {
-  opacity: 0.45;
-  padding: 0 0.15em;
+.lede {
+  font-size: clamp(16px, 1.3vw, 18px);
+  line-height: 1.75;
+  color: var(--text);
+  text-wrap: pretty;
 }
 
-/* ── Action hierarchy ───────────────────────────────────────────────────────
-   There were three competing filled treatments (mint, white, and outlined)
-   all reading as primary, so any screen with two of them had no winner. The
-   white fill was the loudest, which meant a neutral beat the brand accent.
-   One fill only. Sentence case at 13px, because a button is a sentence, not
-   a label.                                                                   */
+/* Location chip, as on the original hero. */
+.chip {
+  display: inline-block;
+  background: var(--primary-mint);
+  color: var(--rich-black);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  line-height: 1.4;
+}
 
+/* A link that reads as an action: bold, mint rule underneath. */
+.link-rule {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  border-bottom: 2px solid var(--primary-mint);
+  transition: color 0.2s ease;
+}
+.link-rule:hover { color: var(--accent-text); }
+.sec-light .link-rule { border-bottom-color: var(--accent-text); }
+
+.text-link { color: var(--accent-text); text-decoration: underline; text-underline-offset: 3px; }
+.text-link:hover { text-decoration-thickness: 2px; }
+
+/* ── Actions ──────────────────────────────────────────────────────────── */
+/* Square, like the brand. One filled style; everything else is an outline. */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  font-family: var(--font-montserrat), sans-serif;
+  gap: 0.625rem;
+  min-height: 52px;
+  padding: 0 1.625rem;
+  font-family: var(--font-montserrat), 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+  border: 1.5px solid transparent;
+  border-radius: 0;
+  cursor: pointer;
+  text-align: center;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.btn-primary { background: var(--primary-mint); color: var(--rich-black); }
+.btn-primary:hover { background: var(--mint-hover); }
+.btn-secondary, .btn-secondary-on-image {
+  background: transparent;
+  color: var(--ink);
+  border-color: color-mix(in srgb, var(--ink) 45%, transparent);
+}
+.btn-secondary:hover, .btn-secondary-on-image:hover { border-color: var(--primary-mint); color: var(--accent-text); }
+.btn-dark { background: var(--rich-black); color: var(--primary-mint); }
+.btn-dark:hover { background: #062a37; }
+.btn-tertiary { background: transparent; color: var(--accent-text); padding-left: 0; padding-right: 0; min-height: 44px; }
+.btn-tertiary:hover { color: var(--ink); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Panels and fields ────────────────────────────────────────────────── */
+/* Outlined, never filled: a panel is a hairline around content, not a box. */
+.panel-inset {
+  background: color-mix(in srgb, var(--ink) 2.5%, transparent);
+  border: 1px solid var(--line);
+  border-radius: 0;
+}
+.panel-inset-interactive { transition: border-color 0.2s ease; }
+.panel-inset-interactive:hover { border-color: var(--primary-mint); }
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 32px;
+  border: 1px solid var(--line);
+  border-top: 3px solid var(--primary-mint);
+  background: color-mix(in srgb, var(--ink) 2.5%, transparent);
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+a.card:hover { border-color: var(--primary-mint); }
+.sec-light .card { background: #ECEDEB; }
+
+.field {
+  background: var(--field-bg);
+  border: 1px solid var(--field-line);
+  border-radius: 0;
+  color: var(--ink);
+  transition: border-color 0.2s ease;
+}
+.field::placeholder { color: var(--muted); opacity: 0.8; }
+.field:focus { border-color: var(--primary-mint); outline: none; }
+select.field option { background: var(--deep); color: #E5E5E5; }
+
+.form-label {
+  display: block;
   font-size: 13px;
   font-weight: 600;
   letter-spacing: 0.01em;
-  padding: 0.75rem 1.375rem;
-  border: 1px solid transparent;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-  cursor: pointer;
-  text-align: center;
-  min-height: 44px; /* touch target */
+  color: var(--ink);
+  margin-bottom: 0.4rem;
 }
 
-.btn-primary {
-  background: var(--primary-mint);
-  color: var(--rich-black);
+/* Mint corner brackets, from the original contact form. */
+.brackets { position: relative; }
+.brackets::before, .brackets::after {
+  content: '';
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  pointer-events: none;
+  z-index: 1;
 }
-.btn-primary:hover { background: #4bd6a6; }
-
-.btn-secondary {
-  background: transparent;
-  color: var(--text-primary);
-  border-color: var(--border-color);
-}
-.btn-secondary:hover {
-  border-color: var(--primary-mint);
-  color: var(--primary-mint);
-}
-
-/* On photography, where a hairline border would disappear */
-.btn-secondary-on-image {
-  background: transparent;
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.45);
-}
-.btn-secondary-on-image:hover {
-  border-color: var(--primary-mint);
-  color: var(--primary-mint);
-}
-
-.btn-tertiary {
-  background: transparent;
-  color: var(--primary-mint);
-  border-color: transparent;
-  padding-left: 0;
-  padding-right: 0;
-}
-.btn-tertiary:hover { color: #4bd6a6; }
-
-.btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-/* ── Nested surfaces ───────────────────────────────────────────────────────
-   Direction B, tonal: inside a panel, a block is simply a lighter plane. No
-   border at all. This is where most of the ~125 lines lived, and where they
-   were doing the least work. Inside @layer components so a per-instance
-   utility (the mint edge on the one emphasis block) still overrides it. */
-.panel-inset {
-  background: var(--surface-2);
-  border: 1px solid transparent;
-  border-radius: 0;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-
-.panel-inset-interactive:hover {
-  background: var(--surface-3);
-  border-color: var(--primary-mint);
-}
-
-/* Controls sit one step further forward, so a field reads as something you
-   type into rather than another flat box. */
-.field {
-  background: var(--surface-3);
-  border: 1px solid transparent;
-  border-radius: 0;
-  transition: border-color 0.2s ease, background-color 0.2s ease;
-}
-.field:focus {
-  border-color: var(--primary-mint);
-  background: var(--surface-2);
-}
+.brackets::before { left: -12px; top: -12px; border-top: 3px solid var(--primary-mint); border-left: 3px solid var(--primary-mint); }
+.brackets::after { right: -12px; bottom: -12px; border-bottom: 3px solid var(--primary-mint); border-right: 3px solid var(--primary-mint); }
 
 } /* end @layer components */
 
-/* ── Architectural Panel ────────────────────────────────────────────────────
-   Direction A, "lit edge": the panel keeps its ruler-drawn geometry and gains
-   light. A highlight where the top edge would catch it, a gradient down the
-   face, and a soft ambient shadow beneath, so it reads as a plane rather than
-   an outline. Corners stay at 0 on purpose. Bebas is a squared-off face and a
-   radius would fight it.                                                      */
-.classic-panel {
-  /* The highlight is measured in px, not %, on purpose. A percentage stop
-     would stretch the gradient across the full height of a 6000px article
-     panel and read as a slow, unintentional darkening of the whole page.
-     Fixed distance means the light always falls just below the top edge,
-     whatever the panel's height. */
-  background: linear-gradient(180deg, #06232f 0px, var(--surface-1) 220px);
-  border: 1px solid #123342;
-  border-top-color: var(--rule-lit);
-  border-radius: 0;
-  box-shadow: 0 22px 46px -28px rgba(0, 0, 0, 0.95);
-}
-
-/* Nested surfaces (.panel-inset, .field) live inside @layer components above,
-   so a per-instance Tailwind utility can still override them. */
-
-/* Sticky positioning helpers */
-.sticky-header {
+/* ── Header ───────────────────────────────────────────────────────────── */
+.site-header {
   position: sticky;
-  top: 0; /* Pinned to very top */
-  z-index: 100; /* High z-index to stay above all content including sticky sidebar */
-  background-color: var(--panel-bg); /* Matches panel background */
-  backdrop-filter: blur(12px); /* Add blur for legibility when content scrolls under */
-  margin-bottom: 1.5rem; /* Visual separation from content */
-  border-bottom: 1px solid var(--border-color);
+  top: 0;
+  z-index: 100;
+  background: color-mix(in srgb, var(--rich-black) 94%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
 }
 
-.sticky-sidebar {
-  position: static; /* Default to static on mobile */
-  height: fit-content;
-}
-
-@media (min-width: 768px) {
-  /* The rail used to stretch to the full height of the article and stick its
-     *contents* at the top. On a 2700-word post that meant a bordered frame
-     thousands of pixels tall holding a subscribe form and then nothing.
-
-     The fix is not simply align-self: start, which would wrap the panel but
-     kill the sticky travel, since a sticky element can only move inside its
-     containing block. Instead the grid item itself becomes sticky. A sticky
-     grid item travels within its grid area, and the grid area is still the
-     full row height, so the panel wraps its content AND follows the reader. */
-  .sticky-sidebar {
-    position: sticky;
-    top: 7rem; /* clears the 5rem sticky header with room to breathe */
-    align-self: start;
-    height: auto;
-    z-index: 1; /* below the header (z-index: 100) */
-  }
-
-  .sticky-sidebar-content {
-    position: static; /* the sticking now happens one level up */
-    width: 100%;
-  }
-}
-
-/* Animations */
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.animate-slide-up {
-  animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-/* ── Navigation ─────────────────────────────────────────────────────────────
-   Was Bebas at 1.1rem. Bebas is a display face: condensed, caps only, drawn
-   for headlines. At navigation size it is slow to scan, and because it is the
-   same face as the h1 the menu competed with the page heading instead of
-   receding behind it. Body face, sentence case, smaller.
-
-   The active item also used to gain a 1px box, which made the current page a
-   boxed word among unboxed words. Mint plus a rule underneath now, consistent
-   with mint meaning emphasis everywhere else.                                */
-.nav-btn {
+.nav-link {
   position: relative;
-  transition: color 0.2s ease;
-  color: var(--text-nav-inactive);
-  font-family: var(--font-montserrat), sans-serif;
+  color: var(--text);
   font-size: 14px;
   font-weight: 500;
-  letter-spacing: 0.01em;
-  padding: 6px 10px;
+  padding: 12px;
+  transition: color 0.2s ease;
 }
-
-.nav-btn:hover {
-  color: var(--text-primary);
-}
-
-.nav-btn.active {
-  color: var(--primary-mint);
-}
-
-.nav-btn.active::after {
+.nav-link:hover { color: var(--ink); }
+.nav-link.active { color: var(--primary-mint); }
+.nav-link.active::after {
   content: '';
   position: absolute;
-  left: 10px;
-  right: 10px;
-  bottom: -2px;
+  left: 12px;
+  right: 12px;
+  bottom: 4px;
   height: 2px;
   background: var(--primary-mint);
 }
 
-/* The mobile menu wants a larger tap target. Set the size here rather than
-   relying on a Tailwind text-lg utility: .nav-btn lives outside
-   @layer components, so its font-size would win over the utility.
-   No underline on mobile either; the items are stacked and mint alone is
-   unambiguous. */
-.nav-btn-mobile {
-  font-size: 1.125rem;
-  padding-left: 0;
-  padding-right: 0;
-}
-.nav-btn-mobile.active::after {
-  content: none;
+/* ── Photo tiles ──────────────────────────────────────────────────────── */
+.tile { position: relative; display: block; overflow: hidden; background: var(--deep); aspect-ratio: 4 / 5; }
+.tile img { transition: transform 0.6s ease; }
+.tile:hover img { transform: scale(1.03); }
+.tile::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 12, 17, 0.94) 0%, rgba(0, 12, 17, 0.55) 38%, rgba(0, 12, 17, 0.05) 70%);
+  pointer-events: none;
 }
 
-/* Image Grayscale to Color on Hover */
-.img-classic {
-  filter: grayscale(100%) contrast(110%);
-  transition: filter 0.5s ease, transform 0.5s ease;
+/* ── Mint banner ──────────────────────────────────────────────────────── */
+.banner-strip {
+  background: var(--primary-mint);
+  color: var(--rich-black);
+  transform: rotate(-2deg);
+  margin: 0 -40px;
+  padding: 14px 40px 4px;
+  box-shadow: 0 24px 40px -24px rgba(0, 0, 0, 0.6);
+}
+.banner-strip p, .banner-strip h1, .banner-strip h2 {
+  font-family: var(--font-bebas), 'Bebas Neue', Impact, sans-serif;
+  font-size: clamp(64px, 12.2vw, 200px);
+  line-height: 0.86;
+  letter-spacing: 0.01em;
+  margin: 0;
+  text-align: center;
+  white-space: nowrap;
+  color: var(--rich-black);
 }
 
-.group:hover .img-classic {
-  filter: grayscale(0%) contrast(100%);
-  transform: scale(1.02);
-}
-
-/* Typography Utilities */
-.text-mint { color: var(--primary-mint); }
-.text-orange { color: var(--secondary-orange); }
-.text-purple { color: var(--secondary-purple); }
-
-/* Tiptap Editor Styles */
-.ProseMirror {
-  outline: none;
-}
-
-.ProseMirror p {
-  margin: 1em 0;
-}
-
-.ProseMirror h1 {
-  font-size: 2em;
-  font-weight: bold;
-  margin: 0.67em 0;
-}
-
-.ProseMirror h2 {
-  font-size: 1.5em;
-  font-weight: bold;
-  margin: 0.75em 0;
-}
-
-.ProseMirror h3 {
-  font-size: 1.17em;
-  font-weight: bold;
-  margin: 0.83em 0;
-}
-
-.ProseMirror ul,
-.ProseMirror ol {
-  padding-left: 2em;
-  margin: 1em 0;
-}
-
-.ProseMirror li {
-  margin: 0.5em 0;
-}
-
-.ProseMirror blockquote {
-  border-left: 4px solid var(--neutral-border);
-  padding-left: 1em;
-  margin: 1em 0;
-  font-style: italic;
-}
-
-.ProseMirror a {
-  color: var(--primary-mint);
-  text-decoration: underline;
-  transition: color 0.2s;
-}
-
-.ProseMirror a:hover {
-  color: var(--link-hover);
-}
-
-.ProseMirror img {
-  max-width: 100%;
-  height: auto;
-  display: block;
-  margin: 1em 0;
-  /* Smooth loading transition */
-  transition: opacity 0.3s ease-in-out;
-}
-
-.ProseMirror img.editor-image {
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-/* Smooth image loading with fade-in effect */
-img {
-  transition: opacity 0.3s ease-in-out;
-}
-
-/* Image loading state - show placeholder while loading */
-img[loading="lazy"] {
-  opacity: 0;
-  animation: fadeIn 0.3s ease-in-out forwards;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-/* Next.js Image component optimizations */
-.next-image-wrapper {
-  position: relative;
-  overflow: hidden;
-}
-
-.next-image-wrapper img {
-  transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
-}
-
-.ProseMirror img.editor-image:hover {
-  opacity: 0.8;
-}
-
-/* Blog Content Styles */
+/* ── Article body ─────────────────────────────────────────────────────────
+   Long reading happens on the light surface. Content arrives as HTML from
+   the d5 editor, so these rules also neutralise inline colours and
+   positioning the editor may have left behind. */
 .blog-content {
-  color: var(--text-secondary);
+  color: var(--text);
   line-height: 1.8;
-  font-size: 16px;
-  padding: 2rem 0;
-  background: transparent !important;
-  font-family: var(--font-montserrat), sans-serif;
-  /* Cap the reading measure (~70ch) — paragraphs were stretching across the
-     full ~970px panel, roughly double a comfortable line length. */
-  max-width: 46rem;
-  margin-left: auto;
-  margin-right: auto;
+  font-size: 18px;
+  font-family: var(--font-montserrat), 'Montserrat', sans-serif;
+  max-width: 44rem;
   position: relative;
-  z-index: 1;
-  overflow: visible;
-  isolation: isolate; /* Create new stacking context */
+  overflow-wrap: break-word;
 }
-
-/* Override any white backgrounds from editor content */
-.blog-content * {
-  background: transparent !important;
-  color: inherit;
-}
-
-/* Prevent absolute positioning that could cause overlap with main media */
+.blog-content * { background: transparent !important; color: inherit; }
 .blog-content *[style*="position: absolute"],
-.blog-content *[style*="position:absolute"] {
-  position: relative !important;
-}
-
-/* Ensure images don't float or overlap */
-.blog-content img,
-.blog-content figure,
-.blog-content picture {
+.blog-content *[style*="position:absolute"] { position: relative !important; }
+.blog-content img, .blog-content figure, .blog-content picture {
   position: relative !important;
   float: none !important;
   clear: both !important;
   max-width: 100% !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-  z-index: 1 !important;
-}
-
-/* Ensure text content doesn't overlap images */
-.blog-content p,
-.blog-content div,
-.blog-content section,
-.blog-content article {
-  position: relative !important;
-  z-index: 1 !important;
-  overflow-wrap: break-word !important;
-  word-wrap: break-word !important;
-}
-
-/* Fix any grid/flex layouts to prevent overlap */
-.blog-content [class*="grid"],
-.blog-content [class*="flex"],
-.blog-content [style*="display: grid"],
-.blog-content [style*="display:flex"],
-.blog-content [style*="display: flex"] {
-  gap: 1rem !important;
-  margin: 1.5rem 0 !important;
-}
-
-/* Ensure columns don't overlap */
-.blog-content [class*="col"],
-.blog-content [style*="column"] {
-  padding: 0 1rem !important;
-  overflow: visible !important;
-}
-
-.blog-content div,
-.blog-content section,
-.blog-content article {
-  background: transparent !important;
-  color: var(--text-secondary) !important;
-}
-
-.blog-content h1,
-.blog-content h2,
-.blog-content h3,
-.blog-content h4,
-.blog-content h5,
-.blog-content h6 {
-  font-family: var(--font-bebas), sans-serif;
-  color: var(--text-primary);
-  margin-top: 2em;
-  margin-bottom: 1em;
-  font-weight: bold;
-}
-
-.blog-content h1 { font-size: 2.5em; }
-.blog-content h2 { font-size: 2em; }
-.blog-content h3 { font-size: 1.75em; }
-.blog-content h4 { font-size: 1.5em; }
-
-.blog-content p {
-  margin-bottom: 1.5em;
-  color: var(--text-secondary) !important;
-  text-indent: 0 !important;
-  padding-left: 0 !important;
-  margin-left: 0 !important;
-  background: transparent !important;
-  font-family: var(--font-montserrat), sans-serif;
-}
-
-.blog-content a {
-  color: var(--primary-mint);
-  text-decoration: underline;
-  transition: color 0.2s;
-}
-
-.blog-content a:hover {
-  color: var(--link-hover);
-}
-
-.blog-content img {
-  max-width: 100%;
   height: auto;
-  margin: 2em 0;
-  border: 1px solid var(--border-color);
-}
-
-.blog-content img.editor-image-fullwidth,
-.ProseMirror img.editor-image-fullwidth {
-  width: 100% !important;
-  max-width: 100% !important;
-  height: auto !important;
-  display: block !important;
   margin: 2em 0 !important;
 }
-
-/* Subscribe Snippet Styles */
-.blog-subscribe-snippet {
-  margin: 3em 0;
+.blog-content p { margin: 0 0 1.4em; color: var(--text) !important; }
+.blog-content h1, .blog-content h2, .blog-content h3, .blog-content h4, .blog-content h5, .blog-content h6 {
+  font-family: var(--font-bebas), 'Bebas Neue', Impact, sans-serif;
+  font-weight: 400;
+  color: var(--ink) !important;
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+  margin: 1.8em 0 0.6em;
 }
-
-/* Editor placeholder for subscribe snippet */
-.ProseMirror .subscribe-snippet-placeholder {
-  min-height: 100px;
-  border: 2px dashed var(--primary-mint);
-  background: rgba(35, 193, 140, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 1.5em 0;
-  padding: 2em;
-  position: relative;
-}
-
-.ProseMirror .subscribe-snippet-placeholder::before {
-  content: "📧 Subscribe Form";
-  color: var(--primary-mint);
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.blog-content ul,
-.blog-content ol {
-  margin: 1.5em 0;
-  padding-left: 2em;
-  color: var(--text-secondary) !important;
-  background: transparent !important;
-}
-
-.blog-content li {
-  margin-bottom: 0.5em;
-}
-
+.blog-content h1 { font-size: 2.6em; }
+.blog-content h2 { font-size: 2.2em; }
+.blog-content h3 { font-size: 1.7em; }
+.blog-content h4 { font-size: 1.4em; }
+.blog-content a { color: var(--accent-text) !important; text-decoration: underline; text-underline-offset: 3px; }
+.blog-content a:hover { text-decoration-thickness: 2px; }
+.blog-content strong, .blog-content b { color: var(--ink) !important; font-weight: 700; }
+.blog-content em, .blog-content i { font-style: italic; }
+.blog-content ul, .blog-content ol { margin: 0 0 1.4em; padding-left: 1.4em; color: var(--text) !important; }
+.blog-content ul { list-style: square; }
+.blog-content ol { list-style: decimal; }
+.blog-content li { margin-bottom: 0.5em; }
+.blog-content li::marker { color: var(--accent-text); }
 .blog-content blockquote {
+  margin: 2em 0;
+  padding: 0.2em 0 0.2em 1.2em;
   border-left: 3px solid var(--primary-mint);
-  padding-left: 1.5em;
-  margin: 2em 0;
-  color: var(--text-muted);
-  font-style: italic;
+  color: var(--ink) !important;
+  font-size: 1.15em;
 }
-
 .blog-content code {
-  background: var(--rich-black) !important;
-  padding: 0.2em 0.4em;
-  border-radius: 4px;
-  font-size: 0.9em;
-  border: 1px solid var(--border-color);
-  color: var(--text-secondary) !important;
-  font-family: 'Courier New', monospace;
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 0.88em;
+  padding: 0.15em 0.35em;
+  border: 1px solid var(--line);
 }
+.blog-content pre { padding: 1.2em; overflow-x: auto; border: 1px solid var(--line); margin: 2em 0; }
+.blog-content pre code { border: 0; padding: 0; }
+.blog-content table, .blog-content th, .blog-content td { border-color: var(--line) !important; color: var(--text) !important; }
+.blog-content hr { border: 0; border-top: 1px solid var(--line); margin: 3em 0; }
+.blog-content [class*="grid"], .blog-content [class*="flex"],
+.blog-content [style*="display: grid"], .blog-content [style*="display:flex"], .blog-content [style*="display: flex"] { gap: 1rem !important; }
+.blog-subscribe-snippet, .blog-subscribe-snippet-inline { margin: 2.5em 0; }
 
-.blog-content pre {
-  background: var(--rich-black) !important;
-  padding: 1.5em;
-  border-radius: 4px;
-  overflow-x: auto;
-  margin: 2em 0;
-  border: 1px solid var(--border-color);
-  color: var(--text-secondary) !important;
+/* ── Motion and focus ─────────────────────────────────────────────────── */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
+.animate-slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
 
-/* Force button stacking on mobile for admin pages */
-@media (max-width: 1023px) {
-  .admin-buttons-container {
-    flex-direction: column !important;
-  }
-  
-  .admin-buttons-container > button {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-}
-
-.blog-content pre code {
-  background: none !important;
-  padding: 0;
-  border: none;
-  color: var(--text-secondary) !important;
-}
-
-/* Override any table styles */
-.blog-content table {
-  background: transparent !important;
-  color: var(--text-secondary) !important;
-  border-color: var(--border-color) !important;
-}
-
-.blog-content table th,
-.blog-content table td {
-  background: transparent !important;
-  color: var(--text-secondary) !important;
-  border-color: var(--border-color) !important;
-}
-
-/* Override any span or inline element styles */
-.blog-content span {
-  color: inherit !important;
-  background: transparent !important;
-}
-
-/* Ensure strong and em tags use proper colors */
-.blog-content strong,
-.blog-content b {
-  color: var(--text-primary) !important;
-  font-weight: bold;
-}
-
-.blog-content em,
-.blog-content i {
-  color: var(--text-secondary) !important;
-  font-style: italic;
-}
-
-/* Respect the user's motion preference: disable entrance animations and
-   hover zoom/color transitions for users who ask for reduced motion. */
 @media (prefers-reduced-motion: reduce) {
-  .animate-slide-up {
-    animation: none;
-  }
-  .img-classic,
-  .group:hover .img-classic {
-    transition: none;
-    transform: none;
-  }
-  *,
-  *::before,
-  *::after {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+  .tile:hover img { transform: none; }
 }
 
-/* Keyboard focus indicator.
-   Nothing in the app styled :focus-visible, so keyboard users relied on the
-   UA default ring — which is nearly invisible against these dark panels and
-   is suppressed entirely on the inputs that set `focus:outline-none`. */
-:focus-visible {
-  outline: 2px solid var(--primary-mint);
-  outline-offset: 2px;
-}
+:focus-visible { outline: 2px solid var(--primary-mint); outline-offset: 2px; }
+input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--primary-mint); outline-offset: 0; }
 
-/* Inputs and textareas opt out of the offset ring (it clips against adjacent
-   borders) and get a solid mint border plus a soft ring instead. */
-input:focus-visible,
-textarea:focus-visible,
-select:focus-visible {
-  outline: 2px solid var(--primary-mint);
-  outline-offset: 0;
-  border-color: var(--primary-mint);
-}
-
-/* Skip-to-content link: off-screen until keyboard-focused */
 .skip-link {
   position: absolute;
   left: -9999px;
@@ -800,7 +455,4 @@ select:focus-visible {
   letter-spacing: 0.15em;
   padding: 10px 18px;
 }
-.skip-link:focus {
-  left: 8px;
-  top: 8px;
-}
+.skip-link:focus { left: 8px; top: 8px; }

@@ -1,17 +1,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Heart, Mountain, ShieldCheck, Hourglass, Play } from 'lucide-react';
-import Sidebar from '@/components/Sidebar';
+import type { Metadata } from 'next';
 import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
+import PageHero from '@/components/site/PageHero';
+import SectionLabel from '@/components/site/SectionLabel';
 import { createMetadata } from '@/lib/metadata';
-import { yearsOfBuilding, yearsOfHiring, KNOWS_ABOUT } from '@/lib/site';
+import { KNOWS_ABOUT } from '@/lib/site';
 import { VENTURES } from '@/lib/ventures';
 import { VALUES } from '@/lib/values';
-import type { Metadata } from 'next';
-
-// lib/values.ts stores the lucide export name rather than the component, so it
-// stays free of React imports and can be used from anywhere.
-const VALUE_ICONS = { Heart, Mountain, ShieldCheck, Hourglass } as const;
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 
@@ -23,7 +19,7 @@ const profilePageData = {
     '@id': `${siteUrl}/#person`,
     name: 'Engjell Rraklli',
     jobTitle: 'Homegrown Albanian Tech Entrepreneur',
-    description: 'Homegrown Albanian tech entrepreneur and startup founder building scalable technology in Albania.',
+    description: 'Homegrown Albanian tech entrepreneur and founder of division5 and divisionAI, building service businesses that scale from Tirana.',
     url: siteUrl,
     image: `${siteUrl}/IMG_0466.JPG`,
     nationality: { '@type': 'Country', name: 'Albania' },
@@ -48,119 +44,167 @@ const profilePageData = {
 
 export const metadata: Metadata = createMetadata({
   title: 'About Engjell Rraklli, Homegrown Albanian Tech Entrepreneur',
-  description: 'Engjell Rraklli is an Albanian tech entrepreneur and startup founder building world-class software in Albania, and thousands of job opportunities for young Albanians over the past decade.',
+  description:
+    'Engjell Rraklli founded division5 in Albania in 2015, at 23, with no money and no network. How a decade of building taught him which constraints were real.',
   path: '/about',
 });
 
+// The story in chapters. Every fact here is from the pillar essay or the
+// speaking page, in his words where possible.
+const CHAPTERS = [
+  {
+    when: 'May 2015',
+    title: 'No money, no network, no plan B',
+    body: 'I founded division5 at 23, with no connections, no money, no references and no experience. My plan lasted until the money ran out, which did not take long. The only way to keep the company alive was to sell software development services, so that is what we sold.',
+  },
+  {
+    when: 'The next five years',
+    title: 'Trying to escape',
+    body: 'Once we were solvent I kept trying to pivot into a product. Every attempt pulled attention away from the business that was paying salaries, and none of the products got far enough to matter. I call it cheating on your business, because looking back, that is what it was.',
+  },
+  {
+    when: 'Six years in',
+    title: 'The bottleneck had my name on it',
+    body: 'Clients were attached to me rather than to the company. Every proposal and every difficult call queued behind me, and I read that as being essential. It was the opposite. Founder dependency is not a property of services. It is a stage, and you build your way out of it with systems.',
+  },
+  {
+    when: '2022',
+    title: 'Writing it all down',
+    body: 'We captured how the work actually gets done and built it into how new people learn, so someone leaving became a setback instead of a hole. I started divisionAI to put software underneath that operation, with AI inside it rather than bolted on the side.',
+  },
+  {
+    when: 'Today',
+    title: 'What it became',
+    body: 'division5 is a marketplace that connects vetted AI-native engineers across the Balkans with companies in Europe and beyond. Our recruitment used to take five people and now runs with two, because agents do the assembly work and a person still makes every call that leaves the building.',
+  },
+];
+
 export default function About() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+    <main id="main-content">
       <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'About', url: '/about' }]} />
       <StructuredData type="ProfilePage" data={profilePageData} />
-      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
-        {/* Breadcrumbs / Top Bar */}
-        <div className="h-14 border-b border-[var(--rule-faint)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
-          <div className="flex items-center gap-3 text-xs text-[var(--text-meta)]">
-            <span className="text-[var(--primary-mint)] font-bold">/</span>
-            <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">About</span>
-          </div>
-          <div className="font-montserrat text-[11px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
-            THERE IS NO SHORTCUT TO HARD WORK.
-          </div>
+
+      <PageHero
+        label="About"
+        title={
+          <>
+            I wanted to build games. <span className="text-[var(--primary-mint)]">The market had other plans.</span>
+          </>
+        }
+        lede={
+          <p>
+            I live in Tirana. I founded division5 in 2015 and divisionAI in 2022, and for most of that
+            time I was the reason my own company could not grow. This is how that happened, and what I
+            did about it.
+          </p>
+        }
+        image={{ src: '/IMG_0456.JPG', alt: 'Engjell Rraklli talking at the microphone in the podcast studio', position: '50% 30%' }}
+      />
+
+      <section className="sec-light" aria-label="My story">
+        <div className="wrap pad-y">
+          <ol className="border-b border-[var(--line)]">
+            {CHAPTERS.map((c) => (
+              <li key={c.title} className="flex flex-wrap gap-x-12 gap-y-2 border-t border-[var(--line)] py-9">
+                <p className="label mt-2 flex-[0_0_210px] !text-[var(--accent-text)]">{c.when}</p>
+                <div className="min-w-0 max-w-[720px] flex-[1_1_520px]">
+                  <h2 className="text-[clamp(32px,2.8vw,42px)] leading-[1.02] tracking-[0.03em]">{c.title}</h2>
+                  <p className="mt-3.5 text-[17px] leading-[1.75] text-[var(--text)]">{c.body}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
         </div>
+      </section>
 
-        {/* Content Area */}
-        <div className="p-6 md:p-10">
-          <section className="animate-slide-up">
-            <div className="grid grid-cols-1 gap-8 max-w-4xl mx-auto">
-              <div className="text-center mb-8">
-                <span className="page-label mb-3 block">My Story</span>
-                <h1 className="text-5xl md:text-6xl text-white font-bebas mb-6">THE JOURNEY</h1>
-                <p className="text-sm text-[var(--text-meta)] mt-2 font-light">{yearsOfBuilding()} YEARS OF BUILDING</p>
-                <div className="h-[1px] w-24 bg-gray-600 mx-auto mt-4"></div>
-              </div>
-              
-              {/* Image and First Paragraph Split Layout */}
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-6">
-                {/* Image Column */}
-                <div className="md:col-span-5 h-64 md:h-auto relative overflow-hidden group">
-                  <Image 
-                    src="/IMG_0466.JPG" 
-                    alt="Engjell Rraklli - About page portrait, tech entrepreneur in Tirana" 
-                    fill
-                    priority
-                    sizes="(min-width: 768px) 42vw, 100vw"
-                    className="object-cover img-classic group-hover:scale-105 transition-transform duration-700"
-                  />
-                </div>
-                {/* Text Column */}
-                <div className="md:col-span-7 flex flex-col justify-center">
-              <div className="prose prose-invert max-w-none text-[var(--text-muted)] text-base leading-[1.75]">
-                <p className="mb-6 first-letter:text-4xl first-letter:font-bold first-letter:text-white first-letter:mr-1 first-letter:float-left">
-                  My work is grounded in the conviction that Albania is fertile ground for world-class technology. Over a decade ago, I stepped away from traditional education to build my own path. As a creative at heart, I fell in love with the act of building, whether it was software development or companies. I failed more times than I succeeded, but those experiences shaped me into the tech entrepreneur and startup founder I am today.
-                </p>
-                    <p className="mb-0">
-                  Now, as the founder of division5, that work has become a staffing marketplace connecting vetted AI-native engineers across the Balkans with companies in Europe and beyond. But my true focus isn't just scaling a business; it is scaling human potential. I am building the infrastructure that allows young Albanian talents to apply their skills at a global level without leaving their homes, proving that the best way to predict our country's future is to empower the youth who will build it.
-                </p>
-                {/* Same evidence as the homepage mission block, in the second
-                    place the claim is made. */}
-                <p className="mt-6 mb-0 pl-4 border-l-2 border-[var(--primary-mint)] text-white text-sm font-medium not-prose">
-                  <span className="font-bebas text-2xl tracking-wide text-[var(--primary-mint)] mr-2">THOUSANDS</span>
-                  of job opportunities created for young Albanians over the past {yearsOfHiring()} years.
-                </p>
-                  </div>
-                </div>
-              </div>
+      {/* A photograph at full width, between the reading and the rest. */}
+      <div className="relative aspect-[16/9] w-full overflow-hidden bg-[var(--deep)] md:aspect-[21/8]">
+        <Image
+          src="/IMG_0425.JPG"
+          alt="Engjell Rraklli at the microphone in his Tirana studio"
+          fill
+          sizes="100vw"
+          className="object-cover"
+          style={{ objectPosition: '50% 38%' }}
+        />
+      </div>
 
-              {/* Core Values Grid */}
-              <div className="mt-8">
-                <h2 className="text-2xl text-white font-bebas mb-6 tracking-wide">What I Value</h2>
-                {/* Rendered from lib/values.ts so this grid and the footer
-                    sentence cannot drift apart. */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {VALUES.map((value) => {
-                    const Icon = VALUE_ICONS[value.icon];
-                    return (
-                      <div key={value.name} className="p-6 panel-inset panel-inset-interactive group">
-                        <div className="flex items-center gap-3 mb-2">
-                          <Icon className="w-5 h-5 text-white" />
-                          <h3 className="text-lg text-white font-bebas tracking-wide">{value.name}</h3>
-                        </div>
-                        <p className="text-xs text-[var(--text-meta)]">{value.description}</p>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* End-of-story CTA */}
-              <div className="mt-10 p-8 panel-inset text-center">
-                <h2 className="text-3xl text-white font-bebas tracking-wide mb-3">LET'S BUILD SOMETHING</h2>
-                <p className="text-sm text-[var(--text-muted)] font-light max-w-md mx-auto mb-6">
-                  If any of this resonates, whether you want to work together or just hear more of the story, here's where to go next.
-                </p>
-                {/* The sprint is the only paid offer on the site and it was
-                    reachable from the playbook alone, which meant nobody who
-                    read the story ever saw it. */}
-                <div className="flex flex-wrap items-center justify-center gap-3">
-                  <Link href="/contact" className="btn btn-primary">
-                    Work With Me
-                  </Link>
-                  <Link href="/sprint" className="btn btn-secondary-on-image">
-                    The Constraint Sprint
-                  </Link>
-                  <Link href="/podcast" className="btn btn-secondary-on-image">
-                    <Play className="w-4 h-4" />
-                    Listen to the Podcast
-                  </Link>
-                </div>
-              </div>
+      <section className="sec-deep" aria-labelledby="albania">
+        <div className="wrap pad-y">
+          <SectionLabel>Why I build in Albania</SectionLabel>
+          <div className="mt-4 flex flex-wrap gap-x-20 gap-y-10">
+            <div className="min-w-0 flex-[1_1_560px]">
+              <h2 id="albania" className="text-balance text-[clamp(44px,4.6vw,70px)] leading-[0.96]">
+                Albania exports its best people. Everything I build is a bet that it{' '}
+                <span className="text-[var(--primary-mint)]">does not have to.</span>
+              </h2>
+              <p className="mt-6 max-w-[36em] text-base leading-relaxed text-[var(--text)]">
+                A young engineer here should not have to choose between the career they want and the
+                country they are from. Build companies here that meet a world standard, and they no
+                longer have to. That means real projects, senior people to learn from, and the structure
+                to grow into senior work without boarding a plane.
+              </p>
             </div>
-          </section>
+            <ul className="min-w-0 flex-[1_1_380px] self-end border-b border-[var(--line)]">
+              {VENTURES.map((v) => (
+                <li key={v.name}>
+                  <a href={v.url} target="_blank" rel="noopener noreferrer" className="group block border-t border-[var(--line)] py-6">
+                    <span className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                      <span className="text-xl font-bold text-[var(--ink)] transition-colors group-hover:text-[var(--primary-mint)]">
+                        {v.name}
+                      </span>
+                      <span className="meta">
+                        {v.role} since {v.since} ↗
+                      </span>
+                    </span>
+                    <span className="mt-2 block text-[15px] leading-relaxed text-[var(--text)]">{v.description}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-      </main>
-      <Sidebar />
-    </div>
+      </section>
+
+      <section className="sec-dark" aria-labelledby="values">
+        <div className="wrap pad-y">
+          <SectionLabel>What I hold to</SectionLabel>
+          <h2 id="values" className="h-section mt-3.5">
+            Four things I learned the slow way
+          </h2>
+          <div className="mt-10 grid gap-x-12 sm:grid-cols-2 lg:grid-cols-4">
+            {VALUES.map((v) => (
+              <div key={v.name} className="border-t border-[var(--line)] py-7">
+                <h3 className="text-[34px] leading-none tracking-[0.03em]">{v.name}</h3>
+                <p className="mt-3 text-[15px] leading-relaxed text-[var(--text)]">{v.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="sec-mint">
+        <div className="wrap flex flex-wrap items-center justify-between gap-x-12 gap-y-8 py-[clamp(56px,6vw,88px)]">
+          <div className="min-w-0 flex-[1_1_520px]">
+            <h2 className="text-balance text-[clamp(40px,4vw,62px)] leading-[0.96]">
+              If this sounds like your company, start with the playbook.
+            </h2>
+            <p className="mt-4 max-w-[40em] text-base leading-relaxed text-[var(--rich-black)]">
+              It is the same diagnostics I run with leadership teams, written so you can do them on
+              your own.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/playbook" className="btn btn-dark">
+              Get the free playbook
+            </Link>
+            <Link href="/work" className="btn border-[var(--rich-black)] text-[var(--rich-black)] hover:bg-[var(--rich-black)] hover:text-[var(--primary-mint)]">
+              Work with me
+            </Link>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }
-

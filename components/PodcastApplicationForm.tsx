@@ -48,7 +48,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
       const data = await response.json();
 
       if (response.ok) {
-        setMessage('Application submitted successfully!');
+        setMessage('Application sent successfully. I will be in touch.');
         setFormData({
           name: '',
           email: '',
@@ -78,9 +78,14 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
 
   return (
     <div>
-      <div className="flex items-center gap-3 mb-6 pb-4 border-b border-[var(--rule-faint)]">
-        <Mic className="w-5 h-5 text-[var(--primary-mint)]" />
-        <h2 className="text-xl text-white font-bebas tracking-wide">Apply to Podcast</h2>
+      <div className="mb-7 border-b border-[var(--line-soft)] pb-5 pr-10">
+        <p className="label flex items-center gap-2">
+          <Mic className="h-4 w-4 text-[var(--primary-mint)]" aria-hidden="true" />
+          Scaling the Unscalable
+        </p>
+        <h2 id="podcast-apply-title" className="mt-2 text-[40px] leading-none tracking-[0.03em]">
+          Apply to be a guest
+        </h2>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -96,7 +101,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
             value={formData.name}
             onChange={handleChange}
             required
-            className="w-full field p-3 text-sm text-white font-montserrat disabled:opacity-50"
+            className="w-full field p-3 text-sm font-montserrat disabled:opacity-50"
             disabled={loading}
           />
         </div>
@@ -113,7 +118,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
             value={formData.email}
             onChange={handleChange}
             required
-            className="w-full field p-3 text-sm text-white font-montserrat disabled:opacity-50"
+            className="w-full field p-3 text-sm font-montserrat disabled:opacity-50"
             disabled={loading}
           />
         </div>
@@ -132,7 +137,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
             onChange={handleChange}
             required
             rows={4}
-            className="w-full field p-3 text-sm text-white resize-none font-montserrat disabled:opacity-50"
+            className="w-full field p-3 text-sm resize-none font-montserrat disabled:opacity-50"
             disabled={loading}
           />
         </div>
@@ -148,7 +153,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
             onChange={handleChange}
             required
             rows={3}
-            className="w-full field p-3 text-sm text-white resize-none font-montserrat disabled:opacity-50"
+            className="w-full field p-3 text-sm resize-none font-montserrat disabled:opacity-50"
             disabled={loading}
           />
         </div>
@@ -164,7 +169,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
             value={formData.industry}
             onChange={handleChange}
             required
-            className="w-full field p-3 text-sm text-white font-montserrat disabled:opacity-50"
+            className="w-full field p-3 text-sm font-montserrat disabled:opacity-50"
             disabled={loading}
           />
         </div>
@@ -180,7 +185,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
             onChange={handleChange}
             required
             rows={3}
-            className="w-full field p-3 text-sm text-white resize-none font-montserrat disabled:opacity-50"
+            className="w-full field p-3 text-sm resize-none font-montserrat disabled:opacity-50"
             disabled={loading}
           />
         </div>
@@ -196,7 +201,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
             onChange={handleChange}
             required
             rows={3}
-            className="w-full field p-3 text-sm text-white resize-none font-montserrat disabled:opacity-50"
+            className="w-full field p-3 text-sm resize-none font-montserrat disabled:opacity-50"
             disabled={loading}
           />
         </div>
@@ -212,7 +217,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
             onChange={handleChange}
             required
             rows={3}
-            className="w-full field p-3 text-sm text-white resize-none font-montserrat disabled:opacity-50"
+            className="w-full field p-3 text-sm resize-none font-montserrat disabled:opacity-50"
             disabled={loading}
           />
         </div>
@@ -223,7 +228,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
           className="btn btn-primary w-full"
         >
           <Send className="w-4 h-4" />
-          {loading ? 'Submitting...' : 'Submit Application'}
+          {loading ? 'Sending…' : 'Send application'}
         </button>
 
         {/* Honeypot field - hidden from users but visible to bots */}
@@ -240,7 +245,7 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         {message && (
           <p
             role="status"
-            className={`text-sm mt-2 ${message.includes('success') ? 'text-[var(--primary-mint)]' : 'text-red-400'}`}
+            className={`text-sm mt-2 ${message.includes('success') ? 'text-[var(--accent-text)]' : 'text-[var(--secondary-orange)]'}`}
           >
             {message}
           </p>

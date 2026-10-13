@@ -1,7 +1,6 @@
 'use client';
 
 import { useId, useState } from 'react';
-import { Mail } from 'lucide-react';
 
 // Single subscribe implementation. There used to be three near-identical
 // copies (this file, SubscribeFormInline, and a private one inside Sidebar)
@@ -69,48 +68,40 @@ export default function SubscribeForm({ variant = 'card' }: { variant?: Subscrib
   const statusLine = status && (
     <p
       role="status"
-      className={`meta mt-2 ${variant === 'inline' ? 'text-center' : ''} ${
-        status.ok ? 'text-[var(--primary-mint)]' : 'text-red-400'
-      }`}
+      className={`meta mt-2 ${status.ok ? 'text-[var(--accent-text)]' : 'text-[var(--secondary-orange)]'}`}
     >
       {status.text}
     </p>
   );
 
-  const inputClass =
-    'w-full field p-3 text-sm text-white font-montserrat disabled:opacity-50';
+  const form = (
+    <form onSubmit={handleSubmit} className="flex w-full max-w-md flex-wrap gap-2">
+      <label htmlFor={inputId} className="sr-only">
+        Email address
+      </label>
+      <input
+        id={inputId}
+        type="email"
+        name="email"
+        autoComplete="email"
+        placeholder="you@company.com"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        className="field min-h-[48px] min-w-0 flex-[1_1_200px] px-4 text-sm disabled:opacity-50"
+        required
+        disabled={loading}
+      />
+      {honeypot}
+      <button type="submit" disabled={loading} className="btn btn-primary min-h-[48px] px-5">
+        {loading ? 'Subscribing…' : 'Subscribe'}
+      </button>
+    </form>
+  );
 
   if (variant === 'inline') {
-    // items-start, not items-center: the parent decides alignment. Centring
-    // here meant the form could not sit left-aligned in a footer column.
     return (
-      <div className="blog-subscribe-snippet-inline my-8 flex flex-col items-start">
-        <form onSubmit={handleSubmit} className="flex items-center w-full max-w-md">
-          <label htmlFor={inputId} className="sr-only">
-            Email address
-          </label>
-          <input
-            id={inputId}
-            type="email"
-            name="email"
-            autoComplete="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={`${inputClass} border-r-0 h-12`}
-            required
-            disabled={loading}
-          />
-          {honeypot}
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn btn-primary whitespace-nowrap"
-          >
-            <Mail className="w-4 h-4" />
-            {loading ? 'Subscribing...' : 'Join'}
-          </button>
-        </form>
+      <div className="blog-subscribe-snippet-inline mt-4 flex flex-col items-start">
+        {form}
         {statusLine}
       </div>
     );
@@ -118,36 +109,13 @@ export default function SubscribeForm({ variant = 'card' }: { variant?: Subscrib
 
   return (
     <div className="blog-subscribe-snippet">
-      <div className="panel-inset p-6">
-        <h4 className="text-xl text-white font-bebas tracking-wide mb-3">SUBSCRIBE</h4>
-        <p className="text-xs text-[var(--text-meta)] leading-relaxed mb-4 font-light">{PITCH}</p>
-        <form onSubmit={handleSubmit} className="space-y-2">
-          <label htmlFor={inputId} className="sr-only">
-            Email address
-          </label>
-          <input
-            id={inputId}
-            type="email"
-            name="email"
-            autoComplete="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={inputClass}
-            required
-            disabled={loading}
-          />
-          {honeypot}
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn btn-primary w-full"
-          >
-            <Mail className="w-4 h-4" />
-            {loading ? 'Subscribing...' : 'Join'}
-          </button>
-          {statusLine}
-        </form>
+      <div className="panel-inset p-7">
+        <p className="label">
+          <span className="slash">/</span>Field notes by email
+        </p>
+        <p className="mb-4 mt-2 max-w-[46ch] text-sm leading-relaxed text-[var(--text)]">{PITCH}</p>
+        {form}
+        {statusLine}
       </div>
     </div>
   );

@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
-import Sidebar from '@/components/Sidebar';
-import BlogCard from '@/components/BlogCard';
 import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
+import JournalList from '@/components/site/JournalList';
+import SectionLabel from '@/components/site/SectionLabel';
 import { createMetadata } from '@/lib/metadata';
 import { getBlogs } from '@/lib/data';
 import { toCategorySlug, titleFromCategorySlug } from '@/lib/category-slug';
@@ -56,7 +56,7 @@ export async function generateMetadata(
 
   return createMetadata({
     title: `${displayName}: Articles by Engjell Rraklli`,
-    description: `${posts.length} article${posts.length === 1 ? '' : 's'} on ${displayName}. Field notes on tech, entrepreneurship, and building startups in Albania.`,
+    description: `${posts.length} article${posts.length === 1 ? '' : 's'} on ${displayName}. Field notes on building and scaling a service business in Albania.`,
     path: `/journal/category/${resolved.slug}`,
   });
 }
@@ -89,7 +89,7 @@ export default async function CategoryPage(
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+    <main id="main-content">
       <Breadcrumbs
         items={[
           { name: 'Home', url: '/' },
@@ -98,50 +98,32 @@ export default async function CategoryPage(
         ]}
       />
       <StructuredData type="CollectionPage" data={collectionData} />
-      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
-        {/* Breadcrumbs / Top Bar */}
-        <div className="h-14 border-b border-[var(--rule-faint)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
-          <div className="flex items-center gap-3 text-xs text-[var(--text-meta)]">
-            <Link href="/journal" className="hover:text-[var(--primary-mint)] transition-colors">
-              <span className="text-[var(--primary-mint)] font-bold">/</span>
-              <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">Journal</span>
+
+      <section className="sec-dark">
+        <div className="wrap pb-[clamp(48px,5vw,80px)] pt-[clamp(40px,6vw,96px)]">
+          <p className="label">
+            <span className="slash" aria-hidden="true">/</span>
+            <Link href="/journal" className="hover:text-[var(--primary-mint)]">
+              Journal
             </Link>
-            <span className="text-[var(--text-meta)]">/</span>
-            <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">{displayName}</span>
-          </div>
-          <div className="font-montserrat text-[11px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
-            A KIND WORLD IS A BETTER WORLD.
-          </div>
+            <span aria-hidden="true"> · </span>Topic
+          </p>
+          <h1 className="mt-5 text-[clamp(56px,6.4vw,100px)] leading-[0.92]">{displayName}</h1>
+          <p className="lede mt-5">
+            {posts.length} essay{posts.length === 1 ? '' : 's'}.{' '}
+            <Link href="/journal" className="text-link">
+              See every topic
+            </Link>
+          </p>
         </div>
+      </section>
 
-        {/* Content Area */}
-        <div className="p-6 md:p-10">
-          <section className="animate-slide-up">
-            <div className="flex items-end justify-between mb-8 border-b border-[var(--rule-faint)] pb-4">
-              <div>
-                <span className="page-label mb-3 block">Category</span>
-                <h1 className="text-5xl md:text-6xl text-white font-bebas uppercase">{displayName}</h1>
-                <p className="text-xs text-[var(--text-meta)] mt-2 uppercase tracking-widest">
-                  {posts.length} article{posts.length === 1 ? '' : 's'}
-                </p>
-              </div>
-              <Link
-                href="/journal"
-                className="meta hover:text-[var(--primary-mint)]"
-              >
-                ← All articles
-              </Link>
-            </div>
-
-            <div className="grid gap-6">
-              {posts.map((blog, idx) => (
-                <BlogCard key={blog.id} blog={blog} priority={idx === 0} />
-              ))}
-            </div>
-          </section>
+      <section className="sec-light" aria-label={`${displayName} essays`}>
+        <div className="wrap pad-y">
+          <JournalList items={posts} priorityFirst />
         </div>
-      </main>
-      <Sidebar />
-    </div>
+      </section>
+
+    </main>
   );
 }

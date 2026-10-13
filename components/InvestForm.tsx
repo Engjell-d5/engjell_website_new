@@ -129,12 +129,10 @@ export default function InvestForm() {
 
   if (sent) {
     return (
-      <div className="panel-inset relative flex flex-col items-center gap-4 p-10 text-center">
-        <div className="absolute left-0 top-0 h-4 w-4 border-l-2 border-t-2 border-[var(--primary-mint)]"></div>
-        <div className="absolute bottom-0 right-0 h-4 w-4 border-b-2 border-r-2 border-[var(--primary-mint)]"></div>
-        <CheckCircle2 className="h-10 w-10 text-[var(--primary-mint)]" />
-        <h3 className="font-bebas text-2xl tracking-wide text-white">APPLICATION RECEIVED</h3>
-        <p className="max-w-xs text-sm font-light text-[var(--text-muted)]">
+      <div className="panel-inset flex flex-col items-center gap-4 p-8 text-center md:p-10">
+        <CheckCircle2 className="h-10 w-10 text-[var(--accent-text)]" aria-hidden="true" />
+        <h3 className="text-[36px] leading-none tracking-[0.03em]">Application received</h3>
+        <p className="max-w-xs text-sm text-[var(--text)]">
           I read these myself. If it is a fit you will hear from me within a week, and if it is
           not I will still tell you rather than leave you waiting.
         </p>
@@ -143,12 +141,10 @@ export default function InvestForm() {
   }
 
   const field =
-    'w-full field p-3 text-sm text-white font-montserrat disabled:opacity-50';
+    'w-full field p-3 text-sm font-montserrat disabled:opacity-50';
 
   return (
-    <div className="panel-inset relative flex flex-col p-10">
-      <div className="absolute left-0 top-0 h-4 w-4 border-l-2 border-t-2 border-[var(--primary-mint)]"></div>
-      <div className="absolute bottom-0 right-0 h-4 w-4 border-b-2 border-r-2 border-[var(--primary-mint)]"></div>
+    <div className="panel-inset flex flex-col p-7 md:p-10">
 
       <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="grid gap-6 sm:grid-cols-2">
@@ -245,10 +241,10 @@ export default function InvestForm() {
           tabIndex={-1} autoComplete="off" aria-hidden="true"
           style={{ position: 'absolute', left: '-9999px' }} />
 
-        {error && <p role="alert" className="text-xs text-red-400">{error}</p>}
+        {error && <p role="alert" className="text-sm text-[var(--secondary-orange)]">{error}</p>}
 
         <button type="submit" disabled={loading} className="btn btn-primary w-full">
-          <Send className="h-4 w-4" />
+          <Send className="h-4 w-4" aria-hidden="true" />
           {loading ? 'Sending…' : 'Send application'}
         </button>
       </form>

@@ -36,7 +36,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  themeColor: '#000000',
+  themeColor: '#001823',
 };
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
@@ -97,7 +97,10 @@ export default function RootLayout({
           </>
         )}
       </head>
-      <body className={`${montserrat.className} flex flex-col p-2 md:p-6 gap-0 max-w-[1600px] mx-auto`}>
+      {/* No frame around the page any more: every section runs edge to edge
+          and sets its own surface (see globals.css), so the body is just the
+          rich-black ground. */}
+      <body className={`${montserrat.className} flex flex-col`}>
         <a href="#main-content" className="skip-link">Skip to content</a>
         <StructuredData type="Person" data={personData} />
         <StructuredData type="WebSite" data={websiteData} />

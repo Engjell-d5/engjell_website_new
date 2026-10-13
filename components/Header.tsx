@@ -3,187 +3,109 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+// Four destinations and one action. The old bar carried nine links plus a
+// button, which asked a first-time visitor to choose between every audience
+// the site serves before they knew what it was. Everything else lives one
+// click down: the offers under Work with me, the rest in the footer.
+const NAV = [
+  { href: '/journal', label: 'Journal', match: ['/journal'] },
+  { href: '/podcast', label: 'Podcast', match: ['/podcast'] },
+  { href: '/about', label: 'About', match: ['/about', '/ventures'] },
+  { href: '/work', label: 'Work with me', match: ['/work', '/sprint', '/speaking', '/invest', '/contact'] },
+];
 
 export default function Header() {
-  const pathname = usePathname();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const pathname = usePathname() || '/';
+  const [open, setOpen] = useState(false);
 
-  // Hide header on admin pages
-  if (pathname?.startsWith('/admin')) {
-    return null;
-  }
+  // Close the menu on navigation, and stop the page scrolling under it.
+  useEffect(() => setOpen(false), [pathname]);
+  useEffect(() => {
+    document.body.style.overflow = open ? 'hidden' : '';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [open]);
 
-  const isActive = (path: string) => {
-    if (path === '/') {
-      return pathname === '/';
-    }
-    return pathname.startsWith(path);
-  };
-
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
-  const closeMobileMenu = () => {
-    setIsMobileMenuOpen(false);
-  };
+  const isActive = (match: string[]) => match.some((m) => pathname === m || pathname.startsWith(m + '/'));
 
   return (
-    <>
-    <header className="classic-panel h-20 shrink-0 flex items-center justify-between px-4 md:px-8 sticky-header relative z-[105]">
-      {/* Brand */}
-      <div className="flex items-center gap-3 md:gap-5 shrink-0 min-w-0 flex-1">
-        <Link href="/" className="w-12 h-12 md:w-16 md:h-16 flex items-center justify-center hover:opacity-80 transition-opacity group flex-shrink-0">
+    <header className="site-header">
+      <div className="wrap flex min-h-[76px] items-center justify-between gap-6">
+        <Link href="/" className="flex min-h-[48px] min-w-0 items-center gap-3.5" aria-label="Engjell Rraklli, home">
           <img
             src="/Engjell_Rraklli_White_Logo_Mark.svg"
-            alt="Engjell Rraklli logo"
-            className="w-full h-full object-contain group-hover:brightness-110 transition-all"
+            alt=""
+            className="h-11 w-11 shrink-0 md:h-12 md:w-12"
           />
+          <span className="flex min-w-0 flex-col gap-[3px]">
+            <span className="font-bebas text-[25px] leading-none tracking-[0.08em] text-[var(--ink)] md:text-[27px]">
+              Engjell Rraklli
+            </span>
+            {/* Kept from the original header: the descriptor is part of the brand. */}
+            <span className="flex items-center gap-2 text-[9px] font-bold uppercase leading-tight tracking-[0.14em] text-[var(--muted)] sm:text-[10px] sm:tracking-[0.16em]">
+              <span className="block h-px w-6 shrink-0 bg-[var(--primary-mint)]" aria-hidden="true" />
+              <span>Homegrown Albanian tech entrepreneur</span>
+            </span>
+          </span>
         </Link>
-        <div className="flex flex-col min-w-0">
-          <div className="text-3xl md:text-2xl lg:text-3xl tracking-widest text-white leading-none mt-1 font-bebas truncate">ENGJELL RRAKLLI</div>
-          <div className="flex items-center gap-2 mt-1">
-            <div className="h-[1px] w-6 md:w-8 bg-[var(--primary-mint)]"></div>
-            {/* Tracking and size step down on small screens, and nowrap is gone:
-                the descriptor grew from 17 characters to 36, which at 11px with
-                0.18em tracking is wider than a phone. */}
-            <span className="text-[9px] sm:text-[10px] md:text-[11px] text-[var(--platinum)] font-bold tracking-[0.1em] sm:tracking-[0.14em] md:tracking-[0.18em] font-montserrat uppercase opacity-80 leading-tight">Homegrown Albanian Tech Entrepreneur</span>
-          </div>
-        </div>
-      </div>
 
-      {/* Navigation - Right Aligned */}
-      <nav className="hidden md:flex items-center gap-2 ml-auto">
-        <Link href="/" className={`nav-btn ${isActive('/') ? 'active' : ''}`}>
-          Home
-        </Link>
-        <Link href="/about" className={`nav-btn ${isActive('/about') ? 'active' : ''}`}>
-          About
-        </Link>
-        <Link href="/podcast" className={`nav-btn ${isActive('/podcast') ? 'active' : ''}`}>
-          Podcast
-        </Link>
-        <Link href="/journal" className={`nav-btn ${isActive('/journal') ? 'active' : ''}`}>
-          Journal
-        </Link>
-        <Link href="/playbook" className={`nav-btn ${isActive('/playbook') ? 'active' : ''}`}>
-          Playbook
-        </Link>
-        <Link href="/ventures" className={`nav-btn ${isActive('/ventures') ? 'active' : ''}`}>
-          Ventures
-        </Link>
-        <Link href="/invest" className={`nav-btn ${isActive('/invest') ? 'active' : ''}`}>
-          Invest
-        </Link>
-        <Link href="/speaking" className={`nav-btn ${isActive('/speaking') ? 'active' : ''}`}>
-          Speaking
-        </Link>
-        <Link href="/contact" className={`nav-btn ${isActive('/contact') ? 'active' : ''}`}>
-          Contact
-        </Link>
-      </nav>
-
-      {/* The header is the most persistent element on the site and was the only
-          surface left without a primary action. Slightly shorter than the
-          standard button so it sits comfortably in an 80px bar. */}
-      <Link
-        href="/contact"
-        className="btn btn-primary hidden md:inline-flex ml-4 min-h-0 py-2.5"
-      >
-        Work with me
-      </Link>
-
-      {/* Mobile Menu Button */}
-      <button 
-        className="md:hidden text-white hover:text-[var(--primary-mint)] transition-colors z-50 flex-shrink-0 p-2 -mr-2"
-        onClick={toggleMobileMenu}
-        aria-label="Toggle menu"
-        aria-expanded={isMobileMenuOpen}
-        suppressHydrationWarning
-      >
-        {isMobileMenuOpen ? (
-          <X className="w-6 h-6" />
-        ) : (
-          <Menu className="w-6 h-6" />
-        )}
-      </button>
-    </header>
-
-    {/* Mobile Menu Dropdown */}
-    {isMobileMenuOpen && (
-      <div className="md:hidden fixed inset-0 top-20 z-[110] bg-[var(--panel-bg)] border-t border-[var(--rule-faint)] overflow-y-auto">
-        <nav className="flex flex-col p-6 gap-4">
-          <Link 
-            href="/" 
-            onClick={closeMobileMenu}
-            className={`nav-btn nav-btn-mobile text-lg py-3 ${isActive('/') ? 'active' : ''}`}
-          >
-            Home
-          </Link>
-          <Link 
-            href="/about" 
-            onClick={closeMobileMenu}
-            className={`nav-btn nav-btn-mobile text-lg py-3 ${isActive('/about') ? 'active' : ''}`}
-          >
-            About
-          </Link>
-          <Link 
-            href="/podcast" 
-            onClick={closeMobileMenu}
-            className={`nav-btn nav-btn-mobile text-lg py-3 ${isActive('/podcast') ? 'active' : ''}`}
-          >
-            Podcast
-          </Link>
-          <Link 
-            href="/journal" 
-            onClick={closeMobileMenu}
-            className={`nav-btn nav-btn-mobile text-lg py-3 ${isActive('/journal') ? 'active' : ''}`}
-          >
-            Journal
-          </Link>
-          <Link
-            href="/playbook"
-            onClick={closeMobileMenu}
-            className={`nav-btn nav-btn-mobile text-lg py-3 ${isActive('/playbook') ? 'active' : ''}`}
-          >
-            Playbook
-          </Link>
-          <Link 
-            href="/ventures"
-            onClick={closeMobileMenu}
-            className={`nav-btn nav-btn-mobile text-lg py-3 ${isActive('/ventures') ? 'active' : ''}`}
-          >
-            Ventures
-          </Link>
-          <Link
-            href="/invest"
-            onClick={closeMobileMenu}
-            className={`nav-btn nav-btn-mobile text-lg py-3 ${isActive('/invest') ? 'active' : ''}`}
-          >
-            Invest
-          </Link>
-          <Link
-            href="/speaking"
-            onClick={closeMobileMenu}
-            className={`nav-btn nav-btn-mobile text-lg py-3 ${isActive('/speaking') ? 'active' : ''}`}
-          >
-            Speaking
-          </Link>
-          <Link
-            href="/contact"
-            onClick={closeMobileMenu}
-            className={`nav-btn nav-btn-mobile text-lg py-3 ${isActive('/contact') ? 'active' : ''}`}
-          >
-            Contact
-          </Link>
-          <Link href="/contact" onClick={closeMobileMenu} className="btn btn-primary mt-3">
-            Work with me
+        <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
+          {NAV.map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`nav-link ${isActive(item.match) ? 'active' : ''}`}
+              aria-current={isActive(item.match) ? 'page' : undefined}
+            >
+              {item.label}
+            </Link>
+          ))}
+          <Link href="/playbook" className="btn btn-primary ml-3 min-h-[46px] px-5 text-[13px]">
+            Free playbook
           </Link>
         </nav>
+
+        <button
+          type="button"
+          className="-mr-2 flex h-12 w-12 shrink-0 items-center justify-center text-[var(--ink)] transition-colors hover:text-[var(--primary-mint)] lg:hidden"
+          onClick={() => setOpen((v) => !v)}
+          aria-label={open ? 'Close menu' : 'Open menu'}
+          aria-expanded={open}
+          aria-controls="mobile-menu"
+        >
+          {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </button>
       </div>
-    )}
-    </>
+
+      {open && (
+        <div
+          id="mobile-menu"
+          className="fixed inset-x-0 bottom-0 top-[77px] z-[110] overflow-y-auto border-t border-[var(--line)] bg-[var(--deep)] lg:hidden"
+        >
+          <nav aria-label="Main" className="wrap flex flex-col py-6">
+            {[{ href: '/', label: 'Home', match: ['/'] }, ...NAV].map((item) => {
+              const active = item.href === '/' ? pathname === '/' : isActive(item.match);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`border-b border-[var(--line-soft)] py-4 font-bebas text-[34px] leading-none tracking-[0.04em] ${
+                    active ? 'text-[var(--primary-mint)]' : 'text-[var(--ink)]'
+                  }`}
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
+            <Link href="/playbook" className="btn btn-primary mt-8">
+              Get the free playbook
+            </Link>
+          </nav>
+        </div>
+      )}
+    </header>
   );
 }
-

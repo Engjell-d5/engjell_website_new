@@ -1,12 +1,15 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import type { Metadata } from 'next';
-import Sidebar from '@/components/Sidebar';
-import BlogCard from '@/components/BlogCard';
-import Pagination from '@/components/Pagination';
 import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
+import Pagination from '@/components/Pagination';
+import JournalList from '@/components/site/JournalList';
+import SectionLabel from '@/components/site/SectionLabel';
 import { createMetadata } from '@/lib/metadata';
 import { getBlogs } from '@/lib/data';
 import { toCategorySlug } from '@/lib/category-slug';
+import { readingTimeMinutes } from '@/lib/reading-time';
+import { formatDateShort } from '@/lib/format';
 import { POSTS_PER_PAGE, START_HERE_SLUG } from '@/lib/site';
 
 // Rendered per request. ISR (revalidate) is wedged in the deployed
@@ -34,7 +37,7 @@ export async function generateMetadata(
   return createMetadata({
     title: page > 1 ? `Journal, Page ${page}` : 'Journal: Field Notes on Building Tech',
     description:
-      "Engjell Rraklli's field notes on building tech ventures, scaling startups, and software development in Albania. Articles on entrepreneurship and leadership.",
+      "Engjell Rraklli's field notes on building and scaling a service business in Albania: founders, AI in operations, growth and culture.",
     path: page > 1 ? `/journal?page=${page}` : '/journal',
   });
 }
@@ -71,9 +74,8 @@ export default async function Journal({ searchParams }: { searchParams?: SearchP
   const page = Math.min(parsePage(searchParams), totalPages);
   const pageBlogs = feed.slice((page - 1) * POSTS_PER_PAGE, page * POSTS_PER_PAGE);
 
-  // Distinct categories for the topic-pill nav, each linking to its own category page.
-  // Built from every post, not just this page, so the nav is stable across pages.
-  // Deduplicate by slug so two categories that slugify to the same value (rare) merge into one pill.
+  // Distinct categories for the topic nav, built from every post so the nav is
+  // stable across pages; deduplicated by slug.
   const categories = Array.from(
     new Map(
       blogs
@@ -84,7 +86,7 @@ export default async function Journal({ searchParams }: { searchParams?: SearchP
 
   const collectionData = {
     name: 'Engjell Rraklli: Field Notes',
-    description: 'Articles on tech entrepreneurship, software development, and building startups in Albania.',
+    description: 'Articles on building and scaling a service business, AI in operations, and building tech companies in Albania.',
     url: page > 1 ? `${siteUrl}/journal?page=${page}` : `${siteUrl}/journal`,
     inLanguage: 'en',
     isPartOf: { '@type': 'WebSite', url: siteUrl, name: 'Engjell Rraklli' },
@@ -100,96 +102,97 @@ export default async function Journal({ searchParams }: { searchParams?: SearchP
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+    <main id="main-content">
       <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Journal', url: '/journal' }]} />
       <StructuredData type="CollectionPage" data={collectionData} />
-      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
-        {/* Breadcrumbs / Top Bar */}
-        <div className="h-14 border-b border-[var(--rule-faint)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
-          <div className="flex items-center gap-3 text-xs text-[var(--text-meta)]">
-            <span className="text-[var(--primary-mint)] font-bold">/</span>
-            <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">Journal</span>
-          </div>
-          <div className="font-montserrat text-[11px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
-            A KIND WORLD IS A BETTER WORLD.
-          </div>
-        </div>
 
-        {/* Content Area */}
-        <div className="p-6 md:p-10">
-          <section className="animate-slide-up">
-            <div className="flex items-end justify-between mb-8 border-b border-[var(--rule-faint)] pb-4">
-              <div>
-                <span className="page-label mb-3 block">Journal</span>
-                <h1 className="text-5xl md:text-6xl text-white font-bebas">FIELD NOTES</h1>
-                {blogs.length > 0 && (
-                  <p className="text-xs text-[var(--text-meta)] mt-2 uppercase tracking-widest">
-                    {blogs.length} article{blogs.length === 1 ? '' : 's'}
-                    {totalPages > 1 ? ` · Page ${page} of ${totalPages}` : ''}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {blogs.length === 0 ? (
-              <div className="text-center py-12">
-                <p className="text-[var(--text-muted)]">No blog posts yet. Check back soon!</p>
-              </div>
-            ) : (
-              <>
-                {categories.length > 1 && (
-                  <nav aria-label="Browse by topic" className="mb-8">
-                    <h2 className="section-label mb-3">Browse by topic</h2>
-                    <ul className="flex flex-wrap gap-2">
-                      {categories.map(({ slug, name }) => (
-                        <li key={slug}>
-                          <Link
-                            href={`/journal/category/${slug}`}
-                            className="meta hover:text-[var(--primary-mint)] border border-[var(--border-color)] px-3 py-1 transition-colors"
-                          >
-                            {name}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </nav>
-                )}
-
-                {/* Pinned reference piece, page 1 only. */}
-                {startHere && page === 1 && (
-                  <section aria-labelledby="start-here" className="mb-10">
-                    <h2 id="start-here" className="section-label mb-3" style={{ color: "var(--primary-mint)" }}>
-                      Start here
-                    </h2>
+      <section className="sec-dark">
+        <div className="wrap pb-[clamp(48px,5vw,80px)] pt-[clamp(40px,6vw,96px)]">
+          <SectionLabel>Journal</SectionLabel>
+          <h1 className="mt-5 max-w-[14em] text-balance text-[clamp(48px,5.6vw,86px)] leading-[0.94]">
+            Notes from inside a <span className="text-[var(--primary-mint)]">service business</span>
+          </h1>
+          <p className="lede mt-6 max-w-[38em]">
+            Essays on building and scaling a service business, written from inside one. What worked,
+            what did not, and what it cost.
+            {blogs.length > 0 && ` ${blogs.length} so far.`}
+          </p>
+          {categories.length > 1 && (
+            <nav aria-label="Browse by topic" className="mt-9">
+              <ul className="flex flex-wrap gap-2">
+                {categories.map(({ slug, name }) => (
+                  <li key={slug}>
                     <Link
-                      href={`/journal/${startHere.slug}`}
-                      className="block p-6 md:p-8 border border-[var(--primary-mint)]/50 bg-[var(--rich-black)] hover:border-[var(--primary-mint)] transition-colors group"
+                      href={`/journal/category/${slug}`}
+                      className="inline-flex min-h-[40px] items-center border border-[var(--line)] px-4 text-[13px] font-semibold text-[var(--ink)] transition-colors hover:border-[var(--primary-mint)] hover:text-[var(--primary-mint)]"
                     >
-                      <h3 className="text-3xl md:text-4xl text-white font-bebas mb-3 group-hover:text-[var(--primary-mint)] transition-colors">
-                        {startHere.title}
-                      </h3>
-                      <p className="text-sm text-[var(--text-muted)] leading-relaxed font-light max-w-3xl">
-                        {startHere.excerpt}
-                      </p>
-                      <span className="mt-4 inline-flex items-center gap-2 meta font-semibold text-[var(--primary-mint)]">
-                        Read the playbook
-                      </span>
+                      {name}
                     </Link>
-                  </section>
-                )}
-
-                <div className="grid gap-6">
-                  {pageBlogs.map((blog, idx) => (
-                    <BlogCard key={blog.id} blog={blog} priority={page === 1 && idx === 0 && !startHere} />
-                  ))}
-                </div>
-                <Pagination basePath="/journal" page={page} totalPages={totalPages} />
-              </>
-            )}
-          </section>
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          )}
         </div>
-      </main>
-      <Sidebar />
-    </div>
+      </section>
+
+      {/* Pinned reference piece, page 1 only. */}
+      {startHere && page === 1 && (
+        <section className="sec-deep" aria-labelledby="start-here">
+          <div className="wrap py-[clamp(48px,6vw,88px)]">
+            <Link href={`/journal/${startHere.slug}`} className="group flex flex-wrap items-center gap-x-14 gap-y-8">
+              {startHere.imageUrl && (
+                <div className="relative aspect-[16/10] min-w-0 flex-[1_1_420px] overflow-hidden bg-[var(--deep)]">
+                  <Image
+                    src={startHere.imageUrl}
+                    alt=""
+                    fill
+                    priority
+                    sizes="(min-width: 1024px) 45vw, 100vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                  />
+                </div>
+              )}
+              <div className="min-w-0 flex-[1_1_440px]">
+                <SectionLabel as="h2" id="start-here">
+                  Start here
+                </SectionLabel>
+                <p className="mt-4 font-bebas text-[clamp(40px,3.8vw,58px)] leading-[0.98] tracking-[0.02em] text-[var(--ink)] transition-colors group-hover:text-[var(--primary-mint)]">
+                  {startHere.title}
+                </p>
+                {startHere.excerpt && (
+                  <p className="mt-4 max-w-[36em] text-base leading-relaxed text-[var(--text)]">{startHere.excerpt}</p>
+                )}
+                <p className="meta mt-5">
+                  {formatDateShort(startHere.publishedAt)}
+                  {startHere.content ? ` · ${readingTimeMinutes(startHere.content)} min read` : ''}
+                </p>
+                <span className="link-rule mt-3">Read the essay</span>
+              </div>
+            </Link>
+          </div>
+        </section>
+      )}
+
+      <section className="sec-light" aria-label="All essays">
+        <div className="wrap pad-y">
+          {blogs.length === 0 ? (
+            <p className="text-[var(--text)]">New essays are on the way.</p>
+          ) : (
+            <>
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <SectionLabel as="h2">{page > 1 ? `Page ${page} of ${totalPages}` : 'Latest'}</SectionLabel>
+                {totalPages > 1 && <p className="meta">{feed.length} essays</p>}
+              </div>
+              <div className="mt-6">
+                <JournalList items={pageBlogs} priorityFirst={page === 1 && !startHere} />
+              </div>
+              <Pagination basePath="/journal" page={page} totalPages={totalPages} />
+            </>
+          )}
+        </div>
+      </section>
+
+    </main>
   );
 }

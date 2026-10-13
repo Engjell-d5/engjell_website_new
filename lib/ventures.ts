@@ -9,6 +9,8 @@ export interface Venture {
   description: string;
   image: string;
   role: string;
+  /** Year founded, shown beside the role. */
+  since: number;
 }
 
 export const VENTURES: Venture[] = [
@@ -19,13 +21,18 @@ export const VENTURES: Venture[] = [
       'A staffing marketplace connecting vetted AI-native engineers across the Balkans with companies in Europe and beyond.',
     image: '/ventures-division5.jpg',
     role: 'Founder',
+    since: 2015,
   },
   {
     name: 'divisionAI',
     url: 'https://divisionai.co',
-    description: 'Artificial intelligence solutions and AI-powered products.',
+    // Was 'Artificial intelligence solutions and AI-powered products', which
+    // describes every AI company. This is what it actually builds.
+    description:
+      'Business systems with AI agents inside them, for operations that used to need a whole department.',
     image: '/ventures-divisionai.jpg',
     role: 'Founder',
+    since: 2022,
   },
 ];
 

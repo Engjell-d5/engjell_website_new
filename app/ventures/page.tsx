@@ -1,11 +1,11 @@
-import Image from 'next/image';
-import { Briefcase, BrainCircuit, ArrowUpRight } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
-import Sidebar from '@/components/Sidebar';
+import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
+import type { Metadata } from 'next';
 import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
+import PageHero from '@/components/site/PageHero';
+import SectionLabel from '@/components/site/SectionLabel';
 import { createMetadata } from '@/lib/metadata';
 import { VENTURES } from '@/lib/ventures';
-import type { Metadata } from 'next';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 const FOUNDER = {
@@ -15,21 +15,25 @@ const FOUNDER = {
   url: siteUrl,
 } as const;
 
-const ICONS: Record<string, LucideIcon> = {
-  division5: Briefcase,
-  divisionAI: BrainCircuit,
-};
-
 export const metadata: Metadata = createMetadata({
   title: 'division5 & divisionAI',
   description:
-    "Engjell Rraklli's tech ventures: division5, a staffing marketplace for vetted AI-native Balkan engineers, and divisionAI (AI solutions). Building scalable tech businesses from Tirana.",
+    "Engjell Rraklli's companies: division5, a staffing marketplace for vetted AI-native Balkan engineers, and divisionAI, business systems with AI agents inside them. Built in Tirana.",
   path: '/ventures',
 });
 
+// What each company is for, in a line, beyond the one-line description the
+// Organization schema carries.
+const DETAIL: Record<string, string> = {
+  division5:
+    'Started in May 2015 with no money and no network, selling software development services because that is what kept the company alive. Today it places vetted AI-native engineers from across the Balkans with companies in Europe and beyond, selected for skill and fit.',
+  divisionAI:
+    'The software underneath the operation, with AI inside it rather than bolted on the side. Agents carry the assembly work, and a person still approves every decision that leaves the building. It is how a recruitment function that took five people now runs with two.',
+};
+
 export default function Ventures() {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch">
+    <main id="main-content">
       <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Ventures', url: '/ventures' }]} />
       {VENTURES.map((v) => (
         <StructuredData
@@ -38,87 +42,74 @@ export default function Ventures() {
           data={{
             name: v.name,
             url: v.url,
-            // Same string the card renders, so schema and page never diverge.
+            // Same string the page renders, so schema and page never diverge.
             description: v.description,
             founder: FOUNDER,
           }}
         />
       ))}
-      <main id="main-content" className="classic-panel md:col-span-9 flex flex-col bg-[var(--content-bg)] min-h-[80vh]">
-        {/* Breadcrumbs / Top Bar */}
-        <div className="h-14 border-b border-[var(--rule-faint)] flex items-center justify-between px-8 shrink-0 bg-[var(--rich-black)]">
-          <div className="flex items-center gap-3 text-xs text-[var(--text-meta)]">
-            <span className="text-[var(--primary-mint)] font-bold">/</span>
-            <span className="text-[var(--text-silver)] font-medium uppercase tracking-widest font-montserrat text-[11px]">Ventures</span>
-          </div>
-          <div className="font-montserrat text-[11px] text-[var(--text-meta)] font-bold tracking-[0.15em] hidden md:block">
-            YOU DON'T FAIL IF YOU NEVER GIVE UP.
-          </div>
-        </div>
 
-        {/* Content Area */}
-        <div className="p-6 md:p-10">
-          <section className="animate-slide-up">
-            <div className="flex items-end justify-between mb-8 border-b border-[var(--rule-faint)] pb-4">
-              <div>
-                <span className="page-label mb-3 block">Ventures</span>
-                <h1 className="text-5xl md:text-6xl text-white font-bebas">WHAT I BUILD</h1>
-              </div>
+      <PageHero
+        label="Ventures"
+        size="md"
+        title={
+          <>
+            What I <span className="text-[var(--primary-mint)]">build</span>
+          </>
+        }
+        lede={
+          <p>
+            Two companies in Tirana. One places engineers with companies across Europe; the other builds
+            the systems that let a small team run like a large one.
+          </p>
+        }
+      />
+
+      {VENTURES.map((v, i) => (
+        <section key={v.name} className={i % 2 === 0 ? 'sec-light' : 'sec-deep'} aria-labelledby={`venture-${i}`}>
+          <div className="wrap pad-y flex flex-wrap items-end gap-x-20 gap-y-8">
+            <div className="min-w-0 flex-[1_1_520px]">
+              <SectionLabel>
+                {v.role} since {v.since}
+              </SectionLabel>
+              {/* Brand names keep their own casing, so not Bebas here. */}
+              <h2
+                id={`venture-${i}`}
+                className="mt-4 font-montserrat text-[clamp(56px,7vw,112px)] font-extrabold leading-[0.9] tracking-[-0.03em]"
+              >
+                {v.name}
+              </h2>
+              <p className="mt-6 max-w-[34em] text-[clamp(18px,1.5vw,22px)] font-medium leading-snug text-[var(--ink)]">
+                {v.description}
+              </p>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {VENTURES.map((v, idx) => {
-                const Icon = ICONS[v.name] ?? Briefcase;
-                return (
-                  <a
-                    key={v.name}
-                    href={v.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group relative h-[300px] border border-[var(--border-color)] overflow-hidden hover:border-[var(--primary-mint)] transition-all"
-                  >
-                    <Image
-                      src={v.image}
-                      alt={`${v.name}, ${v.description.replace(/\.$/, '').toLowerCase()}`}
-                      fill
-                      priority={idx === 0}
-                      sizes="(min-width: 768px) 50vw, 100vw"
-                      className="object-cover img-classic opacity-40"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[var(--rich-black)] via-[var(--rich-black)]/80 to-transparent z-10"></div>
-
-                    <div className="relative z-20 h-full flex flex-col justify-end p-8">
-                      <div className="flex justify-between items-end mb-4">
-                        <div className="w-12 h-12 border border-[var(--border-color)]/50 flex items-center justify-center bg-[var(--rich-black)]">
-                          <Icon className="w-6 h-6 text-white" />
-                        </div>
-                      </div>
-                      <h2 className="text-4xl text-white font-bebas mb-2">{v.name}</h2>
-                      <p className="text-sm text-[var(--text-meta)] mb-6 font-light border-l border-[var(--rule-faint)]/50 pl-3">
-                        {v.description}
-                      </p>
-
-                      <div className="grid grid-cols-2 gap-4 border-t border-[var(--rule-faint)]/30 pt-4">
-                        <div>
-                          <p className="section-label">Role</p>
-                          <p className="text-xs text-white">{v.role}</p>
-                        </div>
-                        {/* Brand names keep their own casing, this label used
-                            to title-case them ("Visit Division5"). */}
-                        <div className="flex items-center gap-1 text-[var(--text-meta)] group-hover:text-[var(--primary-mint)] transition-colors">
-                          <p className="meta font-semibold">Visit {v.name}</p>
-                          <ArrowUpRight className="w-3 h-3" />
-                        </div>
-                      </div>
-                    </div>
-                  </a>
-                );
-              })}
+            <div className="min-w-0 flex-[1_1_380px]">
+              <p className="text-[17px] leading-relaxed text-[var(--text)]">{DETAIL[v.name]}</p>
+              <a
+                href={v.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`btn mt-7 ${i % 2 === 0 ? 'btn-dark' : 'btn-primary'}`}
+              >
+                Visit {v.name}
+                <ArrowUpRight className="h-4 w-4" aria-hidden="true" />
+              </a>
             </div>
-          </section>
+          </div>
+        </section>
+      ))}
+
+      <section className="sec-dark">
+        <div className="wrap flex flex-wrap items-center justify-between gap-x-12 gap-y-6 py-[clamp(56px,6vw,88px)]">
+          <p className="max-w-[30em] text-[17px] leading-relaxed text-[var(--text)]">
+            The story of how both came to exist, including the years spent trying to escape the first one,
+            is on the About page.
+          </p>
+          <Link href="/about" className="link-rule">
+            Read my story
+          </Link>
         </div>
-      </main>
-      <Sidebar />
-    </div>
+      </section>
+    </main>
   );
 }

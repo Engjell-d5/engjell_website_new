@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { Check, X } from 'lucide-react';
-import Sidebar from '@/components/Sidebar';
 import ContactForm from '@/components/ContactForm';
 import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
+import PageHero from '@/components/site/PageHero';
+import SectionLabel from '@/components/site/SectionLabel';
 import { createMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
 
@@ -28,7 +29,7 @@ const PRICE = '€7,500';
  * Typed as a Service, not a ProfilePage.
  *
  * It was a ProfilePage, which Search Console flagged as "Missing field
- * mainEntity" — correctly, because ProfilePage describes a profile OF someone
+ * mainEntity", correctly, because ProfilePage describes a profile OF someone
  * and requires the person as its mainEntity. This page sells a thing. A service
  * with a provider is what it actually is, and it needs no mainEntity.
  */
@@ -108,7 +109,7 @@ const NOT_FOR = [
 
 export default function SprintPage() {
   return (
-    <>
+    <main id="main-content">
       <StructuredData type="Service" data={sprintData} />
       <Breadcrumbs
         items={[
@@ -117,133 +118,155 @@ export default function SprintPage() {
         ]}
       />
 
-      <div className="mx-auto w-full max-w-[80rem] px-4 py-12 md:py-16 lg:flex lg:gap-12">
-        <main id="main-content" className="w-full lg:max-w-[46rem]">
-          <p className="section-label mb-4">Working session</p>
-          <h1 className="mb-6 text-4xl font-bold leading-tight text-[var(--text-primary)] md:text-5xl">
-            The Constraint Sprint
-          </h1>
-
-          <p className="mb-6 max-w-[62ch] text-lg leading-relaxed text-[var(--text-secondary)]">
-            Four sessions over two weeks with you and the people who actually run your business,
-            to name the thing it is stuck on and decide what to do about it. Run remotely, wherever
-            you are. You leave with a written analysis and a ninety day plan.
+      <PageHero
+        label="Working session"
+        title={
+          <>
+            The Constraint <span className="text-[var(--primary-mint)]">Sprint</span>
+          </>
+        }
+        lede={
+          <p>
+            Four sessions over two weeks with you and the people who actually run your business, to name
+            the thing it is stuck on and decide what to do about it. Run remotely, wherever you are. You
+            leave with a written analysis and a ninety day plan.
           </p>
+        }
+        actions={
+          <>
+            <a href="#book" className="btn btn-primary">
+              Tell me what you are stuck on
+            </a>
+            <Link href="/playbook" className="btn btn-secondary">
+              Read the free playbook first
+            </Link>
+          </>
+        }
+        aside={
+          <div className="border border-[var(--line)] border-t-[3px] border-t-[var(--primary-mint)] p-8">
+            <p className="label">Fixed price</p>
+            <p className="mt-2 font-bebas text-[84px] leading-none text-[var(--primary-mint)]">{PRICE}</p>
+            <ul className="mt-5 flex flex-col gap-2.5 border-t border-[var(--line)] pt-5 text-[15px] font-semibold text-[var(--ink)]">
+              <li>Four sessions of about two hours</li>
+              <li>Two weeks, run over video</li>
+              <li>A written analysis and a ninety day plan</li>
+              <li className="text-[var(--accent-text)]">Not useful after session one? You pay nothing.</li>
+            </ul>
+          </div>
+        }
+      />
 
-          <p className="mb-10 max-w-[62ch] leading-relaxed text-[var(--text-muted)]">
+      <section className="sec-deep">
+        <div className="wrap py-[clamp(48px,5vw,72px)]">
+          <p className="max-w-[52em] text-[17px] leading-relaxed text-[var(--text)]">
             The{' '}
-            <Link href="/playbook" className="text-[var(--primary-mint)] hover:underline">
+            <Link href="/playbook" className="text-link">
               playbook
             </Link>{' '}
-            is the free version and it is genuinely enough for some people. This is for the ones
-            who started it, got to the second diagnostic, and found that answering honestly about
-            your own company is harder alone than it looks on paper.
+            is the free version and it is genuinely enough for some people. This is for the ones who
+            started it, got to the second diagnostic, and found that answering honestly about your own
+            company is harder alone than it looks on paper.
           </p>
+        </div>
+      </section>
 
-          {/* Agenda */}
-          <section className="mb-12 border-t border-[var(--rule-faint)] pt-8">
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-[var(--text-meta)]">
-              How the two weeks run
-            </h2>
-            <p className="mb-6 max-w-[60ch] leading-relaxed text-[var(--text-muted)]">
-              Four sessions of about two hours, twice a week. The gaps are not padding. Asked in a
-              room, questions like where your last ten clients came from get answered from memory,
-              which is the flattering version. The work between sessions is where the real answers
-              come from.
-            </p>
-            <ol className="flex flex-col gap-6">
-              {AGENDA.map((slot) => (
-                <li key={slot.when} className="border-l-2 border-[var(--primary-mint)] pl-5">
-                  <p className="mb-1 font-mono text-xs uppercase tracking-[0.14em] text-[var(--primary-mint)]">
-                    {slot.when}
+      <section className="sec-light" aria-labelledby="agenda">
+        <div className="wrap pad-y">
+          <SectionLabel>How the two weeks run</SectionLabel>
+          <h2 id="agenda" className="h-section mt-3.5">
+            Four sessions, with real work in between
+          </h2>
+          <p className="mt-5 max-w-[46em] text-[17px] leading-relaxed text-[var(--text)]">
+            Four sessions of about two hours, twice a week. The gaps are not padding. Asked in a room,
+            questions like where your last ten clients came from get answered from memory, which is the
+            flattering version. The work between sessions is where the real answers come from.
+          </p>
+          <ol className="mt-12 grid gap-x-12 md:grid-cols-2">
+            {AGENDA.map((slot, i) => (
+              <li key={slot.when} className="border-t border-[var(--line)] py-8">
+                <p className="font-bebas text-[20px] tracking-[0.08em] text-[var(--accent-text)]">
+                  {String(i + 1).padStart(2, '0')} · {slot.when}
+                </p>
+                <h3 className="mt-2 text-[clamp(30px,2.6vw,38px)] leading-[1.02] tracking-[0.03em]">{slot.what}</h3>
+                <p className="mt-3 text-[15px] leading-relaxed text-[var(--text)]">{slot.detail}</p>
+                {slot.homework && (
+                  <p className="mt-4 border-l-2 border-[var(--accent-text)] pl-4 text-sm leading-relaxed text-[var(--muted)]">
+                    <span className="font-semibold text-[var(--ink)]">Before the next one:</span> {slot.homework}
                   </p>
-                  <p className="mb-1 font-semibold text-[var(--text-primary)]">{slot.what}</p>
-                  <p className="text-sm leading-relaxed text-[var(--text-muted)]">{slot.detail}</p>
-                  {slot.homework && (
-                    <p className="mt-3 border-l-2 border-[var(--rule-faint)] pl-3 text-sm italic leading-relaxed text-[var(--text-meta)]">
-                      Before the next one: {slot.homework}
-                    </p>
-                  )}
-                </li>
-              ))}
-            </ol>
-          </section>
+                )}
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
 
-          {/* Deliverables */}
-          <section className="mb-12 border-t border-[var(--rule-faint)] pt-8">
-            <h2 className="mb-6 text-sm font-semibold uppercase tracking-[0.18em] text-[var(--text-meta)]">
-              What you leave with
-            </h2>
-            <ul className="flex flex-col gap-3">
-              {DELIVERABLES.map((d) => (
-                <li key={d} className="flex gap-3">
-                  <Check
-                    size={18}
-                    className="mt-1 shrink-0 text-[var(--primary-mint)]"
-                    aria-hidden="true"
-                  />
-                  <span className="leading-relaxed text-[var(--text-muted)]">{d}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
+      <section className="sec-dark" aria-labelledby="leave-with">
+        <div className="wrap pad-y">
+          <SectionLabel>What you leave with</SectionLabel>
+          <h2 id="leave-with" className="h-section mt-3.5">
+            Written down, owned, and in order
+          </h2>
+          <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {DELIVERABLES.map((d) => (
+              <li key={d} className="card">
+                <Check size={22} className="text-[var(--primary-mint)]" aria-hidden="true" />
+                <p className="text-[15px] leading-relaxed text-[var(--ink)]">{d}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
 
-          {/* Price */}
-          <section className="mb-12 border border-[var(--border-color)] bg-[var(--panel-bg)] p-8">
-            <p className="mb-2 text-sm uppercase tracking-[0.18em] text-[var(--text-meta)]">
-              Price
-            </p>
-            <p className="mb-4 font-bebas text-5xl tracking-wide text-[var(--primary-mint)]">
-              {PRICE}
-            </p>
-            <p className="max-w-[58ch] leading-relaxed text-[var(--text-muted)]">
-              Fixed, for all four sessions and the written analysis afterwards. Run over video, so
-              your timezone matters more than your address and there is no travel to pay for. If
-              you decide after the first session that this is not going to be useful, we stop and
-              you pay nothing.
-            </p>
-          </section>
+      <section className="sec-mint" aria-labelledby="price">
+        <div className="wrap flex flex-wrap items-center gap-x-16 gap-y-6 py-[clamp(56px,6vw,96px)]">
+          <p id="price" className="font-bebas text-[clamp(96px,12vw,180px)] leading-[0.85] text-[var(--rich-black)]">
+            {PRICE}
+          </p>
+          <p className="max-w-[38em] flex-[1_1_420px] text-[17px] font-medium leading-relaxed text-[var(--rich-black)]">
+            Fixed, for all four sessions and the written analysis afterwards. Run over video, so your
+            timezone matters more than your address and there is no travel to pay for. If you decide after
+            the first session that this is not going to be useful, we stop and you pay nothing.
+          </p>
+        </div>
+      </section>
 
-          {/* Disqualifier. The most trustworthy part of any offer page. */}
-          <section className="mb-12 border-t border-[var(--rule-faint)] pt-8">
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-[var(--text-meta)]">
-              Who this is not for
-            </h2>
-            <p className="mb-6 max-w-[60ch] leading-relaxed text-[var(--text-muted)]">
-              Saying yes to everyone is how consulting gets its reputation. Four cases where I
-              would tell you not to book.
-            </p>
-            <ul className="flex flex-col gap-3">
-              {NOT_FOR.map((n) => (
-                <li key={n} className="flex gap-3">
-                  <X
-                    size={18}
-                    className="mt-1 shrink-0 text-[var(--secondary-orange)]"
-                    aria-hidden="true"
-                  />
-                  <span className="leading-relaxed text-[var(--text-muted)]">{n}</span>
-                </li>
-              ))}
-            </ul>
-          </section>
+      <section className="sec-deep" aria-labelledby="not-for">
+        <div className="wrap pad-y">
+          <SectionLabel>Who this is not for</SectionLabel>
+          <h2 id="not-for" className="h-section mt-3.5">
+            Four cases where I would tell you not to book
+          </h2>
+          <p className="mt-5 max-w-[46em] text-[17px] leading-relaxed text-[var(--text)]">
+            Saying yes to everyone is how consulting gets its reputation.
+          </p>
+          <ul className="mt-10 grid gap-x-12 md:grid-cols-2">
+            {NOT_FOR.map((n) => (
+              <li key={n} className="flex gap-4 border-t border-[var(--line)] py-6">
+                <X size={22} className="mt-0.5 shrink-0 text-[var(--secondary-orange)]" aria-hidden="true" />
+                <span className="text-base leading-relaxed text-[var(--ink)]">{n}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
 
-          {/* Enquiry */}
-          <section id="book" className="border-t border-[var(--rule-faint)] pt-8">
-            <h2 className="mb-3 text-2xl font-bold text-[var(--text-primary)]">
+      <section id="book" className="sec-dark" aria-labelledby="book-title">
+        <div className="wrap pad-y flex flex-wrap gap-x-20 gap-y-10">
+          <div className="min-w-0 flex-[1_1_400px]">
+            <SectionLabel>Book</SectionLabel>
+            <h2 id="book-title" className="h-section mt-3.5">
               Tell me what you are stuck on
             </h2>
-            <p className="mb-8 max-w-[60ch] leading-relaxed text-[var(--text-muted)]">
-              A paragraph is enough. I will reply with whether I think a sprint is the right thing,
-              and I will say so plainly when it is not. There is no call before the call.
+            <p className="mt-5 max-w-[36em] text-[17px] leading-relaxed text-[var(--text)]">
+              A paragraph is enough. I will reply with whether I think a sprint is the right thing, and I
+              will say so plainly when it is not. There is no call before the call.
             </p>
+          </div>
+          <div className="min-w-0 flex-[1_1_520px]">
             <ContactForm defaultTopic="Constraint sprint" />
-          </section>
-        </main>
-
-        <div className="mt-16 lg:mt-0 lg:flex-1">
-          <Sidebar />
+          </div>
         </div>
-      </div>
-    </>
+      </section>
+    </main>
   );
 }
