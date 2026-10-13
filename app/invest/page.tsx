@@ -159,7 +159,7 @@ export default function InvestPage() {
             Apply
           </a>
         }
-        image={{ src: '/photos/kosict-smile.jpg', alt: 'Engjell Rraklli in conversation at KosICT in Prishtina', landscape: true }}
+        image={{ src: '/photos/kosict-listening.jpg', alt: 'Engjell Rraklli listening during a conversation at KosICT in Prishtina', landscape: true }}
       />
 
       <section className="sec-light" aria-labelledby="what">
