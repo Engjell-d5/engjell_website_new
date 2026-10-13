@@ -22,7 +22,7 @@ export default function PageHero({
   title: ReactNode;
   lede?: ReactNode;
   actions?: ReactNode;
-  image?: { src: string; alt: string; position?: string; caption?: string; priority?: boolean };
+  image?: { src: string; alt: string; position?: string; caption?: string; priority?: boolean; landscape?: boolean };
   aside?: ReactNode;
   size?: 'lg' | 'md';
 }) {
@@ -43,17 +43,17 @@ export default function PageHero({
             {actions && <div className="mt-9 flex flex-wrap gap-3">{actions}</div>}
           </div>
           {side && (
-            <div className="w-full max-w-[430px] flex-[1_1_300px]">
+            <div className={`w-full flex-[1_1_300px] ${image?.landscape ? 'max-w-[560px]' : 'max-w-[430px]'}`}>
               {image ? (
                 <figure className="m-0">
                   <div>
-                    <div className="relative aspect-[4/5] overflow-hidden bg-[var(--deep)]">
+                    <div className={`relative overflow-hidden bg-[var(--deep)] ${image.landscape ? 'aspect-[4/3]' : 'aspect-[4/5]'}`}>
                       <Image
                         src={image.src}
                         alt={image.alt}
                         fill
                         priority={image.priority ?? true}
-                        sizes="(min-width: 1024px) 430px, 100vw"
+                        sizes="(min-width: 1024px) 560px, 100vw"
                         className="object-cover"
                         style={{ objectPosition: image.position ?? '50% 30%' }}
                       />

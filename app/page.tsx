@@ -10,7 +10,7 @@ import { VENTURES } from '@/lib/ventures';
 import { readingTimeMinutes } from '@/lib/reading-time';
 import { formatDateShort } from '@/lib/format';
 import SectionLabel from '@/components/site/SectionLabel';
-import PhotoTiles from '@/components/site/PhotoTiles';
+import PhotoTiles, { type Tile } from '@/components/site/PhotoTiles';
 import MintBanner from '@/components/site/MintBanner';
 import JournalList from '@/components/site/JournalList';
 import { FeaturedEpisode, EpisodeRow } from '@/components/site/Episodes';
@@ -37,33 +37,6 @@ const RECEIPTS = [
   { n: String(HOSTED_EPISODES), note: 'Long-form conversations recorded with founders for the podcast.' },
 ];
 
-const TILES = [
-  {
-    href: '/about',
-    image: '/IMG_0425.JPG',
-    position: '62% 40%',
-    label: 'division5 · divisionAI',
-    keepCase: true,
-    title: 'Builds',
-    body: 'Service businesses that scale, and the AI systems that run them.',
-  },
-  {
-    href: '/podcast',
-    image: '/IMG_0456.JPG',
-    position: '50% 30%',
-    label: 'Scaling the Unscalable',
-    title: 'Talks',
-    body: 'Long conversations with founders about what really happens inside a company.',
-  },
-  {
-    href: '/speaking',
-    image: '/_DSC0142.JPG',
-    position: '74% 35%',
-    label: 'Speaking',
-    title: 'Speaks',
-    body: 'Post-mortems, not predictions. What putting AI agents into a real business cost.',
-  },
-];
 
 const OFFERS = [
   {
@@ -110,6 +83,37 @@ export default async function Home() {
   const latest = published.filter((b) => b.slug !== START_HERE_SLUG).slice(0, 4);
 
   const featured = videos.find((v) => v.featured) || videos[0];
+
+  // Three tiles, three different places: a working table at the Skills Expo,
+  // the podcast studio, and the ADC stage. The studio appears once here and
+  // once in the hero, never twice in the same row.
+  const tiles: Tile[] = [
+    {
+      href: '/ventures',
+      image: '/photos/expo-mentoring.jpg',
+      position: '52% 50%',
+      label: 'division5 · divisionAI',
+      keepCase: true,
+      title: 'Builds',
+      body: 'Service businesses that scale, and the teams and systems that run them.',
+    },
+    {
+      href: '/podcast',
+      image: '/photos/studio-ringlight.jpg',
+      position: '54% 40%',
+      label: 'Scaling the Unscalable',
+      title: 'Talks',
+      body: 'Long conversations with founders about what really happens inside a company.',
+    },
+    {
+      href: '/speaking',
+      image: '/photos/stage-adc-crowd.jpg',
+      position: '88% 50%',
+      label: 'Speaking',
+      title: 'Speaks',
+      body: 'Post-mortems, not predictions. What putting AI agents into a real business cost.',
+    },
+  ];
   const moreEpisodes = videos.filter((v) => v.id !== featured?.id).slice(0, 3);
 
   return (
@@ -188,7 +192,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <PhotoTiles tiles={TILES} />
+      <PhotoTiles tiles={tiles} />
 
       {/* Reading happens on the light surface */}
       <section className="sec-light">

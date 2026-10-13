@@ -5,6 +5,7 @@ import SectionLabel from '@/components/site/SectionLabel';
 export interface Tile {
   href: string;
   image: string;
+  /** object-position for the crop, so the subject survives the 4:5 frame. */
   position?: string;
   label: string;
   keepCase?: boolean;
@@ -14,8 +15,9 @@ export interface Tile {
 
 /**
  * Full-bleed photo tiles with the caption set over the lower third. They are
- * the main thing that breaks up the dark: real photographs at full width,
- * edge to edge, between the text sections.
+ * what breaks up the dark near the top of the homepage, so the three photos
+ * should come from three different places: the same studio three times in a
+ * row reads as one picture repeated.
  */
 export default function PhotoTiles({ tiles, label = 'What I do' }: { tiles: Tile[]; label?: string }) {
   return (

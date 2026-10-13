@@ -23,8 +23,8 @@ export const metadata: Metadata = createMetadata({
 const OFFERS = [
   {
     href: '/sprint',
-    image: '/IMG_0425.JPG',
-    position: '62% 40%',
+    image: '/photos/expo-table.jpg',
+    position: '55% 50%',
     for: 'For service business founders',
     title: 'The Constraint Sprint',
     body: 'Four remote sessions over two weeks with you and the people who actually run your business, to name the thing it is stuck on and decide what to do about it. You leave with a written analysis and a ninety day plan.',
@@ -33,8 +33,8 @@ const OFFERS = [
   },
   {
     href: '/speaking',
-    image: '/_DSC0142.JPG',
-    position: '74% 35%',
+    image: '/photos/stage-adc-wide.jpg',
+    position: '82% 50%',
     for: 'For organisers and podcast hosts',
     title: 'Speaking',
     body: 'Talks about what actually happened when we put AI agents into a real business: what they took over, what we refused to let them touch, and what it cost. Post-mortems, not predictions.',
@@ -43,8 +43,8 @@ const OFFERS = [
   },
   {
     href: '/invest',
-    image: '/IMG_0456.JPG',
-    position: '50% 30%',
+    image: '/photos/jury-ebdc.jpg',
+    position: '50% 40%',
     for: 'For founders in Albania and Kosovo',
     title: 'Angel investing',
     body: 'I back B2B productized services, services turned into software and high-ticket B2B products, built here and already selling in Europe or the US. Customers, distribution and automation come with the cheque.',
