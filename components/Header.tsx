@@ -32,54 +32,58 @@ export default function Header() {
   const isActive = (match: string[]) => match.some((m) => pathname === m || pathname.startsWith(m + '/'));
 
   return (
-    <header className="site-header">
-      <div className="wrap flex min-h-[76px] items-center justify-between gap-6">
-        <Link href="/" className="flex min-h-[48px] min-w-0 items-center gap-3.5" aria-label="Engjell Rraklli, home">
-          <img
-            src="/Engjell_Rraklli_White_Logo_Mark.svg"
-            alt=""
-            className="h-11 w-11 shrink-0 md:h-12 md:w-12"
-          />
-          <span className="flex min-w-0 flex-col gap-[3px]">
-            <span className="font-bebas text-[25px] leading-none tracking-[0.08em] text-[var(--ink)] md:text-[27px]">
-              Engjell Rraklli
+    <>
+      <header className="site-header">
+        <div className="wrap flex min-h-[76px] items-center justify-between gap-6">
+          <Link href="/" className="flex min-h-[48px] min-w-0 items-center gap-3.5" aria-label="Engjell Rraklli, home">
+            <img
+              src="/Engjell_Rraklli_White_Logo_Mark.svg"
+              alt=""
+              className="h-11 w-11 shrink-0 md:h-12 md:w-12"
+            />
+            <span className="flex min-w-0 flex-col gap-[3px]">
+              <span className="font-bebas text-[25px] leading-none tracking-[0.08em] text-[var(--ink)] md:text-[27px]">
+                Engjell Rraklli
+              </span>
+              {/* Kept from the original header: the descriptor is part of the brand. */}
+              <span className="flex items-center gap-2 text-[9px] font-bold uppercase leading-tight tracking-[0.14em] text-[var(--muted)] sm:text-[10px] sm:tracking-[0.16em]">
+                <span className="block h-px w-6 shrink-0 bg-[var(--primary-mint)]" aria-hidden="true" />
+                <span>Homegrown Albanian tech entrepreneur</span>
+              </span>
             </span>
-            {/* Kept from the original header: the descriptor is part of the brand. */}
-            <span className="flex items-center gap-2 text-[9px] font-bold uppercase leading-tight tracking-[0.14em] text-[var(--muted)] sm:text-[10px] sm:tracking-[0.16em]">
-              <span className="block h-px w-6 shrink-0 bg-[var(--primary-mint)]" aria-hidden="true" />
-              <span>Homegrown Albanian tech entrepreneur</span>
-            </span>
-          </span>
-        </Link>
-
-        <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
-          {NAV.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`nav-link ${isActive(item.match) ? 'active' : ''}`}
-              aria-current={isActive(item.match) ? 'page' : undefined}
-            >
-              {item.label}
-            </Link>
-          ))}
-          <Link href="/playbook" className="btn btn-primary ml-3 min-h-[46px] px-5 text-[13px]">
-            Free playbook
           </Link>
-        </nav>
+  
+          <nav aria-label="Main" className="hidden items-center gap-1 lg:flex">
+            {NAV.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`nav-link ${isActive(item.match) ? 'active' : ''}`}
+                aria-current={isActive(item.match) ? 'page' : undefined}
+              >
+                {item.label}
+              </Link>
+            ))}
+            <Link href="/playbook" className="btn btn-primary ml-3 min-h-[46px] px-5 text-[13px]">
+              Free playbook
+            </Link>
+          </nav>
+  
+          <button
+            type="button"
+            className="-mr-2 flex h-12 w-12 shrink-0 items-center justify-center text-[var(--ink)] transition-colors hover:text-[var(--primary-mint)] lg:hidden"
+            onClick={() => setOpen((v) => !v)}
+            aria-label={open ? 'Close menu' : 'Open menu'}
+            aria-expanded={open}
+            aria-controls="mobile-menu"
+          >
+            {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
+        </div>
+      </header>
 
-        <button
-          type="button"
-          className="-mr-2 flex h-12 w-12 shrink-0 items-center justify-center text-[var(--ink)] transition-colors hover:text-[var(--primary-mint)] lg:hidden"
-          onClick={() => setOpen((v) => !v)}
-          aria-label={open ? 'Close menu' : 'Open menu'}
-          aria-expanded={open}
-          aria-controls="mobile-menu"
-        >
-          {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
-      </div>
-
+      {/* Rendered outside <header>: its backdrop-filter makes it the containing
+          block for fixed descendants, which collapsed this panel to 1px tall. */}
       {open && (
         <div
           id="mobile-menu"
@@ -106,6 +110,6 @@ export default function Header() {
           </nav>
         </div>
       )}
-    </header>
+    </>
   );
 }
