@@ -16,10 +16,12 @@ export const PERSON = {
   // The Albanian spelling is how people in Albania and Kosovo search for him,
   // and how the Albanian-language AI visibility questions ask about him.
   alternateName: ['Engjëll Rraklli'],
-  // A role, not the tagline: assistants answer "who is X" from jobTitle.
-  jobTitle: 'Founder of division5 and divisionAI',
+  // Roles, not the tagline: assistants answer "who is X" from jobTitle, and
+  // event organisers search for speakers by role. Speaker and host are on the
+  // record (KosICT panel, 14 hosted episodes, see lib/speaking.ts).
+  jobTitle: ['Founder of division5 and divisionAI', 'Speaker', 'Podcast host'],
   description:
-    'Albanian tech entrepreneur in Tirana, founder of division5 and divisionAI. Builds vetted software engineering teams across the Balkans, runs AI agents inside his own operations, writes about scaling service businesses, and backs founders in Albania and Kosovo.',
+    'Albanian tech entrepreneur and speaker in Tirana, founder of division5 and divisionAI. Builds vetted software engineering teams across the Balkans, runs AI agents inside his own operations, writes about scaling service businesses, and hosts the podcast Scaling the Unscalable.',
   url: siteUrl,
   image: `${siteUrl}/IMG_0466.JPG`,
   nationality: { '@type': 'Country', name: 'Albania' },

@@ -60,9 +60,6 @@ export const KNOWS_ABOUT = [
   'Software development outsourcing',
   'Albanian tech ecosystem',
   'Founder-led growth',
-  // Feeds the Person schema on every page, so the entity carries the claim
-  // sitewide rather than only on /invest.
-  'Angel investing in Albania and Kosovo',
   'B2B productized services',
   // The software and recruitment side of division5, which the site had never
   // claimed even though it is the business that pays the salaries.
@@ -70,4 +67,6 @@ export const KNOWS_ABOUT = [
   'Technical recruitment and vetting of software engineers',
   'Artificial intelligence in business',
   'Albanian entrepreneurship',
+  // Kept, but last: investing is the least important of his positions.
+  'Angel investing in Albania and Kosovo',
 ] as const;

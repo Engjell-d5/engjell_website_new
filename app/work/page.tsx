@@ -8,7 +8,7 @@ import SectionLabel from '@/components/site/SectionLabel';
 import { createMetadata } from '@/lib/metadata';
 
 /**
- * The hub behind "Work with me" in the header. The three offers used to be
+ * The hub behind "Work with me" in the header. The offers used to be
  * reachable only from the footer and from each other; this is the one page
  * that lays them side by side, says who each is for, and points everyone
  * else at the contact form.
@@ -16,7 +16,7 @@ import { createMetadata } from '@/lib/metadata';
 export const metadata: Metadata = createMetadata({
   title: 'Work with Engjell Rraklli',
   description:
-    'Three ways to work with Engjell Rraklli: the Constraint Sprint for service business founders, talks for event organisers, and angel investment in Albania and Kosovo.',
+    'Work with Engjell Rraklli: the Constraint Sprint for service founders, an engineering team through division5, talks for event organisers, or angel investment.',
   path: '/work',
 });
 
@@ -29,6 +29,17 @@ const OFFERS = [
     body: 'Four remote sessions over two weeks with you and the people who actually run your business, to name the thing it is stuck on and decide what to do about it. You leave with a written analysis and a ninety day plan.',
     facts: ['€7,500 fixed', 'Four sessions, two weeks, remote', 'Stop after session one and pay nothing'],
     go: 'How the sprint works',
+  },
+  {
+    // The business that pays the salaries, and the one a visitor here is most
+    // likely to buy. Every fact is published on division5.co's own page.
+    href: 'https://division5.co/en/staff-augmentation',
+    image: '/photos/studio-profile.jpg',
+    for: 'For CTOs and engineering leads',
+    title: 'An engineering team',
+    body: 'My company division5 builds software engineering teams from vetted AI-native engineers in Albania, Kosovo and the wider Balkans, for companies in Europe and beyond. One engineer or a whole team, working in your tools and on your hours.',
+    facts: ['Relevant profiles usually within 24 hours', 'An introduction video for every candidate', 'Central European Time, full overlap with EU teams'],
+    go: 'Hire through division5',
   },
   {
     href: '/speaking',
@@ -60,7 +71,7 @@ export default function WorkPage() {
         size="md"
         title={
           <>
-            Three ways to <span className="text-[var(--primary-mint)]">work together</span>
+            Four ways to <span className="text-[var(--primary-mint)]">work together</span>
           </>
         }
         lede={

@@ -24,7 +24,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = createMetadata({
   // Kept under 160 characters so search results show the whole sentence.
   description:
-    'Albanian tech entrepreneur in Tirana. I build software engineering teams and AI-run operations, write about scaling service businesses, and back founders.',
+    'Albanian tech entrepreneur and speaker in Tirana. I build software engineering teams and AI-run operations, and write about scaling service businesses.',
   path: '/',
 });
 
@@ -48,20 +48,23 @@ const OFFERS = [
     go: 'How the sprint works',
   },
   {
+    // Replaced angel investing here: an engineering team is what most visitors
+    // can actually buy, and investing is the least important of his positions
+    // (still on /work and in the footer).
+    href: 'https://division5.co/en/staff-augmentation',
+    for: 'For CTOs and engineering leads',
+    title: 'An engineering team',
+    body: 'My company division5 builds teams from vetted AI-native engineers in Albania, Kosovo and the Balkans, working in your tools and on Central European Time.',
+    fact: 'Relevant profiles usually within 24 hours, each with an introduction video.',
+    go: 'Hire through division5',
+  },
+  {
     href: '/speaking',
     for: 'For organisers and podcast hosts',
     title: 'Speaking',
     body: 'Talks about what actually happened when we put AI agents into a real business, including the parts that went badly. Post-mortems, not predictions.',
     fact: 'Conference talks, panels, half-day workshops and podcast guest spots.',
     go: 'Topics and bios',
-  },
-  {
-    href: '/invest',
-    for: 'For founders in Albania and Kosovo',
-    title: 'Angel investing',
-    body: 'I back B2B productized services and services turned into software, built here and already selling in Europe or the US. Customers and distribution come with the cheque.',
-    fact: 'No fund and no committee. I read every application myself.',
-    go: 'What I invest in',
   },
 ];
 

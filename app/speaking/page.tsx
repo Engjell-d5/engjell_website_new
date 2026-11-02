@@ -5,7 +5,8 @@ import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
 import PageHero from '@/components/site/PageHero';
 import SectionLabel from '@/components/site/SectionLabel';
 import { createMetadata } from '@/lib/metadata';
-import { yearsOfBuilding, KNOWS_ABOUT } from '@/lib/site';
+import { PERSON } from '@/lib/person';
+import { yearsOfBuilding } from '@/lib/site';
 import { TALKS, SPEAKING_CREDITS, FORMATS, BIOS, HOSTED_EPISODES, DECLINES } from '@/lib/speaking';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
@@ -17,22 +18,18 @@ const speakingPageData = {
   url: `${siteUrl}/speaking`,
   mainEntity: {
     '@type': 'Person',
-    '@id': `${siteUrl}/#person`,
-    name: 'Engjell Rraklli',
-    jobTitle: 'Homegrown Albanian Tech Entrepreneur',
-    url: siteUrl,
+    ...PERSON,
+    // The speaker bio is what a programme committee pastes, so it leads here.
     description: BIOS.medium,
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: 'Tirana',
-      addressCountry: 'AL',
-    },
-    sameAs: [
-      'https://www.linkedin.com/in/engjell-rraklli-a8b20a68/',
-      'https://x.com/RraklliEngjell',
-      'https://www.youtube.com/@engjellrraklli',
-    ],
-    knowsAbout: [...KNOWS_ABOUT],
+    // Where he has spoken, as events an organiser or assistant can check.
+    performerIn: SPEAKING_CREDITS.map((c) => ({
+      '@type': 'Event',
+      name: `${c.event} ${c.year}`,
+      startDate: String(c.year),
+      eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+      location: { '@type': 'Place', name: c.location },
+      ...(c.url && { url: c.url }),
+    })),
   },
 };
 

@@ -5,7 +5,8 @@
  * search engine and an assistant.
  *
  * Every sentence traces to copy that already exists: the about chapters, the
- * homepage receipts (5 → 2, 350+), lib/speaking.ts, lib/ventures.ts and /invest.
+ * homepage receipts (5 → 2, 350+), lib/speaking.ts, lib/ventures.ts and the
+ * "Why I build in Albania" section of /about.
  * Add a claim here only once it is true and public somewhere else on the site.
  */
 export interface ExpertiseArea {
@@ -34,7 +35,7 @@ export const EXPERTISE: ExpertiseArea[] = [
   },
   {
     name: 'The Albanian tech ecosystem',
-    body: 'Albania exports its best people, and everything I build is a bet that it does not have to. I invest in founders building B2B productized services in Albania and Kosovo who are already selling in Europe or the US.',
-    link: { href: '/invest', label: 'Angel investing' },
+    body: 'Albania exports its best people, and everything I build is a bet that it does not have to: companies in Tirana that meet a world standard, so young engineers can grow into senior work without boarding a plane.',
+    link: { href: '/journal/the-silicon-valley-illusion', label: 'The Silicon Valley Illusion' },
   },
 ];

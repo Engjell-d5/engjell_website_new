@@ -208,6 +208,9 @@ export default function About() {
             <Link href="/work" className="btn border-[var(--rich-black)] text-[var(--rich-black)] hover:bg-[var(--rich-black)] hover:text-[var(--primary-mint)]">
               Work with me
             </Link>
+            <Link href="/speaking" className="btn border-[var(--rich-black)] text-[var(--rich-black)] hover:bg-[var(--rich-black)] hover:text-[var(--primary-mint)]">
+              Book a talk
+            </Link>
           </div>
         </div>
       </section>
