@@ -28,6 +28,7 @@ const speakingPageData = {
       startDate: String(c.year),
       eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
       location: { '@type': 'Place', name: c.location },
+      ...(c.topic && { about: `${c.format}: ${c.topic}` }),
       ...(c.url && { url: c.url }),
     })),
   },
@@ -125,8 +126,8 @@ export default function Speaking() {
         </div>
       </section>
 
-      {/* Where a booker asks whether the person can hold an audience. One
-          stage credit does not answer that; recorded conversations do, and
+      {/* Where a booker asks whether the person can hold an audience. Two
+          stage credits do not answer that; recorded conversations do, and
           unlike a credit they can be checked before deciding. */}
       <section className="sec-deep" aria-labelledby="proof">
         <div className="wrap pad-y flex flex-wrap items-end gap-x-20 gap-y-10">
@@ -164,6 +165,7 @@ export default function Speaking() {
                       <MapPin className="h-3 w-3" aria-hidden="true" />
                       {c.location}
                     </span>
+                    {c.topic && <span className="mt-1 block text-[15px] text-[var(--text)]">{c.topic}</span>}
                   </span>
                   <span className="meta">
                     {c.format}, {c.year}

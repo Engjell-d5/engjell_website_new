@@ -191,7 +191,7 @@ export default function InvestPage() {
             <div className="relative mt-10 aspect-[3/2] w-full overflow-hidden bg-[var(--deep)]">
               <Image
                 src="/photos/adc-audience.jpg"
-                alt="Developers in the audience at ADC 2023"
+                alt="Developers in the audience at the Albanian Developers Conference 2023"
                 fill
                 quality={85}
                 sizes="(min-width: 1024px) 580px, 100vw"

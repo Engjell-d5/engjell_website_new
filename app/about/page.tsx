@@ -128,7 +128,7 @@ export default function About() {
       <div className="relative aspect-[16/9] w-full overflow-hidden bg-[var(--deep)] md:aspect-[21/8]">
         <Image
           src="/photos/stage-adc-room.jpg"
-          alt="Engjell Rraklli speaking to a full room at ADC 2023"
+          alt="Engjell Rraklli speaking to a full room at the Albanian Developers Conference 2023 in Pristina"
           fill
           quality={85}
           sizes="100vw"

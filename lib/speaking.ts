@@ -6,7 +6,8 @@
 // gets checked costs more than the booking was worth. Every number below traces
 // to something real: the tool count and approval rule come from the d5
 // management system, the five-to-two figure from the recruitment function, and
-// the KosICT panel is the one speaking credit to date. Nothing is padded.
+// the stage credits are the ones he confirmed: the Albanian Developers
+// Conference talk and the KosICT panel, both 2023. Nothing is padded.
 
 export interface Talk {
   title: string;
@@ -70,9 +71,21 @@ export interface SpeakingCredit {
   location: string;
   year: number;
   format: string;
+  /** What the talk was about, as he described it. Organisers book on topic. */
+  topic?: string;
 }
 
 export const SPEAKING_CREDITS: SpeakingCredit[] = [
+  {
+    // Second edition, Saturday 20 May 2023. He confirmed Pristina; AlbaniaTech's
+    // listing (the url) says Tirana, which is wrong.
+    event: 'Albanian Developers Conference',
+    url: 'https://albaniatech.org/event/albanian-developers-conference-2023/',
+    location: 'Pristina, Kosovo',
+    year: 2023,
+    format: 'Talk',
+    topic: '3D on the web',
+  },
   {
     event: 'KosICT',
     url: 'https://kosict.org',
@@ -87,7 +100,7 @@ export const SPEAKING_CREDITS: SpeakingCredit[] = [
  *
  * This is the strongest evidence on the page and it was previously a passing
  * mention. A programme committee's real question is whether someone can hold an
- * audience and think without a script, and one panel credit does not answer it.
+ * audience and think without a script, and two stage credits do not answer it.
  * Fourteen recorded conversations do, and they can be watched.
  *
  * Update the number when the count changes. An inflated one is worse than none,

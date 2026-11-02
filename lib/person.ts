@@ -18,7 +18,7 @@ export const PERSON = {
   alternateName: ['Engjëll Rraklli'],
   // Roles, not the tagline: assistants answer "who is X" from jobTitle, and
   // event organisers search for speakers by role. Speaker and host are on the
-  // record (KosICT panel, 14 hosted episodes, see lib/speaking.ts).
+  // record (two 2023 stage credits, 14 hosted episodes, see lib/speaking.ts).
   jobTitle: ['Founder of division5 and divisionAI', 'Speaker', 'Podcast host'],
   description:
     'Albanian tech entrepreneur and speaker in Tirana, founder of division5 and divisionAI. Builds vetted software engineering teams across the Balkans, runs AI agents inside his own operations, writes about scaling service businesses, and hosts the podcast Scaling the Unscalable.',
