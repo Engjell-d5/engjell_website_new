@@ -92,6 +92,7 @@ export const SPEAKING_CREDITS: SpeakingCredit[] = [
     location: 'Pristina, Kosovo',
     year: 2023,
     format: 'Panel',
+    topic: 'Hiring and employment in tech',
   },
 ];
 
