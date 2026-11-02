@@ -102,7 +102,7 @@ export default function About() {
         <div className="wrap pad-y" style={{ paddingTop: 0 }}>
           <SectionLabel>What I know</SectionLabel>
           <h2 id="expertise" className="h-section mt-3.5">
-            Four things a decade of building taught me
+            What ten years taught me first-hand
           </h2>
           <div className="mt-10 grid gap-x-12 sm:grid-cols-2">
             {EXPERTISE.map((e) => (
