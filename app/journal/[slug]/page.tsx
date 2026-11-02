@@ -280,6 +280,10 @@ function BlogContentWithSubscribe({ content }: { content: string }) {
     decodedContent = decodeHtml(content);
   }
   decodedContent = optimizeContentImages(decodedContent);
+  // The page already renders the post title as the one <h1>. Some imported
+  // bodies open with their own <h1> (service-vs-product did), which gave the
+  // page two and made the post's real headline ambiguous to search engines.
+  decodedContent = decodedContent.replace(/<(\/?)h1(?=[\s>])/gi, '<$1h2');
 
   // Define all possible placeholder formats (both regular and HTML-encoded)
   const inlinePlaceholderVariants = [

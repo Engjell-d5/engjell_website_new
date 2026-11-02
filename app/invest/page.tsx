@@ -61,8 +61,10 @@ const investData = {
 
 export const metadata: Metadata = createMetadata({
   title: 'Angel Investing in Albania and Kosovo',
+  // Under 160 characters so Google shows the whole sentence; the full thesis
+  // stays in the Service schema above and on the page.
   description:
-    'Engjell Rraklli invests in B2B productized digital services, high-ticket B2B products and services delivered as software, built in Albania or Kosovo and already selling in Europe or the US. Customers, distribution and automation come with the cheque.',
+    'Angel investment from Engjell Rraklli for B2B productized services built in Albania or Kosovo and already selling in Europe or the US.',
   path: '/invest',
 });
 

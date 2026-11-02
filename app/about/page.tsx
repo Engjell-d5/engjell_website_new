@@ -5,7 +5,7 @@ import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
 import PageHero from '@/components/site/PageHero';
 import SectionLabel from '@/components/site/SectionLabel';
 import { createMetadata } from '@/lib/metadata';
-import { KNOWS_ABOUT } from '@/lib/site';
+import { PERSON } from '@/lib/person';
 import { VENTURES } from '@/lib/ventures';
 import { VALUES } from '@/lib/values';
 
@@ -14,32 +14,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com'
 const profilePageData = {
   name: 'About Engjell Rraklli',
   url: `${siteUrl}/about`,
-  mainEntity: {
-    '@type': 'Person',
-    '@id': `${siteUrl}/#person`,
-    name: 'Engjell Rraklli',
-    jobTitle: 'Homegrown Albanian Tech Entrepreneur',
-    description: 'Homegrown Albanian tech entrepreneur and founder of division5 and divisionAI, building service businesses that scale from Tirana.',
-    url: siteUrl,
-    image: `${siteUrl}/IMG_0466.JPG`,
-    nationality: { '@type': 'Country', name: 'Albania' },
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: 'Tirana',
-      addressCountry: 'AL',
-    },
-    sameAs: [
-      'https://www.linkedin.com/in/engjell-rraklli-a8b20a68/',
-      'https://x.com/RraklliEngjell',
-      'https://www.youtube.com/@engjellrraklli',
-    ],
-    knowsAbout: [...KNOWS_ABOUT],
-    worksFor: VENTURES.map((v) => ({
-      '@type': 'Organization',
-      name: v.name,
-      url: v.url,
-    })),
-  },
+  mainEntity: { '@type': 'Person', ...PERSON },
 };
 
 export const metadata: Metadata = createMetadata({

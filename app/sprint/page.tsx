@@ -6,6 +6,7 @@ import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
 import PageHero from '@/components/site/PageHero';
 import SectionLabel from '@/components/site/SectionLabel';
 import { createMetadata } from '@/lib/metadata';
+import { SPRINT_PRICE } from '@/lib/site';
 import type { Metadata } from 'next';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
@@ -22,9 +23,10 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com'
  * things between them, and it removes the geographic ceiling on who can buy.
  *
  * PRICE is a single constant because it is the number most likely to change and
- * it should never need hunting for in the copy.
+ * it should never need hunting for in the copy. It lives in lib/site.ts because
+ * /llms.txt quotes it too.
  */
-const PRICE = '€7,500';
+const PRICE = SPRINT_PRICE;
 
 /**
  * Typed as a Service, not a ProfilePage.

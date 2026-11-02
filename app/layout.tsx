@@ -6,7 +6,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { createMetadata } from "@/lib/metadata";
-import { KNOWS_ABOUT } from "@/lib/site";
+import { PERSON } from "@/lib/person";
 import StructuredData from "@/components/StructuredData";
 
 const montserrat = Montserrat({
@@ -46,32 +46,9 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const personData = {
-    '@id': `${siteUrl}/#person`,
-    name: 'Engjell Rraklli',
-    jobTitle: 'Homegrown Albanian Tech Entrepreneur',
-    description: 'Building scalable tech and human potential in Albania. Creative at heart, resilient by practice.',
-    url: siteUrl,
-    sameAs: [
-      'https://www.linkedin.com/in/engjell-rraklli-a8b20a68/',
-      'https://x.com/RraklliEngjell',
-      'https://www.youtube.com/@engjellrraklli',
-    ],
-    knowsAbout: [...KNOWS_ABOUT],
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: 'Tirana',
-      addressCountry: 'AL',
-    },
-    worksFor: {
-      '@type': 'Organization',
-      name: 'division5',
-      url: 'https://division5.co',
-    },
-  };
-
   const websiteData = {
     name: 'Engjell Rraklli',
+    alternateName: 'Engjëll Rraklli',
     url: siteUrl,
     description: 'Building scalable tech and human potential in Albania',
     publisher: {
@@ -102,7 +79,7 @@ export default function RootLayout({
           rich-black ground. */}
       <body className={`${montserrat.className} flex flex-col`}>
         <a href="#main-content" className="skip-link">Skip to content</a>
-        <StructuredData type="Person" data={personData} />
+        <StructuredData type="Person" data={PERSON} />
         <StructuredData type="WebSite" data={websiteData} />
         <Header />
         {children}

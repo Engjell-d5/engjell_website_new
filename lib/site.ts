@@ -17,6 +17,9 @@ export function yearsOfHiring(): number {
   return new Date().getFullYear() - HIRING_SINCE_YEAR;
 }
 
+// The Constraint Sprint's fixed price, quoted on /sprint and in /llms.txt.
+export const SPRINT_PRICE = '€7,500';
+
 // Journal listing config, shared by app/journal/page.tsx and app/sitemap.ts so
 // the two can never disagree about how many pages exist.
 export const POSTS_PER_PAGE = 10;
