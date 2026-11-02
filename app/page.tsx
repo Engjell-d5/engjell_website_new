@@ -24,7 +24,7 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = createMetadata({
   // Kept under 160 characters so search results show the whole sentence.
   description:
-    'Tech entrepreneur in Tirana. I build service businesses that scale, write about what it takes, and back founders building in Albania and Kosovo.',
+    'Albanian tech entrepreneur in Tirana. I build software engineering teams and AI-run operations, write about scaling service businesses, and back founders.',
   path: '/',
 });
 

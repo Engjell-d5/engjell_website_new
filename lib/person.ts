@@ -19,7 +19,7 @@ export const PERSON = {
   // A role, not the tagline: assistants answer "who is X" from jobTitle.
   jobTitle: 'Founder of division5 and divisionAI',
   description:
-    'Homegrown Albanian tech entrepreneur and founder of division5 and divisionAI, building service businesses that scale from Tirana and backing founders in Albania and Kosovo.',
+    'Albanian tech entrepreneur in Tirana, founder of division5 and divisionAI. Builds vetted software engineering teams across the Balkans, runs AI agents inside his own operations, writes about scaling service businesses, and backs founders in Albania and Kosovo.',
   url: siteUrl,
   image: `${siteUrl}/IMG_0466.JPG`,
   nationality: { '@type': 'Country', name: 'Albania' },

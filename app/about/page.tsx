@@ -5,6 +5,7 @@ import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
 import PageHero from '@/components/site/PageHero';
 import SectionLabel from '@/components/site/SectionLabel';
 import { createMetadata } from '@/lib/metadata';
+import { EXPERTISE } from '@/lib/expertise';
 import { PERSON } from '@/lib/person';
 import { VENTURES } from '@/lib/ventures';
 import { VALUES } from '@/lib/values';
@@ -20,7 +21,7 @@ const profilePageData = {
 export const metadata: Metadata = createMetadata({
   title: 'About Engjell Rraklli, Homegrown Albanian Tech Entrepreneur',
   description:
-    'Engjell Rraklli founded division5 in Albania in 2015, at 23, with no money and no network. How a decade of building taught him which constraints were real.',
+    'Albanian tech entrepreneur Engjell Rraklli founded division5 in 2015 at 23. A decade of building engineering teams, AI-run operations and a service business.',
   path: '/about',
 });
 
@@ -69,9 +70,9 @@ export default function About() {
         }
         lede={
           <p>
-            I live in Tirana. I founded division5 in 2015 and divisionAI in 2022, and for most of that
-            time I was the reason my own company could not grow. This is how that happened, and what I
-            did about it.
+            I am an Albanian tech entrepreneur in Tirana. I founded division5 in 2015 and divisionAI in
+            2022, and for most of that time I was the reason my own company could not grow. This is how
+            that happened, and what I did about it.
           </p>
         }
         image={{ src: '/photos/studio-smile.jpg', alt: 'Engjell Rraklli smiling in the podcast studio' }}
@@ -90,6 +91,36 @@ export default function About() {
               </li>
             ))}
           </ol>
+        </div>
+      </section>
+
+      {/* What the story added up to. Assistants answer "who is an expert on X"
+          from pages that say so plainly and show the proof, so each area states
+          the claim, the evidence and where to check it. */}
+      <section className="sec-light" aria-labelledby="expertise">
+        {/* Same surface as the story above, so it continues without a second top gap. */}
+        <div className="wrap pad-y" style={{ paddingTop: 0 }}>
+          <SectionLabel>What I know</SectionLabel>
+          <h2 id="expertise" className="h-section mt-3.5">
+            Four things a decade of building taught me
+          </h2>
+          <div className="mt-10 grid gap-x-12 sm:grid-cols-2">
+            {EXPERTISE.map((e) => (
+              <div key={e.name} className="border-t border-[var(--line)] py-7">
+                <h3 className="text-[30px] leading-[1.02] tracking-[0.03em]">{e.name}</h3>
+                <p className="mt-3 text-[16px] leading-[1.7] text-[var(--text)]">{e.body}</p>
+                {e.link.href.startsWith('http') ? (
+                  <a href={e.link.href} target="_blank" rel="noopener noreferrer" className="meta mt-3 inline-block underline underline-offset-4">
+                    {e.link.label} ↗
+                  </a>
+                ) : (
+                  <Link href={e.link.href} className="meta mt-3 inline-block underline underline-offset-4">
+                    {e.link.label} →
+                  </Link>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

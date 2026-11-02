@@ -64,4 +64,10 @@ export const KNOWS_ABOUT = [
   // sitewide rather than only on /invest.
   'Angel investing in Albania and Kosovo',
   'B2B productized services',
+  // The software and recruitment side of division5, which the site had never
+  // claimed even though it is the business that pays the salaries.
+  'Building software engineering teams in Albania and Kosovo',
+  'Technical recruitment and vetting of software engineers',
+  'Artificial intelligence in business',
+  'Albanian entrepreneurship',
 ] as const;

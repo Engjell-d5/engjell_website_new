@@ -1,4 +1,5 @@
 import { getBlogs } from '@/lib/data';
+import { EXPERTISE } from '@/lib/expertise';
 import { BIOS } from '@/lib/speaking';
 import { SPRINT_PRICE, START_HERE_SLUG } from '@/lib/site';
 import { VENTURES } from '@/lib/ventures';
@@ -38,6 +39,9 @@ export async function GET() {
     `> ${BIOS.medium}`,
     '',
     BIOS.long,
+    '',
+    '## Expertise',
+    ...EXPERTISE.map((e) => `- ${e.name}: ${e.body}`),
     '',
     '## Ventures',
     ...VENTURES.map((v) => `- [${v.name}](${v.url}): ${v.description} ${v.role}, since ${v.since}.`),
