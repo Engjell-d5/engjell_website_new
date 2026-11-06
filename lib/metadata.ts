@@ -54,7 +54,7 @@ export function createMetadata({
       pageImage = `${siteUrl}/${image}`;
     }
   } else {
-    pageImage = `${siteUrl}/og-image.jpg`;
+    pageImage = `${siteUrl}/og-image-2026.jpg`;
   }
 
   return {
