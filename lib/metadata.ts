@@ -16,6 +16,8 @@ export function createMetadata({
   publishedTime,
   modifiedTime,
   noindex = false,
+  locale = 'en_US',
+  languages,
 }: {
   title?: string;
   description?: string;
@@ -25,6 +27,10 @@ export function createMetadata({
   publishedTime?: string;
   modifiedTime?: string;
   noindex?: boolean;
+  /** Open Graph locale, e.g. 'sq_AL' on the Albanian pages. */
+  locale?: string;
+  /** hreflang alternates as { en: '/about', sq: '/sq' }; paths, made absolute here. */
+  languages?: Record<string, string>;
 }): Metadata {
   // Append the brand suffix only when the title doesn't already carry the
   // name, avoids "About Engjell Rraklli | ... | Engjell Rraklli". Keep page
@@ -65,7 +71,7 @@ export function createMetadata({
     },
     openGraph: {
       type,
-      locale: 'en_US',
+      locale,
       url: pageUrl,
       title: pageTitle,
       description: pageDescription,
@@ -107,7 +113,18 @@ export function createMetadata({
         },
     // A noindex page should not declare a canonical. Explicit null is required
     // to unset the value inherited from the root layout's metadata.
-    alternates: noindex ? null : { canonical: pageUrl },
+    // Translated pages name each other (hreflang), so search shows the
+    // Albanian page to Albanian searchers instead of treating it as a copy.
+    alternates: noindex
+      ? null
+      : {
+          canonical: pageUrl,
+          ...(languages && {
+            languages: Object.fromEntries(
+              Object.entries(languages).map(([lang, p]) => [lang, `${siteUrl}${p}`]),
+            ),
+          }),
+        },
     icons: {
       icon: [
         { url: '/favicon.ico', sizes: 'any' },

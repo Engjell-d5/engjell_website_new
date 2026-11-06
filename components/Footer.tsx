@@ -26,6 +26,7 @@ const COLUMNS: { title: string; links: { href: string; label: string; external?:
     links: [
       { href: '/about', label: 'My story' },
       { href: '/ventures', label: 'Ventures' },
+      { href: '/sq', label: 'Shqip' },
       { href: 'https://division5.co', label: 'division5 ↗', external: true },
       { href: 'https://divisionai.co', label: 'divisionAI ↗', external: true },
     ],

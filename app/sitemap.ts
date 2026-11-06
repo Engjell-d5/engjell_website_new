@@ -2,6 +2,7 @@ import { MetadataRoute } from 'next';
 import { getBlogs } from '@/lib/data';
 import { toCategorySlug } from '@/lib/category-slug';
 import { journalPageCount } from '@/lib/site';
+import { SQ_ESSAYS } from '@/lib/sq';
 
 // The Docker build runs without DATABASE_URL, so a build-time sitemap would
 // have no blog routes, and ISR revalidation is wedged in the deployed
@@ -60,6 +61,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.7,
     },
+    // The Albanian pages (lib/sq.ts), each naming its English original.
+    {
+      url: `${baseUrl}/sq`,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+      alternates: { languages: { en: `${baseUrl}/about`, sq: `${baseUrl}/sq` } },
+    },
+    ...SQ_ESSAYS.map((e) => ({
+      url: `${baseUrl}/sq/shkrime/${e.slug}`,
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+      alternates: { languages: { en: `${baseUrl}/journal/${e.enSlug}`, sq: `${baseUrl}/sq/shkrime/${e.slug}` } },
+    })),
   ];
 
   // Dynamic blog routes, derive lastModified from real content

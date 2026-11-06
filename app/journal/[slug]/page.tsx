@@ -13,6 +13,7 @@ import { getBlogBySlug, getRelatedBlogs } from '@/lib/data';
 import { toCategorySlug } from '@/lib/category-slug';
 import { readingTimeMinutes } from '@/lib/reading-time';
 import { formatDateLong, formatDateShort } from '@/lib/format';
+import { SQ_ESSAYS } from '@/lib/sq';
 
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string }> | { slug: string } }
@@ -34,6 +35,8 @@ export async function generateMetadata(
   const description = seo.metaDescription || blog.excerpt;
   // Default to the branded share card; an admin-set seo.ogImage still wins.
   const ogImage = seo.ogImage || `/og/journal/${blog.slug}`;
+  // Essays with an Albanian translation (lib/sq.ts) name it as an alternate.
+  const sq = SQ_ESSAYS.find((e) => e.enSlug === blog.slug);
 
   return createMetadata({
     title,
@@ -43,6 +46,7 @@ export async function generateMetadata(
     type: 'article',
     publishedTime: blog.publishedAt || undefined,
     modifiedTime: blog.updatedAt || undefined,
+    ...(sq && { languages: { en: `/journal/${blog.slug}`, sq: `/sq/shkrime/${sq.slug}` } }),
   });
 }
 

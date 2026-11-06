@@ -23,6 +23,7 @@ export const metadata: Metadata = createMetadata({
   description:
     'Albanian tech entrepreneur Engjell Rraklli founded division5 in 2015 at 23. A decade of building engineering teams, AI-run operations and a service business.',
   path: '/about',
+  languages: { en: '/about', sq: '/sq' },
 });
 
 // The story in chapters. Every fact here is from the pillar essay or the
