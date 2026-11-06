@@ -4,6 +4,7 @@ import { ArrowRight } from 'lucide-react';
 import type { Metadata } from 'next';
 import { createMetadata } from '@/lib/metadata';
 import { getBlogs, getVideos } from '@/lib/data';
+import { ONE_LINE } from '@/lib/bio';
 import { START_HERE_SLUG } from '@/lib/site';
 import { HOSTED_EPISODES } from '@/lib/speaking';
 import { VENTURES } from '@/lib/ventures';
@@ -22,9 +23,8 @@ export const dynamic = 'force-dynamic';
 // No year count in the description on purpose, `metadata` is evaluated once
 // at module load, so a hardcoded "11 years" would go stale between deploys.
 export const metadata: Metadata = createMetadata({
-  // Kept under 160 characters so search results show the whole sentence.
-  description:
-    'Albanian tech entrepreneur and speaker in Tirana. I build software engineering teams and AI-run operations, and write about scaling service businesses.',
+  // The one idea (lib/bio.ts), under 160 characters so results show all of it.
+  description: ONE_LINE,
   path: '/',
 });
 
@@ -37,6 +37,34 @@ const RECEIPTS = [
   { n: String(HOSTED_EPISODES), note: 'Long-form conversations recorded with founders for the podcast.' },
 ];
 
+
+// The one idea, in its three parts. Everything else he does is one of these
+// or the place they are told (podcast, talks, journal), so the homepage says
+// it once, plainly, before the activities. Proof for each traces to
+// lib/expertise.ts and the receipts above.
+const PARTS = [
+  {
+    n: '01',
+    title: 'People',
+    body: 'Work that depends on you moves to a team you trust. division5 vets AI-native engineers across the Balkans and places them with companies in Europe and beyond.',
+    href: '/ventures',
+    go: 'division5',
+  },
+  {
+    n: '02',
+    title: 'Systems',
+    body: 'Agents do the assembly work and a person approves what leaves the building. That took our recruitment from five people to two. divisionAI builds the same for other companies.',
+    href: '/speaking',
+    go: 'What it cost',
+  },
+  {
+    n: '03',
+    title: 'Method',
+    body: 'Find the one constraint holding growth back and write down how the work gets done. The playbook is free; the Constraint Sprint does it with your leadership team.',
+    href: '/playbook',
+    go: 'The playbook',
+  },
+];
 
 const OFFERS = [
   {
@@ -129,9 +157,9 @@ export default async function Home() {
                 <span className="text-[var(--primary-mint)]">Mine was too.</span>
               </h1>
               <p className="lede mt-7 max-w-[33em]">
-                I founded division5 in Albania in 2015, at 23, with no money and no network. The next
-                decade taught me which constraints were real and which ones I had invented. This site is
-                that decade, written down.
+                I founded division5 in Albania in 2015, at 23, with no money and no network, and spent the
+                next decade as the bottleneck in my own company. I took myself out of it with vetted
+                engineers, AI agents and written systems. This site is how, written down.
               </p>
               <div className="mt-9 flex flex-wrap gap-3">
                 <Link href="/playbook" className="btn btn-primary">
@@ -190,6 +218,28 @@ export default async function Home() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* The one idea, in three parts */}
+      <section className="sec-dark" aria-labelledby="parts-title">
+        <div className="wrap pad-y">
+          <SectionLabel>One idea</SectionLabel>
+          <h2 id="parts-title" className="h-section mt-3.5 max-w-[18em] text-balance">
+            How a company stops depending on its founder
+          </h2>
+          <ol className="mt-10 grid gap-x-10 gap-y-10 md:grid-cols-3">
+            {PARTS.map((p) => (
+              <li key={p.title} className="border-t border-[var(--line)] pt-6">
+                <p className="meta">{p.n}</p>
+                <h3 className="mt-2 text-[36px] leading-none tracking-[0.03em]">{p.title}</h3>
+                <p className="mt-4 text-[15px] leading-relaxed text-[var(--text)]">{p.body}</p>
+                <Link href={p.href} className="link-rule mt-5">
+                  {p.go}
+                </Link>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 

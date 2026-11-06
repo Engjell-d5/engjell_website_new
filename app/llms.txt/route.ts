@@ -1,6 +1,6 @@
 import { getBlogs } from '@/lib/data';
 import { EXPERTISE } from '@/lib/expertise';
-import { BIOS } from '@/lib/speaking';
+import { BIOS, ONE_LINE } from '@/lib/bio';
 import { SPRINT_PRICE, START_HERE_SLUG } from '@/lib/site';
 import { VENTURES } from '@/lib/ventures';
 
@@ -36,7 +36,7 @@ export async function GET() {
   const body = [
     '# Engjell Rraklli (Engjëll Rraklli)',
     '',
-    `> ${BIOS.medium}`,
+    `> ${ONE_LINE}`,
     '',
     BIOS.long,
     '',

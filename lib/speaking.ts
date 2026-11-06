@@ -139,12 +139,3 @@ export const DECLINES = [
   'Panels where everyone agrees. There is no reason for an audience to watch that',
   'Anything requiring me to pretend a project went smoothly',
 ];
-
-export const BIOS = {
-  short:
-    'Engjell Rraklli is a homegrown Albanian tech entrepreneur based in Tirana. He founded division5, a staffing marketplace placing vetted AI-native Balkan engineers with companies across Europe, and builds AI-powered business systems at divisionAI.',
-  medium:
-    'Engjell Rraklli is a homegrown Albanian tech entrepreneur based in Tirana. He founded division5 in 2015, today a staffing marketplace connecting vetted AI-native engineers across the Balkans with companies in Europe and beyond, and builds AI-powered business management systems at divisionAI. He writes about scaling service businesses and hosts the podcast Scaling the Unscalable.',
-  long:
-    'Engjell Rraklli is a homegrown Albanian tech entrepreneur based in Tirana. He founded division5 in 2015 at the age of 23, with no capital and no network, and spent the following decade building it into a staffing marketplace that connects vetted AI-native engineers across the Balkans with companies in Europe and beyond. He also builds AI-powered business management systems at divisionAI, where agent-driven workflows run operations that previously required whole departments. He writes about scaling service businesses, the constraints founders invent for themselves, and building technology companies outside the established hubs. He hosts the podcast Scaling the Unscalable, and speaks on AI in operations, bootstrapped growth, and the Albanian and wider Balkan tech ecosystem.',
-};

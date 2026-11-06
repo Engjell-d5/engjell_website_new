@@ -7,7 +7,8 @@ import SectionLabel from '@/components/site/SectionLabel';
 import { createMetadata } from '@/lib/metadata';
 import { PERSON } from '@/lib/person';
 import { yearsOfBuilding } from '@/lib/site';
-import { TALKS, SPEAKING_CREDITS, FORMATS, BIOS, HOSTED_EPISODES, DECLINES } from '@/lib/speaking';
+import { TALKS, SPEAKING_CREDITS, FORMATS, HOSTED_EPISODES, DECLINES } from '@/lib/speaking';
+import { BIOS, wordCount } from '@/lib/bio';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 
@@ -193,9 +194,9 @@ export default function Speaking() {
           <div className="mt-10 grid gap-5 lg:grid-cols-3">
             {(
               [
-                ['Short bio, 25 words', BIOS.short],
-                ['Medium bio, 45 words', BIOS.medium],
-                ['Full bio, 130 words', BIOS.long],
+                [`Short bio, ${wordCount(BIOS.short)} words`, BIOS.short],
+                [`Medium bio, ${wordCount(BIOS.medium)} words`, BIOS.medium],
+                [`Full bio, ${wordCount(BIOS.long)} words`, BIOS.long],
               ] as const
             ).map(([label, text]) => (
               <div key={label} className="card">

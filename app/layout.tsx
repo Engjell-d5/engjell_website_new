@@ -7,6 +7,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { createMetadata } from "@/lib/metadata";
 import { PERSON } from "@/lib/person";
+import { TAGLINE } from "@/lib/bio";
 import StructuredData from "@/components/StructuredData";
 
 const montserrat = Montserrat({
@@ -50,7 +51,7 @@ export default function RootLayout({
     name: 'Engjell Rraklli',
     alternateName: 'Engjëll Rraklli',
     url: siteUrl,
-    description: 'Building scalable tech and human potential in Albania',
+    description: TAGLINE,
     publisher: {
       '@type': 'Person',
       '@id': `${siteUrl}/#person`,

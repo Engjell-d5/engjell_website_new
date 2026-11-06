@@ -1,3 +1,4 @@
+import { BIOS } from '@/lib/bio';
 import { KNOWS_ABOUT } from '@/lib/site';
 import { VENTURES } from '@/lib/ventures';
 
@@ -20,8 +21,9 @@ export const PERSON = {
   // event organisers search for speakers by role. Speaker and host are on the
   // record (two 2023 stage credits, 14 hosted episodes, see lib/speaking.ts).
   jobTitle: ['Founder of division5 and divisionAI', 'Speaker', 'Podcast host'],
-  description:
-    'Albanian tech entrepreneur and speaker in Tirana, founder of division5 and divisionAI. Builds vetted software engineering teams across the Balkans, runs AI agents inside his own operations, writes about scaling service businesses, and hosts the podcast Scaling the Unscalable.',
+  // The same short bio the speaker page hands out, so the entity reads the
+  // same in schema as on every profile it is pasted into.
+  description: BIOS.short,
   url: siteUrl,
   image: `${siteUrl}/IMG_0466.JPG`,
   nationality: { '@type': 'Country', name: 'Albania' },

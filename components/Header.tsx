@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { TAGLINE } from '@/lib/bio';
 
 // Four destinations and one action. The old bar carried nine links plus a
 // button, which asked a first-time visitor to choose between every audience
@@ -45,10 +46,10 @@ export default function Header() {
               <span className="font-bebas text-[25px] leading-none tracking-[0.08em] text-[var(--ink)] md:text-[27px]">
                 Engjell Rraklli
               </span>
-              {/* Kept from the original header: the descriptor is part of the brand. */}
+              {/* The descriptor is part of the brand: the one idea, from lib/bio.ts. */}
               <span className="flex items-center gap-2 text-[9px] font-bold uppercase leading-tight tracking-[0.14em] text-[var(--muted)] sm:text-[10px] sm:tracking-[0.16em]">
                 <span className="block h-px w-6 shrink-0 bg-[var(--primary-mint)]" aria-hidden="true" />
-                <span>Homegrown Albanian tech entrepreneur</span>
+                <span>{TAGLINE}</span>
               </span>
             </span>
           </Link>
