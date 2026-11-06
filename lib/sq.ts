@@ -12,6 +12,7 @@
  * the /about chapters, lib/expertise.ts, lib/values.ts, lib/ventures.ts.
  * Change the English first, then this.
  */
+import { SQ_ESSAY_SLUGS } from '@/lib/translations';
 
 export const SQ_ONE_LINE =
   'Engjëll Rraklli ndërton biznese shërbimesh që nuk varen nga themeluesi i tyre: me inxhinierë të verifikuar, agjentë AI dhe sisteme të shkruara, nga Tirana.';
@@ -64,8 +65,7 @@ const img = (file: string) =>
 
 export const SQ_ESSAYS: SqEssay[] = [
   {
-    slug: 'permbyse-vete-biznesin-tend-me-ai',
-    enSlug: 'put-yourself-out-of-business-with-ai',
+    ...SQ_ESSAY_SLUGS[0],
     title: 'Përmbyse vetë biznesin tënd me AI',
     description:
       'Isha skeptik ndaj AI-së derisa i provova mjetet. Pse gjëja e parë që bëra pas kësaj ishte të mendoja si ta përmbysja vetë biznesin tim.',
@@ -96,8 +96,7 @@ export const SQ_ESSAYS: SqEssay[] = [
     ].join(''),
   },
   {
-    slug: 'beje-rrugetimin-tend-me-qellim',
-    enSlug: 'make-your-journey-purposeful',
+    ...SQ_ESSAY_SLUGS[1],
     title: 'Bëje rrugëtimin tënd me qëllim',
     description:
       'Një biznes shërbimesh B2B nuk do të thotë kurrë se po ndryshon botën. Por të krijosh karriera që u lejojnë të rinjve shqiptarë ta ndërtojnë të ardhmen këtu është një qëllim që ia vlen.',

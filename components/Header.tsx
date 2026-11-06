@@ -5,6 +5,42 @@ import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { TAGLINE } from '@/lib/bio';
+import { isAlbanianPath, otherLanguagePath } from '@/lib/translations';
+
+/**
+ * EN · SQ, the current language marked and the other a link to this page's
+ * translation (or the other language's front door). Text, not flags: flags
+ * name countries, and Albanian is as much Kosovo's language as Albania's.
+ */
+function LanguageSwitch({ pathname, className = '' }: { pathname: string; className?: string }) {
+  const sq = isAlbanianPath(pathname);
+  const other = otherLanguagePath(pathname);
+  const item = (code: 'EN' | 'SQ', current: boolean, name: string) =>
+    current ? (
+      <span aria-current="true" className="text-[var(--primary-mint)]">
+        {code}
+      </span>
+    ) : (
+      <Link
+        href={other}
+        hrefLang={code.toLowerCase()}
+        lang={code.toLowerCase()}
+        aria-label={name}
+        className="text-[var(--muted)] transition-colors hover:text-[var(--ink)]"
+      >
+        {code}
+      </Link>
+    );
+  return (
+    <span className={`flex items-center gap-2 text-[13px] font-bold tracking-[0.12em] ${className}`}>
+      {item('EN', !sq, 'English')}
+      <span aria-hidden="true" className="text-[var(--muted)]">
+        ·
+      </span>
+      {item('SQ', sq, 'Shqip')}
+    </span>
+  );
+}
 
 // Four destinations and one action. The old bar carried nine links plus a
 // button, which asked a first-time visitor to choose between every audience
@@ -65,6 +101,7 @@ export default function Header() {
                 {item.label}
               </Link>
             ))}
+            <LanguageSwitch pathname={pathname} className="ml-3 min-h-[46px] px-2" />
             <Link href="/playbook" className="btn btn-primary ml-3 min-h-[46px] px-5 text-[13px]">
               Free playbook
             </Link>
@@ -105,7 +142,8 @@ export default function Header() {
                 </Link>
               );
             })}
-            <Link href="/playbook" className="btn btn-primary mt-8">
+            <LanguageSwitch pathname={pathname} className="mt-8 min-h-[48px] text-[16px]" />
+            <Link href="/playbook" className="btn btn-primary mt-4">
               Get the free playbook
             </Link>
           </nav>
