@@ -37,6 +37,8 @@ export const PERSON = {
     'https://www.linkedin.com/in/engjell-rraklli-a8b20a68/',
     'https://x.com/RraklliEngjell',
     'https://www.youtube.com/@engjellrraklli',
+    // His author page; he has written there under his own name since 2025.
+    'https://hackernoon.com/u/engjellrraklli',
   ],
   knowsAbout: [...KNOWS_ABOUT],
   // Independent coverage about him (lib/press.ts). Lets crawlers and

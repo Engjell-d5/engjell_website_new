@@ -25,6 +25,14 @@ export interface PressItem {
 
 export const PRESS: PressItem[] = [
   {
+    outlet: 'IT Logs',
+    outletUrl: 'https://www.itlogs.com',
+    title: 'Services over products? This Albanian entrepreneur explains why',
+    url: 'https://www.itlogs.com/p/services-over-products-this-albanian-entrepreneur-explains-why',
+    date: '2026-04-22',
+    summary: 'His case that the Balkan tech scene imported the startup model, and that services are the path the region has been ignoring.',
+  },
+  {
     outlet: 'The Recursive',
     outletUrl: 'https://therecursive.com',
     title: 'For This Albanian Entrepreneur Stubbornness Is Key to Success',
