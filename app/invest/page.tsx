@@ -47,6 +47,7 @@ const investData = {
     },
     ...VENTURES.map((v) => ({
       '@type': 'Organization',
+      '@id': v.entityId,
       name: v.name,
       url: v.url,
     })),

@@ -5,6 +5,12 @@
 export interface Venture {
   name: string;
   url: string;
+  /**
+   * The venture's own Organization @id on its site. Lets search engines and
+   * assistants join the Person here to the company described there, instead
+   * of treating "division5" on two sites as two unrelated names.
+   */
+  entityId: string;
   /** One line, used verbatim on the card AND in the Organization schema. */
   description: string;
   image: string;
@@ -17,6 +23,7 @@ export const VENTURES: Venture[] = [
   {
     name: 'division5',
     url: 'https://division5.co',
+    entityId: 'https://division5.co/#organization',
     description:
       'A staffing marketplace connecting vetted AI-native engineers across the Balkans with companies in Europe and beyond.',
     image: '/ventures-division5.jpg',
@@ -26,6 +33,7 @@ export const VENTURES: Venture[] = [
   {
     name: 'divisionAI',
     url: 'https://divisionai.co',
+    entityId: 'https://divisionai.co/#organization',
     // Was 'Artificial intelligence solutions and AI-powered products', which
     // describes every AI company. This is what it actually builds.
     description:

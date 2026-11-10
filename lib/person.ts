@@ -40,6 +40,7 @@ export const PERSON = {
   knowsAbout: [...KNOWS_ABOUT],
   worksFor: VENTURES.map((v) => ({
     '@type': 'Organization',
+    '@id': v.entityId,
     name: v.name,
     url: v.url,
   })),

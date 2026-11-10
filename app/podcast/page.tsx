@@ -6,6 +6,11 @@ import SectionLabel from '@/components/site/SectionLabel';
 import { FeaturedEpisode, EpisodeRow, EpisodeCard } from '@/components/site/Episodes';
 import { createMetadata } from '@/lib/metadata';
 import { getVideos } from '@/lib/data';
+import { PERSON } from '@/lib/person';
+
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
+const SERIES_ID = `${siteUrl}/podcast#series`;
+const YOUTUBE_CHANNEL = 'https://www.youtube.com/@engjellrraklli';
 
 // Rendered per request, see app/journal/page.tsx for why ISR is not used.
 export const dynamic = 'force-dynamic';
@@ -66,10 +71,8 @@ export default async function Podcast() {
     duration: v.duration,
     embedUrl: `https://www.youtube.com/embed/${v.videoId}`,
     contentUrl: `https://www.youtube.com/watch?v=${v.videoId}`,
-    publisher: {
-      '@type': 'Person',
-      name: 'Engjell Rraklli',
-    },
+    publisher: { '@id': PERSON['@id'], '@type': 'Person', name: PERSON.name },
+    partOfSeries: { '@id': SERIES_ID },
     interactionStatistic: v.viewCount
       ? {
           '@type': 'InteractionCounter',
@@ -92,9 +95,30 @@ export default async function Podcast() {
         }
       : null;
 
+  // The show itself as an entity. AI sweeps asking "What is the Scaling the
+  // Unscalable podcast and who hosts it?" got "couldn't find a podcast by that
+  // name" from Claude: the page only described single videos, never the
+  // series, its host or where it is published. Rendered even when the video
+  // list is empty, since it doesn't depend on the database.
+  const seriesSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'PodcastSeries',
+    '@id': SERIES_ID,
+    name: 'Scaling the Unscalable',
+    alternateName: 'Scaling the Unscalable podcast',
+    description: metadata.description,
+    url: `${siteUrl}/podcast`,
+    inLanguage: 'en',
+    image: PERSON.image,
+    author: { '@id': PERSON['@id'], '@type': 'Person', name: PERSON.name },
+    sameAs: [YOUTUBE_CHANNEL],
+    ...(allVideos[0]?.publishedAt ? { dateModified: allVideos[0].publishedAt } : {}),
+  };
+
   return (
     <main id="main-content">
       <Breadcrumbs items={[{ name: 'Home', url: '/' }, { name: 'Podcast', url: '/podcast' }]} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(seriesSchema) }} />
       {itemListData && <StructuredData type="ItemList" data={itemListData} />}
       {videoObjectSchema.length > 0 && (
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(videoObjectSchema) }} />
