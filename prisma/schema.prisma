@@ -145,6 +145,10 @@ model Group {
   @@map("groups")
 }
 
+// Since the 2026-11-10 guest form: about = the applicant's answer,
+// businesses = their website or LinkedIn, industry = format (Conversation or
+// Teardown). vision, biggestChallenge and whyPodcast are left empty. Columns
+// kept as they were because schema changes have to be applied by hand here.
 model PodcastApplication {
   id               String   @id @default(cuid())
   name             String

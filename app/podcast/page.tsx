@@ -200,11 +200,18 @@ export default async function Podcast() {
           <div className="min-w-0 flex-[1_1_520px]">
             <SectionLabel>Be a guest</SectionLabel>
             <h2 id="guest-title" className="h-section mt-3.5">
-              Built something worth talking about?
+              Does your company still need you?
             </h2>
             <p className="mt-4 max-w-[40em] text-base leading-relaxed text-[var(--text)]">
-              Tell me what you have built and what you are stuck on. I read every application and reply to
-              the ones that would make a good hour.
+              Season 2 is for founders of service and tech businesses, roughly 10 to 100 people. Come on
+              for a <strong className="text-[var(--ink)]">Conversation</strong> about how your company
+              learned to run without you, or a <strong className="text-[var(--ink)]">Teardown</strong>,
+              where we find your bottleneck together on camera.
+            </p>
+            <p className="mt-3 max-w-[40em] text-base leading-relaxed text-[var(--text)]">
+              You get the full episode, short clips for your own channels, and a link to your company in
+              the episode description. It takes two minutes to apply, and I reply to every application
+              within a week.
             </p>
           </div>
           <div className="w-full max-w-[340px]">

@@ -48,7 +48,9 @@ export default function PodcastApplicationButton() {
               <X className="h-6 w-6" />
             </button>
             <div className="p-6 md:p-8">
-              <PodcastApplicationForm onSuccess={() => setOpen(false)} />
+              {/* No auto-close on success: the old form shut the dialog after
+                  1.5 s, so applicants barely saw that it had worked. */}
+              <PodcastApplicationForm />
             </div>
           </div>
         </div>

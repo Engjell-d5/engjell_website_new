@@ -66,7 +66,8 @@ export function checkSpam(
   }
 
   // 3. Spam keywords / link stuffing in free-text fields
-  const textFields = ['message', 'content', 'about', 'vision', 'biggestChallenge', 'whyPodcast'];
+  // 'story' is the podcast guest form's one open answer (rebuilt 2026-11-10).
+  const textFields = ['message', 'content', 'story', 'about', 'vision', 'biggestChallenge', 'whyPodcast'];
   for (const field of textFields) {
     const value = body[field];
     if (typeof value === 'string' && value) {

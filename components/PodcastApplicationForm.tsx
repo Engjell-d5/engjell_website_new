@@ -3,78 +3,76 @@
 import { useState } from 'react';
 import { Mic, Send } from 'lucide-react';
 
+/**
+ * Guest application for Scaling the Unscalable.
+ *
+ * Rebuilt 2026-11-10. The old form asked for eight required fields, six of
+ * them open text boxes ("Your vision", "Tell me about yourself"), and had
+ * received zero applications. This asks for what a host actually needs to
+ * decide: who you are, where to look, which of the two Season 2 formats
+ * fits, and one question that is the show's idea in miniature. A Teardown
+ * applicant is also exactly who the Constraint Sprint is for.
+ */
+
+export const GUEST_FORMATS = {
+  conversation: {
+    label: 'Conversation',
+    hint: 'My company runs without me, and I can explain how it got there.',
+  },
+  teardown: {
+    label: 'Teardown',
+    hint: "I'm still the bottleneck. Diagnose it with me on camera.",
+  },
+} as const;
+
+export type GuestFormat = keyof typeof GUEST_FORMATS;
+
 interface PodcastApplicationFormProps {
   onSuccess?: () => void;
 }
 
+const EMPTY = { name: '', email: '', link: '', format: 'conversation' as GuestFormat, story: '', website: '' };
+
 export default function PodcastApplicationForm({ onSuccess }: PodcastApplicationFormProps) {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    about: '',
-    businesses: '',
-    industry: '',
-    vision: '',
-    biggestChallenge: '',
-    whyPodcast: '',
-    website: '', // Honeypot field
-  });
+  const [formData, setFormData] = useState(EMPTY);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
-  const [formStartTime] = useState(Date.now()); // Track when form was loaded
+  const [error, setError] = useState('');
+  const [sent, setSent] = useState(false);
+  const [formStartTime] = useState(Date.now());
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    setMessage('');
-
+    setError('');
     try {
       const response = await fetch('/api/podcast/apply', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...formData,
-          formStartTime,
-        }),
+        body: JSON.stringify({ ...formData, formStartTime }),
       });
-
-      const data = await response.json();
-
+      const data = await response.json().catch(() => ({}));
       if (response.ok) {
-        setMessage('Application sent successfully. I will be in touch.');
-        setFormData({
-          name: '',
-          email: '',
-          about: '',
-          businesses: '',
-          industry: '',
-          vision: '',
-          biggestChallenge: '',
-          whyPodcast: '',
-          website: '',
-        });
-        // Close modal after a short delay
-        if (onSuccess) {
-          setTimeout(() => {
-            onSuccess();
-          }, 1500);
-        }
+        setSent(true);
+        setFormData(EMPTY);
+        onSuccess?.();
       } else {
-        setMessage(data.error || 'Failed to submit application');
+        setError(data.error || 'Something went wrong. Please try again.');
       }
-    } catch (error) {
-      setMessage('An error occurred. Please try again.');
+    } catch {
+      setError('Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
   };
+
+  const story =
+    formData.format === 'teardown'
+      ? 'What is the one part of your company that still only works because you are there?'
+      : 'What is the one part of your company that stopped needing you, and how did it get there?';
 
   return (
     <div>
@@ -88,170 +86,134 @@ export default function PodcastApplicationForm({ onSuccess }: PodcastApplication
         </h2>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label htmlFor="name" className="form-label">
-            Name
-          </label>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            autoComplete="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            className="w-full field p-3 text-sm font-montserrat disabled:opacity-50"
-            disabled={loading}
-          />
-        </div>
-
-        <div>
-          <label htmlFor="email" className="form-label">
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            autoComplete="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            className="w-full field p-3 text-sm font-montserrat disabled:opacity-50"
-            disabled={loading}
-          />
-        </div>
-
-        <div>
-          {/* Matches every other label in this form; it was the only one at a
-              different size, and the only one with an asterisk even though all
-              eight fields are required. */}
-          <label htmlFor="about" className="form-label">
-            Tell me about yourself
-          </label>
-          <textarea
-            id="about"
-            name="about"
-            value={formData.about}
-            onChange={handleChange}
-            required
-            rows={4}
-            className="w-full field p-3 text-sm resize-none font-montserrat disabled:opacity-50"
-            disabled={loading}
-          />
-        </div>
-
-        <div>
-          <label htmlFor="businesses" className="form-label">
-            Your businesses
-          </label>
-          <textarea
-            id="businesses"
-            name="businesses"
-            value={formData.businesses}
-            onChange={handleChange}
-            required
-            rows={3}
-            className="w-full field p-3 text-sm resize-none font-montserrat disabled:opacity-50"
-            disabled={loading}
-          />
-        </div>
-
-        <div>
-          <label htmlFor="industry" className="form-label">
-            Industry
-          </label>
-          <input
-            type="text"
-            id="industry"
-            name="industry"
-            value={formData.industry}
-            onChange={handleChange}
-            required
-            className="w-full field p-3 text-sm font-montserrat disabled:opacity-50"
-            disabled={loading}
-          />
-        </div>
-
-        <div>
-          <label htmlFor="vision" className="form-label">
-            Your vision
-          </label>
-          <textarea
-            id="vision"
-            name="vision"
-            value={formData.vision}
-            onChange={handleChange}
-            required
-            rows={3}
-            className="w-full field p-3 text-sm resize-none font-montserrat disabled:opacity-50"
-            disabled={loading}
-          />
-        </div>
-
-        <div>
-          <label htmlFor="biggestChallenge" className="form-label">
-            Your biggest challenge
-          </label>
-          <textarea
-            id="biggestChallenge"
-            name="biggestChallenge"
-            value={formData.biggestChallenge}
-            onChange={handleChange}
-            required
-            rows={3}
-            className="w-full field p-3 text-sm resize-none font-montserrat disabled:opacity-50"
-            disabled={loading}
-          />
-        </div>
-
-        <div>
-          <label htmlFor="whyPodcast" className="form-label">
-            Why do you want to be on the podcast?
-          </label>
-          <textarea
-            id="whyPodcast"
-            name="whyPodcast"
-            value={formData.whyPodcast}
-            onChange={handleChange}
-            required
-            rows={3}
-            className="w-full field p-3 text-sm resize-none font-montserrat disabled:opacity-50"
-            disabled={loading}
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="btn btn-primary w-full"
-        >
-          <Send className="w-4 h-4" />
-          {loading ? 'Sending…' : 'Send application'}
-        </button>
-
-        {/* Honeypot field - hidden from users but visible to bots */}
-        <input
-          type="text"
-          name="website"
-          value={formData.website}
-          onChange={handleChange}
-          tabIndex={-1}
-          autoComplete="off"
-          style={{ position: 'absolute', left: '-9999px' }}
-          aria-hidden="true"
-        />
-        {message && (
-          <p
-            role="status"
-            className={`text-sm mt-2 ${message.includes('success') ? 'text-[var(--accent-text)]' : 'text-[var(--secondary-orange)]'}`}
-          >
-            {message}
+      {sent ? (
+        <div role="status" className="space-y-3">
+          <p className="text-xl font-bold text-[var(--ink)]">Thank you, it&apos;s in.</p>
+          <p className="text-base leading-relaxed text-[var(--text)]">
+            I read every application myself and reply within a week.
           </p>
-        )}
-      </form>
+        </div>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="grid gap-6 sm:grid-cols-2">
+            <div>
+              <label htmlFor="guest-name" className="form-label">Name</label>
+              <input
+                type="text"
+                id="guest-name"
+                name="name"
+                autoComplete="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                className="w-full field p-3 text-sm font-montserrat disabled:opacity-50"
+                disabled={loading}
+              />
+            </div>
+            <div>
+              <label htmlFor="guest-email" className="form-label">Email</label>
+              <input
+                type="email"
+                id="guest-email"
+                name="email"
+                autoComplete="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="w-full field p-3 text-sm font-montserrat disabled:opacity-50"
+                disabled={loading}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor="guest-link" className="form-label">Your company website or LinkedIn</label>
+            <input
+              type="text"
+              inputMode="url"
+              id="guest-link"
+              name="link"
+              autoComplete="url"
+              placeholder="yourcompany.com"
+              value={formData.link}
+              onChange={handleChange}
+              required
+              className="w-full field p-3 text-sm font-montserrat disabled:opacity-50"
+              disabled={loading}
+            />
+          </div>
+
+          <fieldset>
+            <legend className="form-label">Which episode fits you?</legend>
+            <div className="mt-2 grid gap-3 sm:grid-cols-2">
+              {(Object.keys(GUEST_FORMATS) as GuestFormat[]).map((key) => {
+                const f = GUEST_FORMATS[key];
+                const checked = formData.format === key;
+                return (
+                  <label
+                    key={key}
+                    className={`block cursor-pointer border p-4 transition-colors ${
+                      checked ? 'border-[var(--primary-mint)]' : 'border-[var(--line)] hover:border-[var(--muted)]'
+                    }`}
+                  >
+                    <span className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        name="format"
+                        value={key}
+                        checked={checked}
+                        onChange={handleChange}
+                        disabled={loading}
+                        className="accent-[var(--primary-mint)]"
+                      />
+                      <span className="font-bold text-[var(--ink)]">{f.label}</span>
+                    </span>
+                    <span className="mt-1.5 block text-[14px] leading-snug text-[var(--text)]">{f.hint}</span>
+                  </label>
+                );
+              })}
+            </div>
+          </fieldset>
+
+          <div>
+            <label htmlFor="guest-story" className="form-label">{story}</label>
+            <textarea
+              id="guest-story"
+              name="story"
+              value={formData.story}
+              onChange={handleChange}
+              required
+              minLength={20}
+              rows={4}
+              placeholder="A few sentences is plenty."
+              className="w-full field p-3 text-sm resize-none font-montserrat disabled:opacity-50"
+              disabled={loading}
+            />
+          </div>
+
+          <button type="submit" disabled={loading} className="btn btn-primary w-full">
+            <Send className="w-4 h-4" />
+            {loading ? 'Sending…' : 'Send application'}
+          </button>
+
+          {/* Honeypot: hidden from people, filled in by bots. */}
+          <input
+            type="text"
+            name="website"
+            value={formData.website}
+            onChange={handleChange}
+            tabIndex={-1}
+            autoComplete="off"
+            style={{ position: 'absolute', left: '-9999px' }}
+            aria-hidden="true"
+          />
+          {error && (
+            <p role="alert" className="text-sm mt-2 text-[var(--secondary-orange)]">
+              {error}
+            </p>
+          )}
+        </form>
+      )}
     </div>
   );
 }
-
