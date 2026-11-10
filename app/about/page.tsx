@@ -9,6 +9,7 @@ import { EXPERTISE } from '@/lib/expertise';
 import { PERSON } from '@/lib/person';
 import { VENTURES } from '@/lib/ventures';
 import { VALUES } from '@/lib/values';
+import { PRESS } from '@/lib/press';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 
@@ -124,6 +125,33 @@ export default function About() {
           </div>
         </div>
       </section>
+
+      {/* Independent coverage (lib/press.ts). Same light surface as the
+          expertise above, so it reads as the evidence for it. */}
+      {PRESS.length > 0 && (
+        <section className="sec-light" aria-label="Written about me">
+          <div className="wrap pad-y" style={{ paddingTop: 0 }}>
+            <SectionLabel>Written about me</SectionLabel>
+            <ul className="mt-6 border-b border-[var(--line)]">
+              {PRESS.map((p) => (
+                <li key={p.url}>
+                  <a href={p.url} target="_blank" rel="noopener noreferrer" className="group block border-t border-[var(--line)] py-6">
+                    <span className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                      <span className="text-xl font-bold text-[var(--ink)] transition-colors group-hover:text-[var(--primary-mint)]">
+                        {p.title}
+                      </span>
+                      <span className="meta">
+                        {p.outlet}, {new Date(p.date).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })} ↗
+                      </span>
+                    </span>
+                    <span className="mt-2 block text-[15px] leading-relaxed text-[var(--text)]">{p.summary}</span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
 
       {/* A photograph at full width, between the reading and the rest. */}
       <div className="relative aspect-[16/9] w-full overflow-hidden bg-[var(--deep)] md:aspect-[21/8]">

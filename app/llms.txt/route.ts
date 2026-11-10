@@ -4,6 +4,7 @@ import { BIOS, ONE_LINE } from '@/lib/bio';
 import { SQ_ESSAYS, SQ_ONE_LINE } from '@/lib/sq';
 import { SPRINT_PRICE, START_HERE_SLUG } from '@/lib/site';
 import { VENTURES } from '@/lib/ventures';
+import { PRESS } from '@/lib/press';
 
 /**
  * /llms.txt (llmstxt.org): a plain-text map of the site for AI assistants.
@@ -57,6 +58,9 @@ export async function GET() {
     line('About', '/about', 'his story, from founding division5 in May 2015 at 23 to today.'),
     line('Contact', '/contact', 'for a talk, the sprint, a team, or anything else.'),
     line('Angel investing', '/invest', 'B2B productized services and services-as-software built in Albania or Kosovo and already selling in Europe or the US.'),
+    '',
+    '## Press',
+    ...PRESS.map((p) => `- [${p.title}](${p.url}), ${p.outlet}, ${new Date(p.date).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}: ${p.summary}`),
     '',
     // Albanian questions are answered from Albanian pages, so name them.
     '## Shqip (Albanian)',

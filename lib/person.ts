@@ -1,6 +1,7 @@
 import { BIOS } from '@/lib/bio';
 import { KNOWS_ABOUT } from '@/lib/site';
 import { VENTURES } from '@/lib/ventures';
+import { PRESS } from '@/lib/press';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 
@@ -38,6 +39,15 @@ export const PERSON = {
     'https://www.youtube.com/@engjellrraklli',
   ],
   knowsAbout: [...KNOWS_ABOUT],
+  // Independent coverage about him (lib/press.ts). Lets crawlers and
+  // assistants connect third-party articles to this entity.
+  subjectOf: PRESS.map((p) => ({
+    '@type': 'NewsArticle',
+    headline: p.title,
+    url: p.url,
+    datePublished: p.date,
+    publisher: { '@type': 'Organization', name: p.outlet, url: p.outletUrl },
+  })),
   worksFor: VENTURES.map((v) => ({
     '@type': 'Organization',
     '@id': v.entityId,
