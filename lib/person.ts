@@ -39,6 +39,10 @@ export const PERSON = {
     'https://www.youtube.com/@engjellrraklli',
     // His author page; he has written there under his own name since 2025.
     'https://hackernoon.com/u/engjellrraklli',
+    // His Wikidata item (created 2026-11-10, sourced to The Recursive and IT
+    // Logs). The strongest single link for search engines and assistants to
+    // recognise him as one entity.
+    'https://www.wikidata.org/wiki/Q142102097',
   ],
   knowsAbout: [...KNOWS_ABOUT],
   // Independent coverage about him (lib/press.ts). Lets crawlers and
