@@ -1,12 +1,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Mic } from 'lucide-react';
+import { ArrowRight, MapPin, Users } from 'lucide-react';
 import type { Metadata } from 'next';
 import { createMetadata } from '@/lib/metadata';
 import { getBlogs, getVideos } from '@/lib/data';
 import { ONE_LINE } from '@/lib/bio';
 import { START_HERE_SLUG } from '@/lib/site';
-import { HOSTED_EPISODES, stageLine } from '@/lib/speaking';
+import { HOSTED_EPISODES, stagesForHome } from '@/lib/speaking';
 import { VENTURES } from '@/lib/ventures';
 import { readingTimeMinutes } from '@/lib/reading-time';
 import { formatDateShort } from '@/lib/format';
@@ -143,8 +143,12 @@ export default async function Home() {
     },
   ];
   const moreEpisodes = videos.filter((v) => v.id !== featured?.id).slice(0, 3);
-  // Next or latest talk, chosen per request from lib/speaking.ts; null hides it.
-  const stage = stageLine(new Date().toISOString().slice(0, 10));
+  // Next or latest talk plus the rest, chosen per request from lib/speaking.ts.
+  const stages = stagesForHome(new Date().toISOString().slice(0, 10));
+  const stageDate = (c: { date?: string; year: number }) =>
+    c.date
+      ? new Date(c.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
+      : String(c.year);
 
   return (
     <main id="main-content">
@@ -172,36 +176,6 @@ export default async function Home() {
                   Read the essay
                 </Link>
               </div>
-              {stage && (
-                <a
-                  href={stage.href}
-                  {...(stage.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                  className="group mt-7 flex max-w-full items-start gap-3 text-[15px] leading-snug text-[var(--text)]"
-                >
-                  <Mic className="mt-0.5 h-4 w-4 shrink-0 text-[var(--primary-mint)]" aria-hidden="true" />
-                  <span className="min-w-0">
-                    <span className="flex flex-wrap items-baseline gap-x-2.5">
-                      <span className="label !text-[var(--primary-mint)]">
-                        {stage.kind === 'next' ? 'Next on stage' : 'Latest on stage'}
-                      </span>
-                      <span className="font-semibold text-[var(--ink)] transition-colors group-hover:text-[var(--primary-mint)]">
-                        {stage.credit.event}
-                        {stage.kind === 'next' && stage.credit.date
-                          ? `, ${new Date(stage.credit.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })}`
-                          : ''}
-                      </span>
-                    </span>
-                    {stage.credit.topic && (
-                      <span className="mt-1 block">
-                        {stage.credit.topic}{' '}
-                        <span aria-hidden="true" className="inline-block transition-transform group-hover:translate-x-0.5">
-                          {stage.external ? '↗' : '→'}
-                        </span>
-                      </span>
-                    )}
-                  </span>
-                </a>
-              )}
             </div>
             <figure className="m-0 w-full max-w-[430px] flex-[1_1_300px]">
               <div className="brackets">
@@ -252,6 +226,102 @@ export default async function Home() {
           </div>
         </div>
       </section>
+
+      {/* On stage: the next (or latest) talk featured, the rest listed.
+          Data and ordering live in lib/speaking.ts (stagesForHome). */}
+      {stages && (
+        <section className="sec-light" aria-labelledby="stage-title">
+          <div className="wrap pad-y">
+            <div className="flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
+              <div>
+                <SectionLabel>On stage</SectionLabel>
+                <h2 id="stage-title" className="h-section mt-3.5">
+                  {stages.kind === 'next' ? 'Where to hear me next' : 'Where I have spoken'}
+                </h2>
+              </div>
+              <Link href="/speaking" className="link-rule">
+                Topics and booking
+              </Link>
+            </div>
+
+            <div className="mt-10 grid items-stretch gap-x-10 gap-y-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)]">
+              <a
+                href={stages.featured.url ?? '/speaking'}
+                {...(stages.featured.url ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                className="card reveal"
+              >
+                <p className="label">
+                  {stages.kind === 'next' ? 'Next' : 'Latest'} · {stages.featured.format}
+                </p>
+                <p className="font-bebas text-[clamp(64px,6.5vw,104px)] uppercase leading-[0.85] tracking-[0.01em] text-[var(--ink)]">
+                  {stageDate(stages.featured)}
+                </p>
+                <h3 className="text-[clamp(30px,2.6vw,40px)] leading-[1.02] tracking-[0.03em]">
+                  {stages.featured.event}
+                </h3>
+                {stages.featured.topic && (
+                  <p className="text-[17px] leading-relaxed text-[var(--ink)]">“{stages.featured.topic}”</p>
+                )}
+                <div className="space-y-1.5 border-t border-[var(--line-soft)] pt-4 text-[15px] text-[var(--text)]">
+                  <p className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 shrink-0 text-[var(--accent-text)]" aria-hidden="true" />
+                    {stages.featured.location}
+                    {stages.featured.session ? ` · ${stages.featured.session}` : ''}
+                  </p>
+                  {stages.featured.with && (
+                    <p className="flex items-center gap-2">
+                      <Users className="h-4 w-4 shrink-0 text-[var(--accent-text)]" aria-hidden="true" />
+                      With {stages.featured.with}
+                    </p>
+                  )}
+                </div>
+                <span className="mt-auto text-sm font-bold text-[var(--accent-text)]">
+                  {stages.featured.url ? 'Event page ↗' : 'More on speaking →'}
+                </span>
+              </a>
+
+              <figure className="reveal m-0">
+                <div className="brackets">
+                  <div className="relative aspect-[16/10] overflow-hidden bg-[var(--deep)]">
+                    <Image
+                      src="/photos/stage-adc-wide.jpg"
+                      alt="Engjell Rraklli speaking on stage at the Albanian Developers Conference in Pristina"
+                      fill
+                      quality={85}
+                      sizes="(min-width: 1024px) 620px, 100vw"
+                      className="object-cover"
+                    />
+                  </div>
+                </div>
+                <figcaption className="meta mt-4">Albanian Developers Conference, Pristina, 2023</figcaption>
+              </figure>
+            </div>
+
+            {stages.rest.length > 0 && (
+              <ul className="reveal-stagger mt-12 border-b border-[var(--line)]">
+                {stages.rest.map((c) => (
+                  <li key={`${c.event}-${c.year}`} className="grid gap-x-6 gap-y-1 border-t border-[var(--line)] py-5 sm:grid-cols-[110px_minmax(0,1fr)_auto] sm:items-baseline">
+                    <span className="meta">{stageDate(c)}</span>
+                    <span>
+                      {c.url ? (
+                        <a href={c.url} target="_blank" rel="noopener noreferrer" className="text-lg font-bold text-[var(--ink)] hover:text-[var(--accent-text)]">
+                          {c.event}
+                        </a>
+                      ) : (
+                        <span className="text-lg font-bold text-[var(--ink)]">{c.event}</span>
+                      )}
+                      {c.topic && <span className="ml-2 text-[15px] text-[var(--text)]">· {c.topic}</span>}
+                    </span>
+                    <span className="meta">
+                      {c.format}, {c.location}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* The one idea, in three parts */}
       <section className="sec-dark" aria-labelledby="parts-title">

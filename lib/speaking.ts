@@ -72,37 +72,35 @@ export interface SpeakingCredit {
   year: number;
   /** Exact ISO date when known; used as the Event startDate in structured data. */
   date?: string;
+  /** Time and room, as the organiser's programme gives them. */
+  session?: string;
+  /** Who shares the stage, as the organiser lists them. */
+  with?: string;
   format: string;
   /** What the talk was about, as he described it. Organisers book on topic. */
   topic?: string;
 }
 
 /**
- * The one stage line the homepage shows (added 2026-11-10). Reads the credits
- * below, so adding a talk with an exact `date` is all it takes:
- * - an upcoming talk within the next 60 days: "Next on stage", linked to the
- *   organiser's page;
- * - otherwise a talk from the last 90 days: "Latest on stage", linked to
- *   /speaking;
- * - otherwise nothing, so the homepage never shows a stale date.
- * `today` is an ISO date (YYYY-MM-DD); the homepage renders per request.
+ * The homepage "On stage" section (added 2026-11-10). Reads the credits below,
+ * so adding a talk is all it takes:
+ * - featured: the soonest upcoming talk ("Next"), else the most recent one
+ *   ("Latest"). Credits with an exact `date` sort by it, others by year.
+ * - rest: every other credit, newest first.
+ * `today` is an ISO date (YYYY-MM-DD); the homepage renders per request, so
+ * "Next" turns into "Latest" by itself the day after the event.
  */
-export function stageLine(today: string):
-  | { kind: 'next' | 'latest'; credit: SpeakingCredit; href: string; external: boolean }
-  | null {
-  const dayMs = 86_400_000;
-  const t = Date.parse(today);
-  const dated = SPEAKING_CREDITS.filter((c) => c.date);
-  const upcoming = dated
-    .filter((c) => c.date! >= today && Date.parse(c.date!) - t <= 60 * dayMs)
-    .sort((a, b) => a.date!.localeCompare(b.date!))[0];
-  if (upcoming) {
-    return { kind: 'next', credit: upcoming, href: upcoming.url ?? '/speaking', external: !!upcoming.url };
-  }
-  const recent = dated
-    .filter((c) => c.date! < today && t - Date.parse(c.date!) <= 90 * dayMs)
-    .sort((a, b) => b.date!.localeCompare(a.date!))[0];
-  return recent ? { kind: 'latest', credit: recent, href: '/speaking', external: false } : null;
+export function stagesForHome(today: string): {
+  kind: 'next' | 'latest';
+  featured: SpeakingCredit;
+  rest: SpeakingCredit[];
+} | null {
+  if (SPEAKING_CREDITS.length === 0) return null;
+  const key = (c: SpeakingCredit) => c.date ?? `${c.year}-12-31`;
+  const upcoming = SPEAKING_CREDITS.filter((c) => c.date && c.date >= today).sort((a, b) => key(a).localeCompare(key(b)));
+  const byNewest = [...SPEAKING_CREDITS].sort((a, b) => key(b).localeCompare(key(a)));
+  const featured = upcoming[0] ?? byNewest[0];
+  return { kind: upcoming[0] ? 'next' : 'latest', featured, rest: byNewest.filter((c) => c !== featured) };
 }
 
 export const SPEAKING_CREDITS: SpeakingCredit[] = [
@@ -115,6 +113,8 @@ export const SPEAKING_CREDITS: SpeakingCredit[] = [
     location: 'Tirana, Albania',
     year: 2026,
     date: '2026-11-14',
+    session: '14:25 to 15:10, Salla Vjosa',
+    with: 'Erjon Curraj, Smart360',
     format: 'Panel',
     topic: 'AI, challenges and opportunities',
   },
