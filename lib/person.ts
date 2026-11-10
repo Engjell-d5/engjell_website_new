@@ -43,6 +43,9 @@ export const PERSON = {
     // Logs). The strongest single link for search engines and assistants to
     // recognise him as one entity.
     'https://www.wikidata.org/wiki/Q142102097',
+    // His Sessionize speaker profile (2026-11-10), with the four talks from
+    // lib/speaking.ts. Where conference organisers look speakers up.
+    'https://sessionize.com/engjell-rraklli',
   ],
   knowsAbout: [...KNOWS_ABOUT],
   // Independent coverage about him (lib/press.ts). Lets crawlers and

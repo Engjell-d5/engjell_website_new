@@ -62,6 +62,7 @@ export async function GET() {
     '',
     '## Stages',
     ...SPEAKING_CREDITS.map((c) => `- ${c.event}, ${c.location}, ${c.date ? new Date(c.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : c.year}: ${c.format.toLowerCase()}${c.topic ? `, "${c.topic}"` : ''}${c.url ? ` (${c.url})` : ''}`),
+    '- Speaker profile with his talks: https://sessionize.com/engjell-rraklli',
     '',
     '## Press',
     ...PRESS.map((p) => `- [${p.title}](${p.url}), ${p.outlet}, ${new Date(p.date).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}: ${p.summary}`),

@@ -237,6 +237,18 @@ export default function Speaking() {
               Tell me the audience, the date and the format, and I will tell you straight away whether I am
               the right person for it. If I am not, I will usually know who is.
             </p>
+            <p className="mt-3 text-[15px] font-medium text-[var(--rich-black)]">
+              Running a call for papers? All four talks are on{' '}
+              <a
+                href="https://sessionize.com/engjell-rraklli"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline underline-offset-4"
+              >
+                my Sessionize profile
+              </a>
+              .
+            </p>
           </div>
           <Link href="/contact" className="btn btn-dark">
             Get in touch
