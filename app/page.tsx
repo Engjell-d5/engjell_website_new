@@ -176,21 +176,29 @@ export default async function Home() {
                 <a
                   href={stage.href}
                   {...(stage.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-                  className="group mt-7 inline-flex max-w-full flex-wrap items-baseline gap-x-2 gap-y-1 text-[15px] leading-snug text-[var(--text)]"
+                  className="group mt-7 flex max-w-full items-start gap-3 text-[15px] leading-snug text-[var(--text)]"
                 >
-                  <Mic className="h-4 w-4 shrink-0 translate-y-[3px] text-[var(--primary-mint)]" aria-hidden="true" />
-                  <span className="label !text-[var(--primary-mint)]">
-                    {stage.kind === 'next' ? 'Next on stage' : 'Latest on stage'}
-                  </span>
-                  <span className="font-semibold text-[var(--ink)] transition-colors group-hover:text-[var(--primary-mint)]">
-                    {stage.credit.event}
-                    {stage.kind === 'next' && stage.credit.date
-                      ? `, ${new Date(stage.credit.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })}`
-                      : ''}
-                  </span>
-                  {stage.credit.topic && <span>· {stage.credit.topic}</span>}
-                  <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
-                    {stage.external ? '↗' : '→'}
+                  <Mic className="mt-0.5 h-4 w-4 shrink-0 text-[var(--primary-mint)]" aria-hidden="true" />
+                  <span className="min-w-0">
+                    <span className="flex flex-wrap items-baseline gap-x-2.5">
+                      <span className="label !text-[var(--primary-mint)]">
+                        {stage.kind === 'next' ? 'Next on stage' : 'Latest on stage'}
+                      </span>
+                      <span className="font-semibold text-[var(--ink)] transition-colors group-hover:text-[var(--primary-mint)]">
+                        {stage.credit.event}
+                        {stage.kind === 'next' && stage.credit.date
+                          ? `, ${new Date(stage.credit.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })}`
+                          : ''}
+                      </span>
+                    </span>
+                    {stage.credit.topic && (
+                      <span className="mt-1 block">
+                        {stage.credit.topic}{' '}
+                        <span aria-hidden="true" className="inline-block transition-transform group-hover:translate-x-0.5">
+                          {stage.external ? '↗' : '→'}
+                        </span>
+                      </span>
+                    )}
                   </span>
                 </a>
               )}
