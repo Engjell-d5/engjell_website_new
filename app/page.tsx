@@ -1,12 +1,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Mic } from 'lucide-react';
 import type { Metadata } from 'next';
 import { createMetadata } from '@/lib/metadata';
 import { getBlogs, getVideos } from '@/lib/data';
 import { ONE_LINE } from '@/lib/bio';
 import { START_HERE_SLUG } from '@/lib/site';
-import { HOSTED_EPISODES } from '@/lib/speaking';
+import { HOSTED_EPISODES, stageLine } from '@/lib/speaking';
 import { VENTURES } from '@/lib/ventures';
 import { readingTimeMinutes } from '@/lib/reading-time';
 import { formatDateShort } from '@/lib/format';
@@ -143,6 +143,8 @@ export default async function Home() {
     },
   ];
   const moreEpisodes = videos.filter((v) => v.id !== featured?.id).slice(0, 3);
+  // Next or latest talk, chosen per request from lib/speaking.ts; null hides it.
+  const stage = stageLine(new Date().toISOString().slice(0, 10));
 
   return (
     <main id="main-content">
@@ -170,6 +172,28 @@ export default async function Home() {
                   Read the essay
                 </Link>
               </div>
+              {stage && (
+                <a
+                  href={stage.href}
+                  {...(stage.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                  className="group mt-7 inline-flex max-w-full flex-wrap items-baseline gap-x-2 gap-y-1 text-[15px] leading-snug text-[var(--text)]"
+                >
+                  <Mic className="h-4 w-4 shrink-0 translate-y-[3px] text-[var(--primary-mint)]" aria-hidden="true" />
+                  <span className="label !text-[var(--primary-mint)]">
+                    {stage.kind === 'next' ? 'Next on stage' : 'Latest on stage'}
+                  </span>
+                  <span className="font-semibold text-[var(--ink)] transition-colors group-hover:text-[var(--primary-mint)]">
+                    {stage.credit.event}
+                    {stage.kind === 'next' && stage.credit.date
+                      ? `, ${new Date(stage.credit.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })}`
+                      : ''}
+                  </span>
+                  {stage.credit.topic && <span>· {stage.credit.topic}</span>}
+                  <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
+                    {stage.external ? '↗' : '→'}
+                  </span>
+                </a>
+              )}
             </div>
             <figure className="m-0 w-full max-w-[430px] flex-[1_1_300px]">
               <div className="brackets">

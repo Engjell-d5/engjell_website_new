@@ -77,6 +77,34 @@ export interface SpeakingCredit {
   topic?: string;
 }
 
+/**
+ * The one stage line the homepage shows (added 2026-11-10). Reads the credits
+ * below, so adding a talk with an exact `date` is all it takes:
+ * - an upcoming talk within the next 60 days: "Next on stage", linked to the
+ *   organiser's page;
+ * - otherwise a talk from the last 90 days: "Latest on stage", linked to
+ *   /speaking;
+ * - otherwise nothing, so the homepage never shows a stale date.
+ * `today` is an ISO date (YYYY-MM-DD); the homepage renders per request.
+ */
+export function stageLine(today: string):
+  | { kind: 'next' | 'latest'; credit: SpeakingCredit; href: string; external: boolean }
+  | null {
+  const dayMs = 86_400_000;
+  const t = Date.parse(today);
+  const dated = SPEAKING_CREDITS.filter((c) => c.date);
+  const upcoming = dated
+    .filter((c) => c.date! >= today && Date.parse(c.date!) - t <= 60 * dayMs)
+    .sort((a, b) => a.date!.localeCompare(b.date!))[0];
+  if (upcoming) {
+    return { kind: 'next', credit: upcoming, href: upcoming.url ?? '/speaking', external: !!upcoming.url };
+  }
+  const recent = dated
+    .filter((c) => c.date! < today && t - Date.parse(c.date!) <= 90 * dayMs)
+    .sort((a, b) => b.date!.localeCompare(a.date!))[0];
+  return recent ? { kind: 'latest', credit: recent, href: '/speaking', external: false } : null;
+}
+
 export const SPEAKING_CREDITS: SpeakingCredit[] = [
   {
     // Business Network Albania's conference. Session 14:25 to 15:10 in Salla
