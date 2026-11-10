@@ -90,7 +90,7 @@ export default function Speaking() {
           <h2 id="talks" className="h-section mt-3.5">
             Four talks, each built on one argument
           </h2>
-          <div className="mt-10 grid gap-x-12 lg:grid-cols-2">
+          <div className="reveal-stagger mt-10 grid gap-x-12 lg:grid-cols-2">
             {TALKS.map((talk) => (
               <article key={talk.title} className="border-t border-[var(--line)] py-9">
                 <h3 className="text-[clamp(32px,2.8vw,40px)] leading-[1.02] tracking-[0.03em]">{talk.title}</h3>
@@ -116,7 +116,7 @@ export default function Speaking() {
           <h2 id="formats" className="h-section mt-3.5">
             Stage, panel, room or microphone
           </h2>
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="reveal-stagger mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {FORMATS.map((f) => (
               <div key={f.name} className="card">
                 <h3 className="text-[32px] leading-none tracking-[0.03em]">{f.name}</h3>

@@ -9,6 +9,7 @@ import { createMetadata } from "@/lib/metadata";
 import { PERSON } from "@/lib/person";
 import { TAGLINE } from "@/lib/bio";
 import StructuredData from "@/components/StructuredData";
+import Reveal from "@/components/site/Reveal";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -86,6 +87,7 @@ export default function RootLayout({
         {children}
         <Footer />
         {gaId && <GoogleAnalytics gaId={gaId} />}
+        <Reveal />
       </body>
     </html>
   );

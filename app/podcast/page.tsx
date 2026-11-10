@@ -173,7 +173,7 @@ export default async function Podcast() {
             <SectionLabel as="h2" id="archive">
               Every episode
             </SectionLabel>
-            <div className="mt-8 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="reveal-stagger mt-8 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
               {archive.map((ep) => (
                 <EpisodeCard key={ep.id} ep={ep} />
               ))}

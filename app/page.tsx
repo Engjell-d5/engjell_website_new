@@ -198,7 +198,7 @@ export default async function Home() {
           <SectionLabel as="h2" id="receipts">
             Receipts, not predictions
           </SectionLabel>
-          <div className="mt-6 grid grid-cols-2 gap-x-10 gap-y-8 lg:grid-cols-4">
+          <div className="reveal-stagger mt-6 grid grid-cols-2 gap-x-10 gap-y-8 lg:grid-cols-4">
             {RECEIPTS.map((r) => (
               <div key={r.note}>
                 <p className="font-bebas text-[clamp(52px,4.8vw,72px)] leading-none tracking-[0.02em] text-white">
@@ -228,7 +228,10 @@ export default async function Home() {
           <h2 id="parts-title" className="h-section mt-3.5 max-w-[18em] text-balance">
             How a company stops depending on its founder
           </h2>
-          <ol className="mt-10 grid gap-x-10 gap-y-10 md:grid-cols-3">
+          {/* parts-line: a mint line draws across the three parts as they
+              come into view (globals.css), the idea of a company that runs
+              as one connected system. */}
+          <ol className="parts-line reveal mt-10 grid gap-x-10 gap-y-10 md:grid-cols-3">
             {PARTS.map((p) => (
               <li key={p.title} className="border-t border-[var(--line)] pt-6">
                 <p className="meta">{p.n}</p>
@@ -249,7 +252,7 @@ export default async function Home() {
       <section className="sec-light">
         <div className="wrap pad-y">
           {startHere && (
-            <div className="flex flex-wrap items-end gap-x-[72px] gap-y-8">
+            <div className="reveal-stagger flex flex-wrap items-end gap-x-[72px] gap-y-8">
               <div className="min-w-0 flex-[1_1_560px]">
                 <SectionLabel className="!text-[var(--accent-text)]">Start here</SectionLabel>
                 <p className="mt-4 text-balance font-bebas text-[clamp(44px,4.8vw,72px)] leading-[0.96] tracking-[0.015em] text-[var(--ink)]">
@@ -283,7 +286,7 @@ export default async function Home() {
                 All {published.length || ''} essays
               </Link>
             </div>
-            <div className="mt-9">
+            <div className="reveal mt-9">
               {latest.length > 0 ? (
                 <JournalList items={latest} showImages={false} />
               ) : (
@@ -336,7 +339,7 @@ export default async function Home() {
           <h2 id="work-title" className="h-section mt-3.5">
             Three ways to work together
           </h2>
-          <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <div className="reveal-stagger mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {OFFERS.map((o) => (
               <Link key={o.href} href={o.href} className="card">
                 <p className="label">{o.for}</p>
@@ -355,7 +358,7 @@ export default async function Home() {
         <div className="wrap pad-y">
           <SectionLabel>Why I build in Albania</SectionLabel>
           <div className="mt-4 flex flex-wrap gap-x-20 gap-y-10">
-            <div className="min-w-0 flex-[1_1_560px]">
+            <div className="reveal min-w-0 flex-[1_1_560px]">
               <h2 id="albania-title" className="text-balance text-[clamp(44px,4.6vw,70px)] leading-[0.96]">
                 Albania exports its best people. Everything I build is a bet that it{' '}
                 <span className="text-[var(--primary-mint)]">does not have to.</span>
@@ -369,7 +372,7 @@ export default async function Home() {
                 Read my story
               </Link>
             </div>
-            <ul className="min-w-0 flex-[1_1_380px] self-end border-b border-[var(--line)]">
+            <ul className="reveal-stagger min-w-0 flex-[1_1_380px] self-end border-b border-[var(--line)]">
               {VENTURES.map((v) => (
                 <li key={v.name}>
                   <a href={v.url} target="_blank" rel="noopener noreferrer" className="group block border-t border-[var(--line)] py-6">

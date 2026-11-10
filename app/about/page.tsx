@@ -106,7 +106,7 @@ export default function About() {
           <h2 id="expertise" className="h-section mt-3.5">
             What ten years taught me first-hand
           </h2>
-          <div className="mt-10 grid gap-x-12 sm:grid-cols-2">
+          <div className="reveal-stagger mt-10 grid gap-x-12 sm:grid-cols-2">
             {EXPERTISE.map((e) => (
               <div key={e.name} className="border-t border-[var(--line)] py-7">
                 <h3 className="text-[30px] leading-[1.02] tracking-[0.03em]">{e.name}</h3>
@@ -132,7 +132,7 @@ export default function About() {
         <section className="sec-light" aria-label="Written about me">
           <div className="wrap pad-y" style={{ paddingTop: 0 }}>
             <SectionLabel>Written about me</SectionLabel>
-            <ul className="mt-6 border-b border-[var(--line)]">
+            <ul className="reveal-stagger mt-6 border-b border-[var(--line)]">
               {PRESS.map((p) => (
                 <li key={p.url}>
                   <a href={p.url} target="_blank" rel="noopener noreferrer" className="group block border-t border-[var(--line)] py-6">
@@ -181,7 +181,7 @@ export default function About() {
                 to grow into senior work without boarding a plane.
               </p>
             </div>
-            <ul className="min-w-0 flex-[1_1_380px] self-end border-b border-[var(--line)]">
+            <ul className="reveal-stagger min-w-0 flex-[1_1_380px] self-end border-b border-[var(--line)]">
               {VENTURES.map((v) => (
                 <li key={v.name}>
                   <a href={v.url} target="_blank" rel="noopener noreferrer" className="group block border-t border-[var(--line)] py-6">
@@ -208,7 +208,7 @@ export default function About() {
           <h2 id="values" className="h-section mt-3.5">
             Four things I learned the slow way
           </h2>
-          <div className="mt-10 grid gap-x-12 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="reveal-stagger mt-10 grid gap-x-12 sm:grid-cols-2 lg:grid-cols-4">
             {VALUES.map((v) => (
               <div key={v.name} className="border-t border-[var(--line)] py-7">
                 <h3 className="text-[34px] leading-none tracking-[0.03em]">{v.name}</h3>

@@ -56,7 +56,7 @@ export function EpisodeRow({ ep }: { ep: Episode }) {
       className="group flex items-start gap-4 border-t border-[var(--line)] py-5 first:border-t-0 first:pt-0"
     >
       <div className="relative aspect-video w-[144px] shrink-0 overflow-hidden border border-[var(--line)] bg-[var(--deep)]">
-        <Image src={ep.thumbnailUrl} alt="" fill quality={85} sizes="144px" className="object-cover" />
+        <Image src={ep.thumbnailUrl} alt="" fill quality={85} sizes="144px" className="object-cover transition-transform duration-500 group-hover:scale-[1.05]" />
       </div>
       <div className="min-w-0">
         <h4 className="font-montserrat text-[15px] font-semibold leading-snug tracking-normal !text-white transition-colors group-hover:!text-[var(--primary-mint)]">
