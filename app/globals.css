@@ -434,7 +434,9 @@ select.field option { background: var(--deep); color: #E5E5E5; }
    screen, so no-JS visitors and crawlers see everything. Only opacity and
    transform move, which the browser animates cheaply. */
 html.reveal-ready .reveal:not(.is-in) { opacity: 0; transform: translateY(18px); }
-html.reveal-ready .reveal {
+/* Transitions only on the way in, so hiding below-the-fold content when the
+   script starts is instant rather than a visible fade-out. */
+html.reveal-ready .reveal.is-in {
   transition:
     opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms),
     transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) var(--reveal-delay, 0ms);
@@ -470,21 +472,21 @@ html.reveal-ready .parts-line.reveal:not(.is-in) { opacity: 1; transform: none; 
 html.reveal-ready .parts-line.reveal:not(.is-in)::before { transform: scaleX(0); }
 html.reveal-ready .parts-line.reveal:not(.is-in) > li::before { transform: scale(0); }
 html.reveal-ready .parts-line.reveal:not(.is-in) > li { opacity: 0; transform: translateY(14px); }
-html.reveal-ready .parts-line.reveal::before { transition: transform 1.3s cubic-bezier(0.65, 0, 0.35, 1); }
-html.reveal-ready .parts-line.reveal > li::before { transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
-html.reveal-ready .parts-line.reveal > li {
+html.reveal-ready .parts-line.reveal.is-in::before { transition: transform 1.3s cubic-bezier(0.65, 0, 0.35, 1); }
+html.reveal-ready .parts-line.reveal.is-in > li::before { transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1); }
+html.reveal-ready .parts-line.reveal.is-in > li {
   transition:
     opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
     transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 /* Same specificity as the transition shorthands above and placed after them,
    so the delays aren't reset to 0 by the shorthand. */
-html.reveal-ready .parts-line.reveal > li:nth-child(1),
-html.reveal-ready .parts-line.reveal > li:nth-child(1)::before { transition-delay: 0.1s; }
-html.reveal-ready .parts-line.reveal > li:nth-child(2),
-html.reveal-ready .parts-line.reveal > li:nth-child(2)::before { transition-delay: 0.55s; }
-html.reveal-ready .parts-line.reveal > li:nth-child(3),
-html.reveal-ready .parts-line.reveal > li:nth-child(3)::before { transition-delay: 1s; }
+html.reveal-ready .parts-line.reveal.is-in > li:nth-child(1),
+html.reveal-ready .parts-line.reveal.is-in > li:nth-child(1)::before { transition-delay: 0.1s; }
+html.reveal-ready .parts-line.reveal.is-in > li:nth-child(2),
+html.reveal-ready .parts-line.reveal.is-in > li:nth-child(2)::before { transition-delay: 0.55s; }
+html.reveal-ready .parts-line.reveal.is-in > li:nth-child(3),
+html.reveal-ready .parts-line.reveal.is-in > li:nth-child(3)::before { transition-delay: 1s; }
 
 /* Small hover and press touches */
 .btn { transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.12s ease; }
