@@ -310,7 +310,12 @@ export default async function Home() {
                       ) : (
                         <span className="text-lg font-bold text-[var(--ink)]">{c.event}</span>
                       )}
-                      {c.topic && <span className="ml-2 text-[15px] text-[var(--text)]">· {c.topic}</span>}
+                      {c.topic && (
+                        <span className="block text-[15px] text-[var(--text)] sm:ml-2 sm:inline">
+                          <span className="hidden sm:inline">· </span>
+                          {c.topic}
+                        </span>
+                      )}
                     </span>
                     <span className="meta">
                       {c.format}, {c.location}
