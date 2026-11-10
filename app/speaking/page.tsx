@@ -26,7 +26,7 @@ const speakingPageData = {
     performerIn: SPEAKING_CREDITS.map((c) => ({
       '@type': 'Event',
       name: `${c.event} ${c.year}`,
-      startDate: String(c.year),
+      startDate: c.date ?? String(c.year),
       eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
       location: { '@type': 'Place', name: c.location },
       ...(c.topic && { about: `${c.format}: ${c.topic}` }),

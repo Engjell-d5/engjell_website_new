@@ -70,12 +70,26 @@ export interface SpeakingCredit {
   url?: string;
   location: string;
   year: number;
+  /** Exact ISO date when known; used as the Event startDate in structured data. */
+  date?: string;
   format: string;
   /** What the talk was about, as he described it. Organisers book on topic. */
   topic?: string;
 }
 
 export const SPEAKING_CREDITS: SpeakingCredit[] = [
+  {
+    // Business Network Albania's conference. Session 14:25 to 15:10 in Salla
+    // Vjosa, on stage with Erjon Curraj (Smart360). The organiser's speaker
+    // page is the url; added 2026-11-10, four days before the event.
+    event: 'BNA Tirana Conference',
+    url: 'https://event.bna.al/en/speakers/Engjell-rraklli',
+    location: 'Tirana, Albania',
+    year: 2026,
+    date: '2026-11-14',
+    format: 'Panel',
+    topic: 'AI, challenges and opportunities',
+  },
   {
     // Second edition, Saturday 20 May 2023. He confirmed Pristina; AlbaniaTech's
     // listing (the url) says Tirana, which is wrong.
