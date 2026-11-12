@@ -88,7 +88,7 @@ export default function Speaking() {
         <div className="wrap pad-y">
           <SectionLabel>Talks</SectionLabel>
           <h2 id="talks" className="h-section mt-3.5">
-            Four talks, each built on one argument
+            Three talks, each built on one argument
           </h2>
           <div className="reveal-stagger mt-10 grid gap-x-12 lg:grid-cols-2">
             {TALKS.map((talk) => (

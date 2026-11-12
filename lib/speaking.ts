@@ -22,17 +22,21 @@ export interface Talk {
 
 export const TALKS: Talk[] = [
   {
-    // Was "We replaced five roles with two people and 350 tools" until
-    // 2026-11-12: it overstated five→two (people, not roles; unconfirmed at
-    // today's volume) and the BNA deck no longer uses that number.
-    title: 'AI proposes, a person decides: running a company on agents',
+    // First given in Albanian at BNA Tirana, 2026-11-14 ("Biznesi x10").
+    // Replaced two talks on 2026-11-12 that told the same story: "We replaced
+    // five roles with two people and 350 tools" (five→two was people, not
+    // roles, and is unconfirmed at today's volume) and "What breaks when you
+    // put AI agents into a real business".
+    // The deck's closing slide, asked as a question on purpose: no 10x figure
+    // has been confirmed, so this must not become a "we 10x'd" claim.
+    title: 'Will AI 10x your business?',
     abstract:
-      'A working account of putting AI agents into a real business, including what they took over, what we refused to let them touch, and the one rule that keeps a human in every outbound decision.',
-    audience: 'Founders and operators running service businesses of 10 to 100 people',
+      'How division5 went from people running every process to more than 85% automated in a year, and the five steps any business can follow: list the processes, put the data in one place, build software on it, then add agents and automated workflows.',
+    audience: 'Business owners and managers, technical or not',
     takeaways: [
-      'Which work an agent does alone, and which waits for a person',
-      'Which parts of a pipeline are assembly work and which are judgment',
-      'What actually broke, and what it cost to fix',
+      'The four steps behind every process change, and why AI cut each cycle from months to weeks',
+      'The order that works: data in one place first, agents last',
+      'Why it is hard: doing it well at low cost, trusting an agent to act as you, and finding the balance between too much AI and too little',
     ],
   },
   {
@@ -55,22 +59,6 @@ export const TALKS: Talk[] = [
       'Why the no-capital constraint produces better unit economics',
       'Hiring and keeping senior engineers outside the established hubs',
       'What regional ecosystems need more of, and what they have too much of',
-    ],
-  },
-  {
-    // First given in Albanian at BNA Tirana, 2026-11-14 ("Biznesi x10").
-    // Replaced "What breaks when you put AI agents into a real business",
-    // which overlapped the first talk.
-    // The deck's closing slide, asked as a question on purpose: no 10x figure
-    // has been confirmed, so this must not become a "we 10x'd" claim.
-    title: 'Will AI 10x your business?',
-    abstract:
-      'How division5 went from people running every process to more than 85% automated in a year, and the five steps any business can follow: list the processes, put the data in one place, build software on it, then add agents and automated workflows.',
-    audience: 'Business owners and managers, technical or not',
-    takeaways: [
-      'The four steps behind every process change, and why AI cut each cycle from months to weeks',
-      'The order that works: data in one place first, agents last',
-      'Why it is hard: doing it well at low cost, trusting an agent to act as you, and finding the balance between too much AI and too little',
     ],
   },
 ];
