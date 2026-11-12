@@ -57,6 +57,14 @@ const nextConfig = {
         destination: '/podcast',
         permanent: true,
       },
+      // Short link on his BNA Tirana 2026 slides (QR code + spoken), to the
+      // Albanian AI guide. Temporary so it can be repointed later; the UTM tags
+      // let GA4 count the visits that came from the session.
+      ...['/bna', '/BNA'].map((source) => ({
+        source,
+        destination: '/sq/udhezuesi-ai?utm_source=bna-2026&utm_medium=talk&utm_campaign=ai-guide',
+        permanent: false,
+      })),
     ];
   },
   // Headers for caching and security.
