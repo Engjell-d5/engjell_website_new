@@ -85,12 +85,11 @@ function PlaybookForm({ dark = false }: { dark?: boolean }) {
             true. Deliberately quiet, and after the download rather than
             instead of it. */}
         <p className="mt-6 max-w-[52ch] border-t border-[var(--line)] pt-4 text-sm leading-relaxed text-[var(--muted)]">
-          If you would rather work through it with your team than alone, I run the same diagnostics
-          remotely over two weeks.{' '}
-          <a href="/sprint" className="text-link">
-            The Constraint Sprint
-          </a>
-          .
+          If you would rather work through it with your team than alone,{' '}
+          <a href="/ai-sprint" className="text-link">
+            the AI Integration Sprint
+          </a>{' '}
+          starts with productizing what you sell, then puts AI in the right order, remotely over two weeks.
         </p>
       </div>
     );

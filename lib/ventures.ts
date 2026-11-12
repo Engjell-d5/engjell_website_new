@@ -40,7 +40,9 @@ export const VENTURES: Venture[] = [
       'Business systems with AI agents inside them, for operations that used to need a whole department.',
     image: '/ventures-divisionai.jpg',
     role: 'Founder',
-    since: 2022,
+    // 2025, confirmed by him 2026-11-12 (was 2022, which contradicted the AI
+    // timeline: one system Nov 2025, first agents Apr 2026).
+    since: 2025,
   },
 ];
 

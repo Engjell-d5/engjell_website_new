@@ -45,7 +45,7 @@ export default function AboutSq() {
         lede={
           <p>
             Jam sipërmarrës shqiptar teknologjie në Tiranë. Themelova division5 në 2015 dhe divisionAI në
-            2022, dhe për pjesën më të madhe të kësaj kohe isha arsyeja pse kompania ime nuk rritej. Kjo
+            2025, dhe për pjesën më të madhe të kësaj kohe isha arsyeja pse kompania ime nuk rritej. Kjo
             është si ndodhi, dhe çfarë bëra për ta ndryshuar.
           </p>
         }
@@ -77,7 +77,7 @@ export default function AboutSq() {
         <div className="wrap pad-y" style={{ paddingTop: 0 }}>
           <SectionLabel>Çfarë di</SectionLabel>
           <h2 id="ekspertiza" className="h-section mt-3.5">
-            Çfarë më mësuan dhjetë vjet nga afër
+            Çfarë më mësuan njëmbëdhjetë vjet nga afër
           </h2>
           <div className="mt-10 grid gap-x-12 sm:grid-cols-2">
             {SQ_EXPERTISE.map((e) => (

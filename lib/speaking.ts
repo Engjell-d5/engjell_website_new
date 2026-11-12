@@ -42,7 +42,7 @@ export const TALKS: Talk[] = [
   {
     title: "Services don't scale, and other things I believed for ten years",
     abstract:
-      'The rule that services cannot scale was never about services. It was about founders. A decade of running a tech company, and which constraints turned out to be self-inflicted.',
+      'The rule that services cannot scale was never about services. It was about founders. Eleven years of running a tech company, and which constraints turned out to be self-inflicted.',
     audience: 'Founders, particularly bootstrapped and service-based',
     takeaways: [
       'Why founder dependency is a stage rather than a property of the model',

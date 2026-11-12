@@ -57,6 +57,13 @@ const nextConfig = {
         destination: '/podcast',
         permanent: true,
       },
+      // The Constraint Sprint was merged into the AI Integration Sprint on
+      // 2026-11-12 (one offer, with productizing for service businesses).
+      {
+        source: '/sprint',
+        destination: '/ai-sprint',
+        permanent: true,
+      },
       // Short link on his BNA Tirana 2026 slides (QR code + spoken), to the
       // Albanian AI guide. Temporary so it can be repointed later; the UTM tags
       // let GA4 count the visits that came from the session.

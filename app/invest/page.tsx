@@ -307,8 +307,8 @@ export default function InvestPage() {
               work without the investment. */}
           <p className="mt-10 max-w-[46em] text-[17px] leading-relaxed text-[var(--text)]">
             If one of those is you, the work itself is still worth doing.{' '}
-            <Link href="/sprint" className="text-link">
-              The Constraint Sprint
+            <Link href="/ai-sprint" className="text-link">
+              The AI Integration Sprint
             </Link>{' '}
             is the same four sessions I would run with a company I had invested in, without the investment,
             and it is open to anyone anywhere.

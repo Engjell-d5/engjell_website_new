@@ -1,6 +1,8 @@
 // Single source of truth for time-based site facts so copy can't drift
 // ("11+ years" vs "ten years ago" vs a 2014 timeline entry).
-export const FOUNDING_YEAR = 2014;
+// 2015, not 2014: he confirmed "11 years in business" on 2026-11-12, i.e. from
+// division5's founding in May 2015.
+export const FOUNDING_YEAR = 2015;
 
 export function yearsOfBuilding(): number {
   return new Date().getFullYear() - FOUNDING_YEAR;
@@ -17,12 +19,9 @@ export function yearsOfHiring(): number {
   return new Date().getFullYear() - HIRING_SINCE_YEAR;
 }
 
-// The Constraint Sprint's fixed price, quoted on /sprint and in /llms.txt.
-export const SPRINT_PRICE = '€7,500';
-
-// The AI Integration Sprint's fixed price (/ai-sprint, /llms.txt). The user
-// set it equal to the Constraint Sprint on 2026-11-12, four remote sessions
-// over two weeks; kept separate so the two can diverge.
+// The AI Integration Sprint's fixed price (/ai-sprint, /llms.txt): four remote
+// sessions over two weeks. Set 2026-11-12, when the Constraint Sprint (same
+// price) was merged into it.
 export const AI_SPRINT_PRICE = '€7,500';
 
 // Journal listing config, shared by app/journal/page.tsx and app/sitemap.ts so

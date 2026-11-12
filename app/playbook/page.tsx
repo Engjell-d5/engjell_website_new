@@ -66,7 +66,7 @@ export default function PlaybookPage() {
           <>
             <p>
               In May 2015 I founded division5 in Albania. I was 23, with no connections, no money, no
-              references and no experience. A decade of growing it taught me that whatever was blocking the
+              references and no experience. Eleven years of growing it taught me that whatever was blocking the
               company was almost always something that existed only in my head.
             </p>
             <div className="mt-8">
@@ -134,11 +134,12 @@ export default function PlaybookPage() {
           <div className="min-w-0 flex-[1_1_480px]">
             <SectionLabel>Rather not do it alone?</SectionLabel>
             <p className="mt-4 text-[17px] leading-relaxed text-[var(--text)]">
-              I run the same diagnostics with leadership teams, remotely over two weeks, as{' '}
-              <Link href="/sprint" className="text-link">
-                the Constraint Sprint
+              I work through this with leadership teams, remotely over two weeks, in{' '}
+              <Link href="/ai-sprint" className="text-link">
+                the AI Integration Sprint
               </Link>
-              . That is the paid version, and the playbook is genuinely enough for plenty of people.
+              : for a service business it starts with productizing what you sell, then puts AI in the right
+              order. The playbook is genuinely enough for plenty of people.
             </p>
           </div>
         </div>

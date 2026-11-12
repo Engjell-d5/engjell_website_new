@@ -77,8 +77,8 @@ export const AI_GUIDE_COPY: Record<GuideLocale, GuideCopy> = {
     aiSprintLink: 'The AI Integration Sprint',
     serviceTitle: 'Run a service business?',
     service:
-      'The Constraint Sprint does the same together with productizing what you sell, so the AI goes onto work that repeats. The free version is the Productize and Scale playbook.',
-    serviceLink: 'The Constraint Sprint',
+      'The sprint starts by productizing what you sell, so the AI goes onto work that repeats. The free version of that part is the Productize and Scale playbook.',
+    serviceLink: 'Productize and Scale',
     metaTitle: 'Will AI 10x your business? A free guide',
     metaDescription:
       'A free 10 page guide to putting AI into any business: five steps in the order that works, and the three things that make it hard. From Engjell Rraklli, in English and Albanian.',
@@ -109,8 +109,8 @@ export const AI_GUIDE_COPY: Record<GuideLocale, GuideCopy> = {
     aiSprintLink: 'AI Integration Sprint',
     serviceTitle: 'Keni një biznes shërbimesh?',
     service:
-      'Constraint Sprint bën të njëjtën gjë së bashku me produktizimin e asaj që shitni, që AI të vendoset mbi punë që përsëritet. Versioni falas është playbook-u Productize and Scale.',
-    serviceLink: 'Constraint Sprint',
+      'Sprint-i nis me produktizimin e asaj që shitni, që AI të vendoset mbi punë që përsëritet. Versioni falas i kësaj pjese është playbook-u Productize and Scale.',
+    serviceLink: 'Productize and Scale',
     englishNote: 'Faqet e mësipërme janë në anglisht.',
     metaTitle: 'A do ta bëjë AI biznesin tuaj x10? Udhëzues falas',
     metaDescription:

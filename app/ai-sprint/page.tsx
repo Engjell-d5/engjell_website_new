@@ -17,9 +17,11 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com'
  * the same five steps from his BNA 2026 deck; this walks a leadership team
  * through them for their own company.
  *
- * Same shape and price as the Constraint Sprint, by his choice. The
- * Constraint Sprint stays the offer for service businesses (productizing plus
- * AI integration); this one is for every other kind of business too.
+ * Since 2026-11-12 this is his only sprint: the Constraint Sprint was merged
+ * into it (/sprint redirects here). Service businesses get productizing in
+ * session one. It is new and has no client proof yet, so it keeps the
+ * Constraint Sprint's "stop after session one, pay nothing" promise and says
+ * plainly that it is new.
  *
  * Every number on the page traces to the deck: 85%+ of division5's processes
  * automated, improvement cycles from months to weeks.
@@ -36,13 +38,13 @@ const sprintData = {
   },
   areaServed: 'Worldwide',
   description:
-    'Four remote working sessions across two weeks with a business owner and their leadership team, to decide where AI belongs in the business and in what order, ending in a written AI integration plan.',
+    'Four remote working sessions across two weeks with a business owner and their leadership team, to decide where AI belongs in the business and in what order, ending in a written AI integration plan. Service businesses also productize what they sell first.',
 };
 
 export const metadata: Metadata = createMetadata({
   title: 'The AI Integration Sprint',
   description:
-    'AI integration consultancy for businesses: four remote sessions with your leadership team to map your processes and data, design the first AI agents, and leave with a written plan. Run by Engjell Rraklli.',
+    'AI integration consultancy: four remote sessions with your leadership team to map your processes and data, design the first AI agents, and leave with a written plan. Service businesses productize first. Run by Engjell Rraklli.',
   path: '/ai-sprint',
 });
 
@@ -52,7 +54,7 @@ const AGENDA = [
     when: 'Session one',
     what: 'List the processes and where the hours go',
     detail:
-      'Every recurring process across sales, marketing, operations, HR and finance, who does it today and what it costs in hours. We pick the few where AI pays back first.',
+      'Every recurring process across sales, marketing, operations, HR and finance, who does it today and what it costs in hours. We pick the few where AI pays back first. For a service business this session also covers what you actually sell and which parts repeat, so the AI goes onto work that repeats rather than work reinvented for every client.',
     homework: 'Each owner lists the data their processes depend on, and where it lives today.',
   },
   {
@@ -136,6 +138,7 @@ export default function AiSprintPage() {
               <li>Four sessions of about two hours</li>
               <li>Two weeks, run over video</li>
               <li>A written AI integration plan</li>
+              <li className="text-[var(--accent-text)]">Not useful after session one? You pay nothing.</li>
             </ul>
           </div>
         }
@@ -167,6 +170,10 @@ export default function AiSprintPage() {
               </Link>{' '}
               sets out that order. This sprint is for the companies that want to go through it with
               someone who has already done it, for their own business.
+            </p>
+            <p className="mt-4">
+              It is a new offer, so there are no client stories here yet. The proof is division5 itself,
+              and the promise below: if the first session is not useful, we stop and you pay nothing.
             </p>
           </div>
         </div>
@@ -225,7 +232,8 @@ export default function AiSprintPage() {
           </p>
           <p className="max-w-[38em] flex-[1_1_420px] text-[17px] font-medium leading-relaxed text-[var(--rich-black)]">
             Fixed, for all four sessions and the written plan afterwards. Run over video, so your timezone
-            matters more than your address. The plan is yours to build with whoever you choose, including{' '}
+            matters more than your address. If you decide after the first session that this is not going
+            to be useful, we stop and you pay nothing. The plan is yours to build with whoever you choose, including{' '}
             <a href="https://divisionai.co" target="_blank" rel="noopener noreferrer" className="underline underline-offset-4">
               divisionAI
             </a>
@@ -249,12 +257,12 @@ export default function AiSprintPage() {
             ))}
           </ul>
           <p className="mt-10 max-w-[46em] text-[17px] leading-relaxed text-[var(--text)]">
-            Run a service business? The{' '}
-            <Link href="/sprint" className="text-link">
-              Constraint Sprint
+            Run a service business? The sprint starts with productizing what you sell, because AI on top
+            of work that is reinvented for every client only makes the mess run faster. The free{' '}
+            <Link href="/playbook" className="text-link">
+              Productize and Scale playbook
             </Link>{' '}
-            covers productizing what you sell as well as where AI fits, because AI on top of work that is
-            reinvented for every client only makes the mess run faster.
+            is the do-it-yourself version of that part.
           </p>
         </div>
       </section>

@@ -22,7 +22,7 @@ const profilePageData = {
 export const metadata: Metadata = createMetadata({
   title: 'About Engjell Rraklli, Homegrown Albanian Tech Entrepreneur',
   description:
-    'Albanian tech entrepreneur Engjell Rraklli founded division5 in 2015 at 23. A decade of building engineering teams, AI-run operations and a service business.',
+    'Albanian tech entrepreneur Engjell Rraklli founded division5 in 2015 at 23. Eleven years of building engineering teams, AI-run operations and a service business.',
   path: '/about',
   languages: { en: '/about', sq: '/sq' },
 });
@@ -36,7 +36,9 @@ const CHAPTERS = [
     body: 'I founded division5 at 23, with no connections, no money, no references and no experience. My plan lasted until the money ran out, which did not take long. The only way to keep the company alive was to sell software development services, so that is what we sold.',
   },
   {
-    when: 'The next five years',
+    // Eight years, confirmed by him 2026-11-12 (was "five", while the essay
+    // said ten).
+    when: 'The first eight years',
     title: 'Trying to escape',
     body: 'Once we were solvent I kept trying to pivot into a product. Every attempt pulled attention away from the business that was paying salaries, and none of the products got far enough to matter. I call it cheating on your business, because looking back, that is what it was.',
   },
@@ -48,7 +50,14 @@ const CHAPTERS = [
   {
     when: '2022',
     title: 'Writing it all down',
-    body: 'We captured how the work actually gets done and built it into how new people learn, so someone leaving became a setback instead of a hole. I started divisionAI to put software underneath that operation, with AI inside it rather than bolted on the side.',
+    body: 'We captured how the work actually gets done and built it into how new people learn, so someone leaving became a setback instead of a hole.',
+  },
+  {
+    // divisionAI since 2025 (confirmed 2026-11-12); the dates after it are
+    // from his BNA 2026 deck.
+    when: '2025',
+    title: 'Putting AI underneath it',
+    body: 'I started divisionAI to put software underneath that operation, with AI inside it rather than bolted on the side. In November 2025 division5 moved onto one system, and the first AI agents followed in April 2026.',
   },
   {
     when: 'Today',
@@ -73,7 +82,7 @@ export default function About() {
         lede={
           <p>
             I am an Albanian tech entrepreneur in Tirana. I founded division5 in 2015 and divisionAI in
-            2022, and for most of that time I was the reason my own company could not grow. This is how
+            2025, and for most of that time I was the reason my own company could not grow. This is how
             that happened, and what I did about it.
           </p>
         }
@@ -104,7 +113,7 @@ export default function About() {
         <div className="wrap pad-y" style={{ paddingTop: 0 }}>
           <SectionLabel>What I know</SectionLabel>
           <h2 id="expertise" className="h-section mt-3.5">
-            What ten years taught me first-hand
+            What eleven years taught me first-hand
           </h2>
           <div className="reveal-stagger mt-10 grid gap-x-12 sm:grid-cols-2">
             {EXPERTISE.map((e) => (

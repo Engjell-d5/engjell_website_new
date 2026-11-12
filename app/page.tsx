@@ -60,7 +60,7 @@ const PARTS = [
   {
     n: '03',
     title: 'Method',
-    body: 'Find the one constraint holding growth back and write down how the work gets done. The playbook is free; the Constraint Sprint does it with your leadership team.',
+    body: 'Find the one constraint holding growth back and write down how the work gets done. The playbook is free; the AI Integration Sprint does it with your leadership team.',
     href: '/playbook',
     go: 'The playbook',
   },
@@ -72,15 +72,7 @@ const OFFERS = [
     href: '/ai-sprint',
     for: 'For any business adding AI',
     title: 'The AI Integration Sprint',
-    body: 'Four remote sessions over two weeks with you and your leadership team, to decide where AI belongs in your business and in what order. You leave with a written plan: processes, data, the first agents and who approves them.',
-    fact: '€7,500 fixed. The free guide sets out the same five steps.',
-    go: 'How the AI sprint works',
-  },
-  {
-    href: '/sprint',
-    for: 'For service business founders',
-    title: 'The Constraint Sprint',
-    body: 'Four remote sessions over two weeks with you and your leadership team, to find what the business is stuck on, productize what you sell and decide where AI fits. You leave with a written analysis and a ninety day plan.',
+    body: 'Four remote sessions over two weeks with you and your leadership team, to decide where AI belongs in your business and in what order. Service businesses start by productizing what they sell. You leave with a written plan.',
     fact: '€7,500 fixed. If the first session is not useful, we stop and you pay nothing.',
     go: 'How the sprint works',
   },
@@ -381,7 +373,7 @@ export default async function Home() {
               </div>
               <div className="min-w-0 flex-[1_1_320px] pb-1.5">
                 <p className="text-base leading-relaxed text-[var(--text)]">
-                  The essay behind everything else on this site. A decade of running division5, which
+                  The essay behind everything else on this site. Eleven years of running division5, which
                   constraints were real, which ones I invented, and what changed when AI removed the last
                   one that was true.
                 </p>
@@ -457,9 +449,9 @@ export default async function Home() {
         <div className="wrap pad-y">
           <SectionLabel>Work with me</SectionLabel>
           <h2 id="work-title" className="h-section mt-3.5">
-            Four ways to work together
+            Three ways to work together
           </h2>
-          <div className="reveal-stagger mt-10 grid gap-5 md:grid-cols-2">
+          <div className="reveal-stagger mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {OFFERS.map((o) => (
               <Link key={o.href} href={o.href} className="card">
                 <p className="label">{o.for}</p>

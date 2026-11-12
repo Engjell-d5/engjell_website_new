@@ -30,7 +30,7 @@ export const EXPERTISE: ExpertiseArea[] = [
   },
   {
     name: 'Scaling service businesses',
-    body: 'I spent a decade as the bottleneck in my own service business before learning how to take myself out of it. The playbook and the Constraint Sprint are the diagnostics that came out of that.',
+    body: 'I spent eight years as the bottleneck in my own service business before learning how to take myself out of it. The playbook and the AI Integration Sprint are the diagnostics that came out of that.',
     link: { href: '/playbook', label: 'The free playbook' },
   },
   {

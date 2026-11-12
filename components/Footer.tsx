@@ -17,7 +17,6 @@ const COLUMNS: { title: string; links: { href: string; label: string; external?:
     title: 'Work with me',
     links: [
       { href: '/ai-sprint', label: 'AI Integration Sprint' },
-      { href: '/sprint', label: 'Constraint Sprint' },
       { href: '/speaking', label: 'Speaking' },
       { href: '/invest', label: 'Angel investing' },
       { href: '/contact', label: 'Contact' },

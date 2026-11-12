@@ -29,7 +29,7 @@ export const SQ_CHAPTERS = [
     body: 'Themelova division5 në moshën 23 vjeç, pa lidhje, pa para, pa referenca dhe pa përvojë. Plani im zgjati derisa mbaruan paratë, gjë që nuk vonoi shumë. E vetmja mënyrë për ta mbajtur kompaninë gjallë ishte të shisnim shërbime zhvillimi software-i, ndaj këtë shitëm.',
   },
   {
-    when: 'Pesë vitet në vijim',
+    when: 'Tetë vitet e para',
     title: 'Duke u përpjekur të ikja',
     body: 'Sapo u bëmë të qëndrueshëm financiarisht, vazhdova të provoja të kthehesha drejt një produkti. Çdo përpjekje ia hiqte vëmendjen biznesit që paguante rrogat, dhe asnjë produkt nuk shkoi aq larg sa të kishte rëndësi. Unë e quaj tradhti ndaj biznesit tënd, sepse duke parë pas, kjo ishte.',
   },
@@ -41,7 +41,12 @@ export const SQ_CHAPTERS = [
   {
     when: '2022',
     title: 'Gjithçka në letër',
-    body: 'E shkruam si bëhet realisht puna dhe e futëm në mënyrën si mësojnë njerëzit e rinj, që largimi i dikujt të ishte një pengesë dhe jo një boshllëk. Nisa divisionAI për të vënë software poshtë këtij operacioni, me AI brenda tij dhe jo të ngjitur anash.',
+    body: 'E shkruam si bëhet realisht puna dhe e futëm në mënyrën si mësojnë njerëzit e rinj, që largimi i dikujt të ishte një pengesë dhe jo një boshllëk.',
+  },
+  {
+    when: '2025',
+    title: 'AI poshtë gjithçkaje',
+    body: 'Nisa divisionAI për të vënë software poshtë këtij operacioni, me AI brenda tij dhe jo të ngjitur anash. Në nëntor 2025 division5 kaloi në një sistem të vetëm, dhe agjentët e parë AI erdhën në prill 2026.',
   },
   {
     when: 'Sot',
@@ -144,7 +149,7 @@ export const SQ_EXPERTISE = [
   },
   {
     name: 'Rritja e bizneseve të shërbimeve',
-    body: 'Kalova një dekadë si pengesa në biznesin tim të shërbimeve, derisa mësova si ta nxjerr veten prej saj. Playbook-u dhe Constraint Sprint janë diagnostikat që dolën nga kjo përvojë.',
+    body: 'Kalova tetë vjet si pengesa në biznesin tim të shërbimeve, derisa mësova si ta nxjerr veten prej saj. Playbook-u dhe AI Integration Sprint janë diagnostikat që dolën nga kjo përvojë.',
     link: { href: '/playbook', label: 'Playbook-u falas (në anglisht)' },
   },
   {

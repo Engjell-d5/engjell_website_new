@@ -12,7 +12,7 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com'
 const contactPageData = {
   name: 'Contact Engjell Rraklli',
   url: `${siteUrl}/contact`,
-  description: 'Get in touch with Engjell Rraklli about the AI Integration Sprint, the Constraint Sprint, speaking, investment, or anything else.',
+  description: 'Get in touch with Engjell Rraklli about the AI Integration Sprint, speaking, investment, or anything else.',
   mainEntity: {
     '@type': 'Person',
     name: 'Engjell Rraklli',
@@ -39,14 +39,13 @@ const contactPageData = {
 export const metadata: Metadata = createMetadata({
   title: 'Contact Engjell Rraklli',
   description:
-    'Contact Engjell Rraklli about the AI Integration Sprint, the Constraint Sprint, a talk, or anything else. He reads every message and usually replies within two business days.',
+    'Contact Engjell Rraklli about the AI Integration Sprint, a talk, an investment, or anything else. He reads every message and usually replies within two business days.',
   path: '/contact',
 });
 
 // Faster routes for the things most messages are about.
 const ROUTES = [
   { href: '/ai-sprint', q: 'Adding AI?', a: 'The AI Integration Sprint' },
-  { href: '/sprint', q: 'Stuck on growth?', a: 'The Constraint Sprint' },
   { href: '/speaking', q: 'Booking a talk?', a: 'Topics, formats and bios' },
   { href: '/invest', q: 'Raising?', a: 'What I invest in' },
 ];

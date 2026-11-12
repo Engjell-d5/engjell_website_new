@@ -126,12 +126,9 @@ export default function AiGuidePage({ locale }: { locale: GuideLocale }) {
           <div className="min-w-0 flex-[1_1_480px]">
             <SectionLabel>{c.serviceTitle}</SectionLabel>
             <p className="mt-4 text-[17px] leading-relaxed text-[var(--text)]">{c.service}</p>
-            <p className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-[15px] font-bold">
-              <Link href="/sprint" className="text-link" hrefLang="en">
-                {c.serviceLink}
-              </Link>
+            <p className="mt-4 text-[15px] font-bold">
               <Link href="/playbook" className="text-link" hrefLang="en">
-                Productize and Scale
+                {c.serviceLink}
               </Link>
             </p>
             {c.englishNote && <p className="mt-4 text-sm text-[var(--muted)]">{c.englishNote}</p>}

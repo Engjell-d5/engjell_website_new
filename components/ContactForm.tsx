@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Send, CheckCircle2 } from 'lucide-react';
 
-const TOPICS = ['AI integration sprint', 'Constraint sprint', 'Speaking', 'Consulting', 'Partnership', 'Other'] as const;
+const TOPICS = ['AI integration sprint', 'Speaking', 'Consulting', 'Partnership', 'Other'] as const;
 
 // The sprint page preselects its own topic so those enquiries arrive tagged
 // rather than as generic consulting, which is the difference between a lead
