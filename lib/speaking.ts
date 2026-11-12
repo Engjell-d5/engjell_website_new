@@ -5,9 +5,11 @@
 // whether to put you in front of their audience, and one inflated claim that
 // gets checked costs more than the booking was worth. Every number below traces
 // to something real: the tool count and approval rule come from the d5
-// management system, the five-to-two figure from the recruitment function, and
-// the stage credits are the ones he confirmed: the Albanian Developers
-// Conference talk and the KosICT panel, both 2023. Nothing is padded.
+// management system, the five-to-two figure from the recruitment function, the
+// 85%+ automated and months-to-weeks figures and the AI timeline (one system
+// from Nov 2025, first agents Apr 2026) from his own BNA 2026 deck ("Biznesi
+// x10"), and the stage credits are the ones he confirmed: the Albanian
+// Developers Conference talk and the KosICT panel, both 2023. Nothing is padded.
 
 export interface Talk {
   title: string;
@@ -22,10 +24,10 @@ export const TALKS: Talk[] = [
   {
     title: 'We replaced five roles with two people and 350 tools',
     abstract:
-      'A working account of putting AI agents into a real business, including what they took over, what we refused to let them touch, and the one rule that keeps a human in every outbound decision.',
+      'A working account of putting AI agents into a real business, including what they took over, what we refused to let them touch, and the one rule that keeps a human in every outbound decision: AI proposes, a person decides.',
     audience: 'Founders and operators running service businesses of 10 to 100 people',
     takeaways: [
-      'The read versus write rule that decides what an agent may do unsupervised',
+      'Where an agent may act alone and where it may only propose',
       'Which parts of a pipeline are assembly work and which are judgment',
       'What actually broke, and what it cost to fix',
     ],
@@ -53,14 +55,17 @@ export const TALKS: Talk[] = [
     ],
   },
   {
-    title: 'What breaks when you put AI agents into a real business',
+    // First given in Albanian at BNA Tirana, 2026-11-14 ("Biznesi x10").
+    // Replaced "What breaks when you put AI agents into a real business",
+    // which overlapped the first talk.
+    title: 'Business x10: putting AI into a company, step by step',
     abstract:
-      'The unglamorous version. Approval queues, permission scoping, the failure modes nobody demos, and why the leverage comes from removing assembly work rather than removing people.',
-    audience: 'Technical leaders and operators evaluating agentic systems',
+      'How division5 went from people running every process to more than 85% automated in a year, and the five steps any business can follow: list the processes, put the data in one place, build software on it, then add agents and automated workflows.',
+    audience: 'Business owners and managers, technical or not',
     takeaways: [
-      'Designing the approval surface before designing the agent',
-      'Why scheduled playbooks beat chat interfaces for operational work',
-      'Honest failure modes from a system running in production',
+      'The four steps behind every process change, and why AI cut each cycle from months to weeks',
+      'The order that works: data in one place first, agents last',
+      'Why it is hard: doing it well at low cost, trusting an agent to act as you, and finding the balance between too much AI and too little',
     ],
   },
 ];

@@ -60,14 +60,14 @@ export default function Speaking() {
           <>
             <p>
               Most AI talks are predictions. Mine are post-mortems. I have spent {yearsOfBuilding()} years
-              building a tech company in Albania, and the last two putting agents into its operations, so I
-              can tell an audience what the change cost rather than what it promises.
+              building a tech company in Albania, and the last year rebuilding its operations around AI
+              agents, so I can tell an audience what the change cost rather than what it promises.
             </p>
             <p className="mt-4">
-              A recruitment function that took five people now runs with two. The system behind it exposes
-              more than 350 tools to its agents, and every one of them that writes anything still waits for
-              a human. That is the talk. The numbers are real and I am happy to be asked about the parts that
-              went badly.
+              Today more than 85% of division5&apos;s processes are automated, across sales, marketing,
+              recruitment, operations, HR and finance. A year ago people did all of it. Improving a process
+              used to take months and now takes weeks. The rule behind it fits on one slide: AI proposes, a
+              person decides. The numbers are real and I am happy to be asked about the parts that went badly.
             </p>
           </>
         }
@@ -116,6 +116,9 @@ export default function Speaking() {
           <h2 id="formats" className="h-section mt-3.5">
             Stage, panel, room or microphone
           </h2>
+          <p className="mt-5 max-w-[46em] text-[17px] leading-relaxed text-[var(--text)]">
+            In English or Albanian.
+          </p>
           <div className="reveal-stagger mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {FORMATS.map((f) => (
               <div key={f.name} className="card">
@@ -238,7 +241,7 @@ export default function Speaking() {
               the right person for it. If I am not, I will usually know who is.
             </p>
             <p className="mt-3 text-[15px] font-medium text-[var(--rich-black)]">
-              Running a call for papers? All four talks are on{' '}
+              Running a call for papers? My talks are also on{' '}
               <a
                 href="https://sessionize.com/engjell-rraklli"
                 target="_blank"
