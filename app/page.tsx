@@ -68,10 +68,19 @@ const PARTS = [
 
 const OFFERS = [
   {
+    // His core offer since 2026-11-12, so it leads.
+    href: '/ai-sprint',
+    for: 'For any business adding AI',
+    title: 'The AI Integration Sprint',
+    body: 'Four remote sessions over two weeks with you and your leadership team, to decide where AI belongs in your business and in what order. You leave with a written plan: processes, data, the first agents and who approves them.',
+    fact: '€7,500 fixed. The free guide sets out the same five steps.',
+    go: 'How the AI sprint works',
+  },
+  {
     href: '/sprint',
     for: 'For service business founders',
     title: 'The Constraint Sprint',
-    body: 'Four remote sessions over two weeks with you and your leadership team. You leave with a written analysis of what the business is stuck on and a ninety day plan to clear it.',
+    body: 'Four remote sessions over two weeks with you and your leadership team, to find what the business is stuck on, productize what you sell and decide where AI fits. You leave with a written analysis and a ninety day plan.',
     fact: '€7,500 fixed. If the first session is not useful, we stop and you pay nothing.',
     go: 'How the sprint works',
   },
@@ -444,9 +453,9 @@ export default async function Home() {
         <div className="wrap pad-y">
           <SectionLabel>Work with me</SectionLabel>
           <h2 id="work-title" className="h-section mt-3.5">
-            Three ways to work together
+            Four ways to work together
           </h2>
-          <div className="reveal-stagger mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          <div className="reveal-stagger mt-10 grid gap-5 md:grid-cols-2">
             {OFFERS.map((o) => (
               <Link key={o.href} href={o.href} className="card">
                 <p className="label">{o.for}</p>

@@ -20,6 +20,11 @@ export function yearsOfHiring(): number {
 // The Constraint Sprint's fixed price, quoted on /sprint and in /llms.txt.
 export const SPRINT_PRICE = '€7,500';
 
+// The AI Integration Sprint's fixed price (/ai-sprint, /llms.txt). The user
+// set it equal to the Constraint Sprint on 2026-11-12, four remote sessions
+// over two weeks; kept separate so the two can diverge.
+export const AI_SPRINT_PRICE = '€7,500';
+
 // Journal listing config, shared by app/journal/page.tsx and app/sitemap.ts so
 // the two can never disagree about how many pages exist.
 export const POSTS_PER_PAGE = 10;

@@ -46,13 +46,16 @@ const sprintData = {
   },
   areaServed: 'Worldwide',
   description:
-    'Four remote working sessions across two weeks with a founder and their leadership team, to name the constraint the business is actually stuck on and leave with a written ninety day plan.',
+    'Four remote working sessions across two weeks with a service business founder and their leadership team: name the constraint the business is stuck on, productize what it sells, decide where AI fits, and leave with a written ninety day plan.',
 };
 
+// Reframed 2026-11-12 (his choice): this is his consultancy for service
+// businesses, productizing plus AI integration. Other businesses go to
+// /ai-sprint, the AI-only version at the same price and shape.
 export const metadata: Metadata = createMetadata({
   title: 'The Constraint Sprint',
   description:
-    'Four remote sessions with your leadership team to name the constraint your service business is actually stuck on, and a written ninety day plan to clear it. Run by Engjell Rraklli.',
+    'Consultancy for service businesses: four remote sessions with your leadership team to find what the business is stuck on, productize what you sell, decide where AI fits, and leave with a written ninety day plan. Run by Engjell Rraklli.',
   path: '/sprint',
 });
 
@@ -82,9 +85,9 @@ const AGENDA = [
   },
   {
     when: 'Session three',
-    what: 'Re-sort the work',
+    what: 'Re-sort the work, and place the AI',
     detail:
-      'What genuinely needs a person, what needs a person who is trained, and what software can now carry. Most teams have not revisited that third bucket since 2023.',
+      'What genuinely needs a person, what needs a person who is trained, and what AI can now carry: which steps an agent drafts and proposes for a person to approve, and which can run on their own. Most teams have not revisited that third bucket since 2023.',
     homework: 'Pick one candidate process and gather whatever data it currently depends on.',
   },
   {
@@ -98,7 +101,7 @@ const AGENDA = [
 
 const DELIVERABLES = [
   'A written constraint analysis, the honest version rather than the flattering one',
-  'Your work re-sorted into what needs you, what needs training, and what software can carry',
+  'Your work re-sorted into what needs you, what needs training, and where AI goes first',
   'A ninety day plan with owners and an order, not a backlog',
   'The one thing I would do first if it were my company, and why',
 ];
@@ -122,18 +125,27 @@ export default function SprintPage() {
       />
 
       <PageHero
-        label="Working session"
+        label="For service businesses"
         title={
           <>
             The Constraint <span className="text-[var(--primary-mint)]">Sprint</span>
           </>
         }
         lede={
-          <p>
-            Four sessions over two weeks with you and the people who actually run your business, to name
-            the thing it is stuck on and decide what to do about it. Run remotely, wherever you are. You
-            leave with a written analysis and a ninety day plan.
-          </p>
+          <>
+            <p>
+              Four sessions over two weeks with you and the people who actually run your service business,
+              to name the thing it is stuck on, productize what you sell, and decide where AI fits. Run
+              remotely, wherever you are. You leave with a written analysis and a ninety day plan.
+            </p>
+            <p className="mt-4">
+              Not a service business?{' '}
+              <Link href="/ai-sprint" className="text-link">
+                The AI Integration Sprint
+              </Link>{' '}
+              is the AI part on its own.
+            </p>
+          </>
         }
         actions={
           <>

@@ -43,8 +43,9 @@ export const metadata: Metadata = createMetadata({
   path: '/contact',
 });
 
-// Faster routes for the three things most messages are about.
+// Faster routes for the things most messages are about.
 const ROUTES = [
+  { href: '/ai-sprint', q: 'Adding AI?', a: 'The AI Integration Sprint' },
   { href: '/sprint', q: 'Stuck on growth?', a: 'The Constraint Sprint' },
   { href: '/speaking', q: 'Booking a talk?', a: 'Topics, formats and bios' },
   { href: '/invest', q: 'Raising?', a: 'What I invest in' },

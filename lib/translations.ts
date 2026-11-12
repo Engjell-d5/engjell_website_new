@@ -12,6 +12,9 @@ export const SQ_ESSAY_SLUGS = [
 
 const PAIRS: { en: string; sq: string }[] = [
   { en: '/about', sq: '/sq' },
+  // Literal rather than imported from lib/ai-guide.ts, which this client
+  // module would otherwise pull into every page's bundle along with its copy.
+  { en: '/ai-guide', sq: '/sq/udhezuesi-ai' },
   ...SQ_ESSAY_SLUGS.map((e) => ({ en: `/journal/${e.enSlug}`, sq: `/sq/shkrime/${e.slug}` })),
 ];
 

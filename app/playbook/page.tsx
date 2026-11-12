@@ -123,6 +123,13 @@ export default function PlaybookPage() {
               , which is the story rather than the work. Read that first if you want to know whether any of
               this is worth your hour.
             </p>
+            <p className="mt-4 text-[17px] leading-relaxed text-[var(--text)]">
+              Not a service business?{' '}
+              <Link href="/ai-guide" className="text-link">
+                Will AI 10x your business?
+              </Link>{' '}
+              is the free guide for any kind of company.
+            </p>
           </div>
           <div className="min-w-0 flex-[1_1_480px]">
             <SectionLabel>Rather not do it alone?</SectionLabel>

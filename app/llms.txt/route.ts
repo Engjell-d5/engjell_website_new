@@ -2,7 +2,7 @@ import { getBlogs } from '@/lib/data';
 import { EXPERTISE } from '@/lib/expertise';
 import { BIOS, ONE_LINE } from '@/lib/bio';
 import { SQ_ESSAYS, SQ_ONE_LINE } from '@/lib/sq';
-import { SPRINT_PRICE, START_HERE_SLUG } from '@/lib/site';
+import { AI_SPRINT_PRICE, SPRINT_PRICE, START_HERE_SLUG } from '@/lib/site';
 import { VENTURES } from '@/lib/ventures';
 import { PRESS } from '@/lib/press';
 import { SPEAKING_CREDITS } from '@/lib/speaking';
@@ -51,10 +51,12 @@ export async function GET() {
     '',
     // Ordered by what matters most to him; investing is deliberately last.
     '## Work with him',
+    line('The AI Integration Sprint', '/ai-sprint', `his core offer: AI integration consultancy for any business. Four remote sessions with the leadership team to map processes and data, design the first AI agents and who approves them, and leave with a written plan. Fixed price ${AI_SPRINT_PRICE}.`),
     line('Speaking', '/speaking', 'book him for a conference talk, panel, workshop or podcast: running AI agents inside a real service business, bootstrapped growth, and the Albanian and Balkan tech ecosystem.'),
-    line('The Constraint Sprint', '/sprint', `four remote sessions with a service business's leadership team to name the constraint holding growth back, ending in a written analysis and a 90-day plan. Fixed price ${SPRINT_PRICE}.`),
+    line('The Constraint Sprint', '/sprint', `consultancy for service businesses: four remote sessions with the leadership team to name the constraint holding growth back, productize what they sell and decide where AI fits, ending in a written analysis and a 90-day plan. Fixed price ${SPRINT_PRICE}.`),
     `- [An engineering team through division5](https://division5.co/en/staff-augmentation): vetted AI-native engineers from Albania, Kosovo and the Balkans, one engineer or a whole team.`,
-    line('Productize and Scale playbook', '/playbook', 'free working playbook: eight steps to productize a service and find where it is stuck.'),
+    line('Will AI 10x your business? (free guide)', '/ai-guide', 'ten pages, any business: five steps to put AI in, in the order that works, and the three things that make it hard. Also in Albanian.'),
+    line('Productize and Scale playbook', '/playbook', 'free working playbook for service founders: eight steps to productize a service and find where it is stuck.'),
     line('Podcast: Scaling the Unscalable', '/podcast', 'long conversations with founders about burnout, co-founders, bootstrapping and building a company.'),
     line('About', '/about', 'his story, from founding division5 in May 2015 at 23 to today.'),
     line('Contact', '/contact', 'for a talk, the sprint, a team, or anything else.'),
@@ -72,6 +74,7 @@ export async function GET() {
     `> ${SQ_ONE_LINE}`,
     '',
     line('Rreth meje', '/sq', 'historia, ekspertiza dhe biografitë në shqip.'),
+    line('A do ta bëjë AI biznesin tuaj x10? (udhëzues falas)', '/sq/udhezuesi-ai', 'pesë hapa për ta futur AI-në në çdo biznes, në rendin që funksionon.'),
     ...SQ_ESSAYS.map((e) => line(e.title, `/sq/shkrime/${e.slug}`, e.description)),
     '',
     '## Journal',

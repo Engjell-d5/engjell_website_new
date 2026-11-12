@@ -42,6 +42,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     },
     {
+      url: `${baseUrl}/ai-guide`,
+      changeFrequency: 'monthly',
+      priority: 0.9,
+      alternates: { languages: { en: `${baseUrl}/ai-guide`, sq: `${baseUrl}/sq/udhezuesi-ai` } },
+    },
+    {
+      url: `${baseUrl}/ai-sprint`,
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    },
+    {
       url: `${baseUrl}/sprint`,
       changeFrequency: 'monthly',
       priority: 0.8,
@@ -67,6 +78,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly',
       priority: 0.8,
       alternates: { languages: { en: `${baseUrl}/about`, sq: `${baseUrl}/sq` } },
+    },
+    {
+      url: `${baseUrl}/sq/udhezuesi-ai`,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+      alternates: { languages: { en: `${baseUrl}/ai-guide`, sq: `${baseUrl}/sq/udhezuesi-ai` } },
     },
     ...SQ_ESSAYS.map((e) => ({
       url: `${baseUrl}/sq/shkrime/${e.slug}`,

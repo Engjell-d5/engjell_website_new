@@ -16,17 +16,27 @@ import { createMetadata } from '@/lib/metadata';
 export const metadata: Metadata = createMetadata({
   title: 'Work with Engjell Rraklli',
   description:
-    'Work with Engjell Rraklli: the Constraint Sprint for service founders, an engineering team through division5, talks for event organisers, or angel investment.',
+    'Work with Engjell Rraklli: AI integration consultancy for businesses, the Constraint Sprint for service founders, an engineering team through division5, talks for event organisers, or angel investment.',
   path: '/work',
 });
 
 const OFFERS = [
   {
+    // His core offer since 2026-11-12, so it leads.
+    href: '/ai-sprint',
+    image: '/photos/studio-ringlight.jpg',
+    for: 'For any business adding AI',
+    title: 'The AI Integration Sprint',
+    body: 'Four remote sessions over two weeks with you and your leadership team, to decide where AI belongs in your business and in what order: your processes, your data, the first agents and who approves them. You leave with a written plan.',
+    facts: ['€7,500 fixed', 'Four sessions, two weeks, remote', 'A written AI integration plan'],
+    go: 'How the AI sprint works',
+  },
+  {
     href: '/sprint',
     image: '/photos/studio-laugh.jpg',
     for: 'For service business founders',
     title: 'The Constraint Sprint',
-    body: 'Four remote sessions over two weeks with you and the people who actually run your business, to name the thing it is stuck on and decide what to do about it. You leave with a written analysis and a ninety day plan.',
+    body: 'Four remote sessions over two weeks with you and the people who actually run your business, to name the thing it is stuck on, productize what you sell and decide where AI fits. You leave with a written analysis and a ninety day plan.',
     facts: ['€7,500 fixed', 'Four sessions, two weeks, remote', 'Stop after session one and pay nothing'],
     go: 'How the sprint works',
   },
@@ -71,7 +81,7 @@ export default function WorkPage() {
         size="md"
         title={
           <>
-            Four ways to <span className="text-[var(--primary-mint)]">work together</span>
+            Five ways to <span className="text-[var(--primary-mint)]">work together</span>
           </>
         }
         lede={

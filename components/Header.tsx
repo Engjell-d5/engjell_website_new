@@ -50,7 +50,7 @@ const NAV = [
   { href: '/journal', label: 'Journal', match: ['/journal'] },
   { href: '/podcast', label: 'Podcast', match: ['/podcast'] },
   { href: '/about', label: 'About', match: ['/about', '/ventures'] },
-  { href: '/work', label: 'Work with me', match: ['/work', '/sprint', '/speaking', '/invest', '/contact'] },
+  { href: '/work', label: 'Work with me', match: ['/work', '/ai-sprint', '/sprint', '/speaking', '/invest', '/contact'] },
 ];
 
 export default function Header() {
