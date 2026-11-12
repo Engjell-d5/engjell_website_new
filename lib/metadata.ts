@@ -3,7 +3,9 @@ import { ONE_LINE } from '@/lib/bio';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
 const siteName = 'Engjell Rraklli';
-const defaultTitle = 'Engjell Rraklli: Homegrown Albanian Tech Entrepreneur';
+// AI integration first (his core offer since 2026-11-12), Albania second,
+// matching the homepage opening "Building from Albania".
+const defaultTitle = 'Engjell Rraklli: AI Integration, Building from Albania';
 // The one idea from lib/bio.ts, so a page without its own description still says it.
 const defaultDescription = ONE_LINE;
 

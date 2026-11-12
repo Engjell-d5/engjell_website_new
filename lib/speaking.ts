@@ -127,8 +127,8 @@ export const SPEAKING_CREDITS: SpeakingCredit[] = [
     topic: '3D on the web',
   },
   {
+    // No url: kosict.org has had no DNS record since at least 2026-11-12.
     event: 'KosICT',
-    url: 'https://kosict.org',
     location: 'Pristina, Kosovo',
     year: 2023,
     format: 'Panel',

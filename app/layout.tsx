@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Montserrat } from "next/font/google";
 import localFont from "next/font/local";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { headers } from "next/headers";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -61,9 +62,11 @@ export default function RootLayout({
   };
 
   const gaId = process.env.NEXT_PUBLIC_GA_ID;
+  // Set by middleware.ts from the path: "sq" under /sq, else "en".
+  const lang = headers().get('x-site-lang') === 'sq' ? 'sq' : 'en';
 
   return (
-    <html lang="en" className={`${montserrat.variable} ${bebasNeue.variable}`}>
+    <html lang={lang} className={`${montserrat.variable} ${bebasNeue.variable}`}>
       <head>
         {/* Preconnect / DNS prefetch hints for third-party origins used across the site */}
         <link rel="preconnect" href="https://i.ytimg.com" crossOrigin="" />

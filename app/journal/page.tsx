@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
 import Pagination from '@/components/Pagination';
@@ -10,7 +11,7 @@ import { getBlogs } from '@/lib/data';
 import { toCategorySlug } from '@/lib/category-slug';
 import { readingTimeMinutes } from '@/lib/reading-time';
 import { formatDateShort } from '@/lib/format';
-import { POSTS_PER_PAGE, START_HERE_SLUG } from '@/lib/site';
+import { journalPageCount, POSTS_PER_PAGE, START_HERE_SLUG } from '@/lib/site';
 
 // Rendered per request. ISR (revalidate) is wedged in the deployed
 // standalone/proxy environment: pages prerendered empty at build (no
@@ -32,6 +33,15 @@ export async function generateMetadata(
   { searchParams }: { searchParams?: SearchParams }
 ): Promise<Metadata> {
   const page = parsePage(searchParams);
+  // A page past the end must 404 here, not only in the page body: app/
+  // loading.tsx makes the body stream, so by the time the body calls
+  // notFound() the 200 status has already gone out (a soft 404). Metadata
+  // resolves before streaming starts. Skipped when no posts loaded, so a
+  // failed DB read never 404s the journal.
+  if (page > 1) {
+    const published = (await loadBlogsSafe()).filter((b) => b.published).map((b) => b.slug);
+    if (published.length > 0 && page > journalPageCount(published)) notFound();
+  }
   // Each paginated page canonicalises to itself (rel=prev/next is no longer
   // used by Google); only page 1 owns the bare /journal URL.
   return createMetadata({
@@ -71,6 +81,10 @@ export default async function Journal({ searchParams }: { searchParams?: SearchP
   const feed = startHere ? blogs.filter((b) => b.slug !== START_HERE_SLUG) : blogs;
 
   const totalPages = Math.max(1, Math.ceil(feed.length / POSTS_PER_PAGE));
+  // A page past the end is a real 404, not an empty page with a 200 (a soft
+  // 404 to search engines). Only when posts loaded: a failed DB read falls back
+  // to an empty list, and that should not 404 the journal.
+  if (blogs.length > 0 && parsePage(searchParams) > totalPages) notFound();
   const page = Math.min(parsePage(searchParams), totalPages);
   const pageBlogs = feed.slice((page - 1) * POSTS_PER_PAGE, page * POSTS_PER_PAGE);
 

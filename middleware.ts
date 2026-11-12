@@ -26,8 +26,13 @@ export async function middleware(request: NextRequest) {
     res.headers.set('X-Robots-Tag', 'noindex, nofollow');
     return res;
   }
+  // Tell the root layout which language the page is in, so the Albanian
+  // pages under /sq render <html lang="sq"> rather than "en".
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set('x-site-lang', pathname === '/sq' || pathname.startsWith('/sq/') ? 'sq' : 'en');
+
   // Add basic security headers to all routes
-  const response = NextResponse.next();
+  const response = NextResponse.next({ request: { headers: requestHeaders } });
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('X-Frame-Options', 'SAMEORIGIN');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');

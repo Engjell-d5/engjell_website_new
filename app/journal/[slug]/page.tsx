@@ -6,6 +6,7 @@ import type { Metadata } from 'next';
 import ShareRow from '@/components/ShareRow';
 import SubscribeForm from '@/components/SubscribeForm';
 import PlaybookCta from '@/components/PlaybookCta';
+import AiGuideCta from '@/components/AiGuideCta';
 import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
 import SectionLabel from '@/components/site/SectionLabel';
 import { createMetadata } from '@/lib/metadata';
@@ -14,6 +15,11 @@ import { toCategorySlug } from '@/lib/category-slug';
 import { readingTimeMinutes } from '@/lib/reading-time';
 import { formatDateLong, formatDateShort } from '@/lib/format';
 import { SQ_ESSAYS } from '@/lib/sq';
+
+/** Posts filed under the AI category (/journal/category/ai). */
+function isAiPost(blog: { category?: string | null }): boolean {
+  return !!blog.category && toCategorySlug(blog.category) === 'ai';
+}
 
 export async function generateMetadata(
   { params }: { params: Promise<{ slug: string }> | { slug: string } }
@@ -188,7 +194,9 @@ export default async function BlogPost({ params }: { params: Promise<{ slug: str
                 ready for it. The playbook rather than a bare subscribe box: it
                 lands the same subscriber, but gives a reason to hand over an
                 address. */}
-            <PlaybookCta />
+            {/* AI posts get the AI guide (his core offer since 2026-11-12);
+                everything else keeps the service-founder playbook. */}
+            {isAiPost(blog) ? <AiGuideCta /> : <PlaybookCta />}
 
             <div className="flex flex-wrap items-center justify-between gap-4 border-t border-[var(--line)] pt-6">
               <p className="meta">Found it useful? Send it to someone running a service business.</p>

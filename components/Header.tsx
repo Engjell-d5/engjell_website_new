@@ -102,8 +102,8 @@ export default function Header() {
               </Link>
             ))}
             <LanguageSwitch pathname={pathname} className="ml-3 min-h-[46px] px-2" />
-            <Link href="/playbook" className="btn btn-primary ml-3 min-h-[46px] px-5 text-[13px]">
-              Free playbook
+            <Link href="/ai-guide" className="btn btn-primary ml-3 min-h-[46px] px-5 text-[13px]">
+              Free AI guide
             </Link>
           </nav>
   
@@ -143,8 +143,8 @@ export default function Header() {
               );
             })}
             <LanguageSwitch pathname={pathname} className="mt-8 min-h-[48px] text-[16px]" />
-            <Link href="/playbook" className="btn btn-primary mt-4">
-              Get the free playbook
+            <Link href="/ai-guide" className="btn btn-primary mt-4">
+              Get the free AI guide
             </Link>
           </nav>
         </div>
