@@ -168,21 +168,25 @@ export default async function Home() {
             <div className="min-w-0 flex-[1_1_560px] animate-slide-up">
               <span className="chip">Tirana, Albania</span>
               <h1 className="mt-6 text-balance text-[clamp(46px,5.3vw,80px)] leading-[0.94] tracking-[0.012em]">
-                Most service businesses are only as big as their founder.{' '}
-                <span className="text-[var(--primary-mint)]">Mine was too.</span>
+                {/* Picked by him 2026-11-12, replacing "Most service businesses are
+                    only as big as their founder. Mine was too." AI integration
+                    consultancy is the core offer, so the buttons lead there. */}
+                Building from Albania,{' '}
+                <span className="text-[var(--primary-mint)]">for the rest of the world.</span>
               </h1>
               <p className="lede mt-7 max-w-[33em]">
-                I founded division5 in Albania in 2015, at 23, with no money and no network, and spent the
-                next decade as the bottleneck in my own company. I took myself out of it with vetted
-                engineers, AI agents and written systems. This site is how, written down.
+                I founded division5 in Tirana in 2015, at 23, with no money and no network. Today it places
+                engineers from across the Balkans with companies in Europe, and more than 85% of its
+                processes run on AI agents and workflows, with a person deciding what matters. Now I help
+                other businesses put AI in the same way.
               </p>
               <div className="mt-9 flex flex-wrap gap-3">
-                <Link href="/playbook" className="btn btn-primary">
-                  Get the free playbook
+                <Link href="/ai-guide" className="btn btn-primary">
+                  Get the free AI guide
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Link>
-                <Link href={startHere ? `/journal/${startHere.slug}` : '/journal'} className="btn btn-secondary">
-                  Read the essay
+                <Link href="/ai-sprint" className="btn btn-secondary">
+                  The AI Integration Sprint
                 </Link>
               </div>
             </div>
