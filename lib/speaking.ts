@@ -22,12 +22,15 @@ export interface Talk {
 
 export const TALKS: Talk[] = [
   {
-    title: 'We replaced five roles with two people and 350 tools',
+    // Was "We replaced five roles with two people and 350 tools" until
+    // 2026-11-12: it overstated five→two (people, not roles; unconfirmed at
+    // today's volume) and the BNA deck no longer uses that number.
+    title: 'AI proposes, a person decides: running a company on agents',
     abstract:
-      'A working account of putting AI agents into a real business, including what they took over, what we refused to let them touch, and the one rule that keeps a human in every outbound decision: AI proposes, a person decides.',
+      'A working account of putting AI agents into a real business, including what they took over, what we refused to let them touch, and the one rule that keeps a human in every outbound decision.',
     audience: 'Founders and operators running service businesses of 10 to 100 people',
     takeaways: [
-      'Where an agent may act alone and where it may only propose',
+      'Which work an agent does alone, and which waits for a person',
       'Which parts of a pipeline are assembly work and which are judgment',
       'What actually broke, and what it cost to fix',
     ],
@@ -58,7 +61,9 @@ export const TALKS: Talk[] = [
     // First given in Albanian at BNA Tirana, 2026-11-14 ("Biznesi x10").
     // Replaced "What breaks when you put AI agents into a real business",
     // which overlapped the first talk.
-    title: 'Business x10: putting AI into a company, step by step',
+    // The deck's closing slide, asked as a question on purpose: no 10x figure
+    // has been confirmed, so this must not become a "we 10x'd" claim.
+    title: 'Will AI 10x your business?',
     abstract:
       'How division5 went from people running every process to more than 85% automated in a year, and the five steps any business can follow: list the processes, put the data in one place, build software on it, then add agents and automated workflows.',
     audience: 'Business owners and managers, technical or not',
