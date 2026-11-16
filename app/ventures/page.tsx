@@ -28,7 +28,7 @@ const DETAIL: Record<string, string> = {
   division5:
     'Started in May 2015 with no money and no network, selling software development services because that is what kept the company alive. Today it places vetted AI-native engineers from across the Balkans with companies in Europe and beyond, selected for skill and fit.',
   divisionAI:
-    'The software underneath the operation, with AI inside it rather than bolted on the side. Agents carry the assembly work, and a person still approves every decision that leaves the building. It is how a recruitment function that took five people now runs with two.',
+    'The software underneath the operation, with AI inside it rather than bolted on the side. Agents carry the assembly work, and a person still approves every decision that leaves the building. It is how more than 85% of the processes at division5 now run.',
 };
 
 export default function Ventures() {

@@ -6,7 +6,7 @@ import { createMetadata } from '@/lib/metadata';
 import { getBlogs, getVideos } from '@/lib/data';
 import { ONE_LINE } from '@/lib/bio';
 import { START_HERE_SLUG } from '@/lib/site';
-import { HOSTED_EPISODES, stagesForHome } from '@/lib/speaking';
+import { stagesForHome } from '@/lib/speaking';
 import { VENTURES } from '@/lib/ventures';
 import { readingTimeMinutes } from '@/lib/reading-time';
 import { formatDateShort } from '@/lib/format';
@@ -28,13 +28,17 @@ export const metadata: Metadata = createMetadata({
   path: '/',
 });
 
-// Every number here traces to lib/speaking.ts or the essay. An inflated one is
-// checkable in a click and costs more than it earns.
+// His own numbers, given 2026-11-16 to replace 5 → 2, 350+ and the episode
+// count, which he said were not right. An inflated one is checkable in a click
+// and costs more than it earns, so change these only on his word.
 const RECEIPTS = [
-  { n: '2015', note: 'Founded division5 at 23. No money, no network, no references.' },
-  { n: '5 → 2', note: 'People it takes to run our recruitment, now that agents do the assembly work.' },
-  { n: '350+', note: 'Tools our agents can use. Every one that writes still waits for a human.' },
-  { n: String(HOSTED_EPISODES), note: 'Long-form conversations recorded with founders for the podcast.' },
+  { n: '21', note: 'The age I started in entrepreneurship.' },
+  { n: '23', note: 'The age I founded my first business, division5, in 2015.' },
+  { n: '2', note: 'Businesses running today: division5 and divisionAI.' },
+  { n: '9', note: 'Other businesses I started that failed. Each one taught me something.' },
+  // "Thousands", in his words; the display font uppercases "1,000s" to "1,000S".
+  { n: '1,000+', note: 'Opportunities created for young Albanians.' },
+  { n: '7', note: 'Entrepreneurs who worked with me and went on to build their own companies.' },
 ];
 
 
@@ -53,7 +57,7 @@ const PARTS = [
   {
     n: '02',
     title: 'Systems',
-    body: 'Agents do the assembly work and a person approves what leaves the building. That took our recruitment from five people to two. divisionAI builds the same for other companies.',
+    body: 'Agents do the assembly work and a person approves what leaves the building. At division5 more than 85% of processes now run that way. divisionAI builds the same for other companies.',
     href: '/speaking',
     go: 'What it cost',
   },
@@ -209,7 +213,7 @@ export default async function Home() {
           <SectionLabel as="h2" id="receipts">
             Receipts, not predictions
           </SectionLabel>
-          <div className="reveal-stagger mt-6 grid grid-cols-2 gap-x-10 gap-y-8 lg:grid-cols-4">
+          <div className="reveal-stagger mt-6 grid grid-cols-2 gap-x-10 gap-y-8 lg:grid-cols-3">
             {RECEIPTS.map((r) => (
               <div key={r.note}>
                 <p className="font-bebas text-[clamp(52px,4.8vw,72px)] leading-none tracking-[0.02em] text-white">

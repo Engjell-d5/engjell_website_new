@@ -51,7 +51,7 @@ export const SQ_CHAPTERS = [
   {
     when: 'Sot',
     title: 'Çfarë u bë',
-    body: 'division5 është një platformë që lidh inxhinierë të verifikuar nga i gjithë Ballkani që punojnë me AI me kompani në Evropë e më gjerë. Rekrutimi ynë dikur kërkonte pesë njerëz dhe tani bëhet me dy, sepse agjentët bëjnë punën e montimit dhe një njeri vendos ende për çdo gjë që del nga kompania.',
+    body: 'division5 është një platformë që lidh inxhinierë të verifikuar nga i gjithë Ballkani që punojnë me AI me kompani në Evropë e më gjerë. Agjentët bëjnë tani pjesën më të madhe të punës së montimit, dhe një njeri vendos ende për çdo gjë që del nga kompania.',
   },
 ];
 
@@ -139,7 +139,7 @@ export const SQ_ESSAYS: SqEssay[] = [
 export const SQ_EXPERTISE = [
   {
     name: 'Agjentë AI në operacionet e biznesit',
-    body: 'I përdor agjentët brenda kompanive të mia, jo në një demo. Te division5, rekrutimi dikur kërkonte pesë njerëz dhe tani bëhet me dy: agjentët bëjnë punën e montimit në më shumë se 350 mjete, dhe një njeri miraton ende çdo gjë që del nga kompania. divisionAI ndërton të njëjtat sisteme për kompani të tjera.',
+    body: 'I përdor agjentët brenda kompanive të mia, jo në një demo. Te division5, mbi 85% e proceseve tani kryhen nga agjentë dhe flukse pune të automatizuara, dhe një njeri miraton ende çdo gjë që del nga kompania. divisionAI ndërton të njëjtat sisteme për kompani të tjera.',
     link: { href: `/sq/shkrime/${SQ_ESSAYS[0].slug}`, label: SQ_ESSAYS[0].title },
   },
   {

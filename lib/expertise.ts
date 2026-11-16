@@ -5,7 +5,7 @@
  * search engine and an assistant.
  *
  * Every sentence traces to copy that already exists: the about chapters, the
- * homepage receipts (5 → 2, 350+), lib/speaking.ts, lib/ventures.ts and the
+ * 85%+ figure (lib/bio.ts), lib/speaking.ts, lib/ventures.ts and the
  * "Why I build in Albania" section of /about.
  * Add a claim here only once it is true and public somewhere else on the site.
  */
@@ -20,7 +20,7 @@ export interface ExpertiseArea {
 export const EXPERTISE: ExpertiseArea[] = [
   {
     name: 'AI agents in business operations',
-    body: 'I run agents inside my own companies, not in a demo. At division5 our recruitment used to take five people and now runs with two: agents do the assembly work across more than 350 tools, and a person still approves everything that leaves the building. divisionAI builds the same systems for other companies.',
+    body: 'I run agents inside my own companies, not in a demo. At division5 more than 85% of our processes now run on agents and automated workflows, and a person still approves everything that leaves the building. divisionAI builds the same systems for other companies.',
     link: { href: '/speaking', label: 'Talks on AI in operations' },
   },
   {

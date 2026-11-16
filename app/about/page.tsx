@@ -62,7 +62,7 @@ const CHAPTERS = [
   {
     when: 'Today',
     title: 'What it became',
-    body: 'division5 is a marketplace that connects vetted AI-native engineers across the Balkans with companies in Europe and beyond. Our recruitment used to take five people and now runs with two, because agents do the assembly work and a person still makes every call that leaves the building.',
+    body: 'division5 is a marketplace that connects vetted AI-native engineers across the Balkans with companies in Europe and beyond. Agents now do most of the assembly work, and a person still makes every call that leaves the building.',
   },
 ];
 
