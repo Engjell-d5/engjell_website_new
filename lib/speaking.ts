@@ -194,6 +194,13 @@ export const JURY_AND_MENTORING: JuryRole[] = [
     years: '2019',
   },
   {
+    // His word, 2026-11-16: three sessions he ran himself. Add the organiser
+    // or city here if he gives them.
+    event: 'Game development training',
+    role: 'Trainer, three sessions',
+    years: '2015 to 2018',
+  },
+  {
     // He was a candidate, not on the published top 40; no public page names
     // him, so no link and never "listed" or "named".
     event: 'BLOconomy 40 under 40',
