@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { MapPin, X } from 'lucide-react';
 import type { Metadata } from 'next';
 import StructuredData, { Breadcrumbs } from '@/components/StructuredData';
@@ -7,7 +8,15 @@ import SectionLabel from '@/components/site/SectionLabel';
 import { createMetadata } from '@/lib/metadata';
 import { PERSON } from '@/lib/person';
 import { yearsOfBuilding } from '@/lib/site';
-import { TALKS, SPEAKING_CREDITS, FORMATS, HOSTED_EPISODES, DECLINES } from '@/lib/speaking';
+import {
+  TALKS,
+  SPEAKING_CREDITS,
+  FORMATS,
+  HOSTED_EPISODES,
+  DECLINES,
+  JURY_AND_MENTORING,
+  GUEST_APPEARANCES,
+} from '@/lib/speaking';
 import { BIOS, wordCount } from '@/lib/bio';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://engjellrraklli.com';
@@ -32,6 +41,17 @@ const speakingPageData = {
       ...(c.topic && { about: `${c.format}: ${c.topic}` }),
       ...(c.url && { url: c.url }),
     })),
+    // Press from PERSON plus the episodes he was a guest on, as checkable videos.
+    subjectOf: [
+      ...(PERSON.subjectOf ?? []),
+      ...GUEST_APPEARANCES.map((g) => ({
+      '@type': 'VideoObject',
+      name: `${g.show}: ${g.title}`,
+      url: g.url,
+      uploadDate: g.date,
+      inLanguage: g.language === 'Albanian' ? 'sq' : 'en',
+      })),
+    ],
   },
 };
 
@@ -134,8 +154,8 @@ export default function Speaking() {
           stage credits do not answer that; recorded conversations do, and
           unlike a credit they can be checked before deciding. */}
       <section className="sec-deep" aria-labelledby="proof">
-        <div className="wrap pad-y flex flex-wrap items-end gap-x-20 gap-y-10">
-          <div className="min-w-0 flex-[1_1_440px]">
+        <div className="wrap pad-y flex flex-wrap items-start gap-x-20 gap-y-10">
+          <div className="min-w-0 flex-[1_1_440px] lg:sticky lg:top-28">
             <SectionLabel>Proof you can check</SectionLabel>
             <p className="mt-4 font-bebas text-[clamp(110px,13vw,200px)] leading-[0.82] text-[var(--primary-mint)]">
               {HOSTED_EPISODES}
@@ -177,6 +197,57 @@ export default function Speaking() {
                 </li>
               ))}
             </ul>
+
+            <p className="label mt-10">Guest on</p>
+            <ul className="mt-3 border-b border-[var(--line)]">
+              {GUEST_APPEARANCES.map((g) => (
+                <li key={g.url} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-[var(--line)] py-4">
+                  <span>
+                    <a href={g.url} target="_blank" rel="noopener noreferrer" className="text-lg font-bold text-[var(--ink)] hover:text-[var(--primary-mint)]">
+                      {g.show}
+                    </a>
+                    <span className="mt-1 block text-[15px] text-[var(--text)]">{g.title}</span>
+                  </span>
+                  <span className="meta">
+                    {g.language}, {g.date.slice(0, 4)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            <p className="label mt-10">Juries, mentoring and community</p>
+            <ul className="mt-3 border-b border-[var(--line)]">
+              {JURY_AND_MENTORING.map((j) => (
+                <li key={j.event} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-t border-[var(--line)] py-4">
+                  <span>
+                    {j.url ? (
+                      <a href={j.url} target="_blank" rel="noopener noreferrer" className="text-lg font-bold text-[var(--ink)] hover:text-[var(--primary-mint)]">
+                        {j.event}
+                      </a>
+                    ) : (
+                      <span className="text-lg font-bold text-[var(--ink)]">{j.event}</span>
+                    )}
+                    {j.detail && <span className="mt-1 block text-[15px] text-[var(--text)]">{j.detail}</span>}
+                  </span>
+                  <span className="meta">
+                    {j.role}, {j.years}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <figure className="m-0 mt-8">
+              <div className="relative aspect-[5/4] overflow-hidden bg-[var(--deep)]">
+                <Image
+                  src="/photos/jury-albanian-skills-2024.jpg"
+                  alt="Engjell Rraklli on the Albanian Skills entrepreneurship jury, December 2024"
+                  fill
+                  quality={85}
+                  sizes="(min-width: 1024px) 520px, 100vw"
+                  className="object-cover"
+                />
+              </div>
+              <figcaption className="meta mt-3">On the Albanian Skills entrepreneurship jury, 2024</figcaption>
+            </figure>
           </div>
         </div>
       </section>

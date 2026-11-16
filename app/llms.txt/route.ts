@@ -5,7 +5,7 @@ import { SQ_ESSAYS, SQ_ONE_LINE } from '@/lib/sq';
 import { AI_SPRINT_PRICE, START_HERE_SLUG } from '@/lib/site';
 import { VENTURES } from '@/lib/ventures';
 import { PRESS } from '@/lib/press';
-import { SPEAKING_CREDITS } from '@/lib/speaking';
+import { SPEAKING_CREDITS, GUEST_APPEARANCES, JURY_AND_MENTORING } from '@/lib/speaking';
 
 /**
  * /llms.txt (llmstxt.org): a plain-text map of the site for AI assistants.
@@ -64,6 +64,12 @@ export async function GET() {
     '## Stages',
     ...SPEAKING_CREDITS.map((c) => `- ${c.event}, ${c.location}, ${c.date ? new Date(c.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : c.year}: ${c.format.toLowerCase()}${c.topic ? `, "${c.topic}"` : ''}${c.url ? ` (${c.url})` : ''}`),
     '- Speaker profile with his talks: https://sessionize.com/engjell-rraklli',
+    '',
+    '## Guest appearances',
+    ...GUEST_APPEARANCES.map((g) => `- ${g.show}, ${g.title} (${g.language}, ${new Date(g.date).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}): ${g.url}`),
+    '',
+    '## Juries, mentoring and community',
+    ...JURY_AND_MENTORING.map((j) => `- ${j.event}: ${j.role.toLowerCase()}, ${j.years}${j.detail ? `. ${j.detail}` : ''}${j.url ? ` (${j.url})` : ''}`),
     '',
     '## Press',
     ...PRESS.map((p) => `- [${p.title}](${p.url}), ${p.outlet}, ${new Date(p.date).toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}: ${p.summary}`),

@@ -145,6 +145,89 @@ export const SPEAKING_CREDITS: SpeakingCredit[] = [
     format: 'Panel',
     topic: 'Hiring and employment in tech',
   },
+  {
+    // Fireside chat at Innospace, Tirana, with his co-founder Ariol Sollaku.
+    // The organiser's event page is the url; he confirmed it 2026-11-16.
+    // Kept newest-first: /speaking and /llms.txt list this array in order.
+    event: 'Startup Grind Tirana',
+    url: 'https://www.startupgrind.com/events/details/startup-grind-tirana-presents-division5-engjell-rraklli-ariol-sollaku/',
+    location: 'Tirana, Albania',
+    year: 2019,
+    date: '2019-07-25',
+    with: 'Ariol Sollaku, division5',
+    format: 'Fireside chat',
+    topic: 'Building division5',
+  },
+];
+
+/**
+ * Juries and mentoring, as he confirmed them on 2026-11-16. Albanian Skills
+ * 2023 and 2024 are backed by photos in Drive (Engjell's Brand / Foto); 2021
+ * and 2022 are his word. Startup Live has no public page naming him.
+ */
+export interface JuryRole {
+  event: string;
+  url?: string;
+  role: string;
+  years: string;
+  detail?: string;
+}
+
+export const JURY_AND_MENTORING: JuryRole[] = [
+  {
+    event: 'Albanian Skills',
+    url: 'https://www.albanianskills.org/',
+    role: 'Jury, entrepreneurship',
+    years: '2021 to 2024',
+    detail: 'Four years judging the Entrepreneurship and Business Development competition at the national skills championship.',
+  },
+  {
+    // His word, 2026-11-16; not yet checked against a public page.
+    event: 'Pirate Summit',
+    role: 'Ambassador',
+    years: '2019 to 2023',
+    detail: 'The startup conference in Cologne.',
+  },
+  {
+    event: 'Startup Live',
+    role: 'Mentor',
+    years: '2019',
+  },
+  {
+    // He was a candidate, not on the published top 40; no public page names
+    // him, so no link and never "listed" or "named".
+    event: 'BLOconomy 40 under 40',
+    role: 'Candidate',
+    years: '2021',
+    detail: 'Young entrepreneurs across Albania, Kosovo and North Macedonia.',
+  },
+];
+
+/** Shows he has been a guest on, newest first. Both links checked 2026-11-16. */
+export interface GuestAppearance {
+  show: string;
+  title: string;
+  url: string;
+  /** ISO date published. */
+  date: string;
+  language: 'English' | 'Albanian';
+}
+
+export const GUEST_APPEARANCES: GuestAppearance[] = [
+  {
+    show: 'Podcast "Me Kampionët", Albanian Skills',
+    title: 'Episode 11, with Engjëll Rraklli',
+    url: 'https://www.youtube.com/watch?v=HicW4ppz3-o',
+    date: '2026-04-10',
+    language: 'Albanian',
+  },
+  {
+    show: 'AI Ascension',
+    title: 'Scaling a Software Business from Albania to the World',
+    url: 'https://www.youtube.com/watch?v=5aQXdHMtQ2w',
+    date: '2025-07-31',
+    language: 'English',
+  },
 ];
 
 /**
