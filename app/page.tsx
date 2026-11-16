@@ -271,7 +271,8 @@ export default async function Home() {
                   <p className="flex items-center gap-2">
                     <MapPin className="h-4 w-4 shrink-0 text-[var(--accent-text)]" aria-hidden="true" />
                     {stages.featured.location}
-                    {stages.featured.session ? ` · ${stages.featured.session}` : ''}
+                    {/* Time and room help only before the event. */}
+                    {stages.kind === 'next' && stages.featured.session ? ` · ${stages.featured.session}` : ''}
                   </p>
                   {stages.featured.with && (
                     <p className="flex items-center gap-2">
@@ -289,8 +290,11 @@ export default async function Home() {
                 <div className="brackets">
                   <div className="relative aspect-[16/10] overflow-hidden bg-[var(--deep)]">
                     <Image
-                      src="/photos/stage-adc-wide.jpg"
-                      alt="Engjell Rraklli speaking on stage at the Albanian Developers Conference in Pristina"
+                      src={stages.featured.photo?.src ?? '/photos/stage-adc-wide.jpg'}
+                      alt={
+                        stages.featured.photo?.alt ??
+                        'Engjell Rraklli speaking on stage at the Albanian Developers Conference in Pristina'
+                      }
                       fill
                       quality={85}
                       sizes="(min-width: 1024px) 620px, 100vw"
@@ -298,7 +302,11 @@ export default async function Home() {
                     />
                   </div>
                 </div>
-                <figcaption className="meta mt-4">Albanian Developers Conference, Pristina, 2023</figcaption>
+                <figcaption className="meta mt-4">
+                  {stages.featured.photo
+                    ? `${stages.featured.event}, ${stages.featured.location.split(',')[0]}, ${stages.featured.year}`
+                    : 'Albanian Developers Conference, Pristina, 2023'}
+                </figcaption>
               </figure>
             </div>
 

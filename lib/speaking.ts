@@ -77,6 +77,8 @@ export interface SpeakingCredit {
   format: string;
   /** What the talk was about, as he described it. Organisers book on topic. */
   topic?: string;
+  /** A photo from this event; the homepage card shows it when this credit is featured. */
+  photo?: { src: string; alt: string };
 }
 
 /**
@@ -105,7 +107,12 @@ export const SPEAKING_CREDITS: SpeakingCredit[] = [
   {
     // Business Network Albania's conference. Session 14:25 to 15:10 in Salla
     // Vjosa, on stage with Erjon Curraj (Smart360). The organiser's speaker
-    // page is the url; added 2026-11-10, four days before the event.
+    // page is the url; added 2026-11-10, four days before the event. Took
+    // place 2026-11-14; the homepage hides `session` once a talk is past.
+    // Programmed as a panel ("AI, challenges and opportunities"), but he
+    // confirmed 2026-11-16 it was co-hosted: each gave his own talk in his own
+    // slot. His was "Biznesi x10", in Albanian (TALKS[0]). The photo is cropped
+    // to him alone.
     event: 'BNA Tirana Conference',
     url: 'https://event.bna.al/en/speakers/Engjell-rraklli',
     location: 'Tirana, Albania',
@@ -113,8 +120,12 @@ export const SPEAKING_CREDITS: SpeakingCredit[] = [
     date: '2026-11-14',
     session: '14:25 to 15:10, Salla Vjosa',
     with: 'Erjon Curraj, Smart360',
-    format: 'Panel',
-    topic: 'AI, challenges and opportunities',
+    format: 'Talk',
+    topic: 'Will AI 10x your business?',
+    photo: {
+      src: '/photos/stage-bna-2026.jpg',
+      alt: 'Engjell Rraklli giving his talk at the BNA Tirana Conference 2026',
+    },
   },
   {
     // Second edition, Saturday 20 May 2023. He confirmed Pristina; AlbaniaTech's
