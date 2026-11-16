@@ -119,7 +119,7 @@ export const SPEAKING_CREDITS: SpeakingCredit[] = [
     year: 2026,
     date: '2026-11-14',
     session: '14:25 to 15:10, Salla Vjosa',
-    with: 'Erjon Curraj, Smart360',
+    // Co-host Erjon Curraj (Smart360) left off at his request, 2026-11-16.
     format: 'Talk',
     topic: 'Will AI 10x your business?',
     photo: {
