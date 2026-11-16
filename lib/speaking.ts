@@ -194,11 +194,12 @@ export const JURY_AND_MENTORING: JuryRole[] = [
     years: '2019',
   },
   {
-    // His word, 2026-11-16: three sessions he organised and taught himself.
+    // His word, 2026-11-16: he taught three sessions; EESTEC organised the
+    // first two and Epoka University the third.
     event: 'Game development training',
-    role: 'Organiser and trainer',
+    role: 'Trainer',
     years: '2015 to 2018',
-    detail: 'Three training sessions I organised and taught.',
+    detail: 'Three sessions: two organised by EESTEC, one by Epoka University.',
   },
   {
     // He was a candidate, not on the published top 40; no public page names
