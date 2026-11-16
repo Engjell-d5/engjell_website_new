@@ -154,6 +154,11 @@ export default async function Home() {
     c.date
       ? new Date(c.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
       : String(c.year);
+  // The list mixes years, so a dated credit there needs its year too.
+  const listDate = (c: { date?: string; year: number }) =>
+    c.date
+      ? new Date(c.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+      : String(c.year);
 
   return (
     <main id="main-content">
@@ -318,7 +323,7 @@ export default async function Home() {
               <ul className="reveal-stagger mt-12 border-b border-[var(--line)]">
                 {stages.rest.map((c) => (
                   <li key={`${c.event}-${c.year}`} className="grid gap-x-6 gap-y-1 border-t border-[var(--line)] py-5 sm:grid-cols-[110px_minmax(0,1fr)_auto] sm:items-baseline">
-                    <span className="meta">{stageDate(c)}</span>
+                    <span className="meta">{listDate(c)}</span>
                     <span>
                       {c.url ? (
                         <a href={c.url} target="_blank" rel="noopener noreferrer" className="text-lg font-bold text-[var(--ink)] hover:text-[var(--accent-text)]">

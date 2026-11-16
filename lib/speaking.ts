@@ -128,6 +128,29 @@ export const SPEAKING_CREDITS: SpeakingCredit[] = [
     },
   },
   {
+    // LDA Europe's youth conference; the url is the organiser's own report,
+    // whose agenda lists him on the first panel. He took part in two smaller
+    // LDA sessions as well and chose not to list them (2026-11-16).
+    event: 'LEAPin Albania',
+    url: 'https://ldaeurope.com/wp-content/uploads/2024/11/LEAPin-Albania-2024.pdf',
+    location: 'Tirana, Albania',
+    year: 2024,
+    date: '2024-11-16',
+    with: 'Hudi Shehu, Postjer Group, and Nexhi Sula',
+    format: 'Panel',
+    topic: 'AI and innovation',
+  },
+  {
+    // Albanian Skills' first "Aftësi, Karrierë & Punësim" festival, 13 to 15
+    // December 2023 (the stage banner in his Drive photos). He confirmed the
+    // panel 2026-11-16; the exact day and topic are not known, so no date.
+    event: 'Albanian Skills: Skills, Career and Employment Festival',
+    url: 'https://www.albanianskills.org/',
+    location: 'Tirana, Albania',
+    year: 2023,
+    format: 'Panel',
+  },
+  {
     // Second edition, Saturday 20 May 2023. He confirmed Pristina; AlbaniaTech's
     // listing (the url) says Tirana, which is wrong.
     event: 'Albanian Developers Conference',
@@ -144,6 +167,15 @@ export const SPEAKING_CREDITS: SpeakingCredit[] = [
     year: 2023,
     format: 'Panel',
     topic: 'Hiring and employment in tech',
+  },
+  {
+    // His word, 2026-11-16: a panel ICT Lab hosted on games in education.
+    // No public page found; exact date unknown, so it sorts by year.
+    event: 'ICT Lab',
+    location: 'Tirana, Albania',
+    year: 2019,
+    format: 'Panel',
+    topic: 'Games in education',
   },
   {
     // Fireside chat at Innospace, Tirana, with his co-founder Ariol Sollaku.
